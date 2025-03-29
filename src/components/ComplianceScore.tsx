@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Export } from 'lucide-react';
+import { FileExport } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ScoreCardProps {
@@ -36,7 +35,7 @@ const ComplianceScore: React.FC<ComplianceScoreProps> = ({ overallScore, scores 
           <span className="text-white"> Overall compliance score.</span>
         </h2>
         <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full">
-          <Export className="mr-2 h-4 w-4" />
+          <FileExport className="mr-2 h-4 w-4" />
           Export
         </Button>
       </div>
