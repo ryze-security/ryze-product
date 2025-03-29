@@ -6,9 +6,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
-import OrganizationalControls from "./pages/OrganizationalControls";
-import ControlDetail from "./pages/ControlDetail";
+import Evaluations from "./pages/Evaluations";
 import ControlQuestions from "./pages/ControlQuestions";
+import QuestionDetail from "./pages/QuestionDetail";
 import NewEvaluation from "./pages/NewEvaluation";
 import CompanySelection from "./pages/CompanySelection";
 import FrameworkSelection from "./pages/FrameworkSelection";
@@ -26,10 +26,10 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/organizational" element={<OrganizationalControls />} />
-          <Route path="/control/:id" element={<ControlDetail />} />
+          <Route path="/evaluations" element={<Evaluations />} />
+          <Route path="/dashboard/:id" element={<Dashboard />} />
           <Route path="/control/:id/questions" element={<ControlQuestions />} />
+          <Route path="/control/:controlId/question/:questionId" element={<QuestionDetail />} />
           <Route path="/new-evaluation" element={<NewEvaluation />} />
           <Route path="/evaluation/company" element={<CompanySelection />} />
           <Route path="/evaluation/framework" element={<FrameworkSelection />} />

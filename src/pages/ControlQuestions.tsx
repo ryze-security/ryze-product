@@ -2,8 +2,8 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
-import { FileText } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { FileText, ArrowLeft } from 'lucide-react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface Question {
@@ -15,10 +15,11 @@ interface Question {
 
 const ControlQuestions = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   
   // Mock data for the control
   const controlData = {
-    id: "5.15",
+    id: id || "5.15",
     title: "Access Control",
     description: "Rules to control physical and logical access to information and other associated assets should be established and implemented based on business and information security requirements.",
     compliance: 75,
@@ -54,15 +55,20 @@ const ControlQuestions = () => {
     <div className="min-h-screen bg-black text-white p-6">
       <Navbar />
       <div className="container mx-auto">
-        <div className="flex items-center justify-between my-8">
+        <div className="flex items-center my-8">
+          <Button variant="ghost" size="icon" className="mr-2" onClick={() => navigate(-1)}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
           <h2 className="text-4xl font-bold flex items-center">
             <span className="text-gray-500">{controlData.id}</span>
             <span className="ml-4 text-white">{controlData.title}</span>
           </h2>
-          <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full">
-            <FileText className="mr-2 h-4 w-4" />
-            Export
-          </Button>
+          <div className="ml-auto">
+            <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full">
+              <FileText className="mr-2 h-4 w-4" />
+              Export
+            </Button>
+          </div>
         </div>
 
         <p className="text-gray-300 mb-8">{controlData.description}</p>

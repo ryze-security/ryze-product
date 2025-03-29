@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, User, Users, Shield, Laptop, FileText } from 'lucide-react';
+import { Home, ClipboardList } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -13,12 +13,7 @@ const Navbar = () => {
     <div className="w-full px-4 py-2 flex items-center justify-between">
       <div className="flex items-center space-x-2 bg-black/50 backdrop-blur-md rounded-full px-2 py-1 border border-white/10">
         <NavItem to="/" icon={<Home className="h-5 w-5" />} text="Home" isActive={path === '/'} />
-        <NavItem to="/dashboard" icon={<FileText className="h-5 w-5" />} text="Dashboard" isActive={path === '/dashboard'} />
-        <NavItem to="/organizational" icon={<Shield className="h-5 w-5" />} text="Organizational" isActive={path.includes('organizational')} />
-        <NavItem to="/people" icon={<Users className="h-5 w-5" />} text="People" isActive={path.includes('people')} />
-        <NavItem to="/physical" icon={<User className="h-5 w-5" />} text="Physical" isActive={path.includes('physical')} />
-        <NavItem to="/technological" icon={<Laptop className="h-5 w-5" />} text="Technological" isActive={path.includes('technological')} />
-        <NavItem to="/new-evaluation" icon={<FileText className="h-5 w-5" />} text="New Evaluation" isActive={path.includes('evaluation') || path.includes('new-evaluation')} />
+        <NavItem to="/evaluations" icon={<ClipboardList className="h-5 w-5" />} text="Evaluations" isActive={path.includes('evaluations') || path.includes('dashboard')} />
       </div>
       
       <div className="flex items-center space-x-2 bg-black/50 backdrop-blur-md rounded-full px-4 py-2 border border-white/10">

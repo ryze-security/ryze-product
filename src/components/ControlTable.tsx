@@ -48,7 +48,11 @@ const ControlTable: React.FC<ControlTableProps> = ({
                 </Link>
               </td>
               <td className="p-4">
-                {renderTitle ? renderTitle(control) : control.title}
+                {renderTitle ? renderTitle(control) : (
+                  <Link to={`/control/${control.id}/questions`} className="hover:text-blue-400">
+                    {control.title}
+                  </Link>
+                )}
               </td>
               {showDescription && <td className="p-4 text-sm">{control.description}</td>}
               {showType && <td className="p-4">{control.type || 'Organizational control'}</td>}
