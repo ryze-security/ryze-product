@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Play, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { useToast } from "@/hooks/use-toast";
 
@@ -27,7 +27,7 @@ const EvaluationStart = () => {
               title: "Evaluation complete!",
               description: "Your security policy has been analyzed successfully.",
             });
-            navigate('/dashboard');
+            navigate('/dashboard/1'); // Navigate to the first evaluation dashboard
           }, 500);
           
           return 100;
@@ -101,10 +101,6 @@ const EvaluationStart = () => {
             </div>
           ) : (
             <div className="glass-card p-6 text-center">
-              <div className="bg-blue-900/20 p-4 rounded-full inline-flex mb-4">
-                <Play className="h-8 w-8 text-blue-400" />
-              </div>
-              
               <h3 className="text-lg font-medium mb-2">Ready to Start</h3>
               <p className="text-gray-400 mb-6">
                 Our AI will analyze your documents against the selected framework.
@@ -120,18 +116,6 @@ const EvaluationStart = () => {
             </div>
           )}
         </div>
-
-        {!isEvaluating && (
-          <div className="flex justify-end mt-8">
-            <Button 
-              onClick={startEvaluation}
-              className="bg-white hover:bg-gray-200 text-black"
-            >
-              Start Evaluation
-              <ArrowRight className="ml-2" />
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );

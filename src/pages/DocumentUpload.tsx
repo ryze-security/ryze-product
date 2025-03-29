@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 const DocumentUpload = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -27,6 +28,10 @@ const DocumentUpload = () => {
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const newFiles = Array.from(e.dataTransfer.files);
       setFiles(prevFiles => [...prevFiles, ...newFiles]);
+      toast({
+        title: "Files added",
+        description: `${newFiles.length} files have been added successfully.`
+      });
     }
   };
   
@@ -34,11 +39,41 @@ const DocumentUpload = () => {
     if (e.target.files && e.target.files.length > 0) {
       const newFiles = Array.from(e.target.files);
       setFiles(prevFiles => [...prevFiles, ...newFiles]);
+      toast({
+        title: "Files added",
+        description: `${newFiles.length} files have been added successfully.`
+      });
     }
   };
 
   const removeFile = (index: number) => {
     setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+    toast({
+      title: "File removed",
+      description: "The file has been removed from the upload list."
+    });
+  };
+
+  const handleUpload = () => {
+    if (files.length === 0) {
+      toast({
+        title: "No files selected",
+        description: "Please select files to upload.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setUploading(true);
+    
+    // Simulate upload process
+    setTimeout(() => {
+      setUploading(false);
+      toast({
+        title: "Upload successful",
+        description: `${files.length} files have been uploaded.`
+      });
+    }, 1500);
   };
 
   return (
@@ -104,6 +139,15 @@ const DocumentUpload = () => {
                   </Button>
                 </div>
               ))}
+            </div>
+            <div className="mt-4">
+              <Button 
+                className="w-full bg-blue-500 hover:bg-blue-600" 
+                onClick={handleUpload}
+                disabled={uploading}
+              >
+                {uploading ? "Uploading..." : "Upload Files"}
+              </Button>
             </div>
           </div>
         )}

@@ -45,12 +45,17 @@ const QuestionDetail = () => {
     setIsEditing(false);
   };
 
+  // Navigate back to control questions page
+  const handleBackClick = () => {
+    navigate(`/control/${controlId}/questions`);
+  };
+
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <Navbar />
       <div className="container mx-auto">
         <div className="flex items-center my-8">
-          <Button variant="ghost" size="icon" className="mr-2" onClick={() => navigate(`/control/${controlId}/questions`)}>
+          <Button variant="ghost" size="icon" className="mr-2" onClick={handleBackClick}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <h2 className="text-3xl font-bold">

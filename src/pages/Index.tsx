@@ -15,7 +15,7 @@ const Index = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full">
-        <Link to="/new-evaluation" className="w-full">
+        <Link to="/evaluation/company" className="w-full">
           <div className="glass-card p-8 text-center h-full flex flex-col items-center justify-center hover:border hover:border-blue-500 transition-all">
             <div className="bg-blue-500/20 p-4 rounded-full inline-flex items-center justify-center mb-6">
               <FileText className="h-12 w-12 text-blue-400" />
