@@ -2,6 +2,7 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight, FileText, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 interface CheckItem {
   id: string;
@@ -38,10 +39,17 @@ const DetailedControl: React.FC<DetailedControlProps> = ({
           <span className="text-gray-500">{controlId}</span>
           <span className="ml-4 text-white">{controlTitle}</span>
         </h2>
-        <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full">
-          <FileText className="mr-2 h-4 w-4" />
-          Export
-        </Button>
+        <div className="flex gap-2">
+          <Link to={`/control/${controlId}/questions`}>
+            <Button variant="outline" className="hover:bg-gray-700">
+              View All Questions
+            </Button>
+          </Link>
+          <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full">
+            <FileText className="mr-2 h-4 w-4" />
+            Export
+          </Button>
+        </div>
       </div>
 
       <p className="text-gray-300 mb-8">{description}</p>

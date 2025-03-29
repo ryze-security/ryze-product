@@ -1,5 +1,6 @@
 
-import React from 'react';
+import React, { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 
 interface Control {
   id: string;
@@ -15,13 +16,15 @@ interface ControlTableProps {
   showDescription?: boolean;
   showType?: boolean;
   showMissingElements?: boolean;
+  renderTitle?: (control: Control) => ReactNode;
 }
 
 const ControlTable: React.FC<ControlTableProps> = ({ 
   controls, 
   showDescription = false, 
   showType = true,
-  showMissingElements = true
+  showMissingElements = true,
+  renderTitle
 }) => {
   return (
     <div className="w-full mt-8">
@@ -39,8 +42,14 @@ const ControlTable: React.FC<ControlTableProps> = ({
         <tbody>
           {controls.map((control) => (
             <tr key={control.id} className="bg-gray-900 border-b border-gray-800">
-              <td className="p-4">{control.id}</td>
-              <td className="p-4">{control.title}</td>
+              <td className="p-4">
+                <Link to={`/control/${control.id}/questions`} className="hover:text-blue-400">
+                  {control.id}
+                </Link>
+              </td>
+              <td className="p-4">
+                {renderTitle ? renderTitle(control) : control.title}
+              </td>
               {showDescription && <td className="p-4 text-sm">{control.description}</td>}
               {showType && <td className="p-4">{control.type || 'Organizational control'}</td>}
               <td className="p-4">

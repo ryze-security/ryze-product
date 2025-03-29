@@ -4,11 +4,13 @@ import { File, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 const FileUploader = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -31,11 +33,11 @@ const FileUploader = () => {
     // Simulate upload process
     setTimeout(() => {
       toast({
-        title: "Analysis complete",
-        description: "Your policy has been successfully analyzed",
+        title: "File uploaded",
+        description: "Redirecting to framework selection",
       });
       setIsUploading(false);
-      window.location.href = '/dashboard';
+      navigate('/evaluation/framework');
     }, 2000);
   };
 

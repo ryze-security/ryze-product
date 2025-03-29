@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import { FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ControlTable from '@/components/ControlTable';
+import { Link } from 'react-router-dom';
 
 const OrganizationalControls = () => {
   const score = 78;
@@ -41,6 +42,12 @@ const OrganizationalControls = () => {
     }
   ];
 
+  const renderLinkedTitle = (control) => (
+    <Link to={`/control/${control.id}/questions`} className="hover:text-blue-400">
+      {control.title}
+    </Link>
+  );
+
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <Navbar />
@@ -61,6 +68,7 @@ const OrganizationalControls = () => {
           showType={false}
           showMissingElements={false}
           showDescription={true}
+          renderTitle={renderLinkedTitle}
         />
       </div>
     </div>
