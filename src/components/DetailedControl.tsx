@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ChevronLeft, ChevronRight, FileExport, Pencil } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FileText, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface CheckItem {
@@ -39,7 +39,7 @@ const DetailedControl: React.FC<DetailedControlProps> = ({
           <span className="ml-4 text-white">{controlTitle}</span>
         </h2>
         <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full">
-          <FileExport className="mr-2 h-4 w-4" />
+          <FileText className="mr-2 h-4 w-4" />
           Export
         </Button>
       </div>

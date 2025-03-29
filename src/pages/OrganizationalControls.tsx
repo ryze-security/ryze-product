@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Navbar from '@/components/Navbar';
-import { FileExport } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ControlTable from '@/components/ControlTable';
 
@@ -51,7 +51,7 @@ const OrganizationalControls = () => {
             <span className="text-white"> Alignment with organizational controls.</span>
           </h2>
           <Button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full">
-            <FileExport className="mr-2 h-4 w-4" />
+            <FileText className="mr-2 h-4 w-4" />
             Export
           </Button>
         </div>
