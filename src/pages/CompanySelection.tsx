@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Building2, Plus } from 'lucide-react';
@@ -12,17 +12,46 @@ import {
   CardHeader, 
   CardTitle 
 } from '@/components/ui/card';
+import companyService from '@/services/companyServices';
+import { CompanyListDto } from '@/models/company/companyListDto';
+import { AxiosErrorInfo } from '@/utils/handleAxiosError';
+import { useToast } from '@/hooks/use-toast';
 
 const CompanySelection = () => {
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
   const [newCompanyName, setNewCompanyName] = useState('');
   const [showNewCompanyInput, setShowNewCompanyInput] = useState(false);
 
-  const companies = [
-    { id: '1', name: 'Acme Corp' },
-    { id: '2', name: 'TechSolutions Inc.' },
-    { id: '3', name: 'Innovate Systems' }
-  ];
+  const [companies, setCompanies] = useState<CompanyListDto[]>([]);
+  const [error, setError] = useState<AxiosErrorInfo>(null);
+
+  const { toast } = useToast();
+
+  //fetches company data on component mount
+  useEffect(() => {
+    const loadCompanies = async () => {
+      try{
+        const data = await companyService.getCompanyByTenantId("alpha123");
+        setCompanies(data);
+      }
+      catch (error) {
+        setError(error);
+      }
+    }
+
+    loadCompanies();
+  }, []);
+
+  useEffect(() => {
+    if(error){
+      toast({
+        title: `Error ${error.statusCode}`,
+        description: error.message,
+        variant: 'destructive',
+        duration: 5000,
+      })
+    }
+  }, [error])
 
   return (
     <div className="min-h-screen bg-black text-white p-6">
@@ -36,14 +65,14 @@ const CompanySelection = () => {
         <div className="grid gap-4">
           {companies.map(company => (
             <Card 
-              key={company.id} 
+              key={company.tg_company_id} 
               className={`border transition-all cursor-pointer ${
-                selectedCompany === company.id ? 'border-blue-500 bg-blue-900/20' : 'border-gray-800 bg-gray-900 hover:bg-gray-800'
+                selectedCompany === company.tg_company_id ? 'border-blue-500 bg-blue-900/20' : 'border-gray-800 bg-gray-900 hover:bg-gray-800'
               }`}
-              onClick={() => setSelectedCompany(company.id)}
+              onClick={() => setSelectedCompany(company.tg_company_id)}
             >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-md font-medium">{company.name}</CardTitle>
+                <CardTitle className="text-md font-medium">{company.tg_company_display_name}</CardTitle>
                 <Building2 className="h-5 w-5 text-gray-400" />
               </CardHeader>
               <CardContent>
