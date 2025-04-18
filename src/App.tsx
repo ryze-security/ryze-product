@@ -14,7 +14,7 @@ import FrameworkSelection from "./pages/FrameworkSelection";
 import DocumentUpload from "./pages/DocumentUpload";
 import EvaluationStart from "./pages/EvaluationStart";
 import NotFound from "./pages/NotFound";
-import {Home} from "./pages/pageIndex.ts";
+import {Home, LoginPage} from "./pages/pageIndex.ts";
 
 const queryClient = new QueryClient();
 
@@ -25,8 +25,9 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/home" element={<Home />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/home" element={<Index />} />
           <Route path="/evaluations" element={<Evaluations />} />
           <Route path="/dashboard/:id" element={<Dashboard />} />
           <Route path="/control/:id/questions" element={<ControlQuestions />} />
