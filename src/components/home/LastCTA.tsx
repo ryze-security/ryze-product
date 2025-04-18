@@ -7,7 +7,7 @@ const demoData = {
 	buttons: {
 		primary: {
 			text: "Get Started",
-			url: "",
+			url: "/login",
 		},
 		secondary: {
 			text: "Request a Demo",

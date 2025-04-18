@@ -8,6 +8,7 @@ import { GlowEffect } from "@/components/ui/glow-effect";
 import { GradientButton } from "@/components/ui/gradient-button";
 import { ArrowDownCircle } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 function Home() {
 	const [showScrollCue, setShowScrollCue] = useState(true);
@@ -71,9 +72,11 @@ function Home() {
 						</span>
 					</p>
 
-					<GradientButton className="font-roboto font-semibold text-md">
-						Get Started
-					</GradientButton>
+					<Link to="/login">
+						<GradientButton className="font-roboto font-semibold text-md">
+							Get Started
+						</GradientButton>
+					</Link>
 				</section>
 			</FadeInSection>
 
