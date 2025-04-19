@@ -1,52 +1,145 @@
+import FrameworkListItem from "@/components/dashboard/FrameworkListItem";
+import RecentReviews from "@/components/dashboard/RecentReviews";
+import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { PlusCircleIcon } from "lucide-react";
+import React from "react";
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { FileText, ClipboardList } from 'lucide-react';
+function Index() {
+  // Dummy data for recent reviews
+  const recentReviews = [
+    {
+      companyName: "Company A",
+      framework: "ISO 27001",
+      score: 85,
+      date: "2025-04-15",
+    },
+    {
+      companyName: "Company B",
+      framework: "NIST CSF",
+      score: 60,
+      date: "2025-03-10",
+    },
+    {
+      companyName: "Company C",
+      framework: "Internal",
+      score: 90,
+      date: "2025-01-15",
+    },
+  ];
 
-const Index = () => {
-  return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6">
-      <div className="text-center mb-12">
-        <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">SecurityGap</h1>
-        <p className="text-xl text-gray-300 max-w-2xl">
-          Evaluate security policies against industry standards through automated gap analysis
-        </p>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl w-full">
-        <Link to="/evaluation/company" className="w-full">
-          <div className="glass-card p-8 text-center h-full flex flex-col items-center justify-center hover:border hover:border-blue-500 transition-all">
-            <div className="bg-blue-500/20 p-4 rounded-full inline-flex items-center justify-center mb-6">
-              <FileText className="h-12 w-12 text-blue-400" />
+  // Dummy data for frameworks
+  const frameworks = [
+    {
+      id: "1",
+      framework: "ISO 27001",
+      date: "2025-04-15",
+    },
+    {
+      id: "2",
+      framework: "NIST CSF",
+      date: "2025-03-10",
+    },
+    {
+      id: "3",
+      framework: "Internal",
+      date: "2025-01-15",
+    },
+  ];
+
+
+	return (
+		<div className="font-roboto text-white w-full min-h-screen overflow-x-hidden">
+			{/* Header */}
+			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-16 px-6 sm:px-12 lg:px-16">
+				<div className="max-w-7xl w-full px-4 flex items-center justify-between">
+					{/* Left: Welcome message */}
+					<h1 className="text-3xl font-semibold text-white leading-relaxed">
+						Welcome, Aditya!
+					</h1>
+
+					{/* Right: Button */}
+					<DropdownMenu>
+						<DropdownMenuTrigger>
+							<Button
+								variant="default"
+								className="bg-sky-500 rounded-2xl hover:bg-sky-600 text-white font-bold text-md"
+							>
+								<PlusCircleIcon />
+								New
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent>
+							<DropdownMenuItem className="font-roboto">Evaluation</DropdownMenuItem>
+							<DropdownMenuItem className="font-roboto">Auditee</DropdownMenuItem>
+							<DropdownMenuItem className="font-roboto">Framework</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</div>
+			</section>
+
+			{/* Cards */}
+			<section className="flex justify-center items-center w-full bg-black text-white py-24 pt-16 px-6 sm:px-12 lg:px-16">
+				<div className="max-w-7xl w-full px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+					{/* Card 1 */}
+					<div className="bg-zinc-900 rounded-xl p-6 text-white shadow-md">
+						<div className="flex items-center justify-between mb-2">
+							<h2 className="text-xl font-semibold tracking-wide pl-4">
+								Recent reviews
+							</h2>
+							<span className="text-sm text-zinc-400 pr-4">
+								Compliance
+							</span>
+						</div>
+						{recentReviews.map((review) => (
+              <RecentReviews
+              companyName={review.companyName}
+              framework={review.framework}
+              score={review.score}
+              date={review.date}
+              />
+            ))}
+            <div className="flex justify-center mb-2 mt-4">
+              <Button
+                variant="outline"
+                className="w-2/3 gap-2 border-violet-600 hover:bg-violet-600 hover:text-white hover:border-violet-600 bg-transparent text-violet-400 font-bold"
+              >View Reviews</Button>
             </div>
-            <h2 className="text-2xl font-bold mb-3">Start New Evaluation</h2>
-            <p className="text-gray-400 mb-6">
-              Upload security policies and evaluate them against industry frameworks
-            </p>
-            <Button className="bg-white text-black hover:bg-gray-200 w-full py-6 text-lg">
-              Start New Evaluation
-            </Button>
-          </div>
-        </Link>
-        
-        <Link to="/evaluations" className="w-full">
-          <div className="glass-card p-8 text-center h-full flex flex-col items-center justify-center hover:border hover:border-purple-500 transition-all">
-            <div className="bg-purple-500/20 p-4 rounded-full inline-flex items-center justify-center mb-6">
-              <ClipboardList className="h-12 w-12 text-purple-400" />
+					</div>
+
+					{/* Card 2 */}
+					<div className="bg-zinc-900 rounded-xl p-6 text-white shadow-md">
+						<div className="flex items-center justify-between mb-2">
+							<h2 className="text-xl font-semibold tracking-wide pl-4">
+								Frameworks available
+							</h2>
+							<span className="text-sm text-zinc-400 pr-4">
+								Last updated
+							</span>
+						</div>
+						{frameworks.map((framework) => (
+              <FrameworkListItem
+                id={framework.id}
+                framework={framework.framework}
+                date={framework.date}
+                />
+            ))}
+            <div className="flex justify-center mb-2 mt-4">
+              <Button
+                variant="outline"
+                className="w-2/3 gap-2 border-violet-600 hover:bg-violet-600 hover:text-white hover:border-violet-600 bg-transparent text-violet-400 font-bold"
+              >View All Frameworks</Button>
             </div>
-            <h2 className="text-2xl font-bold mb-3">Review Evaluations</h2>
-            <p className="text-gray-400 mb-6">
-              View and analyze your previous security policy evaluations
-            </p>
-            <Button variant="outline" className="w-full py-6 text-lg">
-              View Evaluations
-            </Button>
-          </div>
-        </Link>
-      </div>
-    </div>
-  );
-};
+					</div>
+				</div>
+			</section>
+		</div>
+	);
+}
 
 export default Index;
