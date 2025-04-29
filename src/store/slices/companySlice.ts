@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import companyService from "@/services/companyServices";
+import { CompanyListDto } from "@/models/company/companyListDto";
 
 export const loadCompanyData = createAsyncThunk(
 	"company/companyDataList",
@@ -11,7 +12,7 @@ export const loadCompanyData = createAsyncThunk(
 const companySlice = createSlice({
 	name: "company",
 	initialState: {
-		data: [],
+		data: [] as CompanyListDto[],
 		status: "idle",
 		error: null,
 	},

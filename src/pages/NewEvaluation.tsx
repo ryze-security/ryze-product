@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useAppSelector } from "@/store/hooks";
+import { RootState } from "@/store/storeIndex";
 import { Check, ChevronsUpDown, PlusCircleIcon } from "lucide-react";
 import React, { useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
@@ -34,20 +36,16 @@ const NewEvaluation = () => {
 		{ id: 2, label: "Begin Evaluation" },
 	];
 
-	const auditeeOptions = [
-		{
-			value: "auditee1",
-			label: "Auditee 1",
-		},
-		{
-			value: "auditee2",
-			label: "Auditee 2",
-		},
-		{
-			value: "auditee3",
-			label: "Auditee 3",
-		},
-	];
+	const auditees = useAppSelector((state) => state.company.data);
+
+	const auditeeOptions = [];
+
+	auditees.map((auditee) => {
+		auditeeOptions.push({
+			value: auditee.tg_company_id,
+			label: auditee.tg_company_display_name,
+		});
+	})
 
 	const frameworks = [
 		{ name: "NIST CSF", value: "nistcsf" },

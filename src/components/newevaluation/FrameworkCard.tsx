@@ -44,7 +44,6 @@ export const FrameworkCard = ({
 				isSelected
 					? "border-violet-700 text-violet-400 scale-110"
 					: "border-zinc-900 text-zinc-400 text-opacity-80",
-				error && "border-red-500" // Highlight the card if there's an error
 			)}
 		>
 			{name}
