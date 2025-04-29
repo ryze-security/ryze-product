@@ -14,12 +14,26 @@ import FrameworkSelection from "./pages/FrameworkSelection";
 import DocumentUpload from "./pages/DocumentUpload";
 import EvaluationStart from "./pages/EvaluationStart";
 import NotFound from "./pages/NotFound";
-import {Home, LoginPage} from "./pages/pageIndex.ts";
+import {Home, LoginPage, NewEvaluation} from "./pages/pageIndex.ts";
+import Layout from "./components/layout/Layout.tsx";
+import { useEffect } from "react";
+import { loadCompanyData } from "./store/slices/companySlice.ts";
+import { useAppDispatch } from "./store/hooks.ts";
+
 
 const queryClient = new QueryClient();
+const token ="123";
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+const App = () => {
+  
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    if (token) {
+      dispatch(loadCompanyData("alpha123"));
+    }
+  }, [])
+
+  return <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -27,21 +41,24 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/home" element={<Index />} />
-          <Route path="/evaluations" element={<Evaluations />} />
-          <Route path="/dashboard/:id" element={<Dashboard />} />
-          <Route path="/control/:id/questions" element={<ControlQuestions />} />
-          <Route path="/control/:controlId/question/:questionId" element={<QuestionDetail />} />
-          <Route path="/new-evaluation" element={<Navigate to="/evaluation/company" />} />
-          <Route path="/evaluation/company" element={<CompanySelection />} />
-          <Route path="/evaluation/framework" element={<FrameworkSelection />} />
-          <Route path="/evaluation/document" element={<DocumentUpload />} />
-          <Route path="/evaluation/start" element={<EvaluationStart />} />
+
+          <Route element={<Layout />}>
+            <Route path="/home" element={<Index />} />
+            <Route path="/evaluations" element={<Evaluations />} />
+            <Route path="/dashboard/:id" element={<Dashboard />} />
+            <Route path="/control/:id/questions" element={<ControlQuestions />} />
+            <Route path="/control/:controlId/question/:questionId" element={<QuestionDetail />} />
+            <Route path="/new-evaluation" element={<NewEvaluation />} />
+            <Route path="/evaluation/company" element={<CompanySelection />} />
+            <Route path="/evaluation/framework" element={<FrameworkSelection />} />
+            <Route path="/evaluation/document" element={<DocumentUpload />} />
+            <Route path="/evaluation/start" element={<EvaluationStart />} />
+          </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
-);
+};
 
 export default App;
