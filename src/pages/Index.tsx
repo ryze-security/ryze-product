@@ -9,49 +9,49 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { PlusCircleIcon } from "lucide-react";
 import React from "react";
+import { Link } from "react-router-dom";
 
 function Index() {
-  // Dummy data for recent reviews
-  const recentReviews = [
-    {
-      companyName: "Company A",
-      framework: "ISO 27001",
-      score: 85,
-      date: "2025-04-15",
-    },
-    {
-      companyName: "Company B",
-      framework: "NIST CSF",
-      score: 60,
-      date: "2025-03-10",
-    },
-    {
-      companyName: "Company C",
-      framework: "Internal",
-      score: 90,
-      date: "2025-01-15",
-    },
-  ];
+	// Dummy data for recent reviews
+	const recentReviews = [
+		{
+			companyName: "Company A",
+			framework: "ISO 27001",
+			score: 85,
+			date: "2025-04-15",
+		},
+		{
+			companyName: "Company B",
+			framework: "NIST CSF",
+			score: 60,
+			date: "2025-03-10",
+		},
+		{
+			companyName: "Company C",
+			framework: "Internal",
+			score: 90,
+			date: "2025-01-15",
+		},
+	];
 
-  // Dummy data for frameworks
-  const frameworks = [
-    {
-      id: "1",
-      framework: "ISO 27001",
-      date: "2025-04-15",
-    },
-    {
-      id: "2",
-      framework: "NIST CSF",
-      date: "2025-03-10",
-    },
-    {
-      id: "3",
-      framework: "Internal",
-      date: "2025-01-15",
-    },
-  ];
-
+	// Dummy data for frameworks
+	const frameworks = [
+		{
+			id: "1",
+			framework: "ISO 27001",
+			date: "2025-04-15",
+		},
+		{
+			id: "2",
+			framework: "NIST CSF",
+			date: "2025-03-10",
+		},
+		{
+			id: "3",
+			framework: "Internal",
+			date: "2025-01-15",
+		},
+	];
 
 	return (
 		<div className="font-roboto text-white w-full min-h-screen overflow-x-hidden">
@@ -75,9 +75,17 @@ function Index() {
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent>
-							<DropdownMenuItem className="font-roboto">Evaluation</DropdownMenuItem>
-							<DropdownMenuItem className="font-roboto">Auditee</DropdownMenuItem>
-							<DropdownMenuItem className="font-roboto">Framework</DropdownMenuItem>
+							<Link to={"/new-evaluation"}>
+								<DropdownMenuItem className="font-roboto cursor-pointer">
+									Evaluation
+								</DropdownMenuItem>
+							</Link>
+							<DropdownMenuItem className="font-roboto">
+								Auditee
+							</DropdownMenuItem>
+							<DropdownMenuItem className="font-roboto">
+								Framework
+							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</div>
@@ -97,19 +105,21 @@ function Index() {
 							</span>
 						</div>
 						{recentReviews.map((review) => (
-              <RecentReviews
-              companyName={review.companyName}
-              framework={review.framework}
-              score={review.score}
-              date={review.date}
-              />
-            ))}
-            <div className="flex justify-center mb-2 mt-4">
-              <Button
-                variant="outline"
-                className="w-2/3 gap-2 border-violet-600 hover:bg-violet-600 hover:text-white hover:border-violet-600 bg-transparent text-violet-400 font-bold"
-              >View Reviews</Button>
-            </div>
+							<RecentReviews
+								companyName={review.companyName}
+								framework={review.framework}
+								score={review.score}
+								date={review.date}
+							/>
+						))}
+						<div className="flex justify-center mb-2 mt-4">
+							<Button
+								variant="outline"
+								className="w-2/3 gap-2 border-violet-600 hover:bg-violet-600 hover:text-white hover:border-violet-600 bg-transparent text-violet-400 font-bold"
+							>
+								View Reviews
+							</Button>
+						</div>
 					</div>
 
 					{/* Card 2 */}
@@ -123,18 +133,20 @@ function Index() {
 							</span>
 						</div>
 						{frameworks.map((framework) => (
-              <FrameworkListItem
-                id={framework.id}
-                framework={framework.framework}
-                date={framework.date}
-                />
-            ))}
-            <div className="flex justify-center mb-2 mt-4">
-              <Button
-                variant="outline"
-                className="w-2/3 gap-2 border-violet-600 hover:bg-violet-600 hover:text-white hover:border-violet-600 bg-transparent text-violet-400 font-bold"
-              >View All Frameworks</Button>
-            </div>
+							<FrameworkListItem
+								id={framework.id}
+								framework={framework.framework}
+								date={framework.date}
+							/>
+						))}
+						<div className="flex justify-center mb-2 mt-4">
+							<Button
+								variant="outline"
+								className="w-2/3 gap-2 border-violet-600 hover:bg-violet-600 hover:text-white hover:border-violet-600 bg-transparent text-violet-400 font-bold"
+							>
+								View All Frameworks
+							</Button>
+						</div>
 					</div>
 				</div>
 			</section>
