@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { FilesUploadResponseDTO } from "@/models/files/FilesUploadResponseDTO";
+import { RoundSpinner } from "../ui/spinner";
 
 interface DataTableProps<TData> {
 	columns: ColumnDef<TData>[];
@@ -19,6 +20,7 @@ interface DataTableProps<TData> {
 	control: Control<any>;
 	name: string;
 	selectId: keyof TData;
+	isLoading: boolean;
 }
 
 export function FilesDataTable<TData>({
@@ -28,6 +30,7 @@ export function FilesDataTable<TData>({
 	control,
 	name,
 	selectId,
+	isLoading,
 }: DataTableProps<TData>) {
 	const [globalFilter, setGlobalFilter] = useState("");
 	const [visibleCount, setVisibleCount] = useState(20);
@@ -66,7 +69,6 @@ export function FilesDataTable<TData>({
 			render={({ field }) => {
                 // documentExistingSelected hsould be the default onMount state please act accordingly
 				const documents : FilesUploadResponseDTO[] = field.value || [];
-
 				const isSelected = (row: TData) =>
 					documents.some((doc) => doc.file_id === row[selectId]);
 
@@ -153,14 +155,14 @@ export function FilesDataTable<TData>({
 				return (
 					<div className="space-y-4 rounded-md p-2 shadow-sm bg-black font-roboto">
 						<Input
-							placeholder={`Filter by ${String(filterKey)}...`}
+							placeholder={`Filter by File Name`}
 							value={globalFilter}
 							onChange={(e) => setGlobalFilter(e.target.value)}
 							className="max-w-sm bg-black font-roboto"
 						/>
 						<ScrollArea
 							ref={scrollRef}
-							className="h-96 overflow-auto border rounded"
+							className="h-96 scrollbar-none overflow-hidden border rounded"
 							onScroll={handleScroll}
 						>
 							<table className="w-full text-sm">
@@ -215,7 +217,7 @@ export function FilesDataTable<TData>({
 												colSpan={enhancedColumns.length}
 												className="p-4 text-center text-slate-300"
 											>
-												No results.
+												{isLoading ? <RoundSpinner /> :"No results."}
 											</td>
 										</tr>
 									)}

@@ -27,17 +27,18 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 		field.value || []
 	);
 	const [isLoading, setIsLoading] = useState(false);
+	const [isFilesLoading, setIsFilesLoading] = useState(false);
 	const [existingCompanyFiles, setExistingCompanyFiles] = useState<
 		FilesUploadResponseDTO[]
 	>([]);
 	const { toast } = useToast();
-	console.log(control);
 
 	useEffect(() => {
 		const fetchCompanyFile = async () => {
+			setIsFilesLoading(true);
 			try {
 				const response = await fileService.getAllCompanyFiles(
-					"alpha123",
+					"alpha123", //change later to a value fetched from store or cookie
 					control._formValues.auditee.value
 				);
 				setExistingCompanyFiles(response);
@@ -48,6 +49,8 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 					description: "Could not load the files from the server.",
 					variant: "destructive",
 				});
+			} finally {
+				setIsFilesLoading(false);
 			}
 		};
 
@@ -70,7 +73,6 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 				);
 				uploadedFiles.push(response);
 			} catch (error) {
-				console.log("Error uploading file:", error);
 				toast({
 					title: "Error uploading file",
 					description: `Failed to upload ${file.name}. Please try again.`,
@@ -125,6 +127,21 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 
 	return (
 		<div className="flex gap-8 justify-evenly font-roboto">
+			{/* Existing Files Datatable */}
+			<div className="w-[35%] max-h-[calc(100vh-410px)] border-2 p-4 rounded-lg overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+				<p className="text-lg font-semibold mb-4 text-center">Choose an already uploaded file</p>
+				<FilesDataTable
+					columns={columns}
+					data={existingCompanyFiles}
+					filterKey="file_name"
+					control={control}
+					name={`${name}ExistingSelected`}
+					selectId="file_id"
+					isLoading={isFilesLoading}
+				/>
+			</div>
+			
+			{/* File Upload area */}
 			<div
 				{...getRootProps()}
 				className={`border-dashed flex flex-col gap-10 justify-center border-2 p-6 text-center rounded-lg mb-4 w-[30%] min-h-[calc(100vh-410px)] ${
@@ -148,18 +165,7 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 				</Button>
 			</div>
 
-			<div className="w-[35%] max-h-[calc(100vh-410px)] border-2 p-4 rounded-lg overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
-				<p className="text-lg font-semibold mb-4 text-center">Choose an already uploaded file</p>
-				<FilesDataTable
-					columns={columns}
-					data={existingCompanyFiles}
-					filterKey="file_name"
-					control={control}
-					name={`${name}ExistingSelected`}
-					selectId="file_id"
-				/>
-			</div>
-
+			{/* Uploaded files management area */}
 			<div className="w-[30%] min-h-[calc(100vh-410px)]">
 				{files && files.length > 0 ? (
 					<div className="border-2 p-6 rounded-lg min-h-[calc(100vh-410px)] overflow-y-auto">

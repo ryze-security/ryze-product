@@ -5,9 +5,7 @@ import { AppSidebar } from "../Sidebar";
 
 function Layout() {
 	return (
-		<SidebarProvider
-			defaultOpen={true}
-		>
+		<SidebarProvider>
 			<AppSidebar />
 			<main className="w-full h-screen">
 				<Outlet />

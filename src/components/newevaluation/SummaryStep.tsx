@@ -2,6 +2,7 @@ import { useFormContext } from "react-hook-form";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2, FileText, EditIcon } from "lucide-react";
+import { FilesUploadResponseDTO } from "@/models/files/FilesUploadResponseDTO";
 
 export const SummaryStep = ({
 	goToStep,
@@ -13,7 +14,8 @@ export const SummaryStep = ({
 	const auditee = watch("auditee");
 	const selectedFrameworks: { name: string; value: string }[] =
 		watch("selectedFrameworks") || [];
-	const uploadedFiles: File[] = watch("documents") || [];
+	const uploadedFiles: FilesUploadResponseDTO[] = watch("documents") || [];
+	const existingSelectedFiles: FilesUploadResponseDTO[] = watch("documentsExistingSelected") || [];
 
 	const removeFramework = (frameworkValue: string) => {
 		setValue(
@@ -23,11 +25,17 @@ export const SummaryStep = ({
 		);
 	};
 
-	const removeFile = (index: number) => {
+	const removeUploadedFile = (index: number) => {
 		const newFiles = [...uploadedFiles];
 		newFiles.splice(index, 1);
 		setValue("documents", newFiles, { shouldValidate: true });
 	};
+
+	const removeExistingFile = (index: number) => {
+		const newFiles = [...existingSelectedFiles];
+		newFiles.splice(index, 1);
+		setValue("documentsExistingSelected", newFiles, { shouldValidate: true });
+	}
 
 	return (
 		<div className="space-y-6">
@@ -91,19 +99,31 @@ export const SummaryStep = ({
 					<h3 className="text-lg font-semibold text-zinc-600 my-auto">
 						Documents Uploaded.
 					</h3>
-					{uploadedFiles.length === 0 ? (
+					{uploadedFiles.length && existingSelectedFiles.length === 0 ? (
 						<p className="text-slate-400">No files uploaded.</p>
 					) : (
 						<div className="flex flex-wrap gap-2">
-							{uploadedFiles.map((file, index) => (
+							{existingSelectedFiles.map((file, index) => (
 								<div
-									key={file.name}
+									key={file.file_id}
 									className="flex items-center gap-2 bg-zinc-800 px-3 py-1 rounded-sm"
 								>
-									<span>{file.name}</span>
+									<span>{file.file_name}</span>
 									<Trash2
 										className="w-4 h-4 cursor-pointer text-rose-400"
-										onClick={() => removeFile(index)}
+										onClick={() => removeExistingFile(index)}
+									/>
+								</div>
+							))}
+							{uploadedFiles.map((file, index) => (
+								<div
+									key={file.file_id}
+									className="flex items-center gap-2 bg-zinc-800 px-3 py-1 rounded-sm"
+								>
+									<span>{file.file_name}</span>
+									<Trash2
+										className="w-4 h-4 cursor-pointer text-rose-400"
+										onClick={() => removeUploadedFile(index)}
 									/>
 								</div>
 							))}

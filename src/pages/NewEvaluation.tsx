@@ -15,17 +15,18 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { RoundSpinner } from "@/components/ui/spinner";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { CompanyListDto } from "@/models/company/companyListDto";
+import { createEvaluationDTO, createEvaluationResponseDTO } from "@/models/evaluation/EvaluationDTOs";
 import { FilesUploadResponseDTO } from "@/models/files/FilesUploadResponseDTO";
+import evaluationService, { EvaluationService } from "@/services/evaluationServices";
 import { useAppSelector } from "@/store/hooks";
-import { RootState } from "@/store/storeIndex";
 import { ColumnDef } from "@tanstack/react-table";
 import { Check, ChevronsUpDown, PlusCircleIcon } from "lucide-react";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
 
 interface AuditeeOption {
 	value: string;
@@ -48,14 +49,12 @@ const NewEvaluation = () => {
 
 	const auditees = useAppSelector((state) => state.company.data) as CompanyListDto[];
 
-	const auditeeOptions = [];
-
-	auditees.map((auditee) => {
-		auditeeOptions.push({
+	const auditeeOptions = useMemo(() => {
+		return auditees.map((auditee) => ({
 			value: auditee.tg_company_id,
 			label: auditee.tg_company_display_name,
-		});
-	});
+		}));
+	}, [auditees]);
 
 	const frameworks = [
 		{ name: "NIST CSF", value: "nistcsf" },
@@ -68,6 +67,7 @@ const NewEvaluation = () => {
 
 	const [currentStep, setCurrentStep] = useState(0);
 	const [openCombo, setOpenCombo] = useState(false);
+	const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 
 	const goNext = async (e: React.MouseEvent) => {
 		e.preventDefault();
@@ -109,6 +109,7 @@ const NewEvaluation = () => {
 	};
 
 	const goToStep = async (stepId: number) => {
+		if (isSubmitLoading) return;
 		if (currentStep === 0 && stepId > 0) {
 			const result = await methods.trigger([
 				"auditee",
@@ -145,13 +146,54 @@ const NewEvaluation = () => {
 			auditee: {} as AuditeeOption,
 			selectedFrameworks: [],
 			documents: [] as FilesUploadResponseDTO[],
+			documentsExistingSelected: [] as FilesUploadResponseDTO[],
 		},
 	});
 
 	const { toast } = useToast();
 
-	const submit = (data: any) => {
-		console.log(data);
+	const submit = async (data: any) => {
+		setIsSubmitLoading(true);
+		const evaluationData: createEvaluationDTO = {
+			tenant_id: "alpha123", //change later to a value fetched from store or cookie
+			company_id: data.auditee.value,
+			collection_id: "collection_1", //change later when framework endpoints are ready
+			created_by: "SYSTEM",
+			model_used: "gpt",
+			document_list: [
+				...data.documents.map((doc) => doc.file_id),
+				...data.documentsExistingSelected.map((doc) => doc.file_id),
+			],
+		};
+
+		try {
+			const response = await evaluationService.createEvaluation(evaluationData);
+			const evalId : createEvaluationResponseDTO = response;
+
+			try{
+				const response = await evaluationService.startEvaluation(evalId.eval_id);
+				toast({
+					title: "Evaluation is running",
+					description: `Evaluation is created and running successfully. To check the progress visit reviews page. Note to devs: in future this will redirect to the page.`,
+					variant: "default",
+					className: "bg-green-700"
+				});
+			} catch (startError) {
+				toast({
+					title: "Error starting evaluation",
+					description: `Evaluation was created with id ${evalId.eval_id} but failed to start. Please visit reviews page to start it manually! NOTE to devs: subject to change.`,
+					variant: "destructive",
+				})
+			}
+		} catch (error) {
+			toast({
+				title: "Error creating evaluation",
+				description: `Failed to create the evaluation. Please try again later.`,
+				variant: "destructive",
+			});
+		} finally {
+			setIsSubmitLoading(false);
+		}
 	};
 
 	const onError = (errors: any) => {
@@ -160,8 +202,9 @@ const NewEvaluation = () => {
 
 	const onRunClick = async () => {
 		const documentLength = methods.getValues("documents").length;
+		const existingDocumentLength = methods.getValues("documentsExistingSelected").length;
 		const frameworkLength = methods.getValues("selectedFrameworks").length;
-		const isValid = documentLength > 0 && frameworkLength > 0;
+		const isValid = (documentLength > 0 || existingDocumentLength > 0) && frameworkLength > 0;
 
 		if (isValid) {
 			methods.handleSubmit(submit, onError)();
@@ -174,8 +217,6 @@ const NewEvaluation = () => {
 			});
 		}
 	};
-
-	const selected = methods.watch("documents")
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
@@ -410,7 +451,7 @@ const NewEvaluation = () => {
 										control={methods.control}
 										rules={{
 											validate: (val: FilesUploadResponseDTO[]) => {
-												if (!val || val.length === 0) {
+												if ((!val || val.length) && methods.getValues("documentsExistingSelected").length === 0) {
 													return "Please select at least one file.";
 												}
 
@@ -452,7 +493,7 @@ const NewEvaluation = () => {
 								<button
 									type="button"
 									onClick={goPrevious}
-									disabled={currentStep === 0}
+									disabled={currentStep === 0 || isSubmitLoading}
 									className="px-4 py-2 border border-zinc-500 rounded-full text-white hover:bg-zinc-700 disabled:opacity-30 font-bold"
 								>
 									Previous
@@ -461,6 +502,7 @@ const NewEvaluation = () => {
 									<button
 										type="button"
 										onClick={goNext}
+										disabled={isSubmitLoading}
 										className="px-4 py-2 bg-sky-600 text-white font-bold rounded-full hover:bg-sky-700 disabled:opacity-30"
 									>
 										Next
@@ -469,9 +511,10 @@ const NewEvaluation = () => {
 									<button
 										type="button"
 										onClick={onRunClick}
+										disabled={isSubmitLoading}
 										className="px-4 py-2 bg-sky-600 text-white font-bold rounded-full hover:bg-sky-700 disabled:opacity-30"
 									>
-										Run!
+										{isSubmitLoading ? <RoundSpinner /> :"Run!"}
 									</button>
 								)}
 							</div>
