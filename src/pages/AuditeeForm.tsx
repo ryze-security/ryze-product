@@ -1,3 +1,4 @@
+import { AlertDialogBox } from "@/components/AlertDialogBox";
 import InfoCard from "@/components/auditee/InfoCard";
 import SingleSelectBox from "@/components/auditee/SingleSelectBox";
 import PageHeader from "@/components/PageHeader";
@@ -174,6 +175,10 @@ function AuditeeForm() {
 		});
 	};
 
+	const onRunClick = () => {
+		methods.handleSubmit(onSubmit)();
+	};
+
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
 			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-6 sm:px-12 lg:px-16">
@@ -237,17 +242,23 @@ function AuditeeForm() {
 								)}
 							</Button>
 						</div>
-						<Link to={"/auditee/dashboard"}>
-							<Button
-								variant="default"
-								disabled={isLoading}
-								className={
-									"bg-zinc-700 hover:bg-zinc-800 rounded-2xl transition-colors text-white font-bold text-md"
-								}
-							>
-								Cancel
-							</Button>
-						</Link>
+						<AlertDialogBox
+							trigger={
+								<Button
+									variant="default"
+									disabled={isLoading}
+									className={
+										"bg-zinc-700 hover:bg-zinc-800 rounded-2xl transition-colors text-white font-bold text-md"
+									}
+								>
+									Cancel
+								</Button>
+							}
+							subheading="Are you sure you want to cancel this operation? Clicking confirm will cause all your unsaved data to be lost."
+							title="Are You Sure?"
+							actionLabel="Confirm"
+							actionHref="/auditee/dashboard"
+						/>
 					</div>
 				)}
 			</section>
@@ -255,10 +266,7 @@ function AuditeeForm() {
 			<section className="flex justify-center items-center w-full bg-black text-white pt-10 px-6 sm:px-12 lg:px-16">
 				<div className="max-w-7xl w-full mt-1 px-4">
 					<FormProvider {...methods}>
-						<form
-							className="flex flex-col w-full"
-							onSubmit={methods.handleSubmit(onSubmit)}
-						>
+						<form className="flex flex-col w-full">
 							{/* Auditee Name Input Field */}
 							{!isEditMode ? (
 								<div className="space-y-4 max-w-[400px]">
@@ -305,11 +313,18 @@ function AuditeeForm() {
 								</div>
 							) : (
 								<div className="flex justify-start gap-4">
-									<InfoCard heading="Reviews conducted" data={"55"} info="-8% month over month" />
-									<InfoCard heading="Documents reviewed" data={"410"} info="+18% month over month" />
+									<InfoCard
+										heading="Reviews conducted"
+										data={"55"}
+										info="-8% month over month"
+									/>
+									<InfoCard
+										heading="Documents reviewed"
+										data={"410"}
+										info="+18% month over month"
+									/>
 								</div>
 							)}
-
 							{/* Related services single select boxes */}
 							<div className="space-y-4 mt-8">
 								<SingleSelectBox
@@ -348,17 +363,30 @@ function AuditeeForm() {
 							</div>
 							{/* Submit Button */}
 							<div className="flex justify-start mt-8">
-								<Button
-									type="submit"
-									className="bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold text-md"
-									disabled={isLoading || isFetchingData}
-								>
-									{isLoading || isFetchingData ? (
-										<RoundSpinner />
-									) : (
-										`${isEditMode ? "Update" : "Create"}`
-									)}
-								</Button>
+								<AlertDialogBox
+									trigger={
+										<Button
+											type="button"
+											className="bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold text-md"
+											disabled={
+												isLoading || isFetchingData
+											}
+										>
+											{isLoading || isFetchingData ? (
+												<RoundSpinner />
+											) : (
+												`${
+													isEditMode
+														? "Update"
+														: "Create"
+												}`
+											)}
+										</Button>
+									}
+									subheading="Are you sure you want to proceed? Clicking confirm will save your data."
+									actionLabel="Confirm"
+									onAction={onRunClick}
+								/>
 							</div>
 						</form>
 					</FormProvider>

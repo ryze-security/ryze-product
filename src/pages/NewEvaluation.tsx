@@ -1,3 +1,4 @@
+import { AlertDialogBox } from "@/components/AlertDialogBox";
 import { FileUploadArea } from "@/components/newevaluation/FileUploadArea";
 import { FrameworkCard } from "@/components/newevaluation/FrameworkCard";
 import { SummaryStep } from "@/components/newevaluation/SummaryStep";
@@ -528,18 +529,24 @@ const NewEvaluation = () => {
 										Next
 									</button>
 								) : (
-									<button
-										type="button"
-										onClick={onRunClick}
-										disabled={isSubmitLoading}
-										className="px-4 py-2 bg-sky-600 text-white font-bold rounded-full hover:bg-sky-700 disabled:opacity-30"
-									>
-										{isSubmitLoading ? (
-											<RoundSpinner />
-										) : (
-											"Run!"
-										)}
-									</button>
+									<AlertDialogBox
+										trigger={
+											<button
+												type="button"
+												disabled={isSubmitLoading}
+												className="px-4 py-2 bg-sky-600 text-white font-bold rounded-full hover:bg-sky-700 disabled:opacity-30"
+											>
+												{isSubmitLoading ? (
+													<RoundSpinner />
+												) : (
+													"Run!"
+												)}
+											</button>
+										}
+										subheading="Are you sure you want to proceed? Clicking confirm will save your data and start your evaluation."
+										actionLabel="Confirm"
+										onAction={onRunClick}
+									/>
 								)}
 							</div>
 						</form>
