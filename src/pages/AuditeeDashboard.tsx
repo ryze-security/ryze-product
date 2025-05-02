@@ -1,6 +1,6 @@
 import { GenericDataTable } from '@/components/GenericDataTable'
 import PageHeader from '@/components/PageHeader'
-import { CompanyListDto } from '@/models/company/companyListDto'
+import { CompanyListDto } from '@/models/company/companyDTOs'
 import { useAppSelector } from '@/store/hooks'
 import { ColumnDef } from '@tanstack/react-table'
 import React from 'react'
@@ -30,7 +30,7 @@ function AuditeeDashboard() {
 				<PageHeader heading="Auditees" subtitle=" Entities that require security evaluations to ensure compliance and mitigate potential risks." buttonText="Add" variant='add' buttonUrl="/auditee/new" />
 			</section>
 
-            <section className="flex items-center w-full bg-black text-white pt-10 px-6 sm:px-12 lg:px-16">
+            <section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-6 sm:px-12 lg:px-16">
                 <GenericDataTable columns={columns} data={auditeeData} filterKey='tg_company_display_name' rowIdKey='tg_company_id' rowLinkPrefix='/auditee/' />
             </section>
         </div>

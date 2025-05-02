@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "./ui/button";
 import { PlusCircleIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { RoundSpinner } from "./ui/spinner";
 
 interface Props {
 	heading: string;
@@ -9,10 +10,11 @@ interface Props {
     buttonText: string;
     variant?: string;
     buttonUrl: string;
+	isLoading?: boolean;
 }
 
 function PageHeader(props: Props) {
-	const { heading, subtitle, buttonText, variant, buttonUrl } = props;
+	const { heading, subtitle, buttonText, variant, buttonUrl, isLoading } = props;
 
 	return (
 		<div className="max-w-7xl w-full flex justify-between px-4">
@@ -28,10 +30,11 @@ function PageHeader(props: Props) {
             <Link to={buttonUrl}>
                 <Button
                     variant="default"
-                    className="bg-sky-500 rounded-2xl hover:bg-sky-600 text-white font-bold text-md"
+					disabled={isLoading}
+                    className={` ${variant === "add" ? "bg-sky-500 hover:bg-sky-600" : "bg-zinc-700 hover:bg-zinc-800"} rounded-2xl transition-colors text-white font-bold text-md`}
                 >
                     {variant === "add" ? <PlusCircleIcon /> : ""}
-                    {buttonText}
+                    {isLoading? <RoundSpinner /> : buttonText}
                 </Button>
             </Link>
 		</div>
