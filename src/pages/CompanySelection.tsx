@@ -13,7 +13,7 @@ import {
   CardTitle 
 } from '@/components/ui/card';
 import companyService from '@/services/companyServices';
-import { CompanyListDto } from '@/models/company/companyListDto';
+import { CompanyListDto } from '@/models/company/companyDTOs';
 import { AxiosErrorInfo } from '@/utils/handleAxiosError';
 import { useToast } from '@/hooks/use-toast';
 

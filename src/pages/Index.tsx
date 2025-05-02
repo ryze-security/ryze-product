@@ -80,9 +80,11 @@ function Index() {
 									Evaluation
 								</DropdownMenuItem>
 							</Link>
-							<DropdownMenuItem className="font-roboto">
-								Auditee
-							</DropdownMenuItem>
+							<Link to={"/auditee/new"}>
+								<DropdownMenuItem className="font-roboto">
+									Auditee
+								</DropdownMenuItem>
+							</Link>
 							<DropdownMenuItem className="font-roboto">
 								Framework
 							</DropdownMenuItem>

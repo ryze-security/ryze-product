@@ -7,3 +7,10 @@ export interface CompanyListDto {
     type: string;
     document_path: string;
 }
+
+export interface CompanyCreateDto {
+    tenant_id: string;
+    company_name: string;
+    company_type: string;
+    created_by: string;
+}

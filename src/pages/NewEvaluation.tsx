@@ -1,6 +1,7 @@
 import { FileUploadArea } from "@/components/newevaluation/FileUploadArea";
 import { FrameworkCard } from "@/components/newevaluation/FrameworkCard";
 import { SummaryStep } from "@/components/newevaluation/SummaryStep";
+import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import {
 	Command,
@@ -15,19 +16,35 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { RoundSpinner } from "@/components/ui/spinner";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { CompanyListDto } from "@/models/company/companyDTOs";
+import {
+	createEvaluationDTO,
+	createEvaluationResponseDTO,
+} from "@/models/evaluation/EvaluationDTOs";
+import { FilesUploadResponseDTO } from "@/models/files/FilesUploadResponseDTO";
+import evaluationService, {
+	EvaluationService,
+} from "@/services/evaluationServices";
 import { useAppSelector } from "@/store/hooks";
-import { RootState } from "@/store/storeIndex";
+import { ColumnDef } from "@tanstack/react-table";
 import { Check, ChevronsUpDown, PlusCircleIcon } from "lucide-react";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
 
 interface AuditeeOption {
 	value: string;
 	label: string;
 }
+
+const columns: ColumnDef<FilesUploadResponseDTO>[] = [
+	{
+		accessorKey: "file_name",
+		header: "File Name",
+	},
+];
 
 const NewEvaluation = () => {
 	const steps = [
@@ -36,16 +53,16 @@ const NewEvaluation = () => {
 		{ id: 2, label: "Begin Evaluation" },
 	];
 
-	const auditees = useAppSelector((state) => state.company.data);
+	const auditees = useAppSelector(
+		(state) => state.company.data
+	) as CompanyListDto[];
 
-	const auditeeOptions = [];
-
-	auditees.map((auditee) => {
-		auditeeOptions.push({
+	const auditeeOptions = useMemo(() => {
+		return auditees.map((auditee) => ({
 			value: auditee.tg_company_id,
 			label: auditee.tg_company_display_name,
-		});
-	})
+		}));
+	}, [auditees]);
 
 	const frameworks = [
 		{ name: "NIST CSF", value: "nistcsf" },
@@ -58,20 +75,26 @@ const NewEvaluation = () => {
 
 	const [currentStep, setCurrentStep] = useState(0);
 	const [openCombo, setOpenCombo] = useState(false);
+	const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 
 	const goNext = async (e: React.MouseEvent) => {
 		e.preventDefault();
 
-		if(currentStep === 0) {
-			const result = await methods.trigger(["auditee", "selectedFrameworks"]);
-			if (!result){
+		if (currentStep === 0) {
+			const result = await methods.trigger([
+				"auditee",
+				"selectedFrameworks",
+			]);
+			if (!result) {
 				toast({
 					title: "Error",
-					description: methods.formState.errors.auditee?.message || methods.formState.errors.selectedFrameworks?.message,
+					description:
+						methods.formState.errors.auditee?.message ||
+						methods.formState.errors.selectedFrameworks?.message,
 					variant: "destructive",
-				})
+				});
 				return;
-			};
+			}
 		}
 
 		if (currentStep === 1) {
@@ -81,7 +104,7 @@ const NewEvaluation = () => {
 					title: "Error",
 					description: methods.formState.errors.documents?.message,
 					variant: "destructive",
-				})
+				});
 				return;
 			}
 		}
@@ -94,16 +117,22 @@ const NewEvaluation = () => {
 	};
 
 	const goToStep = async (stepId: number) => {
-		if(currentStep === 0 && stepId > 0) {
-			const result = await methods.trigger(["auditee", "selectedFrameworks"]);
-			if (!result){
+		if (isSubmitLoading) return;
+		if (currentStep === 0 && stepId > 0) {
+			const result = await methods.trigger([
+				"auditee",
+				"selectedFrameworks",
+			]);
+			if (!result) {
 				toast({
 					title: "Error",
-					description: methods.formState.errors.auditee?.message || methods.formState.errors.selectedFrameworks?.message,
+					description:
+						methods.formState.errors.auditee?.message ||
+						methods.formState.errors.selectedFrameworks?.message,
 					variant: "destructive",
-				})
+				});
 				return;
-			};
+			}
 		}
 
 		if (currentStep === 1 && stepId > 1) {
@@ -113,25 +142,70 @@ const NewEvaluation = () => {
 					title: "Error",
 					description: methods.formState.errors.documents?.message,
 					variant: "destructive",
-				})
+				});
 				return;
 			}
 		}
-		setCurrentStep(stepId)
+		setCurrentStep(stepId);
 	};
 
 	const methods = useForm({
 		defaultValues: {
 			auditee: {} as AuditeeOption,
 			selectedFrameworks: [],
-			documents: [],
+			documents: [] as FilesUploadResponseDTO[],
+			documentsExistingSelected: [] as FilesUploadResponseDTO[],
 		},
 	});
 
-	const {toast} = useToast();
+	const { toast } = useToast();
 
-	const submit = (data: any) => {
-		console.log(data);
+	const submit = async (data: any) => {
+		setIsSubmitLoading(true);
+		const evaluationData: createEvaluationDTO = {
+			tenant_id: "alpha123", //change later to a value fetched from store or cookie
+			company_id: data.auditee.value,
+			collection_id: "collection_1", //change later when framework endpoints are ready
+			created_by: "SYSTEM",
+			model_used: "gpt",
+			document_list: [
+				...data.documents.map((doc) => doc.file_id),
+				...data.documentsExistingSelected.map((doc) => doc.file_id),
+			],
+		};
+
+		try {
+			const response = await evaluationService.createEvaluation(
+				evaluationData
+			);
+			const evalId: createEvaluationResponseDTO = response;
+
+			try {
+				const response = await evaluationService.startEvaluation(
+					evalId.eval_id
+				);
+				toast({
+					title: "Evaluation is running",
+					description: `Evaluation is created and running successfully. To check the progress visit reviews page. Note to devs: in future this will redirect to the page.`,
+					variant: "default",
+					className: "bg-green-700",
+				});
+			} catch (startError) {
+				toast({
+					title: "Error starting evaluation",
+					description: `Evaluation was created with id ${evalId.eval_id} but failed to start. Please visit reviews page to start it manually! NOTE to devs: subject to change.`,
+					variant: "destructive",
+				});
+			}
+		} catch (error) {
+			toast({
+				title: "Error creating evaluation",
+				description: `Failed to create the evaluation. Please try again later.`,
+				variant: "destructive",
+			});
+		} finally {
+			setIsSubmitLoading(false);
+		}
 	};
 
 	const onError = (errors: any) => {
@@ -140,43 +214,43 @@ const NewEvaluation = () => {
 
 	const onRunClick = async () => {
 		const documentLength = methods.getValues("documents").length;
+		const existingDocumentLength = methods.getValues(
+			"documentsExistingSelected"
+		).length;
 		const frameworkLength = methods.getValues("selectedFrameworks").length;
-		const isValid = documentLength > 0 && frameworkLength > 0;
-		
+		const isValid =
+			(documentLength > 0 || existingDocumentLength > 0) &&
+			frameworkLength > 0;
+
 		if (isValid) {
 			methods.handleSubmit(submit, onError)();
 		} else {
 			toast({
 				title: "Error",
-				description: "Some fields are empty. Please fill them out before proceeding.",
+				description:
+					"Some fields are empty. Please fill them out before proceeding.",
 				variant: "destructive",
-			})
+			});
 		}
-	}
+	};
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
 			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-6 sm:px-12 lg:px-16">
-				<div className="max-w-7xl w-full px-4 flex flex-col gap-2">
-					{/* Left: Welcome message */}
-					<h1 className="text-4xl font-semibold text-white tracking-wide">
-						Start a new evaluation!
-					</h1>
-
-					{/* Subtitle */}
-					<p className="text-base text-slate-500">
-						Review documentation gaps against leading security
-						standards and frameworks
-					</p>
-				</div>
+				<PageHeader
+					heading="Start a new evaluation!"
+					subtitle="Review documentation gaps against leading security standards and frameworks"
+					buttonText="Cancel"
+					buttonUrl="/home"
+					isLoading={isSubmitLoading}
+				/>
 			</section>
 
 			{/* Progress Bar Section */}
 			<section className="flex justify-center items-center w-full bg-black text-white pt-10 px-6 sm:px-12 lg:px-16">
-				<div className="max-w-7xl w-full px-4">
+				<div className="max-w-7xl w-full px-2">
 					<div className="flex items-center justify-between gap-4">
 						{steps.map((step, index) => {
-							const isCompleted = index < currentStep;
 							const isCurrent = index === currentStep;
 
 							return (
@@ -186,16 +260,24 @@ const NewEvaluation = () => {
 									onClick={() => goToStep(index)}
 								>
 									<div
-										className={`w-full h-8 rounded-full relative transition-colors mb-4
-              ${
-					isCompleted
-						? "bg-violet-600"
-						: isCurrent
-						? "bg-blue-500"
-						: "bg-slate-700"
-				}
-              hover:opacity-90`}
+										className={`relative w-[96%] h-8 transition-colors mb-4 pl-4
+											${isCurrent ? "bg-blue-500" : "bg-slate-700"}
+											hover:opacity-90 rounded-s-full overflow-visible ${
+												index === 2
+													? "rounded-e-full"
+													: ""
+											}`}
 									>
+										{index !== 2 && (
+											<div
+												className={`absolute transition-colors top-0 -right-4 w-4 h-8 ${
+													isCurrent
+														? "bg-blue-500"
+														: "bg-slate-700"
+												}
+      [clip-path:polygon(0_0,100%_50%,0_100%)]`}
+											></div>
+										)}
 										<span className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
 											{step.label}
 										</span>
@@ -210,9 +292,7 @@ const NewEvaluation = () => {
 			<section className="flex justify-center items-center w-full bg-black text-white pt-3 px-6 sm:px-12 lg:px-16">
 				<div className="max-w-7xl w-full mt-8 px-4">
 					<FormProvider {...methods}>
-						<form
-							className="flex flex-col w-full"
-						>
+						<form className="flex flex-col w-full">
 							{/* Step Content */}
 							{currentStep === 0 && (
 								<div className="min-h-[calc(100vh-410px)]">
@@ -230,8 +310,10 @@ const NewEvaluation = () => {
 													name="auditee"
 													control={methods.control}
 													rules={{
-														validate: (val) => 
-															val?.value ? true : "Please select an auditee.",
+														validate: (val) =>
+															val?.value
+																? true
+																: "Please select an auditee.",
 													}}
 													render={({
 														field,
@@ -243,9 +325,13 @@ const NewEvaluation = () => {
 																setOpenCombo
 															}
 														>
-															<PopoverTrigger asChild>
+															<PopoverTrigger
+																asChild
+															>
 																<Button
-																	ref={field.ref}
+																	ref={
+																		field.ref
+																	}
 																	variant="outline"
 																	role="combobox"
 																	aria-expanded={
@@ -258,14 +344,18 @@ const NewEvaluation = () => {
 																	)}
 																	id="auditee-select"
 																>
-																	{field.value.value
+																	{field.value
+																		.value
 																		? auditeeOptions.find(
 																				(
 																					opt
 																				) =>
 																					opt.value ===
-																					field.value.value
-																		)?.label
+																					field
+																						.value
+																						.value
+																		  )
+																				?.label
 																		: "Choose an auditee..."}
 																	<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 																</Button>
@@ -293,14 +383,20 @@ const NewEvaluation = () => {
 																							auditee.label
 																						}
 																						onSelect={() => {
-																							field.onChange(auditee);
-																							setOpenCombo(false);
+																							field.onChange(
+																								auditee
+																							);
+																							setOpenCombo(
+																								false
+																							);
 																						}}
 																					>
 																						<Check
 																							className={cn(
 																								"mr-2 h-4 w-4",
-																								field.value?.value ===
+																								field
+																									.value
+																									?.value ===
 																									auditee.value
 																									? "opacity-100"
 																									: "opacity-0"
@@ -332,7 +428,8 @@ const NewEvaluation = () => {
 									{/* Framework Selection */}
 									<div className="space-y-4 mt-10 w-full">
 										<label className="block text-lg">
-											What is the reference for the framework?
+											What is the reference for the
+											framework?
 										</label>
 										<div className="flex flex-row justify-start gap-4">
 											{frameworks.map((f) => (
@@ -343,7 +440,9 @@ const NewEvaluation = () => {
 													fieldName="selectedFrameworks"
 													control={methods.control}
 													error={
-														!!methods.formState.errors.selectedFrameworks
+														!!methods.formState
+															.errors
+															.selectedFrameworks
 													} // Pass the error state
 													setFocus={methods.setFocus} // Pass the setFocus function
 												/>
@@ -362,13 +461,40 @@ const NewEvaluation = () => {
 										name="documents"
 										control={methods.control}
 										rules={{
-											validate: (val) =>
-												val.length > 0 || "Please upload at least one document.",
+											validate: (
+												val: FilesUploadResponseDTO[]
+											) => {
+												if (
+													(!val || val.length) &&
+													methods.getValues(
+														"documentsExistingSelected"
+													).length === 0
+												) {
+													return "Please select at least one file.";
+												}
+
+												const fileNames = val.map(
+													(f) => f.file_name
+												);
+												const nameSet = new Set(
+													fileNames
+												);
+
+												if (
+													nameSet.size !==
+													fileNames.length
+												) {
+													return "Duplicate files are not allowed. Please remove the duplicate file and try again.";
+												}
+
+												return true;
+											},
 										}}
 										render={({ field }) => (
 											<FileUploadArea
 												control={methods.control}
 												name="documents"
+												columns={columns}
 											/>
 										)}
 									/>
@@ -385,7 +511,9 @@ const NewEvaluation = () => {
 								<button
 									type="button"
 									onClick={goPrevious}
-									disabled={currentStep === 0}
+									disabled={
+										currentStep === 0 || isSubmitLoading
+									}
 									className="px-4 py-2 border border-zinc-500 rounded-full text-white hover:bg-zinc-700 disabled:opacity-30 font-bold"
 								>
 									Previous
@@ -394,6 +522,7 @@ const NewEvaluation = () => {
 									<button
 										type="button"
 										onClick={goNext}
+										disabled={isSubmitLoading}
 										className="px-4 py-2 bg-sky-600 text-white font-bold rounded-full hover:bg-sky-700 disabled:opacity-30"
 									>
 										Next
@@ -402,9 +531,14 @@ const NewEvaluation = () => {
 									<button
 										type="button"
 										onClick={onRunClick}
+										disabled={isSubmitLoading}
 										className="px-4 py-2 bg-sky-600 text-white font-bold rounded-full hover:bg-sky-700 disabled:opacity-30"
 									>
-										Run!
+										{isSubmitLoading ? (
+											<RoundSpinner />
+										) : (
+											"Run!"
+										)}
 									</button>
 								)}
 							</div>

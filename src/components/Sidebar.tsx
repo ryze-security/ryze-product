@@ -28,7 +28,7 @@ import { Button } from "./ui/button";
 const items = [
 	{
 		title: "Home",
-		url: "#",
+		url: "/home",
 		icon: Home,
 	},
 	{
@@ -38,7 +38,7 @@ const items = [
 	},
 	{
 		title: "Auditees",
-		url: "#",
+		url: "/auditee/dashboard",
 		icon: Building2Icon,
 	},
 	{
