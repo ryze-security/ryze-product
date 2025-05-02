@@ -10,6 +10,7 @@ import {
 	startEvaluationResponseDTO,
 } from "@/models/evaluation/EvaluationDTOs";
 import { handleAxiosError } from "@/utils/handleAxiosError";
+import config from "./config";
 
 export class EvaluationService {
 	async getEvaluationByID(evaluationId: string): Promise<Evaluation | null> {
@@ -24,7 +25,7 @@ export class EvaluationService {
 			console.error("Error fetching evaluation:", error);
 			return null;
 		}
-	}
+	} //useless
 
 	async getEvaluations(): Promise<Evaluation[] | null> {
 		try {
@@ -38,14 +39,14 @@ export class EvaluationService {
 			console.error("Error fetching evaluations:", error);
 			return null;
 		}
-	}
+	} //useless
 
 	async createEvaluation(
 		evaluation: createEvaluationDTO
 	): Promise<createEvaluationResponseDTO | any> {
 		try {
 			const response = await axios.post(
-				`https://ryzr-be-cwacd8a5c6c8d7bd.francecentral-01.azurewebsites.net/api/v1/evaluations`,
+				`${config.ryzrApiURL}/api/v1/evaluations`,
 				evaluation,
 				{
 					headers: {
@@ -71,7 +72,7 @@ export class EvaluationService {
 	): Promise<startEvaluationResponseDTO | any> {
 		try {
 			const response = await axios.post<startEvaluationResponseDTO>(
-				`https://ryzr-be-cwacd8a5c6c8d7bd.francecentral-01.azurewebsites.net/api/v1/evaluations/${evalId}/start`,
+				`${config.ryzrApiURL}/api/v1/evaluations/${evalId}/start`,
 				null,
 				{
 					headers: {

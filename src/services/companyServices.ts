@@ -1,6 +1,7 @@
 import { CompanyCreateDto, CompanyListDto } from "@/models/company/companyDTOs";
 import { handleAxiosError } from "@/utils/handleAxiosError";
 import axios from "axios";
+import config from "./config";
 
 export class CompanyService {
 	async getCompanyByTenantId(
@@ -8,7 +9,7 @@ export class CompanyService {
 	): Promise<CompanyListDto[] | any> {
 		try {
 			const response = await axios.get<CompanyListDto[]>(
-				`https://ryzr-be-cwacd8a5c6c8d7bd.francecentral-01.azurewebsites.net/api/v1/companies/${tenant_id}`
+				`${config.ryzrApiURL}/api/v1/companies/${tenant_id}`
 			);
 			if (response.status !== 200) {
 				throw response;
@@ -26,7 +27,7 @@ export class CompanyService {
 	async getCompanyByCompanyId(tenantId: string, companyId: string): Promise<CompanyListDto | any> {
 		try {
 			const response = await axios.get<CompanyListDto>(
-				`https://ryzr-be-cwacd8a5c6c8d7bd.francecentral-01.azurewebsites.net/api/v1/companies/${tenantId}/${companyId}`
+				`${config.ryzrApiURL}/api/v1/companies/${tenantId}/${companyId}`
 			);
 			if (response.status !== 200) {
 				throw response;
@@ -46,7 +47,7 @@ export class CompanyService {
 	): Promise<CompanyListDto | any> {
 		try {
 			const response = await axios.post<CompanyListDto>(
-				"https://ryzr-be-cwacd8a5c6c8d7bd.francecentral-01.azurewebsites.net/api/v1/companies",
+				`${config.ryzrApiURL}/api/v1/companies`,
 				companyData,
 				{
 					headers: {

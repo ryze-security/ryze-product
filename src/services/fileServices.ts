@@ -1,6 +1,7 @@
 import { FilesUploadResponseDTO } from "@/models/files/FilesUploadResponseDTO";
 import { handleAxiosError } from "@/utils/handleAxiosError";
 import axios from "axios";
+import config from "./config";
 
 export class FileService {
     async uploadFile(tenant_id: string, company_id: string, file: File, created_by: string): Promise<FilesUploadResponseDTO | any>{
@@ -12,7 +13,7 @@ export class FileService {
         formData.append("created_by",created_by);
 
         try{
-            const response = await axios.post<FilesUploadResponseDTO>("https://ryzr-be-cwacd8a5c6c8d7bd.francecentral-01.azurewebsites.net/api/v1/documents/upload", formData, {
+            const response = await axios.post<FilesUploadResponseDTO>(`${config.ryzrApiURL}/api/v1/documents/upload`, formData, {
                 headers:{
                     "Content-Type": "multipart/form-data",
                 }
@@ -33,7 +34,7 @@ export class FileService {
     async getAllCompanyFiles(tenant_id: string, company_id: string): Promise<FilesUploadResponseDTO[] | any> {
         try {
             const response = await axios.get<FilesUploadResponseDTO[]>(
-                `https://ryzr-be-cwacd8a5c6c8d7bd.francecentral-01.azurewebsites.net/api/v1/companies/${tenant_id}/${company_id}/documents`
+                `${config.ryzrApiURL}/api/v1/companies/${tenant_id}/${company_id}/documents`
             );
             if (response.status !== 200) {
                 throw response;
@@ -51,7 +52,7 @@ export class FileService {
     async deleteFile(tenant_id: string, company_id: string, file_id: string, deleted_by: string): Promise<string | any> {
         try {
             const response = await axios.delete<string>(
-                `https://ryzr-be-cwacd8a5c6c8d7bd.francecentral-01.azurewebsites.net/api/v1/documents/${tenant_id}/${company_id}/${file_id}?deleted_by=${deleted_by}`
+                `${config.ryzrApiURL}/api/v1/documents/${tenant_id}/${company_id}/${file_id}?deleted_by=${deleted_by}`
             );
             if (response.status !== 200) {
                 throw response;
