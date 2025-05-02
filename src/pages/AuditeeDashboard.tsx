@@ -31,7 +31,7 @@ function AuditeeDashboard() {
 			</section>
 
             <section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-6 sm:px-12 lg:px-16">
-                <GenericDataTable columns={columns} data={auditeeData} filterKey='tg_company_display_name' rowIdKey='tg_company_id' rowLinkPrefix='/auditee/' />
+                <GenericDataTable columns={columns} data={auditeeData} filterKey='tg_company_display_name' rowIdKey='tg_company_id' rowLinkPrefix='/auditee/edit/' />
             </section>
         </div>
     )
