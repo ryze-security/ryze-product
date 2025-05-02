@@ -38,7 +38,7 @@ const items = [
 	},
 	{
 		title: "Auditees",
-		url: "#",
+		url: "/auditee/dashboard",
 		icon: Building2Icon,
 	},
 	{

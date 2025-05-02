@@ -1,6 +1,7 @@
 import { FileUploadArea } from "@/components/newevaluation/FileUploadArea";
 import { FrameworkCard } from "@/components/newevaluation/FrameworkCard";
 import { SummaryStep } from "@/components/newevaluation/SummaryStep";
+import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import {
 	Command,
@@ -221,23 +222,12 @@ const NewEvaluation = () => {
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
 			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-6 sm:px-12 lg:px-16">
-				<div className="max-w-7xl w-full px-4 flex flex-col gap-2">
-					{/* Left: Welcome message */}
-					<h1 className="text-4xl font-semibold text-white tracking-wide">
-						Start a new evaluation!
-					</h1>
-
-					{/* Subtitle */}
-					<p className="text-base text-slate-500">
-						Review documentation gaps against leading security
-						standards and frameworks
-					</p>
-				</div>
+				<PageHeader heading="Start a new evaluation!" subtitle="Review documentation gaps against leading security standards and frameworks" buttonText="Cancel" buttonUrl="/home" />
 			</section>
 
 			{/* Progress Bar Section */}
 			<section className="flex justify-center items-center w-full bg-black text-white pt-10 px-6 sm:px-12 lg:px-16">
-				<div className="max-w-7xl w-full px-4">
+				<div className="max-w-7xl w-full px-2">
 					<div className="flex items-center justify-between gap-4">
 						{steps.map((step, index) => {
 							const isCurrent = index === currentStep;

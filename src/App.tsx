@@ -14,7 +14,7 @@ import FrameworkSelection from "./pages/FrameworkSelection";
 import DocumentUpload from "./pages/DocumentUpload";
 import EvaluationStart from "./pages/EvaluationStart";
 import NotFound from "./pages/NotFound";
-import {Home, LoginPage, NewEvaluation} from "./pages/pageIndex.ts";
+import {AuditeeDashboard, Home, LoginPage, NewEvaluation} from "./pages/pageIndex.ts";
 import Layout from "./components/layout/Layout.tsx";
 import { useEffect } from "react";
 import { loadCompanyData } from "./store/slices/companySlice.ts";
@@ -49,10 +49,7 @@ const App = () => {
             <Route path="/control/:id/questions" element={<ControlQuestions />} />
             <Route path="/control/:controlId/question/:questionId" element={<QuestionDetail />} />
             <Route path="/new-evaluation" element={<NewEvaluation />} />
-            <Route path="/evaluation/company" element={<CompanySelection />} />
-            <Route path="/evaluation/framework" element={<FrameworkSelection />} />
-            <Route path="/evaluation/document" element={<DocumentUpload />} />
-            <Route path="/evaluation/start" element={<EvaluationStart />} />
+            <Route path="/auditee/dashboard" element={<AuditeeDashboard />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
