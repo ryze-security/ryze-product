@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { RoundSpinner } from "./ui/spinner";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -25,6 +26,7 @@ interface DataTableProps<TData, TValue> {
 	filterKey: keyof TData;
 	rowIdKey?: keyof TData;
 	rowLinkPrefix?: string;
+	isLoading: boolean;
 }
 
 export function GenericDataTable<TData, TValue>({
@@ -33,6 +35,7 @@ export function GenericDataTable<TData, TValue>({
 	filterKey,
 	rowIdKey,
 	rowLinkPrefix,
+	isLoading,
 }: DataTableProps<TData, TValue>) {
 	const [filter, setFilter] = React.useState("");
 	const navigate = useNavigate();
@@ -113,7 +116,7 @@ export function GenericDataTable<TData, TValue>({
 									colSpan={columns.length}
 									className="text-center"
 								>
-									No results found.
+									{isLoading ? <RoundSpinner /> : "No results found."}
 								</TableCell>
 							</TableRow>
 						)}
@@ -125,15 +128,15 @@ export function GenericDataTable<TData, TValue>({
 					Page {table.getState().pagination.pageIndex + 1} of{" "}
 					{table.getPageCount()}
 				</div>
-				<div className="space-x-2">
-					<Button
+				{table.getPageCount() > 1 &&(<div className="space-x-2">
+					{table.getState().pagination.pageIndex !== 0 &&(<Button
 						variant="outline"
 						size="sm"
 						onClick={() => table.previousPage()}
 						disabled={!table.getCanPreviousPage()}
 					>
 						Previous
-					</Button>
+					</Button>)}
 					<Button
 						variant="default"
                         className="bg-sky-500 hover:bg-sky-600 text-white"
@@ -143,7 +146,7 @@ export function GenericDataTable<TData, TValue>({
 					>
 						Next
 					</Button>
-				</div>
+				</div>)}
 			</div>
 		</div>
 	);

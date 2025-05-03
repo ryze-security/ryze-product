@@ -25,13 +25,6 @@ const queryClient = new QueryClient();
 const token ="123";
 
 const App = () => {
-  
-  const dispatch = useAppDispatch();
-  useEffect(() => {
-    if (token) {
-      dispatch(loadCompanyData("alpha123"));
-    }
-  }, [])
 
   return <QueryClientProvider client={queryClient}>
     <TooltipProvider>

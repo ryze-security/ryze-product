@@ -1,5 +1,6 @@
 import React from "react";
 import DateBox from "./DateBox";
+import { Progress } from "../ui/progress";
 
 interface Props {
 	companyName: string;
@@ -16,19 +17,21 @@ function RecentReviews(props: Props) {
 			<DateBox date={date} />
 
 			<div className="flex flex-col justify-center w-1/2">
-				<h2 className="text-lg font-semibold tracking-wide">
+				<h2 className="text-lg tracking-wider">
 					{companyName}
 				</h2>
 				<span className="text-sm text-neutral-400">{framework}</span>
 			</div>
 
 			{/* Score Bar - pushed to the right */}
-			<div className="flex-1 ml-auto max-w-xs">
-				<div className="relative w-full h-4 bg-neutral-700 rounded-full overflow-hidden">
-					<div
-						className="absolute top-0 left-0 h-full bg-violet-600 text-xs text-white font-semibold flex items-center justify-end pr-2"
-						style={{ width: `${score}%`, minWidth: "2.5rem" }}
-					>
+			<div className="flex-1 ml-auto max-w-20">
+				<div className="relative w-full">
+					<Progress
+						value={score}
+						className="h-6 bg-neutral-700 rounded-full"
+						indicatorColor="bg-violet-600"
+					/>
+					<div className="absolute inset-0 flex justify-center items-center text-white text-xs font-semibold">
 						{score}%
 					</div>
 				</div>

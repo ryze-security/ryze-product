@@ -334,24 +334,6 @@ function AuditeeForm() {
 									label="Related Services"
 								/>
 							</div>
-							{/* Relevant Data boolean */}
-							<div className="space-y-4 mt-8">
-								<SingleSelectBox
-									control={methods.control}
-									name="relevantData"
-									options={[
-										{
-											label: "Yes",
-											value: "yes",
-										},
-										{
-											label: "No",
-											value: "no",
-										},
-									]}
-									label="Is relevant data processed by the auditee?"
-								/>
-							</div>
 							{/* Data processed type */}
 							<div className="space-y-4 mt-8">
 								<SingleSelectBox
@@ -384,6 +366,7 @@ function AuditeeForm() {
 										</Button>
 									}
 									subheading="Are you sure you want to proceed? Clicking confirm will save your data."
+									title="Are You Sure?"
 									actionLabel="Confirm"
 									onAction={onRunClick}
 								/>
