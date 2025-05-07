@@ -174,11 +174,11 @@ const NewEvaluation = () => {
 	const submit = async (data: any) => {
 		setIsSubmitLoading(true);
 		const evaluationData: createEvaluationDTO = {
-			tenant_id: "alpha123", //change later to a value fetched from store or cookie
+			tenant_id: "7077beec-a9ef-44ef-a21b-83aab58872c9", //change later to a value fetched from store or cookie
 			company_id: data.auditee.value,
 			collection_id: "collection_1", //change later when framework endpoints are ready
 			created_by: "SYSTEM",
-			model_used: "gpt",
+			model_used: "gpt4.1",
 			document_list: [
 				...data.documents.map((doc) => doc.file_id),
 				...data.documentsExistingSelected.map((doc) => doc.file_id),
@@ -256,7 +256,7 @@ const NewEvaluation = () => {
 	// Fetch the auditee data when the component mounts if store is empty
 	useEffect(() => {
 		if (auditees.length === 0) {
-			dispatch(loadCompanyData("alpha123"));
+			dispatch(loadCompanyData("7077beec-a9ef-44ef-a21b-83aab58872c9"));
 		}
 	}, []);
 

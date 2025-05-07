@@ -19,12 +19,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { RoundSpinner } from "./ui/spinner";
+import { Progress } from "./ui/progress";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
 	filterKey: keyof TData;
-	rowIdKey?: keyof TData;
+	rowIdKey?: (keyof TData)[];
 	rowLinkPrefix?: string;
 	isLoading: boolean;
 }
@@ -61,9 +62,9 @@ export function GenericDataTable<TData, TValue>({
 
 	const handleRowClick = (row: TData) => {
 		if (rowIdKey && rowLinkPrefix) {
-			const id = row[rowIdKey];
-			if (id !== undefined && id !== null) {
-				navigate(`${rowLinkPrefix}${id}`);
+			const ids = rowIdKey.map((key) => row[key]).filter((val)=> val !== null);
+			if (ids.length === rowIdKey.length) {
+				navigate(`${rowLinkPrefix}${ids.join("/")}`);
 			}
 		}
 	};
@@ -102,9 +103,25 @@ export function GenericDataTable<TData, TValue>({
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext()
+											{typeof cell.getValue() ===
+											"number" ? (
+												// Render a progress bar for Number columns
+												<div className="relative max-w-28">
+													<Progress
+														value={cell.getValue() as number}
+														className="h-6 bg-neutral-700 rounded-full"
+														indicatorColor="bg-violet-600"
+													/>
+													<div className="absolute inset-0 flex justify-center items-center text-white text-xs font-semibold">
+														{cell.getValue() as String}%
+													</div>
+												</div>
+											) : (
+												// Render default cell content for other types
+												flexRender(
+													cell.column.columnDef.cell,
+													cell.getContext()
+												)
 											)}
 										</TableCell>
 									))}
@@ -116,7 +133,11 @@ export function GenericDataTable<TData, TValue>({
 									colSpan={columns.length}
 									className="text-center"
 								>
-									{isLoading ? <RoundSpinner /> : "No results found."}
+									{isLoading ? (
+										<RoundSpinner />
+									) : (
+										"No results found."
+									)}
 								</TableCell>
 							</TableRow>
 						)}
@@ -128,25 +149,29 @@ export function GenericDataTable<TData, TValue>({
 					Page {table.getState().pagination.pageIndex + 1} of{" "}
 					{table.getPageCount()}
 				</div>
-				{table.getPageCount() > 1 &&(<div className="space-x-2">
-					{table.getState().pagination.pageIndex !== 0 &&(<Button
-						variant="outline"
-						size="sm"
-						onClick={() => table.previousPage()}
-						disabled={!table.getCanPreviousPage()}
-					>
-						Previous
-					</Button>)}
-					<Button
-						variant="default"
-                        className="bg-sky-500 hover:bg-sky-600 text-white"
-						size="sm"
-						onClick={() => table.nextPage()}
-						disabled={!table.getCanNextPage()}
-					>
-						Next
-					</Button>
-				</div>)}
+				{table.getPageCount() > 1 && (
+					<div className="space-x-2">
+						{table.getState().pagination.pageIndex !== 0 && (
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => table.previousPage()}
+								disabled={!table.getCanPreviousPage()}
+							>
+								Previous
+							</Button>
+						)}
+						<Button
+							variant="default"
+							className="bg-sky-500 hover:bg-sky-600 text-white"
+							size="sm"
+							onClick={() => table.nextPage()}
+							disabled={!table.getCanNextPage()}
+						>
+							Next
+						</Button>
+					</div>
+				)}
 			</div>
 		</div>
 	);

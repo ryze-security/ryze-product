@@ -31,7 +31,7 @@ const CompanySelection = () => {
   useEffect(() => {
     const loadCompanies = async () => {
       try{
-        const data = await companyService.getCompanyByTenantId("alpha123");
+        const data = await companyService.getCompanyByTenantId("7077beec-a9ef-44ef-a21b-83aab58872c9");
         setCompanies(data);
       }
       catch (error) {

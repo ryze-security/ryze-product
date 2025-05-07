@@ -1,45 +1,54 @@
-import { Evaluation } from "../models/evaluation/evaluation";
-import {
-	mockEvaluationData,
-	mockEvaluations,
-} from "../mock_data/evaluation-data";
 import axios from "axios";
 import {
 	createEvaluationDTO,
 	createEvaluationResponseDTO,
+	evalutaionDetailDTO,
+	listEvaluationsDTO,
 	startEvaluationResponseDTO,
 } from "@/models/evaluation/EvaluationDTOs";
 import { handleAxiosError } from "@/utils/handleAxiosError";
 import config from "./config";
 
 export class EvaluationService {
-	async getEvaluationByID(evaluationId: string): Promise<Evaluation | null> {
+	async getEvaluationByDetails(
+		tenant_id: string,
+		companyId: string,
+		evaluationId: string
+	): Promise<evalutaionDetailDTO | any> {
 		try {
-			// const response = await axios.get<Evaluation>(`https://api.example.com/evaluations/${evaluationId}`);
-			// if (response.status !== 200) {
-			//     throw new Error(`Error fetching evaluation: ${response.statusText}`);
-			// }
-			// return response.data;
-			return mockEvaluationData; // Replace with response.data when using real API
+			const response = await axios.get<evalutaionDetailDTO>(
+				`${config.ryzrApiURL}/api/v1/evaluations/${tenant_id}/${companyId}/${evaluationId}/results`
+			);
+			if (response.status !== 200) {
+				throw response;
+			}
+			return response.data;
 		} catch (error) {
-			console.error("Error fetching evaluation:", error);
-			return null;
-		}
-	} //useless
+			const errorInfo = handleAxiosError(error);
+			console.error("Error fetching company:", errorInfo.message);
 
-	async getEvaluations(): Promise<Evaluation[] | null> {
-		try {
-			// const response = await axios.get<Evaluation[]>(`https://api.example.com/evaluations`);
-			// if (response.status !== 200) {
-			//     throw new Error(`Error fetching evaluations: ${response.statusText}`);
-			// }
-			// return response.data;
-			return mockEvaluations; // Replace with response.data when using real API
-		} catch (error) {
-			console.error("Error fetching evaluations:", error);
-			return null;
+			//rethrowing for conditional rendering
+			throw errorInfo;
 		}
-	} //useless
+	}
+
+	async getEvaluations(tenant_id: string): Promise<listEvaluationsDTO | any> {
+		try {
+			const response = await axios.get<listEvaluationsDTO>(
+				`${config.ryzrApiURL}/api/v1/tenants/${tenant_id}/evaluations`
+			);
+			if (response.status !== 200) {
+				throw response;
+			}
+			return response.data; // Replace with response.data when using real API
+		} catch (error) {
+			const errorInfo = handleAxiosError(error);
+			console.error("Error fetching company:", errorInfo.message);
+
+			//rethrowing for conditional rendering
+			throw errorInfo;
+		}
+	}
 
 	async createEvaluation(
 		evaluation: createEvaluationDTO

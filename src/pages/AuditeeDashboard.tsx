@@ -31,7 +31,7 @@ function AuditeeDashboard() {
 
 	useEffect(() => {
 		if (auditeeData.length === 0) {
-			dispatch(loadCompanyData("alpha123"));
+			dispatch(loadCompanyData("7077beec-a9ef-44ef-a21b-83aab58872c9"));
 		} else if (status == "failed") {
             toast({
                 title: "Error",
@@ -58,7 +58,7 @@ function AuditeeDashboard() {
 					columns={columns}
 					data={auditeeData}
 					filterKey="tg_company_display_name"
-					rowIdKey="tg_company_id"
+					rowIdKey={["tg_company_id"]}
 					rowLinkPrefix="/auditee/edit/"
                     isLoading={status === "loading" ? true : false}
 				/>

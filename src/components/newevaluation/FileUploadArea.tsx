@@ -38,7 +38,7 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 			setIsFilesLoading(true);
 			try {
 				const response = await fileService.getAllCompanyFiles(
-					"alpha123", //change later to a value fetched from store or cookie
+					"7077beec-a9ef-44ef-a21b-83aab58872c9", //change later to a value fetched from store or cookie
 					control._formValues.auditee.value
 				);
 				setExistingCompanyFiles(response);
@@ -66,7 +66,7 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 		for (const file of acceptedFiles) {
 			try {
 				const response = await fileService.uploadFile(
-					"alpha123",
+					"7077beec-a9ef-44ef-a21b-83aab58872c9",
 					"beta321",
 					file,
 					"SYSTEM"
@@ -94,7 +94,7 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 
 		try {
 			await fileService.deleteFile(
-				"alpha123",
+				"7077beec-a9ef-44ef-a21b-83aab58872c9",
 				"beta321",
 				fileToRemove.file_id,
 				"SYSTEM"

@@ -33,7 +33,7 @@ const items = [
 	},
 	{
 		title: "Past Reviews",
-		url: "#",
+		url: "/evaluation",
 		icon: LucideSearch,
 	},
 	{
