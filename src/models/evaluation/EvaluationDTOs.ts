@@ -54,39 +54,40 @@ export interface evaluationDetailData {
 }
 
 export interface evaluationDetailDataResponse {
-	DomainResponseList: domainResponseList[];
+	DomainResponseList: domainResponse[];
 	Response: {
 		Score: number;
 	}
 }
 
-export interface domainResponseList {
+export interface domainResponse {
 	Order: number;
 	domainId: string;
 	Description: string;
-	ControlResponseList: controlResponseList[];
+	ControlResponseList: controlResponse[];
 	Response: {
 		Score: number;
 	}
 }
 
-export interface controlResponseList {
+export interface controlResponse {
 	Order: number;
 	controlId: string;
 	Description: string;
-	QuestionResponseList: questionResponseList[];
+	QuestionResponseList: questionResponse[];
 	Response: {
 		Score: number;
 	}
 }
 
-export interface questionResponseList {
+export interface questionResponse {
+	SNo: string;
 	Order: number;
 	controlId: string;
 	question: string;
 	question_hint: string;
 	Response:{
-		Score: string;
+		Score: string | boolean;
 		Observation: string;
 		evidence: string;
 		audit_comments: string;

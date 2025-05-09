@@ -27,16 +27,18 @@ interface DataTableProps<TData, TValue> {
 	filterKey: keyof TData;
 	rowIdKey?: (keyof TData)[];
 	rowLinkPrefix?: string;
-	isLoading: boolean;
+	isLoading?: boolean;
+	onRowClick?: (row: TData) => void;
 }
 
 export function GenericDataTable<TData, TValue>({
 	columns,
 	data,
 	filterKey,
-	rowIdKey,
-	rowLinkPrefix,
-	isLoading,
+	rowIdKey = [],
+	rowLinkPrefix = "#",
+	isLoading = false,
+	onRowClick,
 }: DataTableProps<TData, TValue>) {
 	const [filter, setFilter] = React.useState("");
 	const navigate = useNavigate();
@@ -61,16 +63,22 @@ export function GenericDataTable<TData, TValue>({
 	});
 
 	const handleRowClick = (row: TData) => {
-		if (rowIdKey && rowLinkPrefix) {
-			const ids = rowIdKey.map((key) => row[key]).filter((val)=> val !== null);
+		if (rowIdKey && rowLinkPrefix !== "#") {
+			const ids = rowIdKey
+				.map((key) => row[key])
+				.filter((val) => val !== null);
 			if (ids.length === rowIdKey.length) {
-				navigate(`${rowLinkPrefix}${ids.join("/")}`);
+				navigate(`${rowLinkPrefix}${ids.join("/")}`, {
+					state: {pageData: row},
+				});
 			}
+		} else {
+			onRowClick?.(row);
 		}
 	};
 
 	return (
-		<div className="space-y-4 px-4 max-w-6xl w-full">
+		<div className="space-y-4 px-4 max-w-7xl w-full">
 			<Input
 				placeholder="Search..."
 				value={filter}
@@ -108,12 +116,32 @@ export function GenericDataTable<TData, TValue>({
 												// Render a progress bar for Number columns
 												<div className="relative max-w-28">
 													<Progress
-														value={cell.getValue() as number}
+														value={
+															cell.getValue() as number
+														}
 														className="h-6 bg-neutral-700 rounded-full"
 														indicatorColor="bg-violet-600"
 													/>
 													<div className="absolute inset-0 flex justify-center items-center text-white text-xs font-semibold">
-														{cell.getValue() as String}%
+														{
+															cell.getValue() as String
+														}
+														%
+													</div>
+												</div>
+											) : typeof cell.getValue() ===
+											  "boolean" ? (
+												<div
+													className={`flex items-center justify-center text-center whitespace-nowrap min-w-fit max-w-36 py-2 px-5 rounded-full text-white ${
+														cell.getValue()
+															? "bg-green-700"
+															: "bg-rose-700"
+													}`}
+												>
+													<div className="truncate">
+														{cell.getValue()
+															? "Compliant"
+															: "Non-Compliant"}
 													</div>
 												</div>
 											) : (

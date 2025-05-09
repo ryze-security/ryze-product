@@ -38,6 +38,7 @@ import { log } from "console";
 import { Check, ChevronsUpDown, PlusCircleIcon } from "lucide-react";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 interface AuditeeOption {
 	value: string;
@@ -64,7 +65,7 @@ const NewEvaluation = () => {
 
 	const dispatch = useAppDispatch();
 
-	
+	const navigate = useNavigate();
 
 	const auditeeOptions = useMemo(() => {
 		return auditees.map((auditee) => ({
@@ -197,10 +198,11 @@ const NewEvaluation = () => {
 				);
 				toast({
 					title: "Evaluation is running",
-					description: `Evaluation is created and running successfully. To check the progress visit reviews page. Note to devs: in future this will redirect to the page.`,
+					description: `Evaluation is created and running successfully.`,
 					variant: "default",
 					className: "bg-green-700",
 				});
+				navigate("/evaluation");
 			} catch (startError) {
 				toast({
 					title: "Error starting evaluation",
@@ -268,7 +270,7 @@ const NewEvaluation = () => {
 					heading="Start a new evaluation"
 					subtitle="Review documentation gaps against leading security standards and frameworks"
 					buttonText="Cancel"
-					buttonUrl="/home"
+					buttonUrl="/evaluation"
 					isLoading={isSubmitLoading}
 				/>
 			</section>

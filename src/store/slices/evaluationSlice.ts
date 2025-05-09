@@ -1,4 +1,4 @@
-import { evaluationDetailData } from "@/models/evaluation/EvaluationDTOs";
+import { evalutaionDetailDTO } from "@/models/evaluation/EvaluationDTOs";
 import evaluationService from "@/services/evaluationServices";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
@@ -23,7 +23,25 @@ const evaluationSlice = createSlice({
 	name: "evaluation",
 	initialState: {
 		//if object is null or undefined or (companyId or evalId) is different in the component than in the store, then it will be reloaded
-		data: {} as evaluationDetailData,
+		data: {
+			status: "",
+			data: {
+				Status: "",
+				UserId: "",
+				TenantId: "",
+				CompanyId: "",
+				PolicyId: [],
+				EvaluationId: "",
+				updateTimestamp: 0,
+				frameworkId: "",
+				EvaluationResponse: {
+					DomainResponseList: [],
+					Response: {
+						Score: 0,
+					},
+				},
+			}
+		} as evalutaionDetailDTO,
 		status: "idle",
 		error: null,
 	},

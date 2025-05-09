@@ -88,7 +88,7 @@ function EvaluationDashboard() {
 					data={evaluations.evaluations}
 					filterKey="tg_company_display_name"
 					rowIdKey={["tg_company_id", "eval_id"]}
-					rowLinkPrefix="#"
+					rowLinkPrefix="/evaluation/"
 					isLoading={isEvalLoading}
 				/>
 			</section>
