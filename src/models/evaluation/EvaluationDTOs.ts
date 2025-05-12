@@ -14,3 +14,82 @@ export interface createEvaluationResponseDTO {
 export interface startEvaluationResponseDTO {
 	message: string;
 }
+
+export interface listEvaluationsDTO {
+	evaluations: Evaluation[];
+	total_count: number;
+}
+
+export interface Evaluation {
+	eval_id: string;
+	tg_company_id: string;
+	tg_company_display_name: string;
+	collection_id: string;
+	collection_display_name: string;
+	collection_created_at: string;
+	collection_edited_on: string;
+	created_at: string;
+	created_by: string;
+	model_used: string;
+	processing_status: string;
+	document_list: string[];
+	overall_score: Number;
+}
+
+export interface evalutaionDetailDTO {
+	status: string;
+	data: evaluationDetailData;
+}
+
+export interface evaluationDetailData {
+	Status: string
+	UserId: string;
+	TenantId: string;
+	CompanyId: string;
+	PolicyId: string[];
+	EvaluationId: string;
+	updateTimestamp: number;
+	frameworkId: string;
+	EvaluationResponse: evaluationDetailDataResponse;
+}
+
+export interface evaluationDetailDataResponse {
+	DomainResponseList: domainResponse[];
+	Response: {
+		Score: number;
+	}
+}
+
+export interface domainResponse {
+	Order: number;
+	domainId: string;
+	Description: string;
+	ControlResponseList: controlResponse[];
+	Response: {
+		Score: number;
+	}
+}
+
+export interface controlResponse {
+	Order: number;
+	controlId: string;
+	Description: string;
+	QuestionResponseList: questionResponse[];
+	Response: {
+		Score: number;
+	}
+}
+
+export interface questionResponse {
+	SNo: string;
+	Order: number;
+	controlId: string;
+	question: string;
+	question_hint: string;
+	Response:{
+		Score: string | boolean;
+		Observation: string;
+		evidence: string;
+		audit_comments: string;
+	}
+}

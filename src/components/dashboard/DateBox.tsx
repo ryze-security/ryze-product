@@ -13,7 +13,7 @@ function DateBox({date}: Props) {
 	const year = parsedDate.getFullYear();
 
 	return (
-		<div className="bg-white text-black rounded-xl p-2 w-20 flex flex-col items-center justify-center shadow-md">
+		<div className="bg-white text-black rounded-xl p-2 w-20 flex flex-col items-center justify-center shadow-md scale-90">
 			<span className="text-sm font-medium tracking-wider uppercase text-rose-500">
 				{month}
 			</span>

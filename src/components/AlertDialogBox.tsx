@@ -10,6 +10,7 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { AlertTriangle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface AlertDialogBoxProps {
 	trigger: React.ReactNode;
@@ -45,7 +46,7 @@ export const AlertDialogBox: React.FC<AlertDialogBoxProps> = ({
 
 					{actionHref ? (
 						<AlertDialogAction asChild>
-							<a href={actionHref}>{actionLabel}</a>
+							<Link to={actionHref}>{actionLabel}</Link>
 						</AlertDialogAction>
 					) : (
 						<AlertDialogAction onClick={onAction}>

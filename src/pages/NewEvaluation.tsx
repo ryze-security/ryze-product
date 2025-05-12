@@ -1,4 +1,5 @@
 import { AlertDialogBox } from "@/components/AlertDialogBox";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { FileUploadArea } from "@/components/newevaluation/FileUploadArea";
 import { FrameworkCard } from "@/components/newevaluation/FrameworkCard";
 import { SummaryStep } from "@/components/newevaluation/SummaryStep";
@@ -29,11 +30,15 @@ import { FilesUploadResponseDTO } from "@/models/files/FilesUploadResponseDTO";
 import evaluationService, {
 	EvaluationService,
 } from "@/services/evaluationServices";
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { loadCompanyData } from "@/store/slices/companySlice";
+import { wait } from "@/utils/wait";
 import { ColumnDef } from "@tanstack/react-table";
+import { log } from "console";
 import { Check, ChevronsUpDown, PlusCircleIcon } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 interface AuditeeOption {
 	value: string;
@@ -57,6 +62,10 @@ const NewEvaluation = () => {
 	const auditees = useAppSelector(
 		(state) => state.company.data
 	) as CompanyListDto[];
+
+	const dispatch = useAppDispatch();
+
+	const navigate = useNavigate();
 
 	const auditeeOptions = useMemo(() => {
 		return auditees.map((auditee) => ({
@@ -159,16 +168,18 @@ const NewEvaluation = () => {
 		},
 	});
 
+	const watchedAuditeeName = methods.watch("auditee");
+
 	const { toast } = useToast();
 
 	const submit = async (data: any) => {
 		setIsSubmitLoading(true);
 		const evaluationData: createEvaluationDTO = {
-			tenant_id: "alpha123", //change later to a value fetched from store or cookie
+			tenant_id: "7077beec-a9ef-44ef-a21b-83aab58872c9", //change later to a value fetched from store or cookie
 			company_id: data.auditee.value,
 			collection_id: "collection_1", //change later when framework endpoints are ready
 			created_by: "SYSTEM",
-			model_used: "gpt",
+			model_used: "gpt4.1",
 			document_list: [
 				...data.documents.map((doc) => doc.file_id),
 				...data.documentsExistingSelected.map((doc) => doc.file_id),
@@ -187,10 +198,11 @@ const NewEvaluation = () => {
 				);
 				toast({
 					title: "Evaluation is running",
-					description: `Evaluation is created and running successfully. To check the progress visit reviews page. Note to devs: in future this will redirect to the page.`,
+					description: `Evaluation is created and running successfully.`,
 					variant: "default",
 					className: "bg-green-700",
 				});
+				navigate("/evaluation");
 			} catch (startError) {
 				toast({
 					title: "Error starting evaluation",
@@ -235,54 +247,60 @@ const NewEvaluation = () => {
 		}
 	};
 
+	// Updates the documentsExistingSelected, documents field when the auditee is changed
+	useEffect(() => {
+		if (watchedAuditeeName?.value) {
+			methods.setValue("documentsExistingSelected", []);
+			methods.setValue("documents", []);
+		}
+	}, [watchedAuditeeName]);
+
+	// Fetch the auditee data when the component mounts if store is empty
+	useEffect(() => {
+		if (auditees.length === 0) {
+			dispatch(loadCompanyData("7077beec-a9ef-44ef-a21b-83aab58872c9"));
+		}
+	}, []);
+
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
+			{isSubmitLoading && <LoadingOverlay />}
 			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-6 sm:px-12 lg:px-16">
 				<PageHeader
-					heading="Start a new evaluation!"
+					heading="Start a new evaluation"
 					subtitle="Review documentation gaps against leading security standards and frameworks"
 					buttonText="Cancel"
-					buttonUrl="/home"
+					buttonUrl="/evaluation"
 					isLoading={isSubmitLoading}
 				/>
 			</section>
 
 			{/* Progress Bar Section */}
-			<section className="flex justify-center items-center w-full bg-black text-white pt-10 px-6 sm:px-12 lg:px-16">
+			<section className="flex justify-center items-center max-w-[55%] w-full bg-black text-white pt-10 px-6 sm:px-12 lg:px-16">
 				<div className="max-w-7xl w-full px-2">
-					<div className="flex items-center justify-between gap-4">
+					<div className="flex items-center w-full">
 						{steps.map((step, index) => {
 							const isCurrent = index === currentStep;
 
 							return (
-								<div
-									key={step.id}
-									className="flex-1 flex flex-col items-center cursor-pointer text-center"
-									onClick={() => goToStep(index)}
-								>
+								<div className="w-full flex items-center" key={step.id}>
 									<div
-										className={`relative w-[96%] h-8 transition-colors mb-4 pl-4
-											${isCurrent ? "bg-blue-500" : "bg-slate-700"}
-											hover:opacity-90 rounded-s-full overflow-visible ${
-												index === 2
-													? "rounded-e-full"
-													: ""
-											}`}
+										className="flex-1 flex flex-col items-center cursor-pointer text-center"
+										onClick={() => goToStep(index)}
 									>
-										{index !== 2 && (
-											<div
-												className={`absolute transition-colors top-0 -right-4 w-4 h-8 ${
-													isCurrent
-														? "bg-blue-500"
-														: "bg-slate-700"
-												}
-      [clip-path:polygon(0_0,100%_50%,0_100%)]`}
-											></div>
-										)}
-										<span className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
-											{step.label}
-										</span>
+										<div
+											className={`relative w-[96%] h-8 transition-colors mx-0 mb-4 pl-4
+											${isCurrent ? "bg-violet-500" : "bg-zinc-700"}
+											hover:opacity-90 rounded-full overflow-visible`}
+										>
+											<span className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
+												{step.label}
+											</span>
+										</div>
 									</div>
+									{index < steps.length - 1 && (
+										<div className="w-6 h-px border-t-2 border-dashed border-zinc-400 mb-4" />
+									)}
 								</div>
 							);
 						})}
@@ -432,7 +450,7 @@ const NewEvaluation = () => {
 											What is the reference for the
 											framework?
 										</label>
-										<div className="flex flex-row justify-start gap-4">
+										<div className="flex flex-row justify-start gap-4 flex-wrap">
 											{frameworks.map((f) => (
 												<FrameworkCard
 													key={f.value}
@@ -449,7 +467,7 @@ const NewEvaluation = () => {
 												/>
 											))}
 											{/* Add link to framework section */}
-											<div className="cursor-pointer rounded-sm border p-4 text-white align-middle font-roboto transition-colors text-center sm:w-fit bg-zinc-800 duration-200 hover:scale-110">
+											<div className="cursor-pointer rounded-sm border p-4 align-middle font-roboto text-center sm:w-28 bg-zinc-800 text-zinc-400 transition-all text-opacity-80 duration-100 hover:scale-110">
 												Add Framework
 											</div>
 										</div>
@@ -466,7 +484,8 @@ const NewEvaluation = () => {
 												val: FilesUploadResponseDTO[]
 											) => {
 												if (
-													(!val || val.length) &&
+													(!val ||
+														val.length === 0) &&
 													methods.getValues(
 														"documentsExistingSelected"
 													).length === 0
@@ -509,16 +528,18 @@ const NewEvaluation = () => {
 
 							{/* Footer Navigation Buttons */}
 							<div className="flex justify-start mt-8 gap-4">
-								<button
-									type="button"
-									onClick={goPrevious}
-									disabled={
-										currentStep === 0 || isSubmitLoading
-									}
-									className="px-4 py-2 border border-zinc-500 rounded-full text-white hover:bg-zinc-700 disabled:opacity-30 font-bold"
-								>
-									Previous
-								</button>
+								{currentStep !== 0 && (
+									<button
+										type="button"
+										onClick={goPrevious}
+										disabled={
+											currentStep === 0 || isSubmitLoading
+										}
+										className="px-4 py-2 border border-zinc-500 rounded-full text-white hover:bg-zinc-700 disabled:opacity-30 font-bold"
+									>
+										Previous
+									</button>
+								)}
 								{currentStep < steps.length - 1 ? (
 									<button
 										type="button"
@@ -539,7 +560,7 @@ const NewEvaluation = () => {
 												{isSubmitLoading ? (
 													<RoundSpinner />
 												) : (
-													"Run!"
+													"Run"
 												)}
 											</button>
 										}

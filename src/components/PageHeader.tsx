@@ -27,7 +27,7 @@ function PageHeader(props: Props) {
 				</h1>
 
 				{/* Subtitle */}
-				<p className="text-base text-slate-500">{subtitle}</p>
+				<p className="text-base text-zinc-500">{subtitle}</p>
 			</div>
 			{variant === "add" ? (<Link to={buttonUrl}>
 				<Button

@@ -18,21 +18,27 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { RoundSpinner } from "./ui/spinner";
+import { Progress } from "./ui/progress";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
 	filterKey: keyof TData;
-	rowIdKey?: keyof TData;
+	rowIdKey?: (keyof TData)[];
 	rowLinkPrefix?: string;
+	isLoading?: boolean;
+	onRowClick?: (row: TData) => void;
 }
 
 export function GenericDataTable<TData, TValue>({
 	columns,
 	data,
 	filterKey,
-	rowIdKey,
-	rowLinkPrefix,
+	rowIdKey = [],
+	rowLinkPrefix = "#",
+	isLoading = false,
+	onRowClick,
 }: DataTableProps<TData, TValue>) {
 	const [filter, setFilter] = React.useState("");
 	const navigate = useNavigate();
@@ -57,16 +63,22 @@ export function GenericDataTable<TData, TValue>({
 	});
 
 	const handleRowClick = (row: TData) => {
-		if (rowIdKey && rowLinkPrefix) {
-			const id = row[rowIdKey];
-			if (id !== undefined && id !== null) {
-				navigate(`${rowLinkPrefix}${id}`);
+		if (rowIdKey && rowLinkPrefix !== "#") {
+			const ids = rowIdKey
+				.map((key) => row[key])
+				.filter((val) => val !== null);
+			if (ids.length === rowIdKey.length) {
+				navigate(`${rowLinkPrefix}${ids.join("/")}`, {
+					state: {pageData: row},
+				});
 			}
+		} else {
+			onRowClick?.(row);
 		}
 	};
 
 	return (
-		<div className="space-y-4 px-4 max-w-6xl w-full">
+		<div className="space-y-4 px-4 max-w-7xl w-full">
 			<Input
 				placeholder="Search..."
 				value={filter}
@@ -99,9 +111,45 @@ export function GenericDataTable<TData, TValue>({
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>
-											{flexRender(
-												cell.column.columnDef.cell,
-												cell.getContext()
+											{typeof cell.getValue() ===
+											"number" ? (
+												// Render a progress bar for Number columns
+												<div className="relative max-w-28">
+													<Progress
+														value={
+															cell.getValue() as number
+														}
+														className="h-6 bg-neutral-700 rounded-full"
+														indicatorColor="bg-violet-600"
+													/>
+													<div className="absolute inset-0 flex justify-center items-center text-white text-xs font-semibold">
+														{
+															cell.getValue() as String
+														}
+														%
+													</div>
+												</div>
+											) : typeof cell.getValue() ===
+											  "boolean" ? (
+												<div
+													className={`flex items-center justify-center text-center whitespace-nowrap min-w-fit max-w-36 py-2 px-5 rounded-full text-white ${
+														cell.getValue()
+															? "bg-green-700"
+															: "bg-rose-700"
+													}`}
+												>
+													<div className="truncate">
+														{cell.getValue()
+															? "Compliant"
+															: "Non-Compliant"}
+													</div>
+												</div>
+											) : (
+												// Render default cell content for other types
+												flexRender(
+													cell.column.columnDef.cell,
+													cell.getContext()
+												)
 											)}
 										</TableCell>
 									))}
@@ -113,7 +161,11 @@ export function GenericDataTable<TData, TValue>({
 									colSpan={columns.length}
 									className="text-center"
 								>
-									No results found.
+									{isLoading ? (
+										<RoundSpinner />
+									) : (
+										"No results found."
+									)}
 								</TableCell>
 							</TableRow>
 						)}
@@ -125,25 +177,29 @@ export function GenericDataTable<TData, TValue>({
 					Page {table.getState().pagination.pageIndex + 1} of{" "}
 					{table.getPageCount()}
 				</div>
-				<div className="space-x-2">
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={() => table.previousPage()}
-						disabled={!table.getCanPreviousPage()}
-					>
-						Previous
-					</Button>
-					<Button
-						variant="default"
-                        className="bg-sky-500 hover:bg-sky-600 text-white"
-						size="sm"
-						onClick={() => table.nextPage()}
-						disabled={!table.getCanNextPage()}
-					>
-						Next
-					</Button>
-				</div>
+				{table.getPageCount() > 1 && (
+					<div className="space-x-2">
+						{table.getState().pagination.pageIndex !== 0 && (
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => table.previousPage()}
+								disabled={!table.getCanPreviousPage()}
+							>
+								Previous
+							</Button>
+						)}
+						<Button
+							variant="default"
+							className="bg-sky-500 hover:bg-sky-600 text-white"
+							size="sm"
+							onClick={() => table.nextPage()}
+							disabled={!table.getCanNextPage()}
+						>
+							Next
+						</Button>
+					</div>
+				)}
 			</div>
 		</div>
 	);

@@ -107,7 +107,7 @@ function AuditeeForm() {
 				try {
 					const data: CompanyListDto =
 						await companyService.getCompanyByCompanyId(
-							"alpha123",
+							"7077beec-a9ef-44ef-a21b-83aab58872c9",
 							auditeeId
 						);
 					methods.reset({
@@ -133,7 +133,7 @@ function AuditeeForm() {
 	const onSubmit = async (data: any) => {
 		setIsLoading(true);
 		const companyData: CompanyCreateDto = {
-			tenant_id: "alpha123", //TODO: get tenant id from auth context
+			tenant_id: "7077beec-a9ef-44ef-a21b-83aab58872c9", //TODO: get tenant id from auth context
 			company_name: data.auditeeName,
 			company_type: data.auditeeType,
 			created_by: "FE_SYSTEM", //TODO: get user id from auth context
@@ -147,7 +147,7 @@ function AuditeeForm() {
 					companyData
 				);
 			}
-			dispatch(loadCompanyData("alpha123"));
+			dispatch(loadCompanyData("7077beec-a9ef-44ef-a21b-83aab58872c9"));
 			navigate("/auditee/dashboard");
 		} catch (error) {
 			toast({
@@ -334,24 +334,6 @@ function AuditeeForm() {
 									label="Related Services"
 								/>
 							</div>
-							{/* Relevant Data boolean */}
-							<div className="space-y-4 mt-8">
-								<SingleSelectBox
-									control={methods.control}
-									name="relevantData"
-									options={[
-										{
-											label: "Yes",
-											value: "yes",
-										},
-										{
-											label: "No",
-											value: "no",
-										},
-									]}
-									label="Is relevant data processed by the auditee?"
-								/>
-							</div>
 							{/* Data processed type */}
 							<div className="space-y-4 mt-8">
 								<SingleSelectBox
@@ -384,6 +366,7 @@ function AuditeeForm() {
 										</Button>
 									}
 									subheading="Are you sure you want to proceed? Clicking confirm will save your data."
+									title="Are You Sure?"
 									actionLabel="Confirm"
 									onAction={onRunClick}
 								/>
