@@ -68,7 +68,7 @@ const Tab = ({
         });
       }}
       onClick={()=> {stepChangefn(itemId)}}
-      className={`relative z-10 block cursor-pointer px-3 py-1.5 text-xs text-white md:px-5 md:py-3 md:text-base ${isActive ? "bg-violet-500 opacity-100 rounded-full" : "opacity-70 hover:opacity-100"}  transition-opacity duration-100`}
+      className={`relative z-10 block cursor-pointer px-3 py-1.5 text-xs text-white md:px-5 md:py-3 md:text-base ${isActive ? "bg-zinc-700 opacity-100 rounded-full" : "opacity-70 hover:opacity-100"}  transition-opacity duration-100`}
     >
       {children}
     </li>
@@ -79,7 +79,7 @@ const Cursor = ({ position }: { position: any }) => {
   return (
     <motion.li
       animate={position}
-      className="absolute z-0 h-7 rounded-full bg-violet-500 md:h-12"
+      className="absolute z-0 h-7 rounded-full bg-zinc-700 md:h-12"
     />
   );
 };

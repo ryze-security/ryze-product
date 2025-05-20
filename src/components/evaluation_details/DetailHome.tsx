@@ -76,9 +76,7 @@ function DetailHome(props: Props) {
 			...control,
 			Response: {
 				...control.Response,
-				Score: Number.parseFloat(
-					(control.Response.Score * 100).toFixed(2)
-				),
+				Score: Math.round(control.Response.Score * 100),
 			},
 		}));
 	}, [combinedControls]);
@@ -128,7 +126,7 @@ function DetailHome(props: Props) {
 			newCardData.push({
 				id: domainId,
 				heading: domain.Description,
-				data: `${(domain.Response.Score * 100).toFixed(2)}%`,
+				data: `${Math.round(domain.Response.Score * 100).toString()}%`,
 			});
 		}
 
@@ -142,27 +140,29 @@ function DetailHome(props: Props) {
 	return (
 		<div className="max-w-7xl w-full px-4">
 			{/* Header */}
-			<div className="flex max-w-fit gap-2">
-				<div className="text-4xl font-semibold text-amber-600 tracking-wide">
-					{overallScore}%.
+			{!selectedRow && <>
+				<div className="flex max-w-fit gap-2">
+					<div className="text-4xl font-semibold text-amber-600 tracking-wide">
+						{overallScore}%.
+					</div>
+					<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
+						Overall compliance score.
+					</div>
 				</div>
-				<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
-					Overall compliance score.
+				{/* Evaluation Cards */}
+				<div className="flex flex-wrap gap-4 w-fit mt-10">
+					{cardData.map((item) => (
+						<InfoCard
+							key={item.id}
+							heading={item.heading}
+							data={item.data}
+						/>
+					))}
 				</div>
-			</div>
-			{/* Evaluation Cards */}
-			<div className="flex flex-wrap gap-4 w-fit mt-10">
-				{cardData.map((item) => (
-					<InfoCard
-						key={item.id}
-						heading={item.heading}
-						data={item.data}
-					/>
-				))}
-			</div>
+			</>}
 
 			{/* Full Data Data table */}
-			<section className="flex flex-col items-center w-full bg-black text-white mt-8 pt-4">
+			<section className={`flex flex-col items-center w-full bg-black text-white ${selectedRow ? "" : "mt-8 pt-4"}`}>
 				<div className="w-full mb-8 px-4">
 					{selectedRow && (
 						<div className="flex max-w-fit gap-2">
@@ -229,7 +229,7 @@ const InfoCard = ({ heading, data }: { heading: string; data: string }) => {
 	return (
 		<Card className="bg-zinc-900 rounded-2xl shadow-lg border border-zinc-700 max-h-48 max-w-60 min-h-48 min-w-60">
 			<CardContent className="p-6 flex flex-col justify-between gap-2 h-full">
-				<div className="flex flex-wrap text-[18px] text-zinc-400 opacity-85 font-bold tracking-wider">
+				<div className="flex flex-wrap text-xl text-zinc-400 opacity-85 font-bold tracking-wider">
 					{heading}
 				</div>
 				<div className="text-4xl text-white font-semibold">{data}</div>

@@ -69,8 +69,8 @@ function DomainDetail(props: Props) {
 					...control,
 					Response: {
 						...control.Response,
-						Score: Number.parseFloat(
-							(control.Response.Score * 100).toFixed(2)
+						Score: Math.round(
+							(control.Response.Score * 100)
 						),
 					},
 				};
@@ -134,7 +134,7 @@ function DomainDetail(props: Props) {
 				) : (
 					<div className="flex max-w-fit gap-2">
 						<div className="text-4xl font-semibold text-amber-600 tracking-wide">
-							{(domainData.Response.Score * 100).toFixed(2)}%.
+							{Math.round(domainData.Response.Score * 100).toString()}%.
 						</div>
 						<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
 							{`Alignment with ${domainData.Description.toLowerCase()}.`}

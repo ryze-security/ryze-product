@@ -19,15 +19,15 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 
 const services = [
 	{
-		label: "Saas",
+		label: "SaaS",
 		value: "saas",
 	},
 	{
-		label: "Iaas",
+		label: "IaaS",
 		value: "iaas",
 	},
 	{
-		label: "Paas",
+		label: "PaaS",
 		value: "paas",
 	},
 	{
@@ -225,7 +225,7 @@ function AuditeeForm() {
 							>
 								{isHeadingEditing ? (
 									<Lock
-										className="text-violet-500 hover:text-violet-700"
+										className="text-violet-ryzr/80 hover:text-violet-ryzr"
 										style={{
 											width: "28px",
 											height: "28px",
@@ -233,7 +233,7 @@ function AuditeeForm() {
 									/>
 								) : (
 									<Edit
-										className="text-violet-500"
+										className="text-violet-ryzr/80 hover:text-violet-ryzr"
 										style={{
 											width: "28px",
 											height: "28px",

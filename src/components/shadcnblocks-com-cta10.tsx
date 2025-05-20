@@ -30,7 +30,7 @@ const Cta10 = ({
   },
 }: Cta10Props) => {
   return (
-  <section className="py-32 flex items-center justify-center">
+  <section className="py-28 flex items-center justify-center">
     <div className="container">
         <div className="flex w-full flex-col gap-16 overflow-hidden rounded-lg bg-accent p-8 md:rounded-xl lg:flex-row lg:items-center lg:p-16">
           <div className="flex-1">

@@ -54,9 +54,9 @@ const columns: ColumnDef<FilesUploadResponseDTO>[] = [
 
 const NewEvaluation = () => {
 	const steps = [
-		{ id: 0, label: "Choose Framework" },
-		{ id: 1, label: "Upload Documents" },
-		{ id: 2, label: "Begin Evaluation" },
+		{ id: 0, label: "Framework" },
+		{ id: 1, label: "Documents" },
+		{ id: 2, label: "Evaluation" },
 	];
 
 	const auditees = useAppSelector(
@@ -283,14 +283,17 @@ const NewEvaluation = () => {
 							const isCurrent = index === currentStep;
 
 							return (
-								<div className="w-full flex items-center" key={step.id}>
+								<div
+									className="w-full flex items-center"
+									key={step.id}
+								>
 									<div
 										className="flex-1 flex flex-col items-center cursor-pointer text-center"
 										onClick={() => goToStep(index)}
 									>
 										<div
 											className={`relative w-[96%] h-8 transition-colors mx-0 mb-4 pl-4
-											${isCurrent ? "bg-violet-500" : "bg-zinc-700"}
+											${isCurrent ? "bg-violet-ryzr" : "bg-zinc-700"}
 											hover:opacity-90 rounded-full overflow-visible`}
 										>
 											<span className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
@@ -439,7 +442,7 @@ const NewEvaluation = () => {
 												type="button"
 												variant="secondary"
 											>
-												<PlusCircleIcon /> Add Auditee
+												<PlusCircleIcon /> Add
 											</Button>
 										</div>
 									</div>
@@ -467,8 +470,8 @@ const NewEvaluation = () => {
 												/>
 											))}
 											{/* Add link to framework section */}
-											<div className="cursor-pointer rounded-sm border p-4 align-middle font-roboto text-center sm:w-28 bg-zinc-800 text-zinc-400 transition-all text-opacity-80 duration-100 hover:scale-110">
-												Add Framework
+											<div className="flex gap-2 justify-center cursor-pointer rounded-sm border p-4 font-roboto sm:w-28 bg-zinc-800 text-zinc-400 transition-all text-opacity-80 duration-100 hover:scale-110">
+												<PlusCircleIcon /> Add
 											</div>
 										</div>
 									</div>

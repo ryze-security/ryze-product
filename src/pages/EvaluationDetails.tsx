@@ -21,7 +21,7 @@ const steps = [
 	{ id: 1, label: "Organizational", icon: <BuildingIcon /> },
 	{ id: 2, label: "People", icon: <FileUserIcon /> },
 	{ id: 3, label: "Physical", icon: <IdCardIcon /> },
-	{ id: 4, label: "Tecnological", icon: <DatabaseIcon /> },
+	{ id: 4, label: "Technological", icon: <DatabaseIcon /> },
 ];
 
 const Home = React.lazy(
@@ -147,10 +147,10 @@ function EvaluationDetails() {
 						<Suspense fallback={<RoundSpinner />}>
 							{currentStep === 0 && (
 								<Home
-									overallScore={(
+									overallScore={Math.round(
 										data.data.EvaluationResponse.Response
 											.Score * 100
-									).toFixed(2)}
+									).toString()}
 									domainDataMap={domainDataMap}
 								/>
 							)}

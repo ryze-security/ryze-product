@@ -21,6 +21,7 @@ interface Faq3Props {
   supportDescription: string;
   supportButtonText: string;
   supportButtonUrl: string;
+  requireSupport?: boolean;
 }
 
 const faqItems = [
@@ -75,6 +76,7 @@ const Faq3 = ({
   supportDescription = "Our dedicated support team is here to help you with any questions or concerns. Get in touch with us for personalized assistance.",
   supportButtonText = "Contact Support",
   supportButtonUrl = "https://www.shadcnblocks.com",
+  requireSupport = true,
 }: Faq3Props) => {
   return (
     <section className="py-32 font-roboto">
@@ -105,7 +107,7 @@ const Faq3 = ({
             </AccordionItem>
           ))}
         </Accordion>
-        <div className="mx-auto flex max-w-4xl flex-col items-center rounded-lg bg-accent p-4 text-center md:rounded-xl md:p-6 lg:p-8">
+        {requireSupport && <div className="mx-auto flex max-w-4xl flex-col items-center rounded-lg bg-accent p-4 text-center md:rounded-xl md:p-6 lg:p-8">
           <div className="relative">
             <Avatar className="absolute mb-4 size-16 origin-bottom -translate-x-[60%] scale-[80%] border md:mb-5">
               <AvatarImage src="https://shadcnblocks.com/images/block/avatar-2.webp" />
@@ -133,7 +135,7 @@ const Faq3 = ({
               </a>
             </Button>
           </div>
-        </div>
+        </div>}
       </div>
     </section>
   );

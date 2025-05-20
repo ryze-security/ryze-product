@@ -10,7 +10,7 @@ const InfoCard = ({ heading, data, info }: InfoCardProps) => {
 	return (
 		<Card className="bg-zinc-900 rounded-2xl shadow-lg border border-zinc-700">
 			<CardContent className="p-6 flex flex-col gap-2">
-				<div className="text-md text-violet-500 font-medium tracking-wide">
+				<div className="text-md text-violet-ryzr font-medium tracking-wide">
 					{heading}
 				</div>
 				<div className="text-4xl text-white font-semibold">{data}</div>

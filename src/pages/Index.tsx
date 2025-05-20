@@ -138,7 +138,7 @@ function Index() {
 						<div className="flex justify-center mb-2 mt-4">
 							<Button
 								variant="outline"
-								className="w-2/3 gap-2 border-violet-600 hover:bg-violet-600 hover:text-white hover:border-violet-600 bg-transparent text-violet-400 font-bold"
+								className="w-2/3 gap-2 border-violet-ryzr hover:bg-violet-ryzr hover:text-white hover:border-violet-ryzr bg-transparent text-violet-ryzr font-bold"
 							>
 								View reviews
 							</Button>
