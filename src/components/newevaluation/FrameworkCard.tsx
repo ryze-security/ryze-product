@@ -42,7 +42,7 @@ export const FrameworkCard = ({
 			className={cn(
 				"cursor-pointer rounded-sm border p-4 text-white align-middle font-roboto text-center sm:w-28 bg-zinc-800 transition-all duration-100 hover:scale-110",
 				isSelected
-					? "border-violet-700 text-violet-400 scale-110"
+					? "border-violet-ryzr text-violet-ryzr scale-110"
 					: "border-zinc-900 text-zinc-400 text-opacity-80",
 			)}
 		>

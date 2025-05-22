@@ -16,21 +16,21 @@ function FeaturesSection() {
 	const steps = [
 		{
 			icon: <List className="text-sky-400 w-12 h-12" />,
-			title: "Specify controls.",
+			title: "Define. Control framework.",
 			desc: "Define your own custom framework or choose from leading standards and frameworks like ISO 27001, NIST CSF and more.",
             link: "/features/specify-controls",
             svg: <AbstractCheckList />
 		},
 		{
 			icon: <CheckSquare className="text-sky-400 w-12 h-12" />,
-			title: "Identify gaps.",
+			title: "Identify. Gaps precisely.",
 			desc: "Use AI to analyze security policies, SOC Type 2 reports, SIG questionnaires, etc. for compliance gaps - speeding up audits, and saving time.",
             link: "/features/identify-gaps",
             svg: <AiEngine />
 		},
 		{
 			icon: <LucideScatterChart className="text-sky-400 w-12 h-12" />,
-			title: "Generate reports.",
+			title: "Generate. Actionable reports.",
 			desc: "Generate risk reports with MITRE ATT&CK-aligned insights and tailored remediation plans and roadmaps for management’s decision making.",
             link: "/features/generate-reports",
             svg: <ReportFlow />
@@ -54,7 +54,7 @@ function FeaturesSection() {
 						>
 							<CardHeader className="flex flex-col space-y-3">
 								{step.icon}
-								<CardTitle className="text-2xl text-left">
+								<CardTitle className="text-2xl text-left tracking-wide">
 									<span className="text-zinc-400">
 										{step.title.split(" ")[0]}{" "}
 									</span>
@@ -69,12 +69,12 @@ function FeaturesSection() {
 							</CardHeader>
 							<CardContent className="text-md text-zinc-300 text-left space-y-2">
 								<p>{step.desc}</p>
-								<Link
+								{/* <Link
 									to={step.link}
 									className="inline-flex items-center gap-1 text-sky-400 hover:text-sky-600 transition-colors duration-150 group hover:underline"
 								>
 									Learn more <MoveRight className="w-4 h-4 transform transition-transform duration-200 group-hover:translate-x-1" />
-								</Link>
+								</Link> */}
 							</CardContent>
                             {step.svg}
 						</Card>

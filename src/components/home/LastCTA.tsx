@@ -3,7 +3,7 @@ import { Cta10 } from "@/components/shadcnblocks-com-cta10";
 const demoData = {
 	heading: "Ready to transform your compliance workflow?",
 	description:
-		"Automate the tedious. Accelerate the audit. Make risk management a strategic advantage.",
+		"Make risk management a strategic advantage.",
 	buttons: {
 		primary: {
 			text: "Get Started",

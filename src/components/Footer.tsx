@@ -6,7 +6,7 @@ function FooterNav() {
 		<div className="w-full">
 			<Footer
 				logo=""
-				brandName="Ryze."
+				brandName="Ryzr."
 				socialLinks={[
 					{
 						icon: <Twitter className="h-5 w-5" />,
@@ -20,12 +20,12 @@ function FooterNav() {
 					},
 				]}
 				mainLinks={[
-					{ href: "/about", label: "About" },
-					{ href: "/contact", label: "Contact" },
+					{ href: "/", label: "About" },
+					{ href: "/", label: "Contact" },
 				]}
 				legalLinks={[
-					{ href: "/privacy", label: "Privacy" },
-					{ href: "/terms", label: "Terms" },
+					{ href: "/", label: "Privacy" },
+					{ href: "/", label: "Terms" },
 				]}
 				copyright={{
 					text: "© 2025 Ryze.",

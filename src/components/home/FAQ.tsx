@@ -26,6 +26,7 @@ const demoData = {
 		"Can't find the answer you're looking for? Our support team is here to help with any technical questions or concerns.",
 	supportButtonText: "Contact Support",
 	supportButtonUrl: "/contact",
+	requireSupport: false,
 };
 
 function FAQ() {

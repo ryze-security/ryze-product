@@ -29,7 +29,7 @@ function RecentReviews(props: Props) {
 					<Progress
 						value={score}
 						className="h-6 bg-neutral-700 rounded-full"
-						indicatorColor="bg-violet-600"
+						indicatorColor="bg-violet-ryzr"
 					/>
 					<div className="absolute inset-0 flex justify-center items-center text-white text-xs font-semibold">
 						{score}%

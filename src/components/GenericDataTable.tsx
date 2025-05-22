@@ -86,10 +86,10 @@ export function GenericDataTable<TData, TValue>({
 				className="max-w-sm"
 			/>
 			<div className="rounded-md border">
-				<Table className="rounded-md">
+				<Table className="rounded-md bg-zinc-900">
 					<TableHeader>
 						{table.getHeaderGroups().map((headerGroup) => (
-							<TableRow key={headerGroup.id}>
+							<TableRow key={headerGroup.id} className="">
 								{headerGroup.headers.map((header) => (
 									<TableHead key={header.id}>
 										{flexRender(
@@ -107,7 +107,7 @@ export function GenericDataTable<TData, TValue>({
 								<TableRow
 									key={row.id}
 									onClick={() => handleRowClick(row.original)}
-									className="cursor-pointer hover:bg-muted/75 transition"
+									className="cursor-pointer hover:bg-zinc-800 transition text-white/70"
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>
@@ -120,7 +120,7 @@ export function GenericDataTable<TData, TValue>({
 															cell.getValue() as number
 														}
 														className="h-6 bg-neutral-700 rounded-full"
-														indicatorColor="bg-violet-600"
+														indicatorColor="bg-violet-ryzr"
 													/>
 													<div className="absolute inset-0 flex justify-center items-center text-white text-xs font-semibold">
 														{
