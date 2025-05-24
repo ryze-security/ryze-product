@@ -8,7 +8,13 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import { GenericDataTable } from "../GenericDataTable";
 import { Button } from "../ui/button";
-import { ArrowBigLeftDash } from "lucide-react";
+import {
+	ArrowBigLeftDash,
+	ArrowDown,
+	ArrowLeft,
+	ArrowUpDown,
+	MoveLeft,
+} from "lucide-react";
 import QuestionForm from "./QuestionForm";
 
 interface Props {
@@ -25,7 +31,20 @@ interface CardData {
 const columns: ColumnDef<controlResponse>[] = [
 	{
 		accessorKey: "controlId",
-		header: "Control Id",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() =>
+						column.toggleSorting(column.getIsSorted() === "asc")
+					}
+					className="p-0 hover:bg-transparent hover:text-white/70 text-lg"
+				>
+					Control Id
+					<ArrowUpDown className="h-4 w-4" />
+				</Button>
+			);
+		},
 	},
 	{
 		accessorKey: "Description",
@@ -33,7 +52,20 @@ const columns: ColumnDef<controlResponse>[] = [
 	},
 	{
 		accessorKey: "Response.Score",
-		header: "Control Score",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() =>
+						column.toggleSorting(column.getIsSorted() === "asc")
+					}
+					className="p-0 hover:bg-transparent hover:text-white/70 text-lg"
+				>
+					Control Score
+					<ArrowUpDown className="h-4 w-4" />
+				</Button>
+			);
+		},
 	},
 ];
 
@@ -48,7 +80,20 @@ const questionColumns: ColumnDef<questionResponse>[] = [
 	},
 	{
 		accessorKey: "Response.Score",
-		header: "Compliance",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() =>
+						column.toggleSorting(column.getIsSorted() === "asc")
+					}
+					className="p-0 hover:bg-transparent hover:text-white/70 text-lg"
+				>
+					Compliance
+					<ArrowUpDown className="h-4 w-4" />
+				</Button>
+			);
+		},
 	},
 	{
 		accessorKey: "Response.Observation",
@@ -140,37 +185,98 @@ function DetailHome(props: Props) {
 	return (
 		<div className="max-w-7xl w-full px-4">
 			{/* Header */}
-			{!selectedRow && <>
-				<div className="flex max-w-fit gap-2">
-					<div className="text-4xl font-semibold text-amber-600 tracking-wide">
-						{overallScore}%.
+			{!selectedRow && (
+				<>
+					{/* Eval stats */}
+					<div className="flex w-full justify-between">
+						<div className="flex flex-col max-w-fit gap-1">
+							<div className="flex justify-start gap-4 mb-6">
+								<h3 className="text-lg font-semibold my-auto text-zinc-600">
+									Review.
+								</h3>
+								{/* Request Review title or something from the api */}
+								<div className="bg-zinc-800 min-w-28 text-center p-1 px-5 rounded-sm text-white">
+									Title
+								</div>
+							</div>
+							<div className="flex justify-start gap-4 mb-6">
+								<h3 className="text-lg font-semibold my-auto text-zinc-600">
+									Auditee.
+								</h3>
+								{/* Request Auditee name from the api */}
+								<div className="bg-zinc-800 min-w-28 text-center p-1 px-5 rounded-sm text-white">
+									Auditee Name
+								</div>
+							</div>
+							<div className="flex justify-start gap-4 mb-6">
+								<h3 className="text-lg font-semibold my-auto text-zinc-600">
+									Control reference.
+								</h3>
+								{/* Request control reference name from the api */}
+								<div className="bg-zinc-800 min-w-28 text-center p-1 px-5 rounded-sm text-white">
+									ISO 27001
+								</div>
+							</div>
+							<div className="flex justify-start gap-4 mb-6">
+								<h3 className="text-lg font-semibold my-auto text-zinc-600">
+									Documents uploaded.
+								</h3>
+								{/* Request control reference name from the api */}
+								<div className="bg-zinc-800 min-w-28 text-center p-1 px-5 rounded-sm text-white">
+									SOC 2 Type 2 report
+								</div>
+							</div>
+						</div>
+						<div>
+							<Button
+								variant="default"
+								className={` bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold text-md`}
+							>
+								Generate <ArrowDown className="w-4 h-4" />
+							</Button>
+						</div>
 					</div>
-					<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
-						Overall compliance score.
+					<div className="flex max-w-fit mt-8 gap-2">
+						<div className="text-[56px] font-semibold text-violet-ryzr tracking-wide">
+							{overallScore}%.
+						</div>
+						<div className="text-[56px] font-semibold text-zinc-400 opacity-85 tracking-wide">
+							Overall compliance score.
+						</div>
 					</div>
-				</div>
-				{/* Evaluation Cards */}
-				<div className="flex flex-wrap gap-4 w-fit mt-10">
-					{cardData.map((item) => (
-						<InfoCard
-							key={item.id}
-							heading={item.heading}
-							data={item.data}
-						/>
-					))}
-				</div>
-			</>}
+					{/* Evaluation Cards */}
+					<div className="flex flex-wrap gap-4 w-fit mt-10">
+						{cardData.map((item) => (
+							<InfoCard
+								key={item.id}
+								heading={item.heading}
+								data={item.data}
+							/>
+						))}
+					</div>
+				</>
+			)}
 
 			{/* Full Data Data table */}
-			<section className={`flex flex-col items-center w-full bg-black text-white ${selectedRow ? "" : "mt-8 pt-4"}`}>
+			<section
+				className={`flex flex-col items-center w-full bg-black text-white ${
+					selectedRow ? "" : "mt-8 pt-4"
+				}`}
+			>
 				<div className="w-full mb-8 px-4">
 					{selectedRow && (
-						<div className="flex max-w-fit gap-2">
-							<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
-								{selectedRow.controlId}
+						<div className="flex justify-between">
+							<div className="flex max-w-fit gap-2">
+								<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
+									{selectedRow.controlId}
+								</div>
+								<div className="text-4xl font-semibold text-white tracking-wide">
+									{selectedRow.Description}
+								</div>
 							</div>
-							<div className="text-4xl font-semibold text-white tracking-wide">
-								{selectedRow.Description}
+							<div className="w-[104px] h-[101px] bg-violet-ryzr rounded-lg flex flex-col justify-center align-middle items-center">
+								<h1 className="text-4xl font-semibold text-white">{selectedRow.Response.Score}%</h1>
+								<p className="text-sm">Compliance</p>
 							</div>
 						</div>
 					)}
@@ -191,10 +297,14 @@ function DetailHome(props: Props) {
 								<div className="px-4 mb-4">
 									<Button
 										onClick={handleBack}
-										className="rounded-2xl bg-sky-500 hover:bg-sky-600 transition-colors text-white font-bold text-md"
+										className="rounded-full bg-zinc-700 hover:bg-zinc-800 transition-colors text-white p-2 w-20"
 									>
-										<ArrowBigLeftDash className="w-12 h-12" />{" "}
-										Back
+										<MoveLeft
+											style={{
+												width: "28px",
+												height: "28px",
+											}}
+										/>
 									</Button>
 								</div>
 								{/* Detail Data Table */}
@@ -212,7 +322,7 @@ function DetailHome(props: Props) {
 							<GenericDataTable
 								columns={columns}
 								data={updatedControlResponseList}
-								filterKey="Description"
+								filterKey="controlId"
 								onRowClick={(row) => {
 									setSelectedRow(row);
 								}}
@@ -227,12 +337,14 @@ function DetailHome(props: Props) {
 
 const InfoCard = ({ heading, data }: { heading: string; data: string }) => {
 	return (
-		<Card className="bg-zinc-900 rounded-2xl shadow-lg border border-zinc-700 max-h-48 max-w-60 min-h-48 min-w-60">
+		<Card className="bg-zinc-900 rounded-2xl shadow-lg border border-zinc-700 max-h-48 max-w-60 min-h-48 min-w-72">
 			<CardContent className="p-6 flex flex-col justify-between gap-2 h-full">
-				<div className="flex flex-wrap text-xl text-zinc-400 opacity-85 font-bold tracking-wider">
+				<div className="flex flex-wrap text-3xl text-zinc-400 opacity-85 font-bold tracking-wider">
 					{heading}
 				</div>
-				<div className="text-4xl text-white font-semibold">{data}</div>
+				<div className="text-[48px] text-white font-semibold">
+					{data}
+				</div>
 			</CardContent>
 		</Card>
 	);
