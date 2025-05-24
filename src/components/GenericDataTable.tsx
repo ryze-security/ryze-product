@@ -2,6 +2,8 @@ import * as React from "react";
 import {
 	ColumnDef,
 	flexRender,
+	SortingState,
+	getSortedRowModel,
 	getCoreRowModel,
 	getPaginationRowModel,
 	getFilteredRowModel,
@@ -41,6 +43,7 @@ export function GenericDataTable<TData, TValue>({
 	onRowClick,
 }: DataTableProps<TData, TValue>) {
 	const [filter, setFilter] = React.useState("");
+	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const navigate = useNavigate();
 
 	const table = useReactTable({
@@ -51,6 +54,7 @@ export function GenericDataTable<TData, TValue>({
 		getFilteredRowModel: getFilteredRowModel(),
 		state: {
 			globalFilter: filter,
+			sorting,
 		},
 		onGlobalFilterChange: setFilter,
 		globalFilterFn: (row, columnId, filterValue) => {
@@ -60,6 +64,8 @@ export function GenericDataTable<TData, TValue>({
 				.toLowerCase()
 				.includes(filterValue.toLowerCase());
 		},
+		onSortingChange: setSorting,
+		getSortedRowModel: getSortedRowModel(),
 	});
 
 	const handleRowClick = (row: TData) => {
@@ -69,7 +75,7 @@ export function GenericDataTable<TData, TValue>({
 				.filter((val) => val !== null);
 			if (ids.length === rowIdKey.length) {
 				navigate(`${rowLinkPrefix}${ids.join("/")}`, {
-					state: {pageData: row},
+					state: { pageData: row },
 				});
 			}
 		} else {
@@ -83,15 +89,28 @@ export function GenericDataTable<TData, TValue>({
 				placeholder="Search..."
 				value={filter}
 				onChange={(e) => setFilter(e.target.value)}
-				className="max-w-sm"
+				className="max-w-sm text-xl"
 			/>
 			<div className="rounded-md border">
 				<Table className="rounded-md bg-zinc-900">
 					<TableHeader>
 						{table.getHeaderGroups().map((headerGroup) => (
-							<TableRow key={headerGroup.id} className="">
-								{headerGroup.headers.map((header) => (
-									<TableHead key={header.id}>
+							<TableRow
+								key={headerGroup.id}
+								className="bg-[#404040] hover:bg-[#404040] transition-opacity"
+							>
+								{headerGroup.headers.map((header, index) => (
+									<TableHead
+										key={header.id}
+										className={`text-white text-lg
+											${index === 0
+												? "rounded-tl-md"
+												: index ===
+												  headerGroup.headers.length - 1
+												? "rounded-tr-md"
+												: ""}
+										`}
+									>
 										{flexRender(
 											header.column.columnDef.header,
 											header.getContext()
@@ -132,7 +151,7 @@ export function GenericDataTable<TData, TValue>({
 											) : typeof cell.getValue() ===
 											  "boolean" ? (
 												<div
-													className={`flex items-center justify-center text-center whitespace-nowrap min-w-fit max-w-36 py-2 px-5 rounded-full text-white ${
+													className={`flex items-center justify-center text-center whitespace-nowrap min-w-32 max-w-36 py-2 px-5 rounded-full text-white ${
 														cell.getValue()
 															? "bg-green-700"
 															: "bg-rose-700"

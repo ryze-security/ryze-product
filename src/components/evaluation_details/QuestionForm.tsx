@@ -1,7 +1,13 @@
 import { questionResponse } from "@/models/evaluation/EvaluationDTOs";
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { ArrowBigLeft, ArrowBigLeftDash, ArrowBigRight, PencilLine } from "lucide-react";
+import {
+	ArrowBigLeft,
+	ArrowBigLeftDash,
+	ArrowBigRight,
+	MoveLeft,
+	PencilLine,
+} from "lucide-react";
 
 interface Props {
 	questionData: questionResponse[];
@@ -12,12 +18,13 @@ interface Props {
 function QuestionForm(props: Props) {
 	const { questionData, questionIndex, handleBack } = props;
 
-	const [selectedQuestion, setSelectedQuestion] =
-		useState<questionResponse>(questionData[questionIndex]);
+	const [selectedQuestion, setSelectedQuestion] = useState<questionResponse>(
+		questionData[questionIndex]
+	);
 
 	const [formattedEvidence, setFormattedEvidence] = useState<string[]>([]);
 
-    const [index, setIndex] = useState<number>(questionIndex);
+	const [index, setIndex] = useState<number>(questionIndex);
 
 	const [isEditing, setIsEditing] = useState(false);
 
@@ -25,15 +32,15 @@ function QuestionForm(props: Props) {
 
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    // This effect is used to set the selected question and formatted evidence when the question data or index changes
+	// This effect is used to set the selected question and formatted evidence when the question data or index changes
 	useEffect(() => {
-        setIndex(questionIndex);
+		setIndex(questionIndex);
 		updateEvidence(questionIndex);
 		setObservation(selectedQuestion?.Response.Observation);
 	}, [questionData, questionIndex]);
 
-    // This effect is used to change the text area size and focus on it when editing
-    // the observation
+	// This effect is used to change the text area size and focus on it when editing
+	// the observation
 	useEffect(() => {
 		if (isEditing && textareaRef.current) {
 			const el = textareaRef.current;
@@ -48,8 +55,7 @@ function QuestionForm(props: Props) {
 		}
 	}, [isEditing]);
 
-
-    // This function is used to update the observation
+	// This function is used to update the observation
 	const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setObservation(e.target.value);
 		if (textareaRef.current) {
@@ -58,43 +64,48 @@ function QuestionForm(props: Props) {
 		}
 	};
 
-    // This function is used to update the formatted evidence
-    const updateEvidence = (currentIndex: number) => {
-        const result = questionData[currentIndex]?.Response.evidence
+	// This function is used to update the formatted evidence
+	const updateEvidence = (currentIndex: number) => {
+		const result = questionData[currentIndex]?.Response.evidence
 			.split(/\d+\.\s/)
 			.filter(Boolean)
 			.map((item) => item.trim().replace(/^['"]|['"]$/g, ""));
 		setFormattedEvidence(result);
-    }
+	};
 
-    const handleLeftArrowClick = () => {
-        if (index > 0) {
-            const newIndex = index - 1;
-            setIndex(newIndex);
-            setSelectedQuestion(questionData[newIndex]);
-            updateEvidence(newIndex);
-            setObservation(questionData[newIndex]?.Response.Observation);
-        }
-    }
+	const handleLeftArrowClick = () => {
+		if (index > 0) {
+			const newIndex = index - 1;
+			setIndex(newIndex);
+			setSelectedQuestion(questionData[newIndex]);
+			updateEvidence(newIndex);
+			setObservation(questionData[newIndex]?.Response.Observation);
+		}
+	};
 
-    const handleRightArrowClick = () => {
-        if (index < questionData.length - 1) {
-            const newIndex = index + 1;
-            setIndex(newIndex);
-            setSelectedQuestion(questionData[newIndex]);
-            updateEvidence(newIndex);
-            setObservation(questionData[newIndex]?.Response.Observation);
-        }
-    }
+	const handleRightArrowClick = () => {
+		if (index < questionData.length - 1) {
+			const newIndex = index + 1;
+			setIndex(newIndex);
+			setSelectedQuestion(questionData[newIndex]);
+			updateEvidence(newIndex);
+			setObservation(questionData[newIndex]?.Response.Observation);
+		}
+	};
 
 	return (
 		<div className="w-full">
 			<div className="px-4 mb-4">
 				<Button
 					onClick={handleBack}
-					className="rounded-2xl bg-sky-500 hover:bg-sky-600 transition-colors text-white font-bold text-md"
+					className="rounded-full bg-zinc-700 hover:bg-zinc-800 transition-colors text-white p-2 w-20"
 				>
-					<ArrowBigLeftDash className="w-12 h-12" /> Back
+					<MoveLeft
+						style={{
+							width: "28px",
+							height: "28px",
+						}}
+					/>
 				</Button>
 			</div>
 			<section className="w-full max-w-[904px] px-4 mb-4 mt-8">
@@ -105,12 +116,18 @@ function QuestionForm(props: Props) {
 							Question
 						</div>
 						<div className="flex gap-2">
-							<Button className="rounded-full text-white w-8 h-8 bg-zinc-900 hover:bg-zinc-700" onClick={handleLeftArrowClick}>
-                                <ArrowBigLeft />
-                            </Button>
-                            <Button className="rounded-full text-white w-8 h-8 bg-zinc-900 hover:bg-zinc-700" onClick={handleRightArrowClick}>
-                                <ArrowBigRight />
-                            </Button>
+							<Button
+								className="rounded-full text-white w-8 h-8 bg-zinc-900 hover:bg-zinc-700"
+								onClick={handleLeftArrowClick}
+							>
+								<ArrowBigLeft />
+							</Button>
+							<Button
+								className="rounded-full text-white w-8 h-8 bg-zinc-900 hover:bg-zinc-700"
+								onClick={handleRightArrowClick}
+							>
+								<ArrowBigRight />
+							</Button>
 						</div>
 					</div>
 					<div className="bg-zinc-900 gap-2 flex rounded-md rounded-tl-none border border-zinc-700 p-4">
