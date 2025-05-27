@@ -190,6 +190,7 @@ function AuditeeForm() {
 						buttonText="Cancel"
 						buttonUrl="/auditee/dashboard"
 						isLoading={isLoading}
+						isClickable={false}
 					/>
 				) : (
 					// Editable heading
@@ -242,23 +243,6 @@ function AuditeeForm() {
 								)}
 							</Button>
 						</div>
-						<AlertDialogBox
-							trigger={
-								<Button
-									variant="default"
-									disabled={isLoading}
-									className={
-										"bg-zinc-700 hover:bg-zinc-800 rounded-2xl transition-colors text-white font-bold text-md"
-									}
-								>
-									Cancel
-								</Button>
-							}
-							subheading="Are you sure you want to cancel this operation? Clicking confirm will cause all your unsaved data to be lost."
-							title="Are You Sure?"
-							actionLabel="Confirm"
-							actionHref="/auditee/dashboard"
-						/>
 					</div>
 				)}
 			</section>
@@ -344,7 +328,7 @@ function AuditeeForm() {
 								/>
 							</div>
 							{/* Submit Button */}
-							<div className="flex justify-start mt-8">
+							<div className="flex justify-start mt-8 gap-2">
 								<AlertDialogBox
 									trigger={
 										<Button
@@ -369,6 +353,23 @@ function AuditeeForm() {
 									title="Are You Sure?"
 									actionLabel="Confirm"
 									onAction={onRunClick}
+								/>
+								<AlertDialogBox
+									trigger={
+										<Button
+											variant="default"
+											disabled={isLoading}
+											className={
+												"bg-gray-ryzr hover:bg-gray-ryzr/70 rounded-2xl transition-opacity duration-150 text-white font-bold text-md"
+											}
+										>
+											Cancel
+										</Button>
+									}
+									subheading="Are you sure you want to cancel this operation? Clicking confirm will cause all your unsaved data to be lost."
+									title="Are You Sure?"
+									actionLabel="Confirm"
+									actionHref="/auditee/dashboard"
 								/>
 							</div>
 						</form>

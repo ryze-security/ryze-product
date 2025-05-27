@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "./ui/button";
-import { PlusCircleIcon } from "lucide-react";
+import { Divide, PlusCircleIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { RoundSpinner } from "./ui/spinner";
 import { AlertDialogBox } from "./AlertDialogBox";
@@ -8,14 +8,15 @@ import { AlertDialogBox } from "./AlertDialogBox";
 interface Props {
 	heading: string;
 	subtitle: string;
-	buttonText: string;
+	isClickable?: boolean;
+	buttonText?: string;
 	variant?: string;
-	buttonUrl: string;
+	buttonUrl?: string;
 	isLoading?: boolean;
 }
 
 function PageHeader(props: Props) {
-	const { heading, subtitle, buttonText, variant, buttonUrl, isLoading } =
+	const { heading, subtitle, buttonText, variant, buttonUrl, isLoading, isClickable = true } =
 		props;
 
 	return (
@@ -29,7 +30,7 @@ function PageHeader(props: Props) {
 				{/* Subtitle */}
 				<p className="text-base text-zinc-500">{subtitle}</p>
 			</div>
-			{variant === "add" ? (<Link to={buttonUrl}>
+			{isClickable ? variant === "add" ? (<Link to={buttonUrl}>
 				<Button
 					variant="default"
 					disabled={isLoading}
@@ -56,7 +57,7 @@ function PageHeader(props: Props) {
 				subheading="Are you sure you want to cancel this operation? Clicking confirm will cause all your unsaved data to be lost."
 				actionLabel="Confirm"
 				actionHref={buttonUrl}
-			/>)}
+			/>) : (<></>)}
 		</div>
 	);
 }

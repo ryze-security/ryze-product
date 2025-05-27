@@ -6,7 +6,7 @@ import {
 	questionResponse,
 } from "@/models/evaluation/EvaluationDTOs";
 import { ColumnDef } from "@tanstack/react-table";
-import { GenericDataTable } from "../GenericDataTable";
+import { ProgressBarDataTable } from "../ProgressBarDataTable";
 import { Button } from "../ui/button";
 import {
 	ArrowBigLeftDash,
@@ -38,7 +38,7 @@ const columns: ColumnDef<controlResponse>[] = [
 					onClick={() =>
 						column.toggleSorting(column.getIsSorted() === "asc")
 					}
-					className="p-0 hover:bg-transparent hover:text-white/70 text-lg"
+					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
 					Control Id
 					<ArrowUpDown className="h-4 w-4" />
@@ -59,7 +59,7 @@ const columns: ColumnDef<controlResponse>[] = [
 					onClick={() =>
 						column.toggleSorting(column.getIsSorted() === "asc")
 					}
-					className="p-0 hover:bg-transparent hover:text-white/70 text-lg"
+					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
 					Control Score
 					<ArrowUpDown className="h-4 w-4" />
@@ -87,7 +87,7 @@ const questionColumns: ColumnDef<questionResponse>[] = [
 					onClick={() =>
 						column.toggleSorting(column.getIsSorted() === "asc")
 					}
-					className="p-0 hover:bg-transparent hover:text-white/70 text-lg"
+					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
 					Compliance
 					<ArrowUpDown className="h-4 w-4" />
@@ -237,10 +237,10 @@ function DetailHome(props: Props) {
 						</div>
 					</div>
 					<div className="flex max-w-fit mt-8 gap-2">
-						<div className="text-[56px] font-semibold text-violet-ryzr tracking-wide">
+						<div className="text-[50px] font-semibold text-violet-ryzr tracking-wide">
 							{overallScore}%.
 						</div>
-						<div className="text-[56px] font-semibold text-zinc-400 opacity-85 tracking-wide">
+						<div className="text-[50px] font-semibold text-zinc-400 opacity-85 tracking-wide">
 							Overall compliance score.
 						</div>
 					</div>
@@ -308,7 +308,7 @@ function DetailHome(props: Props) {
 									</Button>
 								</div>
 								{/* Detail Data Table */}
-								<GenericDataTable
+								<ProgressBarDataTable
 									columns={questionColumns}
 									data={updatedQuestions}
 									filterKey="question"
@@ -319,7 +319,7 @@ function DetailHome(props: Props) {
 								/>
 							</div>
 						) : (
-							<GenericDataTable
+							<ProgressBarDataTable
 								columns={columns}
 								data={updatedControlResponseList}
 								filterKey="controlId"

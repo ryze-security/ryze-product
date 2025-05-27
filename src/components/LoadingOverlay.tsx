@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 const quips = [
-	"Loading, please wait...",
+	"Loading...",
 	"Preparing your data...",
 	"Fetching latest information...",
 	"Processing your request...",
@@ -53,7 +53,7 @@ export const LoadingOverlay = () => {
 				</video>
 
 				<div
-					className={`absolute z-10 text-2xl sm:text-3xl font-semibold text-center px-6 transition duration-1000 ${
+					className={`absolute z-10 text-2xl sm:text-3xl font-semibold text-center px-6 transition text-nowrap duration-1000 ${
 						colorToggle ? "text-white" : "text-zinc-400 opacity-80"
 					}`}
 				>
