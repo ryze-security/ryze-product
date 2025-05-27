@@ -5,7 +5,7 @@ import {
 } from "@/models/evaluation/EvaluationDTOs";
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { GenericDataTable } from "../GenericDataTable";
+import { ProgressBarDataTable } from "../ProgressBarDataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowBigLeftDash, ArrowUpDown, MoveLeft } from "lucide-react";
 import QuestionForm from "./QuestionForm";
@@ -25,7 +25,7 @@ const columns: ColumnDef<controlResponse>[] = [
 					onClick={() =>
 						column.toggleSorting(column.getIsSorted() === "asc")
 					}
-					className="p-0 hover:bg-transparent hover:text-white/70 text-lg"
+					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
 					Control Id
 					<ArrowUpDown className="h-4 w-4" />
@@ -46,7 +46,7 @@ const columns: ColumnDef<controlResponse>[] = [
 					onClick={() =>
 						column.toggleSorting(column.getIsSorted() === "asc")
 					}
-					className="p-0 hover:bg-transparent hover:text-white/70 text-lg"
+					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
 					Control Score
 					<ArrowUpDown className="h-4 w-4" />
@@ -74,7 +74,7 @@ const questionColumns: ColumnDef<questionResponse>[] = [
 					onClick={() =>
 						column.toggleSorting(column.getIsSorted() === "asc")
 					}
-					className="p-0 hover:bg-transparent hover:text-white/70 text-lg"
+					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
 					Compliance
 					<ArrowUpDown className="h-4 w-4" />
@@ -225,7 +225,7 @@ function DomainDetail(props: Props) {
 							</Button>
 						</div>
 						{/* Detail Data Table */}
-						<GenericDataTable
+						<ProgressBarDataTable
 							columns={questionColumns}
 							data={updatedQuestions}
 							filterKey="question"
@@ -236,7 +236,7 @@ function DomainDetail(props: Props) {
 						/>
 					</div>
 				) : (
-					<GenericDataTable
+					<ProgressBarDataTable
 						columns={columns}
 						data={updatedData.ControlResponseList}
 						filterKey="Description"

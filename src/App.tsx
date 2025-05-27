@@ -13,7 +13,7 @@ import FrameworkSelection from "./pages/FrameworkSelection";
 import DocumentUpload from "./pages/DocumentUpload";
 import EvaluationStart from "./pages/EvaluationStart";
 import NotFound from "./pages/NotFound";
-import {AuditeeDashboard, Home, LoginPage, AuditeeForm, NewEvaluation, EvaluationDashboard, EvaluationDetails} from "./pages/pageIndex.ts";
+import {AuditeeDashboard, Home, LoginPage, AuditeeForm, NewEvaluation, EvaluationDashboard, EvaluationDetails, VulnerableAuditeeDashboard, DeviationDashboard} from "./pages/pageIndex.ts";
 import Layout from "./components/layout/Layout.tsx";
 import { useEffect } from "react";
 import { loadCompanyData } from "./store/slices/companySlice.ts";
@@ -44,6 +44,8 @@ const App = () => {
             <Route path="/auditee/dashboard" element={<AuditeeDashboard />} />
             <Route path="/auditee/new" element={<AuditeeForm />} />
             <Route path="/auditee/edit/:auditeeId" element={<AuditeeForm />} />
+            <Route path="/auditee/vulnerable" element={<VulnerableAuditeeDashboard />} />
+            <Route path="/framework/deviation" element={<DeviationDashboard />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1,4 +1,4 @@
-import { GenericDataTable } from "@/components/GenericDataTable";
+import { ProgressBarDataTable } from "@/components/ProgressBarDataTable";
 import PageHeader from "@/components/PageHeader";
 import { useToast } from "@/hooks/use-toast";
 import { Evaluation, listEvaluationsDTO } from "@/models/evaluation/EvaluationDTOs";
@@ -83,7 +83,7 @@ function EvaluationDashboard() {
 			</section>
 
 			<section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-6 sm:px-12 lg:px-16">
-				<GenericDataTable
+				<ProgressBarDataTable
 					columns={columns}
 					data={evaluations.evaluations}
 					filterKey="tg_company_display_name"

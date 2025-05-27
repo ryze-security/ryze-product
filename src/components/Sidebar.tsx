@@ -89,10 +89,19 @@ export function AppSidebar() {
 							{items.map((item) => (
 								<SidebarMenuItem key={item.title}>
 									<SidebarMenuButton asChild>
-										<Link to={item.url}>
-											<item.icon />
-											<span>{item.title}</span>
-										</Link>
+										{item.url === "#" ? (
+											<div className="text-gray-light-ryzr cursor-pointer">
+												<item.icon/>
+												<span>
+													{item.title}
+												</span>
+											</div>
+										) : (
+											<Link to={item.url}>
+												<item.icon />
+												<span>{item.title}</span>
+											</Link>
+										)}
 									</SidebarMenuButton>
 								</SidebarMenuItem>
 							))}

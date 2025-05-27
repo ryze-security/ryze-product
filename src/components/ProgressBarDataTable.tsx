@@ -33,7 +33,7 @@ interface DataTableProps<TData, TValue> {
 	onRowClick?: (row: TData) => void;
 }
 
-export function GenericDataTable<TData, TValue>({
+export function ProgressBarDataTable<TData, TValue>({
 	columns,
 	data,
 	filterKey,
@@ -137,8 +137,35 @@ export function GenericDataTable<TData, TValue>({
 											{typeof cell.getValue() ===
 											"number" ? (
 												// Render a progress bar for Number columns
-												<div className="rounded-full text-center flex items-center justify-center min-w-[62px] h-[26px] w-fit bg-[#404040]">
-													{cell.getValue() as number}
+												<div className="relative max-w-28">
+													<Progress
+														value={
+															cell.getValue() as number
+														}
+														className="h-6 bg-neutral-700 rounded-full"
+														indicatorColor="bg-violet-ryzr"
+													/>
+													<div className="absolute inset-0 flex justify-center items-center text-white text-xs font-semibold">
+														{
+															cell.getValue() as String
+														}
+														%
+													</div>
+												</div>
+											) : typeof cell.getValue() ===
+											  "boolean" ? (
+												<div
+													className={`flex items-center justify-center text-center whitespace-nowrap min-w-32 max-w-36 py-2 px-5 rounded-full text-white ${
+														cell.getValue()
+															? "bg-green-700"
+															: "bg-rose-700"
+													}`}
+												>
+													<div className="truncate">
+														{cell.getValue()
+															? "Compliant"
+															: "Non-Compliant"}
+													</div>
 												</div>
 											) : typeof cell.getValue() ===
 											  "string" ? (
@@ -148,9 +175,8 @@ export function GenericDataTable<TData, TValue>({
 														.split(" ")
 														.slice(0, 30)
 														.join(" ")}
-													{(
-														cell.getValue() as string
-													).split(" ").length > 30 &&
+													{(cell.getValue() as string)
+														.split(" ").length > 30 &&
 														"..."}
 												</div>
 											) : (

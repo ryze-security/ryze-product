@@ -59,8 +59,8 @@ const SingleSelectBox: React.FC<SingleSelectBoxProps> = ({
 									className={`rounded-full min-w-32 px-4 py-2 text-sm border transition 
                     ${
 						isSelected
-							? "bg-violet-600 text-white border-violet-700 ring-2 ring-violet-500"
-							: "bg-zinc-800 text-zinc-200 border-zinc-600 hover:bg-zinc-700"
+							? "bg-violet-ryzr text-white border-violet-ryzr/70 ring-2 ring-violet-ryzr/90"
+							: "bg-gray-ryzr text-zinc-200 border-gray-ryzr/70 hover:bg-gray-ryzr/90"
 					}`}
 									onClick={() => {
 										field.onChange(option.value);

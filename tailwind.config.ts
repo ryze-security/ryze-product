@@ -19,7 +19,11 @@ export default {
 		},
 		extend: {
 			colors: {
-				'violet-ryzr': "#914EC4",
+				"violet-ryzr": "#914EC4",
+				"gray-ryzr": "#262626",
+				"gray-light-ryzr": "#7F7F7F",
+				"green-ryzr": "#3F9155",
+				"red-ryzr": "#BD4F48",
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",
 				ring: "hsl(var(--ring))",
@@ -117,5 +121,8 @@ export default {
 			},
 		},
 	},
-	plugins: [require("tailwindcss-animate"), require("tailwind-scrollbar")],
+	plugins: [
+		require("tailwindcss-animate"),
+		require("tailwind-scrollbar")({ nocompatible: true }),
+	],
 } satisfies Config;
