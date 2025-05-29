@@ -20,6 +20,7 @@ import QuestionForm from "./QuestionForm";
 interface Props {
 	overallScore: string;
 	domainDataMap: Record<string, domainResponse>;
+	stepChangefn: (stepId: number) => void;
 }
 
 interface CardData {
@@ -102,7 +103,7 @@ const questionColumns: ColumnDef<questionResponse>[] = [
 ];
 
 function DetailHome(props: Props) {
-	const { overallScore, domainDataMap } = props;
+	const { overallScore, domainDataMap, stepChangefn } = props;
 
 	const [cardData, setCardData] = useState<CardData[]>([]);
 	const [combinedControls, setCombinedControls] = useState<controlResponse[]>(
@@ -178,9 +179,13 @@ function DetailHome(props: Props) {
 		setCardData(newCardData);
 	}, [domainDataMap]);
 
-	const handleBack = () => setSelectedRow(null);
-
-	const handleQuestionBack = () => setSelectedQuestion(null);
+	const handleBack = () => {
+		if(selectedQuestion){
+			setSelectedQuestion(null);
+		} else if (selectedRow) {
+			setSelectedRow(null);
+		}
+	};
 
 	return (
 		<div className="max-w-7xl w-full px-4">
@@ -246,11 +251,13 @@ function DetailHome(props: Props) {
 					</div>
 					{/* Evaluation Cards */}
 					<div className="flex flex-wrap gap-4 w-fit mt-10">
-						{cardData.map((item) => (
+						{cardData.map((item, index) => (
 							<InfoCard
 								key={item.id}
 								heading={item.heading}
 								data={item.data}
+								stepChangefn={stepChangefn}
+								itemId={index +1}
 							/>
 						))}
 					</div>
@@ -265,18 +272,36 @@ function DetailHome(props: Props) {
 			>
 				<div className="w-full mb-8 px-4">
 					{selectedRow && (
-						<div className="flex justify-between">
-							<div className="flex max-w-fit gap-2">
-								<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
-									{selectedRow.controlId}
-								</div>
-								<div className="text-4xl font-semibold text-white tracking-wide">
-									{selectedRow.Description}
-								</div>
+						<div className="flex flex-col gap-2">
+							{/* Back Button */}
+							<div className="mb-4">
+								<Button
+									onClick={handleBack}
+									className="rounded-full bg-zinc-700 hover:bg-zinc-800 transition-colors text-white p-2 w-20"
+								>
+									<MoveLeft
+										style={{
+											width: "28px",
+											height: "28px",
+										}}
+									/>
+								</Button>
 							</div>
-							<div className="w-[104px] h-[101px] bg-violet-ryzr rounded-lg flex flex-col justify-center align-middle items-center">
-								<h1 className="text-4xl font-semibold text-white">{selectedRow.Response.Score}%</h1>
-								<p className="text-sm">Compliance</p>
+							<div className="flex justify-between">
+								<div className="flex max-w-fit gap-2">
+									<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
+										{selectedRow.controlId}
+									</div>
+									<div className="text-4xl font-semibold text-white tracking-wide">
+										{selectedRow.Description}
+									</div>
+								</div>
+								<div className="w-[104px] h-[101px] bg-violet-ryzr rounded-lg flex flex-col justify-center align-middle items-center">
+									<h1 className="text-4xl font-semibold text-white">
+										{selectedRow.Response.Score}%
+									</h1>
+									<p className="text-sm">Compliance</p>
+								</div>
 							</div>
 						</div>
 					)}
@@ -287,26 +312,11 @@ function DetailHome(props: Props) {
 						questionIndex={updatedQuestions.indexOf(
 							selectedQuestion
 						)}
-						handleBack={handleQuestionBack}
 					/>
 				) : (
 					<>
 						{selectedRow ? (
 							<div className="w-full">
-								{/* Back Button */}
-								<div className="px-4 mb-4">
-									<Button
-										onClick={handleBack}
-										className="rounded-full bg-zinc-700 hover:bg-zinc-800 transition-colors text-white p-2 w-20"
-									>
-										<MoveLeft
-											style={{
-												width: "28px",
-												height: "28px",
-											}}
-										/>
-									</Button>
-								</div>
 								{/* Detail Data Table */}
 								<ProgressBarDataTable
 									columns={questionColumns}
@@ -335,9 +345,9 @@ function DetailHome(props: Props) {
 	);
 }
 
-const InfoCard = ({ heading, data }: { heading: string; data: string }) => {
+const InfoCard = ({ heading, data, stepChangefn, itemId }: { itemId: number; heading: string; data: string; stepChangefn?: (stepId: number) => void; }) => {
 	return (
-		<Card className="bg-zinc-900 rounded-2xl shadow-lg border border-zinc-700 max-h-48 max-w-60 min-h-48 min-w-72">
+		<Card className="bg-zinc-900 rounded-2xl shadow-lg border border-zinc-700 max-h-48 max-w-60 min-h-48 min-w-72 cursor-pointer" onClick={() => {stepChangefn(itemId)}}>
 			<CardContent className="p-6 flex flex-col justify-between gap-2 h-full">
 				<div className="flex flex-wrap text-3xl text-zinc-400 opacity-85 font-bold tracking-wider">
 					{heading}

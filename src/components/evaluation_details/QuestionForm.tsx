@@ -12,11 +12,10 @@ import {
 interface Props {
 	questionData: questionResponse[];
 	questionIndex: number;
-	handleBack: () => void;
 }
 
 function QuestionForm(props: Props) {
-	const { questionData, questionIndex, handleBack } = props;
+	const { questionData, questionIndex } = props;
 
 	const [selectedQuestion, setSelectedQuestion] = useState<questionResponse>(
 		questionData[questionIndex]
@@ -95,19 +94,6 @@ function QuestionForm(props: Props) {
 
 	return (
 		<div className="w-full">
-			<div className="px-4 mb-4">
-				<Button
-					onClick={handleBack}
-					className="rounded-full bg-zinc-700 hover:bg-zinc-800 transition-colors text-white p-2 w-20"
-				>
-					<MoveLeft
-						style={{
-							width: "28px",
-							height: "28px",
-						}}
-					/>
-				</Button>
-			</div>
 			<section className="w-full max-w-[904px] px-4 mb-4 mt-8">
 				{/* Question Name and changing arrows */}
 				<div className="flex flex-col">
@@ -144,7 +130,7 @@ function QuestionForm(props: Props) {
 						<div
 							className={`flex items-center justify-center text-center whitespace-nowrap min-w-20 max-w-20 py-1 px-6 rounded-full text-white ${
 								selectedQuestion?.Response.Score
-									? "bg-green-700"
+									? "bg-green-ryzr"
 									: "bg-zinc-700"
 							}`}
 						>
@@ -154,7 +140,7 @@ function QuestionForm(props: Props) {
 							className={`flex items-center justify-center text-center whitespace-nowrap min-w-20 max-w-20 py-1 px-6 rounded-full text-white ${
 								selectedQuestion?.Response.Score
 									? "bg-zinc-700"
-									: "bg-rose-700"
+									: "bg-red-ryzr"
 							}`}
 						>
 							No

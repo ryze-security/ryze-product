@@ -180,7 +180,7 @@ function AuditeeForm() {
 	};
 
 	return (
-		<div className="min-h-screen font-roboto bg-black text-white p-6">
+		<div className="relative min-h-screen font-roboto bg-black text-white p-6">
 			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-6 sm:px-12 lg:px-16">
 				{!isEditMode ? (
 					// Non-editable heading
@@ -328,7 +328,7 @@ function AuditeeForm() {
 								/>
 							</div>
 							{/* Submit Button */}
-							<div className="flex justify-start mt-8 gap-2">
+							<div className="absolute bottom-0 w-fit bg-black px-0 p-6 flex justify-start gap-2">
 								<AlertDialogBox
 									trigger={
 										<Button

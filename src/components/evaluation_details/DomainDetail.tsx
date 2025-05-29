@@ -150,9 +150,14 @@ function DomainDetail(props: Props) {
 		}
 	}, [selectedRow]);
 
-	const handleBack = () => setSelectedRow(null);
+	const handleBack = () => {
+		if(selectedQuestion){
+			setSelectedQuestion(null);
+		} else if (selectedRow) {
+			setSelectedRow(null);
+		}
+	};
 
-	const handleQuestionBack = () => setSelectedQuestion(null);
 
 	return (
 		<div className="max-w-7xl w-full">
@@ -160,20 +165,36 @@ function DomainDetail(props: Props) {
 			<div className="w-full px-4">
 				{/* Heading */}
 				{selectedRow ? (
-					<div className="flex justify-between">
-						<div className="flex max-w-fit gap-2">
-							<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
-								{selectedRow.controlId}
-							</div>
-							<div className="text-4xl font-semibold text-white tracking-wide">
-								{selectedRow.Description}
-							</div>
+					<div className="flex flex-col gap-2">
+						{/* Back Button */}
+						<div className="mb-4">
+							<Button
+								onClick={handleBack}
+								className="rounded-full bg-zinc-700 hover:bg-zinc-800 transition-colors text-white p-2 w-20"
+							>
+								<MoveLeft
+									style={{
+										width: "28px",
+										height: "28px",
+									}}
+								/>
+							</Button>
 						</div>
-						<div className="w-[104px] h-[101px] bg-violet-ryzr rounded-lg flex flex-col justify-center align-middle items-center">
-							<h1 className="text-4xl font-semibold text-white">
-								{selectedRow.Response.Score}%
-							</h1>
-							<p className="text-sm">Compliance</p>
+						<div className="flex justify-between">
+							<div className="flex max-w-fit gap-2">
+								<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
+									{selectedRow.controlId}
+								</div>
+								<div className="text-4xl font-semibold text-white tracking-wide">
+									{selectedRow.Description}
+								</div>
+							</div>
+							<div className="w-[104px] h-[101px] bg-violet-ryzr rounded-lg flex flex-col justify-center align-middle items-center">
+								<h1 className="text-4xl font-semibold text-white">
+									{selectedRow.Response.Score}%
+								</h1>
+								<p className="text-sm">Compliance</p>
+							</div>
 						</div>
 					</div>
 				) : (
@@ -206,24 +227,9 @@ function DomainDetail(props: Props) {
 						questionIndex={updatedQuestions.indexOf(
 							selectedQuestion
 						)}
-						handleBack={handleQuestionBack}
 					/>
 				) : selectedRow ? (
 					<div className="w-full">
-						{/* Back Button */}
-						<div className="px-4 mb-4">
-							<Button
-								onClick={handleBack}
-								className="rounded-full bg-zinc-700 hover:bg-zinc-800 transition-colors text-white p-2 w-20"
-							>
-								<MoveLeft
-									style={{
-										width: "28px",
-										height: "28px",
-									}}
-								/>
-							</Button>
-						</div>
 						{/* Detail Data Table */}
 						<ProgressBarDataTable
 							columns={questionColumns}

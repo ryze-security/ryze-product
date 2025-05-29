@@ -152,6 +152,7 @@ function EvaluationDetails() {
 											.Score * 100
 									).toString()}
 									domainDataMap={domainDataMap}
+									stepChangefn={goToStep}
 								/>
 							)}
 
