@@ -155,16 +155,16 @@ export function ProgressBarDataTable<TData, TValue>({
 											) : typeof cell.getValue() ===
 											  "boolean" ? (
 												<div
-													className={`flex items-center justify-center text-center whitespace-nowrap min-w-32 max-w-36 py-2 px-5 rounded-full text-white ${
+													className={`flex items-center justify-center text-center whitespace-nowrap min-w-fit max-w-40 py-2 px-5 rounded-full text-white ${
 														cell.getValue()
-															? "bg-green-700"
-															: "bg-rose-700"
+															? "bg-green-ryzr"
+															: "bg-red-ryzr"
 													}`}
 												>
 													<div className="truncate">
 														{cell.getValue()
-															? "Compliant"
-															: "Non-Compliant"}
+															? "COMPLIANT"
+															: "NON-COMPLIANT"}
 													</div>
 												</div>
 											) : typeof cell.getValue() ===
