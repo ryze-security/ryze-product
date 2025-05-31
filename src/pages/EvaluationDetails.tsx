@@ -4,7 +4,6 @@ import { useToast } from "@/hooks/use-toast";
 import { domainResponse } from "@/models/evaluation/EvaluationDTOs";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadEvaluationData } from "@/store/slices/evaluationSlice";
-import { stat } from "fs";
 import {
 	BuildingIcon,
 	DatabaseIcon,
@@ -37,13 +36,13 @@ function EvaluationDetails() {
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 	const { toast } = useToast();
-
+	
 	const [currentStep, setCurrentStep] = useState(0);
-	const [isLoading, setIsLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
 	const [domainDataMap, setDomainDataMap] = useState<
-		Record<string, domainResponse>
+	Record<string, domainResponse>
 	>({});
-
+	
 	const { data, status, error } = useAppSelector((state) => state.evaluation);
 
 	const goToStep = (stepId: number) => {
@@ -53,18 +52,16 @@ function EvaluationDetails() {
 	// This effect is used to set the domain data map when the data is loaded
 	useEffect(() => {
 		setIsLoading(true);
-		if (!data.data.EvaluationResponse.DomainResponseList?.length) {
-			setIsLoading(false);
-			return;
+		if (data?.data?.EvaluationResponse) {
+			const map: Record<string, domainResponse> = {};
+
+			for (const domain of data.data.EvaluationResponse
+				.DomainResponseList) {
+				map[domain.domainId] = domain;
+			}
+			setDomainDataMap(map);
 		}
 
-		const map: Record<string, domainResponse> = {};
-
-		for (const domain of data.data.EvaluationResponse.DomainResponseList) {
-			map[domain.domainId] = domain;
-		}
-
-		setDomainDataMap(map);
 		setIsLoading(false);
 	}, [data]);
 
@@ -97,7 +94,7 @@ function EvaluationDetails() {
 					data.data.CompanyId !== companyId ||
 					data.data.EvaluationId !== evaluationId
 				) {
-					dispatch(
+					await dispatch(
 						loadEvaluationData({
 							tenant_id: "7077beec-a9ef-44ef-a21b-83aab58872c9",
 							companyId: companyId ?? "",
@@ -127,7 +124,19 @@ function EvaluationDetails() {
 		};
 
 		fetchData();
-	}, []);
+	}, [companyId, evaluationId]);
+
+	// Redirect user if data doesn't have EvaluationResponse
+	useEffect(() => {
+		if (!isLoading && data?.data && !data.data.EvaluationResponse) {
+			toast({
+				title: `Invalid Evaluation`,
+				description: `The evaluation data is missing or invalid. Redirecting you back.`,
+				variant: "destructive",
+			});
+			navigate(-1);
+		}
+	}, [data, isLoading, navigate, toast]);
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
@@ -142,7 +151,7 @@ function EvaluationDetails() {
 			<section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-6 sm:px-12 lg:px-16">
 				{isLoading ? (
 					<RoundSpinner />
-				) : (
+				) : (data.data.EvaluationId === evaluationId && data?.data?.EvaluationResponse &&
 					<>
 						<Suspense fallback={<RoundSpinner />}>
 							{currentStep === 0 && (
