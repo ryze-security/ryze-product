@@ -16,6 +16,14 @@ import {
 	MoveLeft,
 } from "lucide-react";
 import QuestionForm from "./QuestionForm";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 interface Props {
 	overallScore: string;
@@ -99,6 +107,15 @@ const questionColumns: ColumnDef<questionResponse>[] = [
 	{
 		accessorKey: "Response.Observation",
 		header: "Observation",
+		cell: ({ row }) => {
+			const observation: string = row.original.Response.Observation;
+			return (
+				<span className="text-wrap">
+					{observation.split(" ").slice(0, 30).join(" ")}
+					{observation.split(" ").length > 30 && "..."}
+				</span>
+			);
+		},
 	},
 ];
 
@@ -180,7 +197,7 @@ function DetailHome(props: Props) {
 	}, [domainDataMap]);
 
 	const handleBack = () => {
-		if(selectedQuestion){
+		if (selectedQuestion) {
 			setSelectedQuestion(null);
 		} else if (selectedRow) {
 			setSelectedRow(null);
@@ -233,12 +250,18 @@ function DetailHome(props: Props) {
 							</div>
 						</div>
 						<div>
-							<Button
-								variant="default"
-								className={` bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold text-md`}
-							>
-								Generate <ArrowDown className="w-4 h-4" />
-							</Button>
+							<DropdownMenu>
+								<DropdownMenuTrigger
+									className={` bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold text-md px-4 py-2 flex items-center gap-2`}
+								>
+									Generate <ArrowDown className="w-4 h-4" />
+								</DropdownMenuTrigger>
+								<DropdownMenuContent>
+									<DropdownMenuItem>Report(.pdf)</DropdownMenuItem>
+									<DropdownMenuItem>Exec. summary(.pptx)</DropdownMenuItem>
+									<DropdownMenuItem>Policy statements(.docx)</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
 						</div>
 					</div>
 					<div className="flex max-w-fit mt-8 gap-2">
@@ -257,7 +280,7 @@ function DetailHome(props: Props) {
 								heading={item.heading}
 								data={item.data}
 								stepChangefn={stepChangefn}
-								itemId={index +1}
+								itemId={index + 1}
 							/>
 						))}
 					</div>
@@ -345,9 +368,24 @@ function DetailHome(props: Props) {
 	);
 }
 
-const InfoCard = ({ heading, data, stepChangefn, itemId }: { itemId: number; heading: string; data: string; stepChangefn?: (stepId: number) => void; }) => {
+const InfoCard = ({
+	heading,
+	data,
+	stepChangefn,
+	itemId,
+}: {
+	itemId: number;
+	heading: string;
+	data: string;
+	stepChangefn?: (stepId: number) => void;
+}) => {
 	return (
-		<Card className="bg-zinc-900 rounded-2xl shadow-lg border border-zinc-700 max-h-48 max-w-60 min-h-48 min-w-72 cursor-pointer" onClick={() => {stepChangefn(itemId)}}>
+		<Card
+			className="bg-zinc-900 rounded-2xl max-h-48 max-w-60 min-h-48 min-w-72 cursor-pointer"
+			onClick={() => {
+				stepChangefn(itemId);
+			}}
+		>
 			<CardContent className="p-6 flex flex-col justify-between gap-2 h-full">
 				<div className="flex flex-wrap text-3xl text-zinc-400 opacity-85 font-bold tracking-wider">
 					{heading}

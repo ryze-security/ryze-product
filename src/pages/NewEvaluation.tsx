@@ -200,7 +200,7 @@ const NewEvaluation = () => {
 					title: "Evaluation is running",
 					description: `Evaluation is created and running successfully.`,
 					variant: "default",
-					className: "bg-green-700",
+					className: "bg-green-ryzr",
 				});
 				navigate("/evaluation");
 			} catch (startError) {

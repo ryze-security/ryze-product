@@ -167,18 +167,6 @@ export function ProgressBarDataTable<TData, TValue>({
 															: "NON-COMPLIANT"}
 													</div>
 												</div>
-											) : typeof cell.getValue() ===
-											  "string" ? (
-												// Truncate long text to 50 words
-												<div className="text-wrap">
-													{(cell.getValue() as string)
-														.split(" ")
-														.slice(0, 30)
-														.join(" ")}
-													{(cell.getValue() as string)
-														.split(" ").length > 30 &&
-														"..."}
-												</div>
 											) : (
 												// Render default cell content for other types
 												flexRender(
