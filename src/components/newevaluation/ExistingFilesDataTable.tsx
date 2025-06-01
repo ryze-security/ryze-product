@@ -21,6 +21,7 @@ interface DataTableProps<TData> {
 	name: string;
 	selectId: keyof TData;
 	isLoading: boolean;
+	openDialog?: () => void;
 }
 
 export function FilesDataTable<TData>({
@@ -31,6 +32,7 @@ export function FilesDataTable<TData>({
 	name,
 	selectId,
 	isLoading,
+	openDialog = () => {},
 }: DataTableProps<TData>) {
 	const [globalFilter, setGlobalFilter] = useState("");
 	const [visibleCount, setVisibleCount] = useState(20);
@@ -67,8 +69,8 @@ export function FilesDataTable<TData>({
 			control={control}
 			name={name}
 			render={({ field }) => {
-                // documentExistingSelected hsould be the default onMount state please act accordingly
-				const documents : FilesUploadResponseDTO[] = field.value || [];
+				// documentExistingSelected hsould be the default onMount state please act accordingly
+				const documents: FilesUploadResponseDTO[] = field.value || [];
 				const isSelected = (row: TData) =>
 					documents.some((doc) => doc.file_id === row[selectId]);
 
@@ -86,7 +88,7 @@ export function FilesDataTable<TData>({
 						field.onChange(updated);
 					} else {
 						// Add selected file (from existing server files list)
-                        field.onChange([...documents, row]);
+						field.onChange([...documents, row]);
 					}
 				};
 
@@ -118,11 +120,11 @@ export function FilesDataTable<TData>({
 					isAllSelected ? clearAll() : selectAll();
 				};
 
-                const getSelectedCount = () => {
-                    return data.filter((row) =>
-                        documents.some((doc) => doc.file_id === row[selectId])
-                    ).length;
-                };
+				const getSelectedCount = () => {
+					return data.filter((row) =>
+						documents.some((doc) => doc.file_id === row[selectId])
+					).length;
+				};
 
 				const enhancedColumns: ColumnDef<TData>[] = [
 					{
@@ -154,12 +156,29 @@ export function FilesDataTable<TData>({
 
 				return (
 					<div className="space-y-4 rounded-md p-2 shadow-sm bg-black font-roboto">
-						<Input
-							placeholder={`Filter by File Name`}
-							value={globalFilter}
-							onChange={(e) => setGlobalFilter(e.target.value)}
-							className="max-w-sm bg-black font-roboto"
-						/>
+						<div className="flex justify-between">
+							<Input
+								placeholder={`Filter by File Name`}
+								value={globalFilter}
+								onChange={(e) =>
+									setGlobalFilter(e.target.value)
+								}
+								className="max-w-sm bg-black font-roboto"
+							/>
+
+							<Button
+								variant="outline"
+								type="button"
+								disabled={isLoading}
+								onClick={openDialog}
+							>
+								{isLoading ? (
+									<RoundSpinner />
+								) : (
+									"Upload New File"
+								)}
+							</Button>
+						</div>
 						<ScrollArea
 							ref={scrollRef}
 							className="h-96 scrollbar-none overflow-hidden border rounded"
@@ -217,7 +236,11 @@ export function FilesDataTable<TData>({
 												colSpan={enhancedColumns.length}
 												className="p-4 text-center text-slate-300"
 											>
-												{isLoading ? <RoundSpinner /> :"No results."}
+												{isLoading ? (
+													<RoundSpinner />
+												) : (
+													"No results."
+												)}
 											</td>
 										</tr>
 									)}

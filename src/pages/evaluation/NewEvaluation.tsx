@@ -128,7 +128,30 @@ const NewEvaluation = () => {
 
 	const goToStep = async (stepId: number) => {
 		if (isSubmitLoading) return;
-		if (currentStep === 0 && stepId > 0) {
+		if (currentStep === 0 && stepId > 1) {
+			const result = await methods.trigger([
+				"auditee",
+				"selectedFrameworks",
+			]);
+			const documentLength = methods.getValues("documents").length;
+			if(documentLength === 0){
+				methods.setError("documents", {
+					type: "manual",
+					message: "Please select at least one document.",
+				})
+			}
+			if (!result || documentLength === 0) {
+				toast({
+					title: "Error",
+					description:
+						methods.formState.errors.auditee?.message ||
+						methods.formState.errors.selectedFrameworks?.message  ||
+						methods.formState.errors.documents?.message, 
+					variant: "destructive",
+				});
+				return;
+			}
+		} else if( currentStep === 0 && stepId > 0) {
 			const result = await methods.trigger([
 				"auditee",
 				"selectedFrameworks",
@@ -164,7 +187,6 @@ const NewEvaluation = () => {
 			auditee: {} as AuditeeOption,
 			selectedFrameworks: [],
 			documents: [] as FilesUploadResponseDTO[],
-			documentsExistingSelected: [] as FilesUploadResponseDTO[],
 		},
 	});
 
@@ -182,7 +204,6 @@ const NewEvaluation = () => {
 			model_used: "gpt4.1",
 			document_list: [
 				...data.documents.map((doc) => doc.file_id),
-				...data.documentsExistingSelected.map((doc) => doc.file_id),
 			],
 		};
 
@@ -227,12 +248,9 @@ const NewEvaluation = () => {
 
 	const onRunClick = async () => {
 		const documentLength = methods.getValues("documents").length;
-		const existingDocumentLength = methods.getValues(
-			"documentsExistingSelected"
-		).length;
 		const frameworkLength = methods.getValues("selectedFrameworks").length;
 		const isValid =
-			(documentLength > 0 || existingDocumentLength > 0) &&
+			(documentLength > 0) &&
 			frameworkLength > 0;
 
 		if (isValid) {
@@ -250,8 +268,8 @@ const NewEvaluation = () => {
 	// Updates the documentsExistingSelected, documents field when the auditee is changed
 	useEffect(() => {
 		if (watchedAuditeeName?.value) {
-			methods.setValue("documentsExistingSelected", []);
 			methods.setValue("documents", []);
+			methods.setValue("selectedFrameworks", []);
 		}
 	}, [watchedAuditeeName]);
 
@@ -488,10 +506,7 @@ const NewEvaluation = () => {
 											) => {
 												if (
 													(!val ||
-														val.length === 0) &&
-													methods.getValues(
-														"documentsExistingSelected"
-													).length === 0
+														val.length === 0)
 												) {
 													return "Please select at least one file.";
 												}
@@ -567,7 +582,7 @@ const NewEvaluation = () => {
 												)}
 											</button>
 										}
-										subheading="Are you sure you want to proceed? Clicking confirm will save your data and start your evaluation."
+										subheading="Are you sure you want to proceed?"
 										actionLabel="Confirm"
 										onAction={onRunClick}
 									/>
