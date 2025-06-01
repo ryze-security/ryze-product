@@ -12,9 +12,11 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Ellipsis } from "lucide-react";
 
 const columns: ColumnDef<Evaluation>[] = [
 	{
@@ -34,11 +36,13 @@ const columns: ColumnDef<Evaluation>[] = [
 		header: ({ column }) => {
 			return (
 				<DropdownMenu>
-					<DropdownMenuTrigger className="p-0 hover:bg-transparent hover:text-white/70 text-base flex items-center gap-2">
+					<DropdownMenuTrigger className="p-0 hover:bg-transparent hover:text-white/70 text-base flex justify-between items-center gap-2">
 						Status
-						<ArrowDown className="h-4 w-4" />
+						<Ellipsis className="h-4 w-4" />
 					</DropdownMenuTrigger>
 					<DropdownMenuContent>
+					<DropdownMenuLabel>Filter by status</DropdownMenuLabel>
+					<DropdownMenuSeparator />
 						<DropdownMenuItem
 							onClick={() => column.setFilterValue("pending")}
 						>

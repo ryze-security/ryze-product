@@ -67,8 +67,7 @@ function Index() {
 	const deviations = [
 		"Managing Information Security in the ICT Supply Chain",
 		"Employee screening",
-		"Redundancy of Information Processing Facilities",
-		"Security Testing in Development and Acceptance",
+		"Information security in supplier relationships",
 	];
 
 	function getFormattedDateTime() {
@@ -148,8 +147,8 @@ function Index() {
 
 				<div className="max-w-7xl items-start w-full px-4 flex gap-6 justify-start">
 					{/* Card 1 */}
-					<div className="bg-gray-ryzr rounded-xl p-6 shadow-md w-[45%] max-w-[45%] h-[330px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-light-ryzr scrollbar-track-transparent">
-						<div className="flex items-center justify-between mb-2">
+					<div className="flex flex-col bg-gray-ryzr rounded-xl p-6 shadow-md w-[45%] max-w-[45%] h-[330px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-light-ryzr scrollbar-track-transparent">
+						<div className="flex items-center flex-grow justify-between mb-2">
 							<h2 className="flex gap-2 text-xl text-gray-light-ryzr font-semibold tracking-wide pl-4">
 								<Building />
 								<span>Vulnerable auditees</span>
@@ -164,39 +163,47 @@ function Index() {
 								score={vulnerability.score}
 							/>
 						))}
-						<Link to={"/auditee/vulnerable"}>
-							<div className="flex justify-center mb-2 mt-4 sticky bottom-0 bg-transparent">
+						<div className="w-full">
+							<Link
+								to={"/auditee/vulnerable"}
+								className="flex justify-center mb-2 mt-4 sticky bottom-0 bg-transparent"
+							>
 								<Button
 									variant="outline"
 									className="w-2/3 gap-2 border-violet-ryzr hover:bg-violet-ryzr hover:text-white hover:border-violet-ryzr bg-gray-ryzr text-violet-ryzr font-bold"
 								>
 									View more
 								</Button>
-							</div>
-						</Link>
+							</Link>
+						</div>
 					</div>
 
 					{/* Card 2 */}
-					<div className="bg-gray-ryzr rounded-xl p-6 shadow-md w-[45%] max-w-[45%] h-[330px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-light-ryzr scrollbar-track-transparent">
-						<div className="flex items-center justify-between mb-2">
+					<div className="flex flex-col bg-gray-ryzr rounded-xl p-6 shadow-md w-[45%] max-w-[45%] h-[330px]">
+						<div className="flex justify-between mb-2">
 							<h2 className="flex gap-2 text-xl text-gray-light-ryzr font-semibold tracking-wide pl-4">
 								<TriangleAlert />
 								<span>Frequent deviations</span>
 							</h2>
 						</div>
-						{deviations.map((deviation, index) => (
-							<DeviationRows key={index} deviation={deviation} />
-						))}
-						<Link to={"/framework/deviation"}>
-							<div className="flex justify-center mb-2 mt-4 sticky bottom-0 bg-transparent">
+						<div className="flex flex-grow flex-col">
+							{deviations.map((deviation, index) => (
+								<DeviationRows key={index} deviation={deviation} />
+							))}
+						</div>
+						<div className="w-full">
+							<Link
+								to={"/framework/deviation"}
+								className="flex justify-center mb-2 mt-4"
+							>
 								<Button
 									variant="outline"
 									className="w-2/3 gap-2 border-violet-ryzr hover:bg-violet-ryzr hover:text-white hover:border-violet-ryzr bg-gray-ryzr text-violet-ryzr font-bold"
 								>
 									View more
 								</Button>
-							</div>
-						</Link>
+							</Link>
+						</div>
 					</div>
 				</div>
 			</section>
@@ -206,12 +213,12 @@ function Index() {
 
 const DeviationRows = ({ deviation }: { deviation: string }) => {
 	return (
-		<div className="flex items-center gap-6 bg-transparent text-white rounded-xl p-4 w-full hover:bg-zinc-700 hover:bg-opacity-50 hover:shadow-md transition duration-150 ease-in-out hover:cursor-pointer">
+		<div className="flex items-center gap-4 bg-transparent text-white rounded-xl p-3 w-full hover:bg-zinc-700 hover:bg-opacity-50 hover:shadow-md transition duration-150 ease-in-out hover:cursor-pointer">
 			<div className="flex items-center justify-center w-1/12">
 				<CircleAlert className="text-[#FBBC05]" />
 			</div>
 			<div className="flex flex-col justify-center w-11/12">
-				<p className="text-lg tracking-wider">{deviation}</p>
+				<p className="text-base">{deviation}</p>
 			</div>
 		</div>
 	);

@@ -1,10 +1,12 @@
 import NavHeader from "@/components/nav-header";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { RoundSpinner } from "@/components/ui/spinner";
 import { useToast } from "@/hooks/use-toast";
 import { domainResponse } from "@/models/evaluation/EvaluationDTOs";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadEvaluationData } from "@/store/slices/evaluationSlice";
 import {
+	ArrowDown,
 	BuildingIcon,
 	DatabaseIcon,
 	FileUserIcon,
@@ -36,13 +38,13 @@ function EvaluationDetails() {
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 	const { toast } = useToast();
-	
+
 	const [currentStep, setCurrentStep] = useState(0);
 	const [isLoading, setIsLoading] = useState(true);
 	const [domainDataMap, setDomainDataMap] = useState<
-	Record<string, domainResponse>
+		Record<string, domainResponse>
 	>({});
-	
+
 	const { data, status, error } = useAppSelector((state) => state.evaluation);
 
 	const goToStep = (stepId: number) => {
@@ -140,7 +142,8 @@ function EvaluationDetails() {
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
-			<section className="flex justify-center items-center max-w-fit w-full bg-black text-white pt-10 px-6 sm:px-12 lg:px-16">
+			<section className="flex flex-col justify-center w-full bg-black text-white pt-10 px-6 sm:px-12 lg:px-16">
+				{/* Eval Details name etc */}
 				<NavHeader
 					data={steps}
 					stepChangefn={goToStep}
@@ -148,39 +151,42 @@ function EvaluationDetails() {
 				/>
 			</section>
 
-			<section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-6 sm:px-12 lg:px-16">
+			<section className="flex items-center w-full bg-black text-white mt-2 pt-10 px-6 sm:px-12 lg:px-16">
 				{isLoading ? (
 					<RoundSpinner />
-				) : (data.data.EvaluationId === evaluationId && data?.data?.EvaluationResponse &&
-					<>
-						<Suspense fallback={<RoundSpinner />}>
-							{currentStep === 0 && (
-								<Home
-									overallScore={Math.round(
-										data.data.EvaluationResponse.Response
-											.Score * 100
-									).toString()}
-									domainDataMap={domainDataMap}
-									stepChangefn={goToStep}
-								/>
-							)}
+				) : (
+					data.data.EvaluationId === evaluationId &&
+					data?.data?.EvaluationResponse && (
+						<>
+							<Suspense fallback={<RoundSpinner />}>
+								{currentStep === 0 && (
+									<Home
+										overallScore={Math.round(
+											data.data.EvaluationResponse
+												.Response.Score * 100
+										).toString()}
+										domainDataMap={domainDataMap}
+										stepChangefn={goToStep}
+									/>
+								)}
 
-							{/* rute force Fallback if mapping doesnt work in the future */}
-							{/* {currentStep > 0 && currentStep <=4 && (
+								{/* rute force Fallback if mapping doesnt work in the future */}
+								{/* {currentStep > 0 && currentStep <=4 && (
                                 <DomainDetail domainData={domainDataMap[`d_${currentStep}`]} currentPage={currentStep} />
                             )} */}
 
-							{Object.entries(domainDataMap).map(
-								([domainId, domain], index) =>
-									currentStep === index + 1 && (
-										<DomainDetail
-											domainData={domain}
-											currentPage={index + 1}
-										/>
-									)
-							)}
-						</Suspense>
-					</>
+								{Object.entries(domainDataMap).map(
+									([domainId, domain], index) =>
+										currentStep === index + 1 && (
+											<DomainDetail
+												domainData={domain}
+												currentPage={index + 1}
+											/>
+										)
+								)}
+							</Suspense>
+						</>
+					)
 				)}
 			</section>
 		</div>

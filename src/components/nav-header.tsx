@@ -23,7 +23,7 @@ function NavHeader(props: NavHeaderProps) {
 
   return (
     <ul
-      className="relative mx-auto flex w-fit rounded-full border border-white bg-black p-1"
+      className="relative justify-start flex w-fit rounded-full border border-white bg-black p-1"
       onMouseLeave={() => setPosition((pv) => ({ ...pv, opacity: 0 }))}
     >
       {data.map((item) => (

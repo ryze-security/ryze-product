@@ -15,27 +15,6 @@ export const SummaryStep = ({
 	const selectedFrameworks: { name: string; value: string }[] =
 		watch("selectedFrameworks") || [];
 	const uploadedFiles: FilesUploadResponseDTO[] = watch("documents") || [];
-	const existingSelectedFiles: FilesUploadResponseDTO[] = watch("documentsExistingSelected") || [];
-
-	const removeFramework = (frameworkValue: string) => {
-		setValue(
-			"selectedFrameworks",
-			selectedFrameworks.filter((f) => f.value !== frameworkValue),
-			{ shouldValidate: true }
-		);
-	};
-
-	const removeUploadedFile = (index: number) => {
-		const newFiles = [...uploadedFiles];
-		newFiles.splice(index, 1);
-		setValue("documents", newFiles, { shouldValidate: true });
-	};
-
-	const removeExistingFile = (index: number) => {
-		const newFiles = [...existingSelectedFiles];
-		newFiles.splice(index, 1);
-		setValue("documentsExistingSelected", newFiles, { shouldValidate: true });
-	}
 
 	return (
 		<div className="space-y-6">
@@ -73,12 +52,6 @@ export const SummaryStep = ({
 									className="flex items-center gap-2 bg-zinc-800 px-3 py-1 rounded-sm"
 								>
 									<span>{framework.name}</span>
-									<Trash2
-										className="w-4 h-4 cursor-pointer text-rose-400"
-										onClick={() =>
-											removeFramework(framework.value)
-										}
-									/>
 								</div>
 							))}
 							<Button
@@ -99,32 +72,16 @@ export const SummaryStep = ({
 					<h3 className="text-lg font-semibold text-zinc-600 my-auto">
 						Documents Uploaded.
 					</h3>
-					{uploadedFiles.length && existingSelectedFiles.length === 0 ? (
-						<p className="text-slate-400">No files uploaded.</p>
+					{uploadedFiles.length === 0 ? (
+						<p className="text-slate-400">No files selected.</p>
 					) : (
 						<div className="flex flex-wrap gap-2">
-							{existingSelectedFiles.map((file, index) => (
-								<div
-									key={file.file_id}
-									className="flex items-center gap-2 bg-zinc-800 px-3 py-1 rounded-sm"
-								>
-									<span>{file.file_name}</span>
-									<Trash2
-										className="w-4 h-4 cursor-pointer text-rose-400"
-										onClick={() => removeExistingFile(index)}
-									/>
-								</div>
-							))}
 							{uploadedFiles.map((file, index) => (
 								<div
 									key={file.file_id}
 									className="flex items-center gap-2 bg-zinc-800 px-3 py-1 rounded-sm"
 								>
 									<span>{file.file_name}</span>
-									<Trash2
-										className="w-4 h-4 cursor-pointer text-rose-400"
-										onClick={() => removeUploadedFile(index)}
-									/>
 								</div>
 							))}
 							<Button
