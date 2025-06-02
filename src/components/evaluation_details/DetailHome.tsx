@@ -295,7 +295,7 @@ function DetailHome(props: Props) {
 								</DropdownMenuTrigger>
 								<DropdownMenuContent>
 									<DropdownMenuItem>
-										Report(.pdf)
+										Report(.xlxs)
 									</DropdownMenuItem>
 									<DropdownMenuItem>
 										Exec. summary(.pptx)
