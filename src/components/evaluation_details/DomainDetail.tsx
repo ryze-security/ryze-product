@@ -64,9 +64,12 @@ const columns: ColumnDef<controlResponse>[] = [
 		header: "Missing elements",
 		cell: ({ row }) => {
 			const missing_elements: string = row.original.missing_elements;
+			const compliance: number = row.original.Response.Score;
 			return (
 				<span className="text-wrap">
-					{missing_elements.split(" ").length > 30 ? (
+					{compliance === 100 ? (
+						<span>No missing elements</span>
+					) : missing_elements.split(" ").length > 30 ? (
 						<HoverCard>
 							<HoverCardTrigger className="text-left">
 								<span>
