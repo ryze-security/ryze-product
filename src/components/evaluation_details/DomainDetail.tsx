@@ -9,6 +9,11 @@ import { ProgressBarDataTable } from "../ProgressBarDataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowBigLeftDash, ArrowUpDown, MoveLeft } from "lucide-react";
 import QuestionForm from "./QuestionForm";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "../ui/hover-card";
 
 interface Props {
 	domainData: domainResponse;
@@ -51,6 +56,38 @@ const columns: ColumnDef<controlResponse>[] = [
 					Control Score
 					<ArrowUpDown className="h-4 w-4" />
 				</Button>
+			);
+		},
+	},
+	{
+		accessorKey: "missing_elements",
+		header: "Missing elements",
+		cell: ({ row }) => {
+			const missing_elements: string = row.original.missing_elements;
+			return (
+				<span className="text-wrap">
+					{missing_elements.split(" ").length > 30 ? (
+						<HoverCard>
+							<HoverCardTrigger className="text-left">
+								<span>
+									{missing_elements
+										.split(" ")
+										.slice(0, 30)
+										.join(" ")}
+									{missing_elements.split(" ").length > 30 &&
+										"..."}
+								</span>
+							</HoverCardTrigger>
+							<HoverCardContent className="bg-gray-ryzr">
+								<span className="w-20 ">
+									{missing_elements}
+								</span>
+							</HoverCardContent>
+						</HoverCard>
+					) : (
+						missing_elements
+					)}
+				</span>
 			);
 		},
 	},
@@ -151,13 +188,12 @@ function DomainDetail(props: Props) {
 	}, [selectedRow]);
 
 	const handleBack = () => {
-		if(selectedQuestion){
+		if (selectedQuestion) {
 			setSelectedQuestion(null);
 		} else if (selectedRow) {
 			setSelectedRow(null);
 		}
 	};
-
 
 	return (
 		<div className="max-w-7xl w-full">
@@ -185,11 +221,19 @@ function DomainDetail(props: Props) {
 								<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
 									{selectedRow.controlId}
 								</div>
-								<div className="text-4xl font-semibold text-white tracking-wide">
-									{selectedRow.Description}
+								<div className="flex flex-col gap-2">
+									<div className="text-4xl font-semibold text-white tracking-wide">
+										{selectedRow.Description}
+									</div>
+									<div>
+										<p className="text-base w-10/12 text-gray-light-ryzr">
+											{selectedRow.control_description}
+										</p>
+									</div>
 								</div>
 							</div>
-							<div className="w-[104px] h-[101px] bg-violet-ryzr rounded-lg flex flex-col justify-center align-middle items-center">
+
+							<div className="min-w-[104px] h-[101px] bg-violet-ryzr rounded-lg flex flex-col justify-center align-middle items-center">
 								<h1 className="text-4xl font-semibold text-white">
 									{selectedRow.Response.Score}%
 								</h1>
