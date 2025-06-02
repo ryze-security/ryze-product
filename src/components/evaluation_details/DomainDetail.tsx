@@ -125,6 +125,15 @@ const questionColumns: ColumnDef<questionResponse>[] = [
 	{
 		accessorKey: "Response.Observation",
 		header: "Observation",
+		cell: ({ row }) => {
+			const observation: string = row.original.Response.Observation;
+			return (
+				<span className="text-wrap">
+					{observation.split(" ").slice(0, 30).join(" ")}
+					{observation.split(" ").length > 30 && "..."}
+				</span>
+			);
+		},
 	},
 ];
 
