@@ -74,6 +74,8 @@ export interface controlResponse {
 	Order: number;
 	controlId: string;
 	Description: string;
+	control_description: string;
+	missing_elements: string;
 	QuestionResponseList: questionResponse[];
 	Response: {
 		Score: number;

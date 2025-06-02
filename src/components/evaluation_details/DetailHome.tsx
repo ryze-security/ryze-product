@@ -24,6 +24,12 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "../ui/hover-card";
 
 interface Props {
 	overallScore: string;
@@ -73,6 +79,38 @@ const columns: ColumnDef<controlResponse>[] = [
 					Control Score
 					<ArrowUpDown className="h-4 w-4" />
 				</Button>
+			);
+		},
+	},
+	{
+		accessorKey: "missing_elements",
+		header: "Missing elements",
+		cell: ({ row }) => {
+			const missing_elements: string = row.original.missing_elements;
+			return (
+				<span className="text-wrap">
+					{missing_elements.split(" ").length > 30 ? (
+						<HoverCard>
+							<HoverCardTrigger className="text-left">
+								<span>
+									{missing_elements
+										.split(" ")
+										.slice(0, 30)
+										.join(" ")}
+									{missing_elements.split(" ").length > 30 &&
+										"..."}
+								</span>
+							</HoverCardTrigger>
+							<HoverCardContent className="bg-gray-ryzr">
+								<span className="w-20 ">
+									{missing_elements}
+								</span>
+							</HoverCardContent>
+						</HoverCard>
+					) : (
+						missing_elements
+					)}
+				</span>
 			);
 		},
 	},
@@ -211,61 +249,61 @@ function DetailHome(props: Props) {
 				<>
 					{/* Eval stats */}
 					<div className="flex w-full justify-between mb-5">
-					<div className="grid grid-cols-2 grid-rows-2 max-w-fit gap-1">
-						<div className="flex justify-start gap-4 mb-6">
-							<h3 className="text-lg font-semibold my-auto text-zinc-600">
-								Review.
-							</h3>
-							<div className="bg-zinc-800 min-w-28 text-center p-1 px-5 rounded-sm text-white">
-								Title
+						<div className="grid grid-cols-2 grid-rows-2 max-w-fit gap-1">
+							<div className="flex justify-start gap-4 mb-6">
+								<h3 className="text-lg font-semibold my-auto text-zinc-600">
+									Review.
+								</h3>
+								<div className="bg-zinc-800 min-w-28 text-center p-1 px-5 rounded-sm text-white">
+									Title
+								</div>
+							</div>
+							<div className="flex justify-start gap-4 mb-6">
+								<h3 className="text-lg font-semibold my-auto text-zinc-600">
+									Auditee.
+								</h3>
+								<div className="bg-zinc-800 min-w-28 text-center p-1 px-5 rounded-sm text-white">
+									Auditee Name
+								</div>
+							</div>
+							<div className="flex justify-start gap-4 mb-6">
+								<h3 className="text-lg font-semibold my-auto text-zinc-600">
+									Control reference.
+								</h3>
+								<div className="bg-zinc-800 min-w-28 text-center p-1 px-5 rounded-sm text-white">
+									ISO 27001
+								</div>
+							</div>
+							<div className="flex justify-start gap-4 mb-6">
+								<h3 className="text-lg font-semibold my-auto text-zinc-600">
+									Documents uploaded.
+								</h3>
+								<div className="bg-zinc-800 min-w-28 text-center p-1 px-5 rounded-sm text-white">
+									SOC 2 Type 2 report
+								</div>
 							</div>
 						</div>
-						<div className="flex justify-start gap-4 mb-6">
-							<h3 className="text-lg font-semibold my-auto text-zinc-600">
-								Auditee.
-							</h3>
-							<div className="bg-zinc-800 min-w-28 text-center p-1 px-5 rounded-sm text-white">
-								Auditee Name
-							</div>
-						</div>
-						<div className="flex justify-start gap-4 mb-6">
-							<h3 className="text-lg font-semibold my-auto text-zinc-600">
-								Control reference.
-							</h3>
-							<div className="bg-zinc-800 min-w-28 text-center p-1 px-5 rounded-sm text-white">
-								ISO 27001
-							</div>
-						</div>
-						<div className="flex justify-start gap-4 mb-6">
-							<h3 className="text-lg font-semibold my-auto text-zinc-600">
-								Documents uploaded.
-							</h3>
-							<div className="bg-zinc-800 min-w-28 text-center p-1 px-5 rounded-sm text-white">
-								SOC 2 Type 2 report
-							</div>
+						<div>
+							<DropdownMenu>
+								<DropdownMenuTrigger
+									className={` bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold text-md px-4 py-2 flex items-center gap-2`}
+								>
+									Generate <ArrowDown className="w-4 h-4" />
+								</DropdownMenuTrigger>
+								<DropdownMenuContent>
+									<DropdownMenuItem>
+										Report(.pdf)
+									</DropdownMenuItem>
+									<DropdownMenuItem>
+										Exec. summary(.pptx)
+									</DropdownMenuItem>
+									<DropdownMenuItem>
+										Policy statements(.docx)
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
 						</div>
 					</div>
-					<div>
-						<DropdownMenu>
-							<DropdownMenuTrigger
-								className={` bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold text-md px-4 py-2 flex items-center gap-2`}
-							>
-								Generate <ArrowDown className="w-4 h-4" />
-							</DropdownMenuTrigger>
-							<DropdownMenuContent>
-								<DropdownMenuItem>
-									Report(.pdf)
-								</DropdownMenuItem>
-								<DropdownMenuItem>
-									Exec. summary(.pptx)
-								</DropdownMenuItem>
-								<DropdownMenuItem>
-									Policy statements(.docx)
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
-					</div>
-				</div>
 					<div className="flex max-w-fit gap-2">
 						<div className="text-[50px] font-semibold text-violet-ryzr tracking-wide">
 							{overallScore}%.
@@ -317,11 +355,21 @@ function DetailHome(props: Props) {
 									<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
 										{selectedRow.controlId}
 									</div>
-									<div className="text-4xl font-semibold text-white tracking-wide">
-										{selectedRow.Description}
+									<div className="flex flex-col gap-2">
+										<div className="text-4xl font-semibold text-white tracking-wide">
+											{selectedRow.Description}
+										</div>
+										<div>
+											<p className="text-base w-10/12 text-gray-light-ryzr">
+												{
+													selectedRow.control_description
+												}
+											</p>
+										</div>
 									</div>
 								</div>
-								<div className="w-[104px] h-[101px] bg-violet-ryzr rounded-lg flex flex-col justify-center align-middle items-center">
+
+								<div className="min-w-[104px] h-[101px] bg-violet-ryzr rounded-lg flex flex-col justify-center align-middle items-center">
 									<h1 className="text-4xl font-semibold text-white">
 										{selectedRow.Response.Score}%
 									</h1>

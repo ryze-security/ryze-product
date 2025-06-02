@@ -201,7 +201,7 @@ const NewEvaluation = () => {
 			company_id: data.auditee.value,
 			collection_id: "collection_1", //change later when framework endpoints are ready
 			created_by: "SYSTEM",
-			model_used: "gpt4.1",
+			model_used: "azure-gpt04-mini",
 			document_list: [
 				...data.documents.map((doc) => doc.file_id),
 			],
