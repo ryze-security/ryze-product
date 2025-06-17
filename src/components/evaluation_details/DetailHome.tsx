@@ -3,6 +3,7 @@ import { Card, CardContent } from "../ui/card";
 import {
 	controlResponse,
 	domainResponse,
+	evaluationMetadata,
 	questionResponse,
 } from "@/models/evaluation/EvaluationDTOs";
 import { ColumnDef } from "@tanstack/react-table";
@@ -35,6 +36,7 @@ interface Props {
 	overallScore: string;
 	domainDataMap: Record<string, domainResponse>;
 	stepChangefn: (stepId: number) => void;
+	evalMetadata: evaluationMetadata;
 }
 
 interface CardData {
@@ -161,7 +163,7 @@ const questionColumns: ColumnDef<questionResponse>[] = [
 ];
 
 function DetailHome(props: Props) {
-	const { overallScore, domainDataMap, stepChangefn } = props;
+	const { overallScore, domainDataMap, stepChangefn, evalMetadata } = props;
 
 	const [cardData, setCardData] = useState<CardData[]>([]);
 	const [combinedControls, setCombinedControls] = useState<controlResponse[]>(
@@ -252,40 +254,50 @@ function DetailHome(props: Props) {
 				<>
 					{/* Eval stats */}
 					<div className="flex w-full justify-between mb-5">
-						<div className="grid grid-cols-2 grid-rows-2 max-w-fit gap-1">
-							<div className="flex justify-start gap-4 mb-6">
+						<div className="max-w-fit">
+							<div className="grid grid-cols-2 max-w-fit gap-1">
+								{/* <div className="flex justify-start gap-4 mb-6">
 								<h3 className="text-lg font-semibold my-auto text-zinc-600">
 									Review.
 								</h3>
 								<div className="bg-zinc-800 min-w-28 text-center p-1 px-5 rounded-sm text-white">
 									Title
 								</div>
-							</div>
-							<div className="flex justify-start gap-4 mb-6">
-								<h3 className="text-lg font-semibold my-auto text-zinc-600">
-									Auditee.
-								</h3>
-								<div className="bg-zinc-800 min-w-28 text-center p-1 px-5 rounded-sm text-white">
-									Auditee Name
+							</div> */}
+								<div className="flex justify-start gap-4 mb-6">
+									<h3 className="text-lg font-semibold my-auto text-zinc-600">
+										Auditee.
+									</h3>
+									<div className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
+										{evalMetadata?.company_display_name}
+									</div>
 								</div>
-							</div>
-							<div className="flex justify-start gap-4 mb-6">
-								<h3 className="text-lg font-semibold my-auto text-zinc-600">
-									Control reference.
-								</h3>
-								<div className="bg-zinc-800 min-w-28 text-center p-1 px-5 rounded-sm text-white">
-									ISO 27001
+								<div className="flex justify-start gap-4 mb-6">
+									<h3 className="text-lg font-semibold my-auto text-zinc-600">
+										Control reference.
+									</h3>
+									<div className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
+										{evalMetadata?.collection_display_name}
+									</div>
 								</div>
 							</div>
 							<div className="flex justify-start gap-4 mb-6">
 								<h3 className="text-lg font-semibold my-auto text-zinc-600">
 									Documents uploaded.
 								</h3>
-								<div className="bg-zinc-800 min-w-28 text-center p-1 px-5 rounded-sm text-white">
-									SOC 2 Type 2 report
-								</div>
+								{evalMetadata?.file_names.map(
+									(filename, index) => (
+										<div
+											className="bg-zinc-800 h-fit my-auto text-nowrap text-center p-1 px-5 rounded-sm text-white"
+											key={index}
+										>
+											{filename}
+										</div>
+									)
+								)}
 							</div>
 						</div>
+
 						<div>
 							<DropdownMenu>
 								<DropdownMenuTrigger
@@ -434,16 +446,16 @@ const InfoCard = ({
 }) => {
 	return (
 		<Card
-			className="bg-zinc-900 rounded-2xl max-h-48 max-w-60 min-h-48 min-w-72 cursor-pointer"
+			className="bg-zinc-900 rounded-2xl max-h-52 max-w-60 min-h-48 min-w-72 cursor-pointer"
 			onClick={() => {
 				stepChangefn(itemId);
 			}}
 		>
-			<CardContent className="p-6 flex flex-col justify-between gap-2 h-full">
-				<div className="flex flex-wrap text-3xl text-zinc-400 opacity-85 font-bold tracking-wider">
+			<CardContent className="p-6 flex flex-col justify-between h-full">
+				<div className="flex-grow text-[26px] text-zinc-400 opacity-85 font-bold">
 					{heading}
 				</div>
-				<div className="text-[48px] text-white font-semibold">
+				<div className="text-[48px] mt-auto text-white font-semibold">
 					{data}
 				</div>
 			</CardContent>

@@ -103,13 +103,13 @@ function QuestionForm(props: Props) {
 						</div>
 						<div className="flex gap-2">
 							<Button
-								className="rounded-full text-white w-8 h-8 bg-zinc-900 hover:bg-zinc-700"
+								className="rounded-full text-white w-8 h-8 bg-gray-ryzr hover:bg-zinc-700"
 								onClick={handleLeftArrowClick}
 							>
 								<ArrowBigLeft />
 							</Button>
 							<Button
-								className="rounded-full text-white w-8 h-8 bg-zinc-900 hover:bg-zinc-700"
+								className="rounded-full text-white w-8 h-8 bg-gray-ryzr hover:bg-zinc-700"
 								onClick={handleRightArrowClick}
 							>
 								<ArrowBigRight />
@@ -126,7 +126,7 @@ function QuestionForm(props: Props) {
 					<div className="text-lg tracking-wide text-zinc-400 opacity-85 rounded-t-md px-2 py-1">
 						Found
 					</div>
-					<div className="flex w-fit px-4 gap-2">
+					<div className="flex w-fit gap-2">
 						<div
 							className={`flex items-center justify-center text-center whitespace-nowrap min-w-20 max-w-20 py-1 px-6 rounded-full text-white ${
 								selectedQuestion?.Response.Score
@@ -149,22 +149,6 @@ function QuestionForm(props: Props) {
 					<Button className="bg-transparent hover:bg-zinc-700 text-white font-bold py-2 px-4">
 						<PencilLine className="opacity-80" />
 					</Button>
-				</div>
-				{/* Evidence */}
-				<div className="flex flex-col mt-8">
-					<div className="flex justify-between">
-						<div className="text-lg text-white tracking-wide bg-zinc-700 rounded-t-md px-3 py-1">
-							Evidence
-						</div>
-					</div>
-					<div className="bg-zinc-900 gap-2 flex flex-col rounded-md rounded-tl-none border border-zinc-700 p-4">
-						{formattedEvidence.map((evidence, index) => (
-							<div className="flex gap-2" key={index}>
-								<span>{`${index + 1}.`}</span>
-								<span className="flex flex-wrap opacity-85">{`${evidence}`}</span>
-							</div>
-						))}
-					</div>
 				</div>
 				{/* Observation */}
 				<div className="flex flex-col mt-8">
@@ -197,6 +181,23 @@ function QuestionForm(props: Props) {
 						)}
 					</div>
 				</div>
+				{/* Evidence */}
+				<div className="flex flex-col mt-8">
+					<div className="flex justify-between">
+						<div className="text-lg text-white tracking-wide bg-zinc-700 rounded-t-md px-3 py-1">
+							Evidence
+						</div>
+					</div>
+					<div className="bg-zinc-900 gap-2 flex flex-col rounded-md rounded-tl-none border border-zinc-700 p-4">
+						{formattedEvidence.map((evidence, index) => (
+							<div className="flex gap-2" key={index}>
+								<span>{`${index + 1}.`}</span>
+								<span className="flex flex-wrap opacity-85">{`${evidence}`}</span>
+							</div>
+						))}
+					</div>
+				</div>
+				
 			</section>
 		</div>
 	);
