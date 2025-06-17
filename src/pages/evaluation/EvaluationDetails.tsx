@@ -1,5 +1,10 @@
 import NavHeader from "@/components/nav-header";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { RoundSpinner } from "@/components/ui/spinner";
 import { useToast } from "@/hooks/use-toast";
 import { domainResponse } from "@/models/evaluation/EvaluationDTOs";
@@ -142,13 +147,31 @@ function EvaluationDetails() {
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
-			<section className="flex flex-col justify-center w-full bg-black text-white pt-10 px-6 sm:px-12 lg:px-16">
+			<section className="flex justify-between items-center w-full bg-black text-white pt-10 px-6 sm:px-12 lg:px-16">
 				{/* Eval Details name etc */}
 				<NavHeader
 					data={steps}
 					stepChangefn={goToStep}
 					currentStep={currentStep}
 				/>
+				<div className="mr-4">
+					<DropdownMenu>
+						<DropdownMenuTrigger
+							className={` bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold text-md px-4 py-2 flex items-center gap-2`}
+						>
+							Generate <ArrowDown className="w-4 h-4" />
+						</DropdownMenuTrigger>
+						<DropdownMenuContent>
+							<DropdownMenuItem>Report(.xlxs)</DropdownMenuItem>
+							<DropdownMenuItem>
+								Exec. summary(.pptx)
+							</DropdownMenuItem>
+							<DropdownMenuItem>
+								Policy statements(.docx)
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</div>
 			</section>
 
 			<section className="flex items-center w-full bg-black text-white mt-2 pt-10 px-6 sm:px-12 lg:px-16">

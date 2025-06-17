@@ -14,6 +14,7 @@ import {
 	ArrowDown,
 	ArrowLeft,
 	ArrowUpDown,
+	Ellipsis,
 	MoveLeft,
 } from "lucide-react";
 import QuestionForm from "./QuestionForm";
@@ -31,6 +32,7 @@ import {
 	HoverCardContent,
 	HoverCardTrigger,
 } from "../ui/hover-card";
+import { Separator } from "../ui/separator";
 
 interface Props {
 	overallScore: string;
@@ -254,9 +256,8 @@ function DetailHome(props: Props) {
 				<>
 					{/* Eval stats */}
 					<div className="flex w-full justify-between mb-5">
-						<div className="max-w-fit">
-							<div className="grid grid-cols-2 max-w-fit gap-1">
-								{/* <div className="flex justify-start gap-4 mb-6">
+						<div className="flex w-full justify-between">
+							{/* <div className="flex justify-start gap-4 mb-6">
 								<h3 className="text-lg font-semibold my-auto text-zinc-600">
 									Review.
 								</h3>
@@ -264,59 +265,47 @@ function DetailHome(props: Props) {
 									Title
 								</div>
 							</div> */}
-								<div className="flex justify-start gap-4 mb-6">
-									<h3 className="text-lg font-semibold my-auto text-zinc-600">
-										Auditee.
-									</h3>
-									<div className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
-										{evalMetadata?.company_display_name}
-									</div>
+							<div className="flex justify-start gap-4 mb-6 w-fit">
+								<h3 className="text-lg font-semibold my-auto text-zinc-600">
+									Auditee.
+								</h3>
+								<div className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
+									{evalMetadata?.company_display_name}
 								</div>
-								<div className="flex justify-start gap-4 mb-6">
-									<h3 className="text-lg font-semibold my-auto text-zinc-600">
-										Control reference.
-									</h3>
-									<div className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
-										{evalMetadata?.collection_display_name}
-									</div>
+							</div>
+							<div className="flex justify-start gap-4 mb-6">
+								<h3 className="text-lg font-semibold my-auto text-zinc-600">
+									Control reference.
+								</h3>
+								<div className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
+									{evalMetadata?.collection_display_name}
 								</div>
 							</div>
 							<div className="flex justify-start gap-4 mb-6">
 								<h3 className="text-lg font-semibold my-auto text-zinc-600">
 									Documents uploaded.
 								</h3>
-								{evalMetadata?.file_names.map(
-									(filename, index) => (
-										<div
-											className="bg-zinc-800 h-fit my-auto text-nowrap text-center p-1 px-5 rounded-sm text-white"
-											key={index}
-										>
-											{filename}
-										</div>
-									)
-								)}
+								<HoverCard>
+									<HoverCardTrigger className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
+									{evalMetadata?.file_names[0]} and {evalMetadata?.file_names.length - 1} more
+									</HoverCardTrigger>
+									<HoverCardContent className="w-fit">
+										{evalMetadata?.file_names.map(
+											(file, index) => (
+												<>
+													<div
+														key={index}
+														className="text-sm text-white/80 w-fit"
+													>
+														{file}
+													</div>
+													<Separator className="my-2" />
+												</>
+											)
+										)}
+									</HoverCardContent>
+								</HoverCard>
 							</div>
-						</div>
-
-						<div>
-							<DropdownMenu>
-								<DropdownMenuTrigger
-									className={` bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold text-md px-4 py-2 flex items-center gap-2`}
-								>
-									Generate <ArrowDown className="w-4 h-4" />
-								</DropdownMenuTrigger>
-								<DropdownMenuContent>
-									<DropdownMenuItem>
-										Report(.xlxs)
-									</DropdownMenuItem>
-									<DropdownMenuItem>
-										Exec. summary(.pptx)
-									</DropdownMenuItem>
-									<DropdownMenuItem>
-										Policy statements(.docx)
-									</DropdownMenuItem>
-								</DropdownMenuContent>
-							</DropdownMenu>
 						</div>
 					</div>
 					<div className="flex max-w-fit gap-2">
