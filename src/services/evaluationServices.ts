@@ -81,7 +81,7 @@ export class EvaluationService {
 	): Promise<startEvaluationResponseDTO | any> {
 		try {
 			const response = await axios.post<startEvaluationResponseDTO>(
-				`${config.ryzrApiURL}/api/v1/evaluations/${evalId}/start`,
+				`${config.ryzrApiURL}/api/v1/start/${evalId}`,
 				null,
 				{
 					headers: {
