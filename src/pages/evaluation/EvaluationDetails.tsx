@@ -167,6 +167,7 @@ function EvaluationDetails() {
 										).toString()}
 										domainDataMap={domainDataMap}
 										stepChangefn={goToStep}
+										evalMetadata={data.data.metadata}
 									/>
 								)}
 

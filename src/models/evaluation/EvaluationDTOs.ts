@@ -51,6 +51,7 @@ export interface evaluationDetailData {
 	updateTimestamp: number;
 	frameworkId: string;
 	EvaluationResponse: evaluationDetailDataResponse;
+	metadata: evaluationMetadata;
 }
 
 export interface evaluationDetailDataResponse {
@@ -93,5 +94,12 @@ export interface questionResponse {
 		Observation: string;
 		evidence: string;
 		audit_comments: string;
+		page_numbers: string;
 	}
+}
+
+export interface evaluationMetadata {
+	file_names: string[];
+	collection_display_name: string;
+	company_display_name: string;
 }
