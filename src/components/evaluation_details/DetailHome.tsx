@@ -287,7 +287,7 @@ function DetailHome(props: Props) {
 								</h3>
 								<HoverCard>
 									<HoverCardTrigger className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
-									{evalMetadata?.file_names[0]} and {evalMetadata?.file_names.length - 1} more
+									{evalMetadata?.file_names[0]} {evalMetadata?.file_names.length > 2 ? `and ${evalMetadata?.file_names.length - 1} more` : "" } 
 									</HoverCardTrigger>
 									<HoverCardContent className="w-fit">
 										{evalMetadata?.file_names.map(
