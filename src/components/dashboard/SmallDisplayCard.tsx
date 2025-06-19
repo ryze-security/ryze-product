@@ -23,7 +23,7 @@ function SmallDisplayCard(props: Props) {
     }
 
 	return (
-		<div className="bg-gray-ryzr rounded-3xl flex flex-col w-[29%] min-h-[148px] justify-center gap-3 pl-6 py-5">
+		<div className="bg-gray-ryzr rounded-3xl flex flex-col w-[31%] min-h-[148px] justify-center gap-3 pl-6 py-5">
 			<div className="text-gray-light-ryzr text-xl font-semibold tracking-wide flex gap-2">
 				{
 					<>

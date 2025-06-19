@@ -6,27 +6,14 @@ import {
 	evaluationMetadata,
 	questionResponse,
 } from "@/models/evaluation/EvaluationDTOs";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, SortingColumn, SortingState } from "@tanstack/react-table";
 import { ProgressBarDataTable } from "../ProgressBarDataTable";
 import { Button } from "../ui/button";
 import {
-	ArrowBigLeftDash,
-	ArrowDown,
-	ArrowLeft,
 	ArrowUpDown,
-	Ellipsis,
 	MoveLeft,
 } from "lucide-react";
 import QuestionForm from "./QuestionForm";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import {
 	HoverCard,
 	HoverCardContent,
@@ -178,6 +165,12 @@ function DetailHome(props: Props) {
 		questionResponse[]
 	>([]);
 
+	const [controlSort, setControlSort] = useState<SortingState>([]);
+	const [controlFilter, setControlFilter] = useState<string>("");
+
+	const [questionSort, setQuestionSort] = useState<SortingState>([]);
+	const [questionFilter, setQuestionFilter] = useState<string>("");
+
 	// updated combinedControls to have the score in percentage
 	const updatedControlResponseList = React.useMemo(() => {
 		return combinedControls.map((control) => ({
@@ -246,6 +239,8 @@ function DetailHome(props: Props) {
 			setSelectedQuestion(null);
 		} else if (selectedRow) {
 			setSelectedRow(null);
+			setQuestionFilter("");
+			setQuestionSort([]);
 		}
 	};
 
@@ -403,6 +398,10 @@ function DetailHome(props: Props) {
 									onRowClick={(row) => {
 										setSelectedQuestion(row);
 									}}
+									externalFilter={questionFilter}
+									setExternalFilter={setQuestionFilter}
+									externalSorting={questionSort}
+									setExternalSorting={setQuestionSort}
 								/>
 							</div>
 						) : (
@@ -413,6 +412,10 @@ function DetailHome(props: Props) {
 								onRowClick={(row) => {
 									setSelectedRow(row);
 								}}
+								externalFilter={controlFilter}
+								setExternalFilter={setControlFilter}
+								externalSorting={controlSort}
+								setExternalSorting={setControlSort}
 							/>
 						)}
 					</>
@@ -433,18 +436,21 @@ const InfoCard = ({
 	data: string;
 	stepChangefn?: (stepId: number) => void;
 }) => {
+	const dataInInteger = parseInt(data);
 	return (
 		<Card
-			className="bg-zinc-900 rounded-2xl max-h-52 max-w-60 min-h-48 min-w-72 cursor-pointer"
+			className={`${dataInInteger >= 75 ? "bg-[#71AE57]/30" : (dataInInteger >= 50 && dataInInteger < 75) ? "bg-[#FFB266]/30" : "bg-[#FF6666]/30"} rounded-2xl max-h-52 max-w-60 min-h-48 min-w-72 cursor-pointer`}
 			onClick={() => {
-				stepChangefn(itemId);
+				stepChangefn?.(itemId);
 			}}
 		>
 			<CardContent className="p-6 flex flex-col justify-between h-full">
-				<div className="flex-grow text-[26px] text-zinc-400 opacity-85 font-bold">
-					{heading}
-				</div>
-				<div className="text-[48px] mt-auto text-white font-semibold">
+			<div
+                    className="flex-grow text-2xl text-white opacity-85 font-bold leading-snug whitespace-pre-wrap break-words"
+                >
+                    {heading.split(" ").join("\n")}
+                </div>
+				<div className={`text-[48px] ${dataInInteger >= 75 ? "text-[#71AE57]" : (dataInInteger >= 50 && dataInInteger < 75) ? "text-[#FFB266]" : "text-[#FF6666]"} mt-auto text-white font-semibold`}>
 					{data}
 				</div>
 			</CardContent>
