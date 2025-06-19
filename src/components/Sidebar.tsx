@@ -70,7 +70,7 @@ export function AppSidebar() {
 					<SidebarHeader className="flex items-center gap-3 px-4 py-3 border-b">
 						<span className="flex gap-1">
 							<img
-								src="public\assets\Ryzr_White Logo_v2.png"
+								src="/assets/Ryzr_White Logo_v2.png"
 								alt="Ryzr Logo"
 								className="w-6 h-full min-w-6 min-h-6 mt-1"
 							/>
