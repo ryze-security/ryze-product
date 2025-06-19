@@ -31,6 +31,12 @@ interface DataTableProps<TData, TValue> {
 	rowLinkPrefix?: string;
 	isLoading?: boolean;
 	onRowClick?: (row: TData) => void;
+
+	// Optional external control
+	externalFilter?: string;
+	setExternalFilter?: (value: string) => void;
+	externalSorting?: SortingState;
+	setExternalSorting?: (value: SortingState) => void;
 }
 
 export function ProgressBarDataTable<TData, TValue>({
@@ -41,9 +47,29 @@ export function ProgressBarDataTable<TData, TValue>({
 	rowLinkPrefix = "#",
 	isLoading = false,
 	onRowClick,
+	externalFilter,
+	setExternalFilter,
+	externalSorting,
+	setExternalSorting,
 }: DataTableProps<TData, TValue>) {
-	const [filter, setFilter] = React.useState("");
-	const [sorting, setSorting] = React.useState<SortingState>([]);
+	const isExternalFilter =
+		externalFilter !== undefined && setExternalFilter !== undefined;
+	const isExternalSorting =
+		externalSorting !== undefined && setExternalSorting !== undefined;
+
+	const [internalFilter, setInternalFilter] = React.useState("");
+	const [internalSorting, setInternalSorting] = React.useState<SortingState>(
+		[]
+	);
+
+	const filter = isExternalFilter ? externalFilter : internalFilter;
+	const sorting = isExternalSorting ? externalSorting : internalSorting;
+
+	const setFilter = isExternalFilter ? setExternalFilter! : setInternalFilter;
+	const setSorting = isExternalSorting
+		? setExternalSorting!
+		: setInternalSorting;
+
 	const navigate = useNavigate();
 
 	const table = useReactTable({

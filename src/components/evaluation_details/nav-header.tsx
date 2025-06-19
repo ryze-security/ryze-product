@@ -67,7 +67,7 @@ const Tab = ({
           left: ref.current.offsetLeft,
         });
       }}
-      onClick={()=> {stepChangefn(itemId)}}
+      onClick={() => {stepChangefn?.(itemId)}}
       className={`relative z-10 block cursor-pointer px-3 py-1.5 text-xs text-white md:px-5 md:py-3 md:text-base ${isActive ? "bg-zinc-700 opacity-100 rounded-full" : "opacity-70 hover:opacity-100"}  transition-opacity duration-100`}
     >
       {children}

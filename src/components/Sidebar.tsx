@@ -14,7 +14,6 @@ import {
 	SidebarFooter,
 	SidebarGroup,
 	SidebarGroupContent,
-	SidebarGroupLabel,
 	SidebarHeader,
 	SidebarMenu,
 	SidebarMenuButton,
@@ -69,9 +68,12 @@ export function AppSidebar() {
 			<SidebarContent>
 				<Link to={"/home"}>
 					<SidebarHeader className="flex items-center gap-3 px-4 py-3 border-b">
-						<span className="flex items-center gap-2">
-							{/* placeholder icon */}
-							<Rocket className="w-6 h-6 text-violet-500" />
+						<span className="flex gap-1">
+							<img
+								src="public\assets\Ryzr_White Logo_v2.png"
+								alt="Ryzr Logo"
+								className="w-6 h-full min-w-6 min-h-6 mt-1"
+							/>
 							{open && (
 								<span className="tracking-wide text-primary text-xl font-semibold">
 									Ryzr
@@ -91,10 +93,8 @@ export function AppSidebar() {
 									<SidebarMenuButton asChild>
 										{item.url === "#" ? (
 											<div className="text-gray-light-ryzr cursor-pointer">
-												<item.icon/>
-												<span>
-													{item.title}
-												</span>
+												<item.icon />
+												<span>{item.title}</span>
 											</div>
 										) : (
 											<Link to={item.url}>

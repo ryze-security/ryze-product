@@ -133,7 +133,7 @@ function Index() {
 
 			{/* Cards */}
 			<section className="flex flex-col gap-4 justify-start bg-black text-white pt-10 px-6 sm:px-12 lg:px-16 w-[90%]">
-				<div className="max-w-7xl w-full px-4 flex gap-7 justify-start">
+				<div className="max-w-7xl w-full px-4 flex gap-7 justify-between">
 					{views.map((view) => (
 						<SmallDisplayCard
 							title={view.title}
@@ -145,9 +145,9 @@ function Index() {
 					))}
 				</div>
 
-				<div className="max-w-7xl items-start w-full px-4 flex gap-6 justify-start">
+				<div className="max-w-7xl items-start w-full px-4 flex gap-6 justify-between">
 					{/* Card 1 */}
-					<div className="flex flex-col bg-gray-ryzr rounded-xl p-6 shadow-md w-[45%] max-w-[45%] h-[330px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-light-ryzr scrollbar-track-transparent">
+					<div className="flex flex-col bg-gray-ryzr rounded-xl p-6 shadow-md w-[48%] h-[330px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-light-ryzr scrollbar-track-transparent">
 						<div className="flex items-center flex-grow justify-between mb-2">
 							<h2 className="flex gap-2 text-xl text-gray-light-ryzr font-semibold tracking-wide pl-4">
 								<Building />
@@ -179,7 +179,7 @@ function Index() {
 					</div>
 
 					{/* Card 2 */}
-					<div className="flex flex-col bg-gray-ryzr rounded-xl p-6 shadow-md w-[45%] max-w-[45%] h-[330px]">
+					<div className="flex flex-col bg-gray-ryzr rounded-xl p-6 shadow-md w-[48%] h-[330px]">
 						<div className="flex justify-between mb-2">
 							<h2 className="flex gap-2 text-xl text-gray-light-ryzr font-semibold tracking-wide pl-4">
 								<TriangleAlert />

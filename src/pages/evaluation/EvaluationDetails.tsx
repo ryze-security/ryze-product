@@ -1,4 +1,4 @@
-import NavHeader from "@/components/nav-header";
+import NavHeader from "@/components/evaluation_details/nav-header";
 import {
 	DropdownMenu,
 	DropdownMenuContent,

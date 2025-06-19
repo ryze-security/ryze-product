@@ -6,7 +6,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { ProgressBarDataTable } from "../ProgressBarDataTable";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, SortingState } from "@tanstack/react-table";
 import { ArrowBigLeftDash, ArrowUpDown, MoveLeft } from "lucide-react";
 import QuestionForm from "./QuestionForm";
 import {
@@ -148,6 +148,12 @@ function DomainDetail(props: Props) {
 	const [selectedQuestion, setSelectedQuestion] =
 		useState<questionResponse>(null);
 
+	const [controlSort, setControlSort] = useState<SortingState>([]);
+	const [controlFilter, setControlFilter] = useState<string>("");
+
+	const [questionSort, setQuestionSort] = useState<SortingState>([]);
+	const [questionFilter, setQuestionFilter] = useState<string>("");
+
 	// This effect is used to convert the score to a percentage
 	useEffect(() => {
 		setIsLoading(true);
@@ -204,6 +210,8 @@ function DomainDetail(props: Props) {
 			setSelectedQuestion(null);
 		} else if (selectedRow) {
 			setSelectedRow(null);
+			setQuestionFilter("");
+			setQuestionSort([]);
 		}
 	};
 
@@ -295,6 +303,10 @@ function DomainDetail(props: Props) {
 							onRowClick={(row) => {
 								setSelectedQuestion(row);
 							}}
+							externalFilter={questionFilter}
+							setExternalFilter={setQuestionFilter}
+							externalSorting={questionSort}
+							setExternalSorting={setQuestionSort}
 						/>
 					</div>
 				) : (
@@ -306,6 +318,10 @@ function DomainDetail(props: Props) {
 						onRowClick={(row) => {
 							setSelectedRow(row);
 						}}
+						externalFilter={controlFilter}
+						setExternalFilter={setControlFilter}
+						externalSorting={controlSort}
+						setExternalSorting={setControlSort}
 					/>
 				)}
 			</section>

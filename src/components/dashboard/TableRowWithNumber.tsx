@@ -26,9 +26,9 @@ function TableRowWithNumber(props: Props) {
 			</div>
 
 			<div className="flex flex-col justify-center w-1/2">
-				<h2 className="text-lg tracking-wider">
+				<p className="text-base tracking-wider">
 					{companyName}
-				</h2>
+				</p>
 			</div>
 
 			{/* Score Bar - pushed to the right */}
