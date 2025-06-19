@@ -450,7 +450,7 @@ const InfoCard = ({
                 >
                     {heading.split(" ").join("\n")}
                 </div>
-				<div className={`text-[48px] ${dataInInteger >= 75 ? "text-[#71AE57]" : (dataInInteger >= 50 && dataInInteger < 75) ? "text-[#FFB266]" : "text-[#FF6666]"} mt-auto text-white font-semibold`}>
+				<div className={`text-[48px] ${dataInInteger >= 75 ? "text-[#71AE57]" : (dataInInteger >= 50 && dataInInteger < 75) ? "text-[#FFB266]" : "text-[#FF6666]"} mt-auto font-semibold`}>
 					{data}
 				</div>
 			</CardContent>
