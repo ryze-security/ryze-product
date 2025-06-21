@@ -6,13 +6,14 @@ import {
 	evaluationMetadata,
 	questionResponse,
 } from "@/models/evaluation/EvaluationDTOs";
-import { ColumnDef, SortingColumn, SortingState } from "@tanstack/react-table";
+import {
+	ColumnDef,
+	PaginationState,
+	SortingState,
+} from "@tanstack/react-table";
 import { ProgressBarDataTable } from "../ProgressBarDataTable";
 import { Button } from "../ui/button";
-import {
-	ArrowUpDown,
-	MoveLeft,
-} from "lucide-react";
+import { ArrowDownAZIcon, ArrowUpAZIcon, MoveLeft } from "lucide-react";
 import QuestionForm from "./QuestionForm";
 import {
 	HoverCard,
@@ -47,7 +48,7 @@ const columns: ColumnDef<controlResponse>[] = [
 					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
 					Control Id
-					<ArrowUpDown className="h-4 w-4" />
+					{column.getIsSorted() === "asc" ? <ArrowDownAZIcon className="h-4 w-4"/> : column.getIsSorted() === "desc" ? <ArrowUpAZIcon className="h-4 w-4" /> : ""}
 				</Button>
 			);
 		},
@@ -68,7 +69,7 @@ const columns: ColumnDef<controlResponse>[] = [
 					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
 					Control Score
-					<ArrowUpDown className="h-4 w-4" />
+					{column.getIsSorted() === "asc" ? <ArrowDownAZIcon className="h-4 w-4"/> : column.getIsSorted() === "desc" ? <ArrowUpAZIcon className="h-4 w-4" /> : ""}
 				</Button>
 			);
 		},
@@ -131,7 +132,7 @@ const questionColumns: ColumnDef<questionResponse>[] = [
 					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
 					Compliance
-					<ArrowUpDown className="h-4 w-4" />
+					{column.getIsSorted() === "asc" ? <ArrowDownAZIcon className="h-4 w-4"/> : column.getIsSorted() === "desc" ? <ArrowUpAZIcon className="h-4 w-4" /> : ""}
 				</Button>
 			);
 		},
@@ -170,6 +171,18 @@ function DetailHome(props: Props) {
 
 	const [questionSort, setQuestionSort] = useState<SortingState>([]);
 	const [questionFilter, setQuestionFilter] = useState<string>("");
+
+	const [controlPagination, setControlPagination] = useState<PaginationState>(
+		{
+			pageIndex: 0,
+			pageSize: 10,
+		}
+	);
+	const [questionPagination, setQuestionPagination] =
+		useState<PaginationState>({
+			pageIndex: 0,
+			pageSize: 10,
+		});
 
 	// updated combinedControls to have the score in percentage
 	const updatedControlResponseList = React.useMemo(() => {
@@ -241,6 +254,10 @@ function DetailHome(props: Props) {
 			setSelectedRow(null);
 			setQuestionFilter("");
 			setQuestionSort([]);
+			setQuestionPagination({
+				pageIndex: 0,
+				pageSize: 10,
+			});
 		}
 	};
 
@@ -282,7 +299,13 @@ function DetailHome(props: Props) {
 								</h3>
 								<HoverCard>
 									<HoverCardTrigger className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
-									{evalMetadata?.file_names[0]} {evalMetadata?.file_names.length > 2 ? `and ${evalMetadata?.file_names.length - 1} more` : "" } 
+										{evalMetadata?.file_names[0]}{" "}
+										{evalMetadata?.file_names.length > 2
+											? `and ${
+													evalMetadata?.file_names
+														.length - 1
+											  } more`
+											: ""}
 									</HoverCardTrigger>
 									<HoverCardContent className="w-fit">
 										{evalMetadata?.file_names.map(
@@ -402,6 +425,8 @@ function DetailHome(props: Props) {
 									setExternalFilter={setQuestionFilter}
 									externalSorting={questionSort}
 									setExternalSorting={setQuestionSort}
+									externalPagination={questionPagination}
+									setExternalPagination={setQuestionPagination}
 								/>
 							</div>
 						) : (
@@ -416,6 +441,8 @@ function DetailHome(props: Props) {
 								setExternalFilter={setControlFilter}
 								externalSorting={controlSort}
 								setExternalSorting={setControlSort}
+								externalPagination={controlPagination}
+								setExternalPagination={setControlPagination}
 							/>
 						)}
 					</>
@@ -439,18 +466,30 @@ const InfoCard = ({
 	const dataInInteger = parseInt(data);
 	return (
 		<Card
-			className={`${dataInInteger >= 75 ? "bg-[#71AE57]/30" : (dataInInteger >= 50 && dataInInteger < 75) ? "bg-[#FFB266]/30" : "bg-[#FF6666]/30"} rounded-2xl max-h-52 max-w-60 min-h-48 min-w-72 cursor-pointer`}
+			className={`${
+				dataInInteger >= 75
+					? "bg-[#71AE57]/30"
+					: dataInInteger >= 50 && dataInInteger < 75
+					? "bg-[#FFB266]/30"
+					: "bg-[#FF6666]/30"
+			} rounded-2xl max-h-52 max-w-60 min-h-48 min-w-72 cursor-pointer`}
 			onClick={() => {
 				stepChangefn?.(itemId);
 			}}
 		>
 			<CardContent className="p-6 flex flex-col justify-between h-full">
-			<div
-                    className="flex-grow text-2xl text-white opacity-85 font-bold leading-snug whitespace-pre-wrap break-words"
-                >
-                    {heading.split(" ").join("\n")}
-                </div>
-				<div className={`text-[48px] ${dataInInteger >= 75 ? "text-[#71AE57]" : (dataInInteger >= 50 && dataInInteger < 75) ? "text-[#FFB266]" : "text-[#FF6666]"} mt-auto font-semibold`}>
+				<div className="flex-grow text-2xl text-white opacity-85 font-bold leading-snug whitespace-pre-wrap break-words">
+					{heading.split(" ").join("\n")}
+				</div>
+				<div
+					className={`text-[48px] ${
+						dataInInteger >= 75
+							? "text-[#71AE57]"
+							: dataInInteger >= 50 && dataInInteger < 75
+							? "text-[#FFB266]"
+							: "text-[#FF6666]"
+					} mt-auto font-semibold`}
+				>
 					{data}
 				</div>
 			</CardContent>

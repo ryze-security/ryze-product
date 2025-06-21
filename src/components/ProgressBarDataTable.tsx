@@ -8,6 +8,7 @@ import {
 	getPaginationRowModel,
 	getFilteredRowModel,
 	useReactTable,
+	PaginationState,
 } from "@tanstack/react-table";
 import {
 	Table,
@@ -22,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { RoundSpinner } from "./ui/spinner";
 import { Progress } from "./ui/progress";
+import { set } from "date-fns";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -37,6 +39,8 @@ interface DataTableProps<TData, TValue> {
 	setExternalFilter?: (value: string) => void;
 	externalSorting?: SortingState;
 	setExternalSorting?: (value: SortingState) => void;
+	externalPagination?: PaginationState;
+	setExternalPagination?: (value: PaginationState) => void;
 }
 
 export function ProgressBarDataTable<TData, TValue>({
@@ -51,12 +55,21 @@ export function ProgressBarDataTable<TData, TValue>({
 	setExternalFilter,
 	externalSorting,
 	setExternalSorting,
+	externalPagination,
+	setExternalPagination,
 }: DataTableProps<TData, TValue>) {
 	const isExternalFilter =
 		externalFilter !== undefined && setExternalFilter !== undefined;
 	const isExternalSorting =
 		externalSorting !== undefined && setExternalSorting !== undefined;
+	const isExternalPagination =
+		externalPagination !== undefined && setExternalPagination !== undefined;
 
+	const [internaPagination, setInternalPagination] =
+		React.useState<PaginationState>({
+			pageIndex: 0,
+			pageSize: 10,
+		});
 	const [internalFilter, setInternalFilter] = React.useState("");
 	const [internalSorting, setInternalSorting] = React.useState<SortingState>(
 		[]
@@ -64,11 +77,17 @@ export function ProgressBarDataTable<TData, TValue>({
 
 	const filter = isExternalFilter ? externalFilter : internalFilter;
 	const sorting = isExternalSorting ? externalSorting : internalSorting;
+	const pagination = isExternalPagination
+		? externalPagination
+		: internaPagination;
 
 	const setFilter = isExternalFilter ? setExternalFilter! : setInternalFilter;
 	const setSorting = isExternalSorting
 		? setExternalSorting!
 		: setInternalSorting;
+	const setPagination = isExternalPagination
+		? setExternalPagination!
+		: setInternalPagination;
 
 	const navigate = useNavigate();
 
@@ -81,6 +100,7 @@ export function ProgressBarDataTable<TData, TValue>({
 		state: {
 			globalFilter: filter,
 			sorting,
+			pagination
 		},
 		onGlobalFilterChange: setFilter,
 		globalFilterFn: (row, columnId, filterValue) => {
@@ -92,6 +112,7 @@ export function ProgressBarDataTable<TData, TValue>({
 		},
 		onSortingChange: setSorting,
 		getSortedRowModel: getSortedRowModel(),
+		onPaginationChange: setPagination,
 	});
 
 	const handleRowClick = (row: TData) => {
