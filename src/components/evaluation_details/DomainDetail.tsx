@@ -6,8 +6,8 @@ import {
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { ProgressBarDataTable } from "../ProgressBarDataTable";
-import { ColumnDef, SortingState } from "@tanstack/react-table";
-import { ArrowBigLeftDash, ArrowUpDown, MoveLeft } from "lucide-react";
+import { ColumnDef, PaginationState, SortingState } from "@tanstack/react-table";
+import {ArrowDownAZIcon, ArrowUpAZIcon, MoveLeft } from "lucide-react";
 import QuestionForm from "./QuestionForm";
 import {
 	HoverCard,
@@ -33,7 +33,7 @@ const columns: ColumnDef<controlResponse>[] = [
 					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
 					Control Id
-					<ArrowUpDown className="h-4 w-4" />
+					{column.getIsSorted() === "asc" ? <ArrowDownAZIcon className="h-4 w-4"/> : column.getIsSorted() === "desc" ? <ArrowUpAZIcon className="h-4 w-4" /> : ""}
 				</Button>
 			);
 		},
@@ -54,7 +54,7 @@ const columns: ColumnDef<controlResponse>[] = [
 					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
 					Control Score
-					<ArrowUpDown className="h-4 w-4" />
+					{column.getIsSorted() === "asc" ? <ArrowDownAZIcon className="h-4 w-4"/> : column.getIsSorted() === "desc" ? <ArrowUpAZIcon className="h-4 w-4" /> : ""}
 				</Button>
 			);
 		},
@@ -117,7 +117,7 @@ const questionColumns: ColumnDef<questionResponse>[] = [
 					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
 					Compliance
-					<ArrowUpDown className="h-4 w-4" />
+					{column.getIsSorted() === "asc" ? <ArrowDownAZIcon className="h-4 w-4"/> : column.getIsSorted() === "desc" ? <ArrowUpAZIcon className="h-4 w-4" /> : ""}
 				</Button>
 			);
 		},
@@ -153,6 +153,18 @@ function DomainDetail(props: Props) {
 
 	const [questionSort, setQuestionSort] = useState<SortingState>([]);
 	const [questionFilter, setQuestionFilter] = useState<string>("");
+
+	const [controlPagination, setControlPagination] = useState<PaginationState>(
+			{
+				pageIndex: 0,
+				pageSize: 10,
+			}
+		);
+		const [questionPagination, setQuestionPagination] =
+			useState<PaginationState>({
+				pageIndex: 0,
+				pageSize: 10,
+			});
 
 	// This effect is used to convert the score to a percentage
 	useEffect(() => {
@@ -212,6 +224,10 @@ function DomainDetail(props: Props) {
 			setSelectedRow(null);
 			setQuestionFilter("");
 			setQuestionSort([]);
+			setQuestionPagination({
+				pageIndex: 0,
+				pageSize: 10,
+			});
 		}
 	};
 
@@ -307,6 +323,8 @@ function DomainDetail(props: Props) {
 							setExternalFilter={setQuestionFilter}
 							externalSorting={questionSort}
 							setExternalSorting={setQuestionSort}
+							externalPagination={questionPagination}
+							setExternalPagination={setQuestionPagination}
 						/>
 					</div>
 				) : (
@@ -322,6 +340,8 @@ function DomainDetail(props: Props) {
 						setExternalFilter={setControlFilter}
 						externalSorting={controlSort}
 						setExternalSorting={setControlSort}
+						externalPagination={controlPagination}
+						setExternalPagination={setControlPagination}
 					/>
 				)}
 			</section>
