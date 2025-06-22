@@ -40,12 +40,38 @@ const evaluationSlice = createSlice({
 						Score: 0,
 					},
 				},
-			}
+			},
 		} as evalutaionDetailDTO,
 		status: "idle",
 		error: null,
+		questionMap: {} as Record<string, any>, // Map of questionId to questionResponse
 	},
-	reducers: {},
+	reducers: {
+		updateQuestionInStore: (state, action) => {
+			const { questionId, observation, score } = action.payload;
+			const question = state.questionMap[questionId];
+			console.log("slice question "+question);
+			if (question) {
+				question.Response.Observation = observation;
+				question.Response.Score = score.toString();
+			}
+		},
+		buildQuestionMap: (state) => {
+			const map = {};
+
+			state.data.data.EvaluationResponse.DomainResponseList.forEach(
+				(domain) => {
+					domain.ControlResponseList.forEach((control) => {
+						control.QuestionResponseList.forEach((question) => {
+							map[question.q_id] = question;
+						});
+					});
+				}
+			);
+
+			state.questionMap = map;
+		},
+	},
 	extraReducers: (builder) => {
 		builder
 			.addCase(loadEvaluationData.pending, (state) => {
@@ -61,5 +87,6 @@ const evaluationSlice = createSlice({
 			});
 	},
 });
-
+export const { updateQuestionInStore, buildQuestionMap } =
+	evaluationSlice.actions;
 export default evaluationSlice.reducer;

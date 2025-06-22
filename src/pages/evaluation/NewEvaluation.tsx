@@ -27,14 +27,10 @@ import {
 	createEvaluationResponseDTO,
 } from "@/models/evaluation/EvaluationDTOs";
 import { FilesUploadResponseDTO } from "@/models/files/FilesUploadResponseDTO";
-import evaluationService, {
-	EvaluationService,
-} from "@/services/evaluationServices";
+import evaluationService from "@/services/evaluationServices";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadCompanyData } from "@/store/slices/companySlice";
-import { wait } from "@/utils/wait";
 import { ColumnDef } from "@tanstack/react-table";
-import { log } from "console";
 import { Check, ChevronsUpDown, PlusCircleIcon } from "lucide-react";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";

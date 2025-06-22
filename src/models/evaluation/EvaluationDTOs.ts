@@ -86,6 +86,7 @@ export interface controlResponse {
 export interface questionResponse {
 	SNo: string;
 	Order: number;
+	q_id: string;
 	controlId: string;
 	question: string;
 	question_hint: string;
@@ -102,4 +103,12 @@ export interface evaluationMetadata {
 	file_names: string[];
 	collection_display_name: string;
 	company_display_name: string;
+}
+
+export interface updateQuestionResponseDTO {
+	success: boolean;
+	message: string;
+	updated_fields: string[];
+	question_id: string;
+	eval_id: string;
 }

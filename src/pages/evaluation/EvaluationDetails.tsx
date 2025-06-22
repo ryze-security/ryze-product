@@ -8,6 +8,7 @@ import {
 import { RoundSpinner } from "@/components/ui/spinner";
 import { useToast } from "@/hooks/use-toast";
 import { domainResponse } from "@/models/evaluation/EvaluationDTOs";
+import evaluationService from "@/services/evaluationServices";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadEvaluationData } from "@/store/slices/evaluationSlice";
 import {
@@ -73,13 +74,13 @@ function EvaluationDetails() {
 	}, [data]);
 
 	// This effect is used to set the loading state based on the status of the evaluation data
-	useEffect(() => {
-		if (status === "loading") {
-			setIsLoading(true);
-		} else {
-			setIsLoading(false);
-		}
-	}, [status]);
+	// useEffect(() => {
+	// 	if (status === "loading") {
+	// 		setIsLoading(true);
+	// 	} else {
+	// 		setIsLoading(false);
+	// 	}
+	// }, [status]);
 
 	// This effect is used to fetch the evaluation data when the component mounts
 	useEffect(() => {
@@ -145,6 +146,55 @@ function EvaluationDetails() {
 		}
 	}, [data, isLoading, navigate, toast]);
 
+	const updateQuestion = async (
+		observation: string,
+		score: boolean,
+		questionId: string
+	) => {
+		try {
+			await evaluationService.updateQuestion(
+				data.data.TenantId,
+				data.data.CompanyId,
+				data.data.EvaluationId,
+				questionId,
+				observation,
+				score
+			);
+
+			await dispatch(
+				loadEvaluationData({
+					tenant_id: "7077beec-a9ef-44ef-a21b-83aab58872c9",
+					companyId: companyId ?? "",
+					evaluationId: evaluationId ?? "",
+				})
+			)
+				.unwrap()
+				.catch((error) => {
+					// This block runs for rejected/failed async thunks
+					toast({
+						title: `Error fetching evaluation data`,
+						description: `The evaluation you are trying to access doesn't exist. Please contact support!`,
+						variant: "destructive",
+					});
+					navigate("/evaluation");
+				});
+
+			toast({
+				title: `Question Updated`,
+				description: `Your response has been updated successfully!`,
+				variant: "default",
+				className: "bg-green-ryzr",
+			});
+		} catch (error) {
+			toast({
+				title: `Error updating question`,
+				description: `There was an error while updating your response. Please try again later!`,
+				variant: "destructive",
+			});
+			console.error("Error updating question:", error);
+		}
+	};
+
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
 			<section className="flex justify-between items-center w-full bg-black text-white pt-10 px-6 sm:px-12 lg:px-16">
@@ -157,7 +207,7 @@ function EvaluationDetails() {
 				<div className="mr-4">
 					<DropdownMenu>
 						<DropdownMenuTrigger
-							className={` bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold text-md px-4 py-2 flex items-center gap-2`}
+							className={` bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold px-4 py-2 flex items-center gap-2`}
 						>
 							Generate <ArrowDown className="w-4 h-4" />
 						</DropdownMenuTrigger>
@@ -191,6 +241,7 @@ function EvaluationDetails() {
 										domainDataMap={domainDataMap}
 										stepChangefn={goToStep}
 										evalMetadata={data.data.metadata}
+										questionUpdatefn={updateQuestion}
 									/>
 								)}
 
@@ -205,6 +256,9 @@ function EvaluationDetails() {
 											<DomainDetail
 												domainData={domain}
 												currentPage={index + 1}
+												questionUpdatefn={
+													updateQuestion
+												}
 											/>
 										)
 								)}
