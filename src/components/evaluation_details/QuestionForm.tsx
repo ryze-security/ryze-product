@@ -1,13 +1,8 @@
 import { questionResponse } from "@/models/evaluation/EvaluationDTOs";
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
-import {
-	ArrowBigLeft,
-	ArrowBigLeftDash,
-	ArrowBigRight,
-	MoveLeft,
-	PencilLine,
-} from "lucide-react";
+import { ArrowBigLeft, ArrowBigRight, PencilLine } from "lucide-react";
+import { useFormContext } from "react-hook-form";
 
 interface Props {
 	questionData: questionResponse[];
@@ -25,23 +20,24 @@ function QuestionForm(props: Props) {
 
 	const [index, setIndex] = useState<number>(questionIndex);
 
-	const [isEditing, setIsEditing] = useState(false);
-
-	const [observation, setObservation] = useState("");
-
+	const [isObservationEditing, setisObservationEditing] = useState(false);
+	
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+	const { register, setValue, watch, reset } =
+		useFormContext();
 
 	// This effect is used to set the selected question and formatted evidence when the question data or index changes
 	useEffect(() => {
 		setIndex(questionIndex);
 		updateEvidence(questionIndex);
-		setObservation(selectedQuestion?.Response.Observation);
 	}, [questionData, questionIndex]);
 
 	// This effect is used to change the text area size and focus on it when editing
 	// the observation
 	useEffect(() => {
-		if (isEditing && textareaRef.current) {
+		if (isObservationEditing && textareaRef.current) {
+			
 			const el = textareaRef.current;
 			el.focus();
 
@@ -52,11 +48,17 @@ function QuestionForm(props: Props) {
 			el.style.height = "auto";
 			el.style.height = `${el.scrollHeight}px`;
 		}
-	}, [isEditing]);
+	}, [isObservationEditing]);
+
+	useEffect(() => {
+		setValue("observation", selectedQuestion?.Response.Observation || "", {
+			shouldDirty: false,});
+		setValue("score", selectedQuestion?.Response.Score || false, {shouldDirty: false});
+	}, [selectedQuestion, setValue]);
 
 	// This function is used to update the observation
 	const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		setObservation(e.target.value);
+		setValue("observation", e.target.value, { shouldDirty: true });
 		if (textareaRef.current) {
 			textareaRef.current.style.height = "auto"; // reset
 			textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
@@ -65,7 +67,8 @@ function QuestionForm(props: Props) {
 
 	// This function is used to update the formatted evidence
 	const updateEvidence = (currentIndex: number) => {
-		const result = questionData[currentIndex]?.Response.evidence
+		const rawEvidence = questionData[currentIndex]?.Response.evidence || "";
+		const result = rawEvidence
 			.split(/\d+\.\s/)
 			.filter(Boolean)
 			.map((item) => item.trim().replace(/^['"]|['"]$/g, ""));
@@ -78,7 +81,11 @@ function QuestionForm(props: Props) {
 			setIndex(newIndex);
 			setSelectedQuestion(questionData[newIndex]);
 			updateEvidence(newIndex);
-			setObservation(questionData[newIndex]?.Response.Observation);
+			reset({
+				observation: questionData[newIndex]?.Response.Observation || "",
+				score: questionData[newIndex]?.Response.Score || false,
+				questionId: questionData[newIndex]?.q_id || "",
+			}, { keepDirty: false})
 		}
 	};
 
@@ -88,7 +95,11 @@ function QuestionForm(props: Props) {
 			setIndex(newIndex);
 			setSelectedQuestion(questionData[newIndex]);
 			updateEvidence(newIndex);
-			setObservation(questionData[newIndex]?.Response.Observation);
+			reset({
+				observation: questionData[newIndex]?.Response.Observation || "",
+				score: questionData[newIndex]?.Response.Score || false,
+				questionId: questionData[newIndex]?.q_id || "",
+			}, { keepDirty: false})
 		}
 	};
 
@@ -127,28 +138,25 @@ function QuestionForm(props: Props) {
 						Found
 					</div>
 					<div className="flex w-fit gap-2">
-						<div
-							className={`flex items-center justify-center text-center whitespace-nowrap min-w-20 max-w-20 py-1 px-6 rounded-full text-white ${
-								selectedQuestion?.Response.Score
-									? "bg-green-ryzr"
-									: "bg-zinc-700"
+						<Button
+							type="button"
+							onClick={() => setValue("score", true, { shouldDirty: true })}
+							className={`min-w-20 max-w-20 py-1 px-6 rounded-full ${watch("score") ? "hover:bg-green-ryzr" : "hover:bg-zinc-800"} text-white ${
+								watch("score") ? "bg-green-ryzr" : "bg-zinc-700"
 							}`}
 						>
 							Yes
-						</div>
-						<div
-							className={`flex items-center justify-center text-center whitespace-nowrap min-w-20 max-w-20 py-1 px-6 rounded-full text-white ${
-								selectedQuestion?.Response.Score
-									? "bg-zinc-700"
-									: "bg-red-ryzr"
+						</Button>
+						<Button
+							type="button"
+							onClick={() => setValue("score", false, { shouldDirty: true })}
+							className={`min-w-20 max-w-20 py-1 px-6 rounded-full text-white ${!watch("score") ? "hover:bg-red-ryzr" : "hover:bg-zinc-800"} ${
+								!watch("score") ? "bg-red-ryzr" : "bg-zinc-700"
 							}`}
 						>
 							No
-						</div>
+						</Button>
 					</div>
-					<Button className="bg-transparent hover:bg-zinc-700 text-white font-bold py-2 px-4">
-						<PencilLine className="opacity-80" />
-					</Button>
 				</div>
 				{/* Observation */}
 				<div className="flex flex-col mt-8">
@@ -158,7 +166,7 @@ function QuestionForm(props: Props) {
 						</div>
 						<Button
 							onClick={() => {
-								setIsEditing(!isEditing);
+								setisObservationEditing(!isObservationEditing);
 							}}
 							className="bg-transparent hover:bg-zinc-700 text-white font-bold px-4"
 						>
@@ -166,17 +174,22 @@ function QuestionForm(props: Props) {
 						</Button>
 					</div>
 					<div className="bg-zinc-900 gap-2 flex rounded-md rounded-tl-none border border-zinc-700 p-4">
-						{isEditing ? (
+						{isObservationEditing ? (
 							<textarea
-								ref={textareaRef}
+							ref={(e) => {
+								textareaRef.current = e;
+								register("observation").ref(e);
+							}}
 								className="w-full bg-zinc-800 p-2 text-white border-none resize-none focus:outline-none rounded"
-								value={observation}
-								onChange={handleChange}
+								value={watch("observation")}
+								onChange={(e) => {
+									handleChange(e);
+								}}
 								placeholder="Enter your observation..."
 							/>
 						) : (
 							<span className="flex flex-wrap opacity-85">
-								{observation}
+								{watch("observation")}
 							</span>
 						)}
 					</div>
@@ -197,7 +210,6 @@ function QuestionForm(props: Props) {
 						))}
 					</div>
 				</div>
-				
 			</section>
 		</div>
 	);

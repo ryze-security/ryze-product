@@ -10,6 +10,7 @@ import {
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { AlertTriangle } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 interface AlertDialogBoxProps {
@@ -29,8 +30,17 @@ export const AlertDialogBox: React.FC<AlertDialogBoxProps> = ({
 	onAction,
 	actionHref,
 }) => {
+	const [isOpen, setIsOpen] = useState(false);
+
+	const handleAction = () => {
+		if (onAction) {
+			onAction();
+		}
+		setIsOpen(false);
+	}
+
 	return (
-		<AlertDialog>
+		<AlertDialog open={isOpen} onOpenChange={setIsOpen}>
 			<AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
 
 			<AlertDialogContent>
@@ -49,7 +59,7 @@ export const AlertDialogBox: React.FC<AlertDialogBoxProps> = ({
 							<Link to={actionHref}>{actionLabel}</Link>
 						</AlertDialogAction>
 					) : (
-						<AlertDialogAction onClick={onAction}>
+						<AlertDialogAction onClick={handleAction}>
 							{actionLabel}
 						</AlertDialogAction>
 					)}

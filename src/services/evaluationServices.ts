@@ -5,6 +5,7 @@ import {
 	evalutaionDetailDTO,
 	listEvaluationsDTO,
 	startEvaluationResponseDTO,
+	updateQuestionResponseDTO,
 } from "@/models/evaluation/EvaluationDTOs";
 import { handleAxiosError } from "@/utils/handleAxiosError";
 import config from "./config";
@@ -99,6 +100,31 @@ export class EvaluationService {
 
 			//rethrowing for conditional rendering
 			throw errorInfo;
+		}
+	}
+
+	async updateQuestion(tenant_id: string, company_id: string, eval_id: string, q_id: string, observation: string, score: boolean): Promise<updateQuestionResponseDTO | any> {
+		const payload = {
+			observation: observation,
+			result: score,
+		}		
+		try{
+			const response = await axios.patch(
+				`${config.ryzrApiURL}/api/v1/evaluations/${tenant_id}/${company_id}/${eval_id}/questions/${q_id}`, payload, {
+					headers: {
+						"Content-Type": "application/json",
+					}
+				})
+			if (response.status !== 200) {
+				throw response;
+			}
+			return response.data;
+		} catch (error) {
+			const errorInfo = handleAxiosError(error);
+            console.error("Error fetching company:", errorInfo.message);
+
+            //rethrowing for conditional rendering
+            throw errorInfo;
 		}
 	}
 }

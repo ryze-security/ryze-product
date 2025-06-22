@@ -6,18 +6,36 @@ import {
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { ProgressBarDataTable } from "../ProgressBarDataTable";
-import { ColumnDef, PaginationState, SortingState } from "@tanstack/react-table";
-import {ArrowDownAZIcon, ArrowUpAZIcon, MoveLeft } from "lucide-react";
+import {
+	ColumnDef,
+	PaginationState,
+	SortingState,
+} from "@tanstack/react-table";
+import { ArrowDownAZIcon, ArrowUpAZIcon, MoveLeft } from "lucide-react";
 import QuestionForm from "./QuestionForm";
 import {
 	HoverCard,
 	HoverCardContent,
 	HoverCardTrigger,
 } from "../ui/hover-card";
+import { FormProvider, useForm } from "react-hook-form";
+import { AlertDialogBox } from "../AlertDialogBox";
+import { RoundSpinner } from "../ui/spinner";
 
 interface Props {
 	domainData: domainResponse;
 	currentPage: number;
+	questionUpdatefn: (
+		observation: string,
+		score: boolean,
+		questionId: string
+	) => Promise<void>;
+}
+
+interface QuestionFormFields {
+	observation: string;
+	score: boolean | string;
+	questionId: string;
 }
 
 const columns: ColumnDef<controlResponse>[] = [
@@ -33,7 +51,13 @@ const columns: ColumnDef<controlResponse>[] = [
 					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
 					Control Id
-					{column.getIsSorted() === "asc" ? <ArrowDownAZIcon className="h-4 w-4"/> : column.getIsSorted() === "desc" ? <ArrowUpAZIcon className="h-4 w-4" /> : ""}
+					{column.getIsSorted() === "asc" ? (
+						<ArrowDownAZIcon className="h-4 w-4" />
+					) : column.getIsSorted() === "desc" ? (
+						<ArrowUpAZIcon className="h-4 w-4" />
+					) : (
+						""
+					)}
 				</Button>
 			);
 		},
@@ -54,7 +78,13 @@ const columns: ColumnDef<controlResponse>[] = [
 					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
 					Control Score
-					{column.getIsSorted() === "asc" ? <ArrowDownAZIcon className="h-4 w-4"/> : column.getIsSorted() === "desc" ? <ArrowUpAZIcon className="h-4 w-4" /> : ""}
+					{column.getIsSorted() === "asc" ? (
+						<ArrowDownAZIcon className="h-4 w-4" />
+					) : column.getIsSorted() === "desc" ? (
+						<ArrowUpAZIcon className="h-4 w-4" />
+					) : (
+						""
+					)}
 				</Button>
 			);
 		},
@@ -117,7 +147,13 @@ const questionColumns: ColumnDef<questionResponse>[] = [
 					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
 					Compliance
-					{column.getIsSorted() === "asc" ? <ArrowDownAZIcon className="h-4 w-4"/> : column.getIsSorted() === "desc" ? <ArrowUpAZIcon className="h-4 w-4" /> : ""}
+					{column.getIsSorted() === "asc" ? (
+						<ArrowDownAZIcon className="h-4 w-4" />
+					) : column.getIsSorted() === "desc" ? (
+						<ArrowUpAZIcon className="h-4 w-4" />
+					) : (
+						""
+					)}
 				</Button>
 			);
 		},
@@ -138,7 +174,15 @@ const questionColumns: ColumnDef<questionResponse>[] = [
 ];
 
 function DomainDetail(props: Props) {
-	const { domainData, currentPage } = props;
+	const { domainData, currentPage, questionUpdatefn } = props;
+	const methods = useForm<QuestionFormFields>({
+		defaultValues: {
+			score: false,
+			observation: "",
+			questionId: "",
+		},
+	});
+
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [selectedRow, setSelectedRow] = useState<controlResponse>(null);
 	const [updatedData, setUpdatedData] = useState<domainResponse>(domainData);
@@ -155,16 +199,19 @@ function DomainDetail(props: Props) {
 	const [questionFilter, setQuestionFilter] = useState<string>("");
 
 	const [controlPagination, setControlPagination] = useState<PaginationState>(
-			{
-				pageIndex: 0,
-				pageSize: 10,
-			}
-		);
-		const [questionPagination, setQuestionPagination] =
-			useState<PaginationState>({
-				pageIndex: 0,
-				pageSize: 10,
-			});
+		{
+			pageIndex: 0,
+			pageSize: 10,
+		}
+	);
+	const [questionPagination, setQuestionPagination] =
+		useState<PaginationState>({
+			pageIndex: 0,
+			pageSize: 10,
+		});
+
+	const [isQuestionUpdating, setIsQuestionUpdating] =
+		useState<boolean>(false);
 
 	// This effect is used to convert the score to a percentage
 	useEffect(() => {
@@ -193,6 +240,35 @@ function DomainDetail(props: Props) {
 	useEffect(() => {
 		handleBack();
 	}, [currentPage]);
+
+	useEffect(() => {
+		if (selectedRow) {
+			const updatedControl = updatedData.ControlResponseList.find(
+				(control) => control.controlId === selectedRow.controlId
+			);
+
+			if (updatedControl) {
+				setSelectedRow(updatedControl); // this triggers your `updatedQuestions` effect
+			}
+		}
+	}, [updatedData.ControlResponseList]);
+
+	// used to update the selected question when the updatedQuestions change after a redux refresh
+	useEffect(() => {
+		if (selectedQuestion) {
+			const updatedQuestion = updatedQuestions.find(
+				(question) => question.q_id === selectedQuestion.q_id
+			);
+			if (updatedQuestion) {
+				setSelectedQuestion(updatedQuestion);
+				methods.reset({
+					score: updatedQuestion.Response.Score,
+					observation: updatedQuestion.Response.Observation,
+					questionId: updatedQuestion.q_id,
+				});
+			}
+		}
+	}, [updatedQuestions]);
 
 	// This effect is used to convert the score to a boolean
 	// and to set the SNo for each question
@@ -231,6 +307,21 @@ function DomainDetail(props: Props) {
 		}
 	};
 
+	const onSubmit = async (data: any) => {
+		setIsQuestionUpdating(true);
+		const { observation, score, questionId } = data;
+		if (selectedQuestion) {
+			const updatedQuestion = updatedQuestions.find(
+				(question) => question.q_id === questionId
+			);
+			if (updatedQuestion) {
+				setSelectedQuestion(updatedQuestion);
+			}
+		}
+		await questionUpdatefn(observation, score, questionId);
+		setIsQuestionUpdating(false);
+	};
+
 	return (
 		<div className="max-w-7xl w-full">
 			{/* Header section */}
@@ -238,19 +329,69 @@ function DomainDetail(props: Props) {
 				{/* Heading */}
 				{selectedRow ? (
 					<div className="flex flex-col gap-2">
-						{/* Back Button */}
-						<div className="mb-4">
-							<Button
-								onClick={handleBack}
-								className="rounded-full bg-zinc-700 hover:bg-zinc-800 transition-colors text-white p-2 w-20"
-							>
-								<MoveLeft
-									style={{
-										width: "28px",
-										height: "28px",
-									}}
-								/>
-							</Button>
+						{/* Back Button and update button */}
+						<div className="flex gap-2">
+							<div className="mb-4">
+								{selectedQuestion &&
+								methods.formState.isDirty ? (
+									<AlertDialogBox
+										trigger={
+											<Button
+												disabled={isQuestionUpdating}
+												className="rounded-full bg-zinc-700 hover:bg-zinc-800 transition-colors text-white p-2 w-20"
+											>
+												<MoveLeft
+													style={{
+														width: "28px",
+														height: "28px",
+													}}
+												/>
+											</Button>
+										}
+										subheading="You have unsaved changes on this page! Clicking confirm will remove any unsaved changes."
+										actionLabel="Confirm"
+										onAction={handleBack}
+									/>
+								) : (
+									<Button
+										onClick={handleBack}
+										disabled={isQuestionUpdating}
+										className="rounded-full bg-zinc-700 hover:bg-zinc-800 transition-colors text-white p-2 w-20"
+									>
+										<MoveLeft
+											style={{
+												width: "28px",
+												height: "28px",
+											}}
+										/>
+									</Button>
+								)}
+							</div>
+							{selectedQuestion && methods.formState.isDirty && (
+								<div className="mb-4">
+									<AlertDialogBox
+										trigger={
+											<Button
+												className="rounded-full bg-sky-500 hover:bg-sky-600 transition-colors text-white p-2 w-20"
+												disabled={isQuestionUpdating}
+											>
+												{isQuestionUpdating ? (
+													<RoundSpinner />
+												) : (
+													<span className="font-bold text-white">
+														Update
+													</span>
+												)}
+											</Button>
+										}
+										subheading="Are you sure you want to save the changes to this question? Confirming will permanently update the evaluation record."
+										onAction={methods.handleSubmit(
+											onSubmit
+										)}
+										actionLabel="Confirm"
+									/>
+								</div>
+							)}
 						</div>
 						<div className="flex justify-between">
 							<div className="flex max-w-fit gap-2">
@@ -302,12 +443,14 @@ function DomainDetail(props: Props) {
 			</div>
 			<section className="flex items-center w-full bg-black text-white mt-8 pt-4">
 				{selectedQuestion ? (
-					<QuestionForm
-						questionData={updatedQuestions}
-						questionIndex={updatedQuestions.indexOf(
-							selectedQuestion
-						)}
-					/>
+					<FormProvider {...methods}>
+						<QuestionForm
+							questionData={updatedQuestions}
+							questionIndex={updatedQuestions.indexOf(
+								selectedQuestion
+							)}
+						/>
+					</FormProvider>
 				) : selectedRow ? (
 					<div className="w-full">
 						{/* Detail Data Table */}
@@ -317,6 +460,11 @@ function DomainDetail(props: Props) {
 							filterKey="question"
 							isLoading={false}
 							onRowClick={(row) => {
+								methods.reset({
+									score: row.Response.Score,
+									observation: row.Response.Observation,
+									questionId: row.q_id,
+								}, {keepDirty: false});
 								setSelectedQuestion(row);
 							}}
 							externalFilter={questionFilter}
