@@ -1,6 +1,6 @@
 import { AlertDialogBox } from "@/components/AlertDialogBox";
 import InfoCard from "@/components/auditee/InfoCard";
-import SingleSelectBox from "@/components/auditee/SingleSelectBox";
+import { MultiSelectBox } from "@/components/auditee/SelectBoxes";
 import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,11 @@ import { Label } from "@/components/ui/label";
 import { RoundSpinner } from "@/components/ui/spinner";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { CompanyCreateDto, CompanyListDto } from "@/models/company/companyDTOs";
+import {
+	CompanyCreateDto,
+	CompanyListDto,
+	CompanyUpdateDto,
+} from "@/models/company/companyDTOs";
 import companyService from "@/services/companyServices";
 import { useAppDispatch } from "@/store/hooks";
 import { loadCompanyData } from "@/store/slices/companySlice";
@@ -77,9 +81,8 @@ function AuditeeForm() {
 	const methods = useForm({
 		defaultValues: {
 			auditeeName: "" as string,
-			auditeeType: "" as string,
-			relevantData: "" as string,
-			dataType: "" as string,
+			auditeeData: [] as string[],
+			auditeeService: [] as string[],
 		},
 	});
 
@@ -112,7 +115,8 @@ function AuditeeForm() {
 						);
 					methods.reset({
 						auditeeName: data.tg_company_display_name,
-						auditeeType: data.type,
+						auditeeData: data.data_type,
+						auditeeService: data.service_type,
 					});
 				} catch (error) {
 					toast({
@@ -135,20 +139,54 @@ function AuditeeForm() {
 		const companyData: CompanyCreateDto = {
 			tenant_id: "7077beec-a9ef-44ef-a21b-83aab58872c9", //TODO: get tenant id from auth context
 			company_name: data.auditeeName,
-			company_type: data.auditeeType,
+			company_type: data.auditeeData[0],
 			created_by: "FE_SYSTEM", //TODO: get user id from auth context
+			data_type: data.auditeeData,
+			service_type: data.auditeeService,
 		};
 
 		try {
 			if (isEditMode) {
+				const updateData: CompanyUpdateDto = {
+					company_name: data.auditeeName,
+					data_type: data.auditeeData,
+					service_type: data.auditeeService,
+				};
+				const response = await companyService.updateCompany(
+					"7077beec-a9ef-44ef-a21b-83aab58872c9",
+					auditeeId as string,
+					updateData
+				);
+				dispatch(
+					loadCompanyData("7077beec-a9ef-44ef-a21b-83aab58872c9")
+				);
+				methods.reset({
+					auditeeName: response.tg_company_display_name,
+					auditeeData: response.data_type,
+					auditeeService: response.service_type,
+				});
+				toast({
+					title: "Auditee updated successfully!",
+					description: "The auditee has been updated successfully.",
+					variant: "default",
+					className: "bg-green-ryzr text-white",
+				});
 				console.log(data);
 			} else {
 				const response = await companyService.createCompany(
 					companyData
 				);
+				dispatch(
+					loadCompanyData("7077beec-a9ef-44ef-a21b-83aab58872c9")
+				);
+				toast({
+					title: "Auditee created successfully!",
+					description: `The auditee with name: ${response.tg_company_display_name} has been created successfully.`,
+					variant: "default",
+					className: "bg-green-ryzr text-white",
+				});
+				navigate("/auditee/dashboard");
 			}
-			dispatch(loadCompanyData("7077beec-a9ef-44ef-a21b-83aab58872c9"));
-			navigate("/auditee/dashboard");
 		} catch (error) {
 			toast({
 				title: `Error ${isEditMode ? "updating" : "creating"} auditee`,
@@ -163,6 +201,11 @@ function AuditeeForm() {
 	};
 
 	const handleEditClick = () => {
+		if (isHeadingEditing) {
+			methods.setValue("auditeeName", watchedAuditeeName, {
+				shouldDirty: true,
+			});
+		}
 		setIsHeadingEditing((prev) => {
 			const newState = !prev;
 			if (newState) {
@@ -198,7 +241,7 @@ function AuditeeForm() {
 						<div className="flex gap-2">
 							<span
 								ref={spanRef}
-								className="invisible absolute whitespace-pre text-4xl font-semibold tracking-wide"
+								className="invisible absolute whitespace-pre text-4xl font-semibold tracking-wide w-fit"
 							>
 								{watchedAuditeeName || " "}
 							</span>
@@ -214,7 +257,8 @@ function AuditeeForm() {
 									onChange={(e) =>
 										methods.setValue(
 											"auditeeName",
-											e.target.value
+											e.target.value,
+											{ shouldDirty: false }
 										)
 									}
 								/>
@@ -311,18 +355,18 @@ function AuditeeForm() {
 							)}
 							{/* Related services single select boxes */}
 							<div className="space-y-4 mt-8">
-								<SingleSelectBox
+								<MultiSelectBox
 									control={methods.control}
-									name="auditeeType"
+									name="auditeeService"
 									options={services}
 									label="Related Services"
 								/>
 							</div>
 							{/* Data processed type */}
 							<div className="space-y-4 mt-8">
-								<SingleSelectBox
+								<MultiSelectBox
 									control={methods.control}
-									name="dataType"
+									name="auditeeData"
 									options={companyDataTypes}
 									label="What is the type of data processed?"
 								/>
@@ -335,7 +379,9 @@ function AuditeeForm() {
 											type="button"
 											className="bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold text-md"
 											disabled={
-												isLoading || isFetchingData
+												isLoading ||
+												isFetchingData ||
+												!methods.formState.isDirty
 											}
 										>
 											{isLoading || isFetchingData ? (
@@ -354,23 +400,38 @@ function AuditeeForm() {
 									actionLabel="Confirm"
 									onAction={onRunClick}
 								/>
-								<AlertDialogBox
-									trigger={
-										<Button
-											variant="default"
-											disabled={isLoading}
-											className={
-												"bg-gray-ryzr hover:bg-gray-ryzr/70 rounded-2xl transition-opacity duration-150 text-white font-bold text-md"
-											}
-										>
-											Cancel
-										</Button>
-									}
-									subheading="Are you sure you want to cancel this operation? Clicking confirm will cause all your unsaved data to be lost."
-									title="Are You Sure?"
-									actionLabel="Confirm"
-									actionHref="/auditee/dashboard"
-								/>
+								{methods.formState.isDirty ? (
+									<AlertDialogBox
+										trigger={
+											<Button
+												variant="default"
+												disabled={isLoading}
+												className={
+													"bg-gray-ryzr hover:bg-gray-ryzr/70 rounded-2xl transition-opacity duration-150 text-white font-bold text-md"
+												}
+											>
+												Cancel
+											</Button>
+										}
+										subheading="Are you sure you want to cancel this operation? Clicking confirm will cause all your unsaved data to be lost."
+										title="Are You Sure?"
+										actionLabel="Confirm"
+										actionHref="/auditee/dashboard"
+									/>
+								) : (
+									<Button
+										variant="default"
+										disabled={isLoading}
+										onClick={() =>
+											navigate("/auditee/dashboard")
+										}
+										className={
+											"bg-gray-ryzr hover:bg-gray-ryzr/70 rounded-2xl transition-opacity duration-150 text-white font-bold text-md"
+										}
+									>
+										Back
+									</Button>
+								)}
 							</div>
 						</form>
 					</FormProvider>
