@@ -48,7 +48,7 @@
 
 @layer base {
   * {
-    @apply border-border selection:bg-white/10 selection:text-white;
+    @apply border-border selection:bg-violet-light-ryzr/70 selection:text-white;
   }
   
   body {

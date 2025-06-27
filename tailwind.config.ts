@@ -20,6 +20,7 @@ export default {
 		extend: {
 			colors: {
 				"violet-ryzr": "#914EC4",
+				"violet-light-ryzr": "#B05BEF",
 				"gray-ryzr": "#262626",
 				"gray-light-ryzr": "#7F7F7F",
 				"green-ryzr": "#3F9155",
