@@ -16,8 +16,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { CardStack } from "@/components/ui/card-stack";
 import { Input } from "@/components/ui/input";
-import { FileText, Heading, icons, MoveRightIcon } from "lucide-react";
-import React from "react";
+import { useIsMobile } from "@/utils/useIsMobile";
+import { ChevronLeft, ChevronRight, FileText, Heading, icons, MoveRightIcon } from "lucide-react";
+import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 
 function Home() {
@@ -88,7 +89,7 @@ function Home() {
 		},
 		{
 			icon: <CertificateIcon width="293" />,
-			heading: "IOS certifications audit & assurance",
+			heading: "ISO certifications audit & assurance",
 			content:
 				"Conduct automated Stage 1 documentation reviews for IOS 27001 audits & policy alignment",
 		},
@@ -135,16 +136,27 @@ function Home() {
 		{ name: "Terms of Service", href: "/#" },
 	];
 
+	const isMobile = useIsMobile();
+
+	const scrollRef = useRef<HTMLDivElement>(null);
+
+	const scrollLeft = () => {
+		scrollRef.current?.scrollBy({ left: -550, behavior: "smooth" });
+	};
+	const scrollRight = () => {
+		scrollRef.current?.scrollBy({ left: 550, behavior: "smooth" });
+	};
+
 	return (
-		<div className="min-h-screen h-auto font-roboto w-full overflow-x-hidden overflow-y-hidden relative">
+		<div className="min-h-screen font-roboto w-full overflow-x-hidden overflow-y-hidden lg:overflow-y-auto relative">
 			<Navbar items={items} />
+
+			{/* Main Hero Section */}
 			<FadeInSection>
-				<div className="h-fit w-full flex flex-col items-center justify-center bg-[linear-gradient(to_bottom,#000000,#0B0B0B80,#B05BEF,#B05BEF)] text-white -z-0">
-					{/* Video And title section */}
-					<section className="relative w-auto h-auto flex items-start pt-32 justify-center text-center bg-transparent overflow-hidden">
-						{/* Centered content container */}
-						<div className="relative z-10 max-w-72 h-72">
-							{/* Video behind text */}
+				<div className="h-fit w-full flex flex-col items-center justify-center bg-[linear-gradient(to_bottom,#000000,#000000,#0B0B0B80,#B05BEF,#B05BEF)] lg:bg-[linear-gradient(to_bottom,#000000,#0B0B0B80,#B05BEF,#B05BEF)] text-white">
+					{/* Video and Title */}
+					<section className="relative w-full flex flex-col items-center pt-32 text-center px-4">
+						<div className="relative z-10 w-[40vw] aspect-square lg:w-[18rem]">
 							<video
 								autoPlay
 								muted
@@ -157,49 +169,40 @@ function Home() {
 									src="/assets/200w-ezgif.com-gif-to-mp4-converter.mp4"
 									type="video/mp4"
 								/>
-								Your browser does not support the video tag.
 							</video>
-
-							{/* Dark overlay over video */}
 							<div className="absolute inset-0 bg-black opacity-50 z-20" />
-
-							{/* Brand text over video */}
 							<div className="absolute inset-0 flex items-center justify-center z-30">
-								<h1 className="text-6xl md:text-8xl sm:text-7xl font-bold text-white bg-transparent px-6 py-4 rounded-lg tracking-wide">
+								<h1 className="text-[10vw] lg:text-8xl font-bold text-white bg-transparent px-6 py-4 rounded-lg tracking-wide">
 									Ryzr.
 								</h1>
 							</div>
 						</div>
 					</section>
 
-					{/* CTA Button and text */}
-					<section className="w-full text-center px-4">
-						<p className="text-lg md:text-5xl font-bold max-w-4xl mx-auto mb-6 leading-loose tracking-wide">
+					{/* CTA Button and Tagline */}
+					<section className="w-full text-center px-4 mt-8">
+						<p className="text-2xl md:text-5xl font-bold max-w-4xl mx-auto mb-4 md:mb-6 leading-relaxed tracking-wide">
 							Transforming security reviews
 							<br />
 							<span className="bg-[linear-gradient(to_right,#7030A0,#DA3D49,#EB7135,#1AC7F7,#EB7135,#DA3D49,#7030A0)] bg-clip-text text-transparent animate-gradient leading-relaxed">
 								with speed and precision
 							</span>
 						</p>
-
 						<Link to="/login">
-							<Button className="font-roboto font-semibold text-base rounded-full px-9 py-5 min-h-12 tracking-wide">
+							<Button className="font-roboto font-semibold text-base rounded-full md:px-9 md:py-5 px-5 py-4 h-9 md:min-h-12 tracking-wide">
 								Get Started <MoveRightIcon />
 							</Button>
 						</Link>
 					</section>
 
-					{/* Product Image */}
-					<section className="w-full h-fit flex justify-center text-center mt-12 px-4">
-						<div className="relative w-[1200px] h-[700px] rounded-3xl bg-gradient-to-b from-[#5F5F5F] to-transparent z-10">
-							<div
-								className="absolute w-[2000px] h-[1000px] -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 pointer-events-none 
-			bg-[radial-gradient(ellipse_at_center,#000000_60%,#B05BEF_100%)] rounded-full"
-							/>
+					{/* Product Image with Glow */}
+					<section className="w-full flex justify-center mt-8 lg:mt-12 px-4">
+						<div className="relative w-[90vw] lg:w-[80vw] aspect-[12/7] rounded-3xl bg-gradient-to-b from-[#5F5F5F] to-transparent z-10">
+							<div className="absolute w-[150vw] h-[175vw] md:w-[140vw] md:h-[80vw] -z-10 top-1.5 md:top-1/2 left-1/2 -translate-x-1/2 lg:-translate-y-1/4 pointer-events-none bg-[radial-gradient(ellipse_at_center,#000000_60%,#B05BEF_100%)] rounded-full" />
 							<img
-								src="\assets\Product image.png"
+								src="/assets/Product image.png"
 								alt="Product image"
-								className="w-full h-full object-cover rounded-3xl shadow-lg p-1"
+								className="w-full h-full rounded-3xl shadow-lg p-1"
 							/>
 							<div className="absolute inset-0 bg-gradient-to-b rounded-3xl from-transparent to-black opacity-100 z-20" />
 						</div>
@@ -207,62 +210,79 @@ function Home() {
 				</div>
 			</FadeInSection>
 
-			{/* Advantages */}
-			<section className="relative w-full flex items-center justify-evenly px-4 z-10">
-				<FadeInSection>
-					<div className="flex gap-10 max-w-80">
-						<CashIcon className="min-w-11" />
-						<p className="text-white text-wrap text-xl">
-							<span className="text-violet-light-ryzr">
-								Cut costs
-							</span>{" "}
-							tied to low value documentation reviews
-						</p>
-					</div>
-				</FadeInSection>
-				<FadeInSection delay={0.4}>
-					<div className="flex gap-10 max-w-80">
-						<SandglassIcon className="min-w-11" />
-						<p className="text-white text-wrap text-xl">
-							Cut compliance time from{" "}
-							<span className="text-violet-light-ryzr">
-								months to hours
-							</span>
-						</p>
-					</div>
-				</FadeInSection>
-				<FadeInSection delay={0.8}>
-					<div className="flex gap-10 max-w-80">
-						<FileText className="min-w-11 min-h-[50px] text-[#666666]" />
-						<p className="text-white text-wrap text-xl">
-							Review hundreds of pages,{" "}
-							<span className="text-violet-light-ryzr">
-								in minutes
-							</span>
-						</p>
-					</div>
-				</FadeInSection>
+			{/* Advantages Section */}
+			<section className="relative w-full grid md:grid-cols-3 gap-10 px-4 mt-12 z-10">
+				{[
+					{
+						icon: (
+							<CashIcon className="max-w-9 md:min-w-11 max-h-[40px] md:min-h-[50px]" />
+						),
+						text: (
+							<>
+								<span className="text-violet-light-ryzr">
+									Cut costs
+								</span>{" "}
+								tied to low value documentation reviews
+							</>
+						),
+					},
+					{
+						icon: (
+							<SandglassIcon className="max-w-9 md:min-w-11 max-h-[40px] md:min-h-[50px]" />
+						),
+						text: (
+							<>
+								Cut compliance time from{" "}
+								<span className="text-violet-light-ryzr">
+									months to hours
+								</span>
+							</>
+						),
+					},
+					{
+						icon: (
+							<FileText className="min-w-9 md:min-w-11 min-h-[40px] md:min-h-[50px] text-[#666666]" />
+						),
+						text: (
+							<>
+								Review hundreds of pages,{" "}
+								<span className="text-violet-light-ryzr">
+									in minutes
+								</span>
+							</>
+						),
+					},
+				].map((item, idx) => (
+					<FadeInSection delay={idx * 0.4} key={idx}>
+						<div className="flex gap-6 max-w-[90vw] h-full md:max-w-md items-center">
+							{item.icon}
+							<p className="text-white align-middle text-wrap text-base lg:text-xl">
+								{item.text}
+							</p>
+						</div>
+					</FadeInSection>
+				))}
 			</section>
 
-			{/* Features and cards section */}
-			<section className="relative z-10 w-full mt-12 bg-white min-h-[512px] flex">
-				<div className="w-[49%]">
-					<div className="py-20 px-24 text-black h-fit">
-						<h2 className="font-semibold text-[56px] leading-[56px] tracking-tight text-wrap">
+			{/* Features Section */}
+			<section className="relative z-10 w-full mt-12 bg-white min-h-[30vh] lg:min-h-[60vh] flex flex-col lg:flex-row max-lg:bg-gradient-to-t from-violet-light-ryzr to-white">
+				<div className="w-full lg:w-[49%]">
+					<div className="py-12 px-6 md:py-20 lg:px-24 text-black">
+						<h2 className="font-semibold text-3xl lg:text-[4vw] leading-tight tracking-tight">
 							<FadeInSection>
 								AI agent that{" "}
 								<span className="text-violet-light-ryzr">
-									understands security{" "}
-								</span>
+									understands security
+								</span>{" "}
 								and detects what humans miss.
 							</FadeInSection>
 						</h2>
 						<FadeInSection delay={0.4}>
-							<h2 className="font-normal text-2xl text-[#7B7B7B] mt-4">
+							<h2 className="font-normal text-xl lg:text-2xl text-[#7B7B7B] mt-4">
 								Save up to 80% of time with AI-driven automation
 							</h2>
 							<Button
-								className="text-black font-medium text-lg rounded-full border-2 py-6 px-10 mt-8"
+								className="text-black font-medium text-lg rounded-full border-2 py-4 px-8 mt-8"
 								variant="ghost"
 							>
 								Book a demo
@@ -270,145 +290,165 @@ function Home() {
 						</FadeInSection>
 					</div>
 				</div>
-				<div className="w-[51%] bg-gradient-to-b from-violet-light-ryzr to-transparent flex flex-col justify-center">
+				<div className="w-full lg:w-[51%] lg:bg-gradient-to-b from-violet-light-ryzr to-transparent flex justify-center items-center">
 					<FadeInSection delay={0.4}>
-						<div className="mx-auto w-fit">
+						<div className="w-fit mx-auto lg:mt-0 my-8">
 							<CardStack items={FeatureCARDS} />
 						</div>
 					</FadeInSection>
 				</div>
 			</section>
 
-			{/* More Features with Icon Cards */}
+			{/* Use Case Cards */}
 			<FadeInSection>
-				<section className="relative z-10 w-full mt-20 flex px-24 h-fit flex-col">
-					<h2 className="font-medium text-6xl tracking-tighter">
+				<section className="relative z-10 w-full mt-20 px-4 md:px-24 flex flex-col">
+					<h2 className="font-medium text-[33px] leading-9 lg:text-6xl md:text-5xl tracking-tighter">
 						<span className="text-violet-light-ryzr">
 							Empower your team
 						</span>
 						<br />
 						without replacing their judgement
 					</h2>
-					<p className="mt-6 text-[#9A9A9A] text-2xl tracking-tight">
+					<p className="mt-4 md:mt-6 text-[#9A9A9A] text-[17px] leading-6 md:text-xl lg:text-2xl tracking-tight">
 						Explore use cases that harness precise insights, saving
 						time, cutting costs, and boosting efficiency.
 					</p>
 				</section>
 			</FadeInSection>
-			<div className="flex justify-evenly mt-14 w-full">
-				{IconCards.map((card, index) => (
-					<FadeInSection delay={(index+1) * 0.4} key={index}>
-						<div
-							className="h-[470px] max-w-[360px] bg-white rounded-3xl px-6 py-8 flex flex-col"
+
+			<div className="relative w-full">
+				{/* Arrows - visible only on lg screens but hidden on xl and up */}
+				<div className="hidden lg:flex 2xl:hidden absolute left-4 top-1/2 -translate-y-1/2 z-10">
+					<button
+						onClick={scrollLeft}
+						className="text-white bg-black p-2 rounded-full shadow"
+					>
+						<ChevronLeft />
+					</button>
+				</div>
+				<div className="hidden lg:flex 2xl:hidden absolute right-4 top-1/2 -translate-y-1/2 z-10">
+					<button
+						onClick={scrollRight}
+						className="text-white bg-black p-2 rounded-full shadow"
+					>
+						<ChevronRight />
+					</button>
+				</div>
+
+				{/* Scrollable Cards */}
+				<div
+					ref={scrollRef}
+					className="flex flex-col md:flex-row overflow-x-auto overflow-y-hidden md:max-2xl:scrollbar-none justify-evenly items-center gap-8 mt-8 md:mt-14 w-full px-4 md:px-24 scroll-smooth"
+				>
+					{IconCards.map((card, index) => (
+						<FadeInSection
+							delay={isMobile ? 0 : (index + 1) * 0.2}
+							key={index}
 						>
-							<h2 className="font-semibold text-black text-3xl tracking-tight leading-7">
-								{card.heading}
-							</h2>
-							<p className="text-sm mt-[29px] min-h-[49px] h-[49px] text-[#5A5A5A]">
-								{card.content}
-							</p>
-							<div className="mx-auto my-auto">{card.icon}</div>
-						</div>
-					</FadeInSection>
-				))}
-			</div>
-			
-			{/* Contact Us */}
-			<FadeInSection>
-				<section className="relative z-10 w-full mt-20 px-24 h-[435px] min-h-[435px]">
-					<div className="bg-white rounded-3xl h-full w-full flex">
-						<div className="w-[48%]">
-							<div className="py-20 px-16 text-black h-full">
-								<h2 className="text-6xl font-medium tracking-tighter">
-									<span className="text-violet-light-ryzr font-semibold">
-										Shape a solution
-									</span>
-									<br />
-									that suits you.
+							<div className="md:min-h-[503px] min-w-[360px] md:min-w-[440px] bg-white rounded-3xl px-6 py-8 flex flex-col">
+								<h2 className="font-semibold text-black text-2xl md:text-4xl tracking-tight leading-7">
+									{card.heading}
 								</h2>
-								<p className="text-[21px] mt-8 text-[#9A9A9A] tracking-tight text-justify">
-									We’d love to help customize your AI agent to
-									fit your unique risk and compliance
-									needs—completely free. Speak with us today!
+								<p className="text-base md:text-xl mt-6 text-[#5A5A5A]">
+									{card.content}
 								</p>
+								<div className="mx-auto my-auto mt-8">
+									{card.icon}
+								</div>
 							</div>
+						</FadeInSection>
+					))}
+				</div>
+			</div>
+
+			{/* Contact Us Section */}
+			<FadeInSection>
+				<section className="relative z-10 w-full mt-20 px-4 md:px-8 lg:px-24">
+					<div className="bg-white rounded-3xl flex flex-col md:flex-row">
+						<div className="w-full md:w-[48%] p-8 md:p-10 lg:p-16">
+							<h2 className="text-4xl text-black md:text-[38px] lg:text-[41px] xl:text-6xl font-medium tracking-tighter">
+								<span className="text-violet-light-ryzr font-semibold">
+									Shape a solution
+								</span>
+								<br />
+								that suits you.
+							</h2>
+							<p className="text-base md:text-lg lg:text-lg xl:text-[21px] mt-6 text-[#9A9A9A] tracking-tight ">
+								We’d love to help customize your AI agent to fit
+								your unique risk and compliance needs—completely
+								free.
+							</p>
 						</div>
-						<div className="w-[52%]">
-							<div className="py-[60px] px-12 flex flex-col gap-8 text-black h-full">
-								<div className="flex justify-between">
-									<div className="flex flex-col gap-2">
-										<p className="text-lg text-black font-medium">
+						<div className="w-full md:w-[52%] p-8 pt-0 md:pt-8 lg:pt-12 lg:p-12">
+							<div className="flex flex-col gap-4 md:gap-8 text-black">
+								<div className="flex flex-col md:flex-row gap-4 md:justify-between">
+									<div className="flex flex-col gap-2 w-full md:w-[48%]">
+										<p className="md:text-lg text-base font-medium">
 											Your Name{" "}
 											<span className="text-rose-600">
 												*
 											</span>
 										</p>
 										<Input
-											className="bg-[#EBEBEB] md:text-base h-14 w-[268px] rounded-3xl border-0"
+											className="bg-[#EBEBEB] h-14 w-full rounded-3xl border-0"
 											placeholder="Your Name"
 										/>
 									</div>
-									<div className="flex flex-col gap-2">
-										<p className="text-lg text-black font-medium">
+									<div className="flex flex-col gap-2 w-full md:w-[48%]">
+										<p className="md:text-lg text-base font-medium">
 											Email{" "}
 											<span className="text-rose-600">
 												*
 											</span>
 										</p>
 										<Input
-											className="bg-[#EBEBEB] md:text-base h-14 w-[268px] rounded-3xl border-0"
-											placeholder="Email"
+											className="bg-[#EBEBEB] h-14 w-full rounded-3xl border-0"
+											placeholder="Email" type="email"
 										/>
 									</div>
 								</div>
-								<div className="w-full">
-									<div className="flex flex-col gap-2">
-										<p className="text-lg text-black font-medium">
-											Company Name{" "}
-											<span className="text-[#5A5A5A]">
-												(optional)
-											</span>
-										</p>
-										<Input
-											className="bg-[#EBEBEB] md:text-base h-14 w-full rounded-3xl border-0"
-											placeholder="Company Name"
-										/>
-									</div>
+								<div className="flex flex-col gap-2">
+									<p className="md:text-lg text-base font-medium">
+										Company Name{" "}
+										<span className="text-[#5A5A5A]">
+											(optional)
+										</span>
+									</p>
+									<Input
+										className="bg-[#EBEBEB] h-14 w-full rounded-3xl border-0"
+										placeholder="Company Name"
+									/>
 								</div>
-								<div className="w-full">
-									<Button className="w-full bg-violet-light-ryzr h-14 rounded-full py-5 px-9 text-white font-semibold text-xl hover:bg-violet-ryzr">
-										Submit
-									</Button>
-								</div>
+								<Button className="w-full bg-violet-light-ryzr h-14 rounded-full py-5 px-9 text-white font-semibold md:text-xl text-lg hover:bg-violet-ryzr">
+									Submit
+								</Button>
 							</div>
 						</div>
 					</div>
 				</section>
 			</FadeInSection>
 
-			{/* FAQs Section */}
+			{/* FAQ Section */}
 			<FadeInSection>
-				<section className="relative z-10 w-full mt-20 mb-32 px-24 h-fit">
-					<div className="w-full h-full flex">
-						<div className="w-[49%]">
-							<div className="text-white h-full">
-								<h2 className="text-[64px] font-semibold tracking-tighter leading-tight">
-									Frequently <br />
-									Asked Questions
-								</h2>
-								<p className="text-[21px] mt-6 text-[#9A9A9A] tracking-tight text-justify">
-									Don't see the answers you're looking for?
-								</p>
-							</div>
+				<section className="relative z-10 w-full mt-20 mb-32 px-4 md:px-24">
+					<div className="w-full flex flex-col lg:flex-row">
+						<div className="w-full lg:w-[49%] mb-8 lg:mb-0">
+							<h2 className="text-[42px] md:text-5xl lg:text-[52px] xl:text-[64px] font-semibold tracking-tighter leading-tight text-white">
+								Frequently <br />
+								Asked Questions
+							</h2>
+							<p className="text-base md:text-[21px] mt-3 md:mt-6 text-[#9A9A9A] tracking-tight text-justify">
+								Don't see the answers you're looking for?
+							</p>
 						</div>
-						<div className="w-[51%]">
+						<div className="w-full lg:w-[51%]">
 							{FAQs.map((faq, index) => (
 								<Accordion key={index} type="multiple">
 									<AccordionItem value={`item-${index + 1}`}>
-										<AccordionTrigger className="text-left text-xl text-[#D7D7D7]">
+										<AccordionTrigger className="text-left text-lg md:text-[22px] text-[#D7D7D7]">
 											{faq.trigger}
 										</AccordionTrigger>
-										<AccordionContent className="text-lg text-[#D7D7D7]">
+										<AccordionContent className="text-sm md:text-base lg:text-lg text-[#d7d7d7dd]">
 											{faq.content}
 										</AccordionContent>
 									</AccordionItem>

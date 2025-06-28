@@ -36,56 +36,34 @@ export const CardStack = ({
 				newArray.unshift(newArray.pop()!); // move the last element to the front
 				return newArray;
 			});
-		}, 6000);
+		}, 5000);
 	};
 
 	return (
-		<div className="relative h-[240px] w-[600px]">
+		<div className="relative w-[90vw] lg:max-w-[400px] xl:max-w-[600px] h-[23vh] md:min-h-[190px] lg:min-h-[260px] xl:min-h-[240px]">
 			{cards.map((card, index) => {
 				return (
 					<motion.div
 						key={card.id}
-						className="absolute bg-white h-[240px] w-[600px] rounded-3xl p-6 shadow-xl border border-neutral-200 shadow-black/[0.1] flex flex-col justify-between font-roboto"
+						className="absolute bg-white h-full w-full rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-xl border border-neutral-200 shadow-black/[0.1] flex flex-col justify-between font-roboto"
 						style={{
 							transformOrigin: "top center",
 						}}
 						animate={{
 							top: index * -CARD_OFFSET,
-							scale: 1 - index * SCALE_FACTOR, // decrease scale for cards that are behind
-							zIndex: cards.length - index, //  decrease z-index for the cards that are behind
+							scale: 1 - index * SCALE_FACTOR,
+							zIndex: cards.length - index,
 						}}
 					>
-						{/* {index === 0 && (
-							<svg
-								key={card.id}
-								className="absolute inset-0 z-20 w-full h-full pointer-events-none"
-								viewBox="0 0 600 232" // Matches your card width & height
-								fill="none"
-								xmlns="http://www.w3.org/2000/svg"
-							>
-								<motion.rect
-									x="1.5"
-									y="1.5"
-									width="598" // 600 - (1.5 * 2)
-									height="229" // 232 - (1.5 * 2)
-									rx="22.5" // Reduce slightly if needed
-									stroke="#B05BEF"
-									strokeWidth="3"
-									initial={{ pathLength: 0 }}
-									animate={{ pathLength: 1 }}
-									transition={{ duration: 10, ease: "linear" }}
-								/>
-							</svg>
-						)} */}
 						<div>
-							<p className="text-violet-light-ryzr font-semibold text-4xl">
+							<p className="text-violet-light-ryzr font-semibold text-xl md:text-3xl lg:text-4xl">
 								{card.heading}
 							</p>
-							<p className="text-black font-normal text-[32px]">
+							<p className="text-black font-normal text-lg md:text-2xl lg:text-3xl xl:text-[32px]">
 								{card.subheading}
 							</p>
 						</div>
-						<div className="font-light text-2xl text-[#8A8A8A] text-justify">
+						<div className="font-light text-sm md:text-lg lg:text-xl xl:text-2xl text-[#8A8A8A] text-justify">
 							{card.content}
 						</div>
 					</motion.div>
