@@ -165,14 +165,13 @@ function Home() {
 								loop
 								playsInline
 								controls={false}
-								className="block w-full h-full bg-transparent"
+								className="block w-full h-full bg-transparent opacity-50"
 							>
 								<source
-									src="/assets/200w-ezgif.com-gif-to-mp4-converter.mp4"
-									type="video/mp4"
+									src="/assets\com-gif-to-mp4-converter-unscreen-ezgif.com-gif-to-webm-converter.webm"
+									type="video/webm"
 								/>
 							</video>
-							<div className="absolute inset-0 bg-black opacity-50 z-20" />
 							<div className="absolute inset-0 flex items-center justify-center z-30">
 								<h1 className="text-[10vw] lg:text-8xl font-bold text-white bg-transparent px-6 py-4 rounded-lg tracking-wide">
 									Ryzr.
