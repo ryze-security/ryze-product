@@ -7,6 +7,7 @@ import MeterIcon from "@/components/home/MeterIcon";
 import Navbar from "@/components/home/Navbar";
 import ReportIcon from "@/components/home/ReportIcon";
 import SandglassIcon from "@/components/home/SandglassIcon";
+import Component from "@/components/scroll-card";
 import {
 	Accordion,
 	AccordionContent,
@@ -149,6 +150,7 @@ function Home() {
 
 	return (
 		<div className="min-h-screen font-roboto w-full overflow-x-hidden overflow-y-hidden lg:overflow-y-auto relative">
+			{/* TODO: Remove border */}
 			<Navbar items={items} />
 
 			{/* Main Hero Section */}
@@ -181,7 +183,7 @@ function Home() {
 
 					{/* CTA Button and Tagline */}
 					<section className="w-full text-center px-4 mt-8">
-						<p className="text-2xl md:text-5xl font-bold max-w-4xl mx-auto mb-4 md:mb-6 leading-relaxed tracking-wide">
+						<p className="text-lg md:text-5xl font-bold max-w-4xl mx-auto mb-4 md:mb-6 leading-relaxed tracking-wide">
 							Transforming security reviews
 							<br />
 							<span className="bg-[linear-gradient(to_right,#7030A0,#DA3D49,#EB7135,#1AC7F7,#EB7135,#DA3D49,#7030A0)] bg-clip-text text-transparent animate-gradient leading-relaxed">
@@ -189,7 +191,7 @@ function Home() {
 							</span>
 						</p>
 						<Link to="/login">
-							<Button className="font-roboto font-semibold text-base rounded-full md:px-9 md:py-5 px-5 py-4 h-9 md:min-h-12 tracking-wide">
+							<Button className="font-roboto font-semibold text-xs md:text-base rounded-full md:px-9 md:py-5 px-3 py-4 h-9 md:min-h-12 tracking-wide max-sm:scale-95">
 								Get Started <MoveRightIcon />
 							</Button>
 						</Link>
@@ -198,7 +200,7 @@ function Home() {
 					{/* Product Image with Glow */}
 					<section className="w-full flex justify-center mt-8 lg:mt-12 px-4">
 						<div className="relative w-[90vw] lg:w-[80vw] aspect-[12/7] rounded-3xl bg-gradient-to-b from-[#5F5F5F] to-transparent z-10">
-							<div className="absolute w-[150vw] h-[175vw] md:w-[140vw] md:h-[80vw] -z-10 top-1.5 md:top-1/2 left-1/2 -translate-x-1/2 lg:-translate-y-1/4 pointer-events-none bg-[radial-gradient(ellipse_at_center,#000000_60%,#B05BEF_100%)] rounded-full" />
+							<div className="absolute w-[150vw] h-[175vw] max-h-[800px] lg:max-h-[1000px] md:w-[140vw] lg:h-[80vw] -z-10 top-1.5 lg:top-1/2 left-1/2 -translate-x-1/2 lg:-translate-y-1/4 pointer-events-none bg-[radial-gradient(ellipse_at_center,#000000_60%,#B05BEF_100%)] rounded-full" />
 							<img
 								src="/assets/Product image.png"
 								alt="Product image"
@@ -211,37 +213,11 @@ function Home() {
 			</FadeInSection>
 
 			{/* Advantages Section */}
-			<section className="relative w-full grid md:grid-cols-3 gap-10 px-4 mt-12 z-10">
+			<section className="relative w-full grid md:grid-cols-3 gap-10 px-4 xl:px-24 mt-12 z-10">
 				{[
 					{
 						icon: (
-							<CashIcon className="max-w-9 md:min-w-11 max-h-[40px] md:min-h-[50px]" />
-						),
-						text: (
-							<>
-								<span className="text-violet-light-ryzr">
-									Cut costs
-								</span>{" "}
-								tied to low value documentation reviews
-							</>
-						),
-					},
-					{
-						icon: (
-							<SandglassIcon className="max-w-9 md:min-w-11 max-h-[40px] md:min-h-[50px]" />
-						),
-						text: (
-							<>
-								Cut compliance time from{" "}
-								<span className="text-violet-light-ryzr">
-									months to hours
-								</span>
-							</>
-						),
-					},
-					{
-						icon: (
-							<FileText className="min-w-9 md:min-w-11 min-h-[40px] md:min-h-[50px] text-[#666666]" />
+							<FileText className="min-w-9 md:min-w-11 min-h-[40px] lg:min-h-[50px] text-[#666666]" />
 						),
 						text: (
 							<>
@@ -252,11 +228,37 @@ function Home() {
 							</>
 						),
 					},
+					{
+						icon: (
+							<CashIcon className="max-w-9 md:min-w-11 max-h-[40px] lg:min-h-[50px]" />
+						),
+						text: (
+							<>
+								<span className="text-violet-light-ryzr">
+									Reduce costs
+								</span>{" "}
+								tied to low value documentation reviews
+							</>
+						),
+					},
+					{
+						icon: (
+							<SandglassIcon className="max-w-9 md:min-w-11 max-h-[40px] lg:min-h-[50px]" />
+						),
+						text: (
+							<>
+								Cut compliance time from{" "}
+								<span className="text-violet-light-ryzr">
+									months to hours
+								</span>
+							</>
+						),
+					},
 				].map((item, idx) => (
 					<FadeInSection delay={idx * 0.4} key={idx}>
 						<div className="flex gap-6 max-w-[90vw] h-full md:max-w-md items-center">
 							{item.icon}
-							<p className="text-white align-middle text-wrap text-base lg:text-xl">
+							<p className="text-white align-middle text-wrap text-base md:text-sm lg:text-lg xl:text-xl">
 								{item.text}
 							</p>
 						</div>
@@ -268,7 +270,7 @@ function Home() {
 			<section className="relative z-10 w-full mt-12 bg-white min-h-[30vh] lg:min-h-[60vh] flex flex-col lg:flex-row max-lg:bg-gradient-to-t from-violet-light-ryzr to-white">
 				<div className="w-full lg:w-[49%]">
 					<div className="py-12 px-6 md:py-20 lg:px-24 text-black">
-						<h2 className="font-semibold text-3xl lg:text-[4vw] leading-tight tracking-tight">
+						<h2 className="font-semibold text-3xl lg:text-[56px] leading-none tracking-tight">
 							<FadeInSection>
 								AI agent that{" "}
 								<span className="text-violet-light-ryzr">
@@ -290,10 +292,11 @@ function Home() {
 						</FadeInSection>
 					</div>
 				</div>
+				{/* TODO: change this stack to trigger card change on scroll */}
 				<div className="w-full lg:w-[51%] lg:bg-gradient-to-b from-violet-light-ryzr to-transparent flex justify-center items-center">
 					<FadeInSection delay={0.4}>
 						<div className="w-fit mx-auto lg:mt-0 my-8">
-							<CardStack items={FeatureCARDS} />
+							<CardStack offset={-10} items={FeatureCARDS} />
 						</div>
 					</FadeInSection>
 				</div>
@@ -302,7 +305,7 @@ function Home() {
 			{/* Use Case Cards */}
 			<FadeInSection>
 				<section className="relative z-10 w-full mt-20 px-4 md:px-24 flex flex-col">
-					<h2 className="font-medium text-[33px] leading-9 lg:text-6xl md:text-5xl tracking-tighter">
+					<h2 className="font-medium text-[33px] leading-9 lg:leading-tight lg:text-6xl md:text-5xl tracking-tighter">
 						<span className="text-violet-light-ryzr">
 							Empower your team
 						</span>
@@ -384,14 +387,14 @@ function Home() {
 								<div className="flex flex-col md:flex-row gap-4 md:justify-between">
 									<div className="flex flex-col gap-2 w-full md:w-[48%]">
 										<p className="md:text-lg text-base font-medium">
-											Your Name{" "}
+											Name{" "}
 											<span className="text-rose-600">
 												*
 											</span>
 										</p>
 										<Input
 											className="bg-[#EBEBEB] h-14 w-full rounded-3xl border-0"
-											placeholder="Your Name"
+											placeholder="Name"
 										/>
 									</div>
 									<div className="flex flex-col gap-2 w-full md:w-[48%]">

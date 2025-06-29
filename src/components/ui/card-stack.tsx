@@ -40,7 +40,7 @@ export const CardStack = ({
 	};
 
 	return (
-		<div className="relative w-[90vw] lg:max-w-[400px] xl:max-w-[600px] h-[23vh] md:min-h-[190px] lg:min-h-[260px] xl:min-h-[240px]">
+		<div className="relative w-[90vw] lg:max-w-[400px] xl:max-w-[600px] h-[24vh] min-h-[155px] md:min-h-[200px] lg:min-h-[260px] xl:min-h-[250px]">
 			{cards.map((card, index) => {
 				return (
 					<motion.div
@@ -56,14 +56,14 @@ export const CardStack = ({
 						}}
 					>
 						<div>
-							<p className="text-violet-light-ryzr font-semibold text-xl md:text-3xl lg:text-4xl">
+							<p className="text-violet-light-ryzr font-semibold mb-[1vh] md:mb-[2.5vh] xl:mb-[2.8vh] text-xl md:text-3xl lg:text-4xl">
 								{card.heading}
 							</p>
 							<p className="text-black font-normal text-lg md:text-2xl lg:text-3xl xl:text-[32px]">
 								{card.subheading}
 							</p>
 						</div>
-						<div className="font-light text-sm md:text-lg lg:text-xl xl:text-2xl text-[#8A8A8A] text-justify">
+						<div className="font-light text-sm md:text-lg lg:text-xl xl:text-2xl text-[#999999] text-justify">
 							{card.content}
 						</div>
 					</motion.div>
