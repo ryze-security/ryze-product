@@ -71,25 +71,25 @@ function Home() {
 
 	const IconCards = [
 		{
-			icon: <MeetingIcon />,
+			icon: <MeetingIcon className="w-[60vw] md:w-full" />,
 			heading: "Client advisory & strategic consulting",
 			content:
 				"Conduct gap analysis of client practices vs industry standards & create remediation plans.",
 		},
 		{
-			icon: <MeterIcon width="287" />,
+			icon: <MeterIcon width="287" className="w-[60vw] md:w-full" />,
 			heading: "Third-party risk management",
 			content:
 				"Conduct comprehensive vendor due diligence, manage contact renewals & perform vendor edits.",
 		},
 		{
-			icon: <ReportIcon width="251" />,
+			icon: <ReportIcon width="251" className="w-[60vw] md:w-full" />,
 			heading: "Internal audit, policy review & enhancement",
 			content:
 				"Review internal policies for compliance with industry standards & framework.",
 		},
 		{
-			icon: <CertificateIcon width="293" />,
+			icon: <CertificateIcon width="293" className="w-[60vw] md:w-full"/>,
 			heading: "ISO certifications audit & assurance",
 			content:
 				"Conduct automated Stage 1 documentation reviews for IOS 27001 audits & policy alignment",
@@ -229,7 +229,7 @@ function Home() {
 					},
 					{
 						icon: (
-							<CashIcon className="max-w-9 md:min-w-11 max-h-[40px] lg:min-h-[50px]" />
+							<CashIcon className="min-w-9 max-w-9 md:max-w-11 md:min-w-11 max-h-[40px] lg:min-h-[50px]" />
 						),
 						text: (
 							<>
@@ -242,7 +242,7 @@ function Home() {
 					},
 					{
 						icon: (
-							<SandglassIcon className="max-w-9 md:min-w-11 max-h-[40px] lg:min-h-[50px]" />
+							<SandglassIcon className="min-w-9 max-w-9 md:max-w-11 md:min-w-11 max-h-[40px] lg:min-h-[50px]" />
 						),
 						text: (
 							<>
@@ -257,7 +257,7 @@ function Home() {
 					<FadeInSection delay={idx * 0.4} key={idx}>
 						<div className="flex gap-6 max-w-[90vw] h-full md:max-w-md items-center">
 							{item.icon}
-							<p className="text-white align-middle text-wrap text-base md:text-sm lg:text-lg xl:text-xl">
+							<p className="text-white align-middle text-wrap text-sm lg:text-lg xl:text-xl">
 								{item.text}
 							</p>
 						</div>
@@ -347,7 +347,7 @@ function Home() {
 							delay={isMobile ? 0 : (index + 1) * 0.2}
 							key={index}
 						>
-							<div className="md:min-h-[503px] min-w-[360px] md:min-w-[440px] bg-white rounded-3xl px-6 py-8 flex flex-col">
+							<div className="md:min-h-[503px] min-w-[80vw] max-md:w-[80vw] md:min-w-[440px] bg-white rounded-3xl px-6 py-8 flex flex-col">
 								<h2 className="font-semibold text-black text-2xl md:text-4xl tracking-tight leading-7">
 									{card.heading}
 								</h2>
