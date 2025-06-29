@@ -40,7 +40,8 @@ export const CardStack = ({
 	};
 
 	return (
-		<div className="relative w-[90vw] lg:max-w-[400px] xl:max-w-[600px] h-[24vh] min-h-[155px] md:min-h-[200px] lg:min-h-[260px] xl:min-h-[250px]">
+		<div className="relative w-[90vw] lg:max-w-[400px] xl:max-w-[600px] h-[24vh] min-h-[155px]
+		max-h-[170px] md:min-h-[220px] lg:min-h-[260px] xl:min-h-[250px]">
 			{cards.map((card, index) => {
 				return (
 					<motion.div
