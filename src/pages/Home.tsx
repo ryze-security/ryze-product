@@ -18,7 +18,14 @@ import { Button } from "@/components/ui/button";
 import { CardStack } from "@/components/ui/card-stack";
 import { Input } from "@/components/ui/input";
 import { useIsMobile } from "@/utils/useIsMobile";
-import { ChevronLeft, ChevronRight, FileText, Heading, icons, MoveRightIcon } from "lucide-react";
+import {
+	ChevronLeft,
+	ChevronRight,
+	FileText,
+	Heading,
+	icons,
+	MoveRightIcon,
+} from "lucide-react";
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 
@@ -89,7 +96,9 @@ function Home() {
 				"Review internal policies for compliance with industry standards & framework.",
 		},
 		{
-			icon: <CertificateIcon width="293" className="w-[60vw] md:w-full"/>,
+			icon: (
+				<CertificateIcon width="293" className="w-[60vw] md:w-full" />
+			),
 			heading: "ISO certifications audit & assurance",
 			content:
 				"Conduct automated Stage 1 documentation reviews for IOS 27001 audits & policy alignment",
@@ -182,15 +191,29 @@ function Home() {
 
 					{/* CTA Button and Tagline */}
 					<section className="w-full text-center px-4 mt-8">
-						<p className="text-lg md:text-5xl font-bold max-w-4xl mx-auto mb-4 md:mb-6 leading-relaxed tracking-wide">
+						<p className="text-[5vw] md:text-5xl font-bold max-w-4xl mx-auto mb-4 md:mb-6 leading-relaxed tracking-wide">
 							Transforming security reviews
 							<br />
 							<span className="bg-[linear-gradient(to_right,#7030A0,#DA3D49,#EB7135,#1AC7F7,#EB7135,#DA3D49,#7030A0)] bg-clip-text text-transparent animate-gradient leading-relaxed">
 								with speed and precision
 							</span>
 						</p>
-						<Link to="/login">
-							<Button className="font-roboto font-semibold text-xs md:text-base rounded-full md:px-9 md:py-5 px-3 py-4 h-9 md:min-h-12 tracking-wide max-sm:scale-95">
+						<Link
+							to="/login"
+						>
+							<Button
+								className="font-roboto font-semibold 
+											text-[clamp(0.75rem,2.3vw,1rem)] 
+											rounded-full 
+											px-[clamp(0.7rem,5vw,2rem)] 
+											py-[clamp(0.5rem,2vh,1rem)] 
+											min-h-[2.15rem] 
+											min-w-[8rem] 
+											w-[20vw]
+											tracking-wide 
+											transition-transform 
+											hover:scale-[1.03] sm:w-fit"
+							>
 								Get Started <MoveRightIcon />
 							</Button>
 						</Link>
@@ -405,7 +428,8 @@ function Home() {
 										</p>
 										<Input
 											className="bg-[#EBEBEB] h-14 w-full rounded-3xl border-0"
-											placeholder="Email" type="email"
+											placeholder="Email"
+											type="email"
 										/>
 									</div>
 								</div>
