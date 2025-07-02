@@ -1,4 +1,5 @@
 import NavHeader from "@/components/evaluation_details/nav-header";
+import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -8,7 +9,13 @@ import {
 import { RoundSpinner } from "@/components/ui/spinner";
 import { useToast } from "@/hooks/use-toast";
 import { domainResponse } from "@/models/evaluation/EvaluationDTOs";
+import {
+	createReportDTO,
+	createStartReportResponseDTO,
+	startReportDTO,
+} from "@/models/reports/ExcelDTOs";
 import evaluationService from "@/services/evaluationServices";
+import reportsService, { ReportsService } from "@/services/reportsServices";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadEvaluationData } from "@/store/slices/evaluationSlice";
 import {
@@ -50,6 +57,8 @@ function EvaluationDetails() {
 	const [domainDataMap, setDomainDataMap] = useState<
 		Record<string, domainResponse>
 	>({});
+	const [reportID, setReportID] = useState<string>("");
+	const [isReportGenerating, setIsReportGenerating] = useState(false);
 
 	const { data, status, error } = useAppSelector((state) => state.evaluation);
 
@@ -195,6 +204,58 @@ function EvaluationDetails() {
 		}
 	};
 
+	const generateExcelReport = async () => {
+		setIsReportGenerating(true);
+		const reportData: createReportDTO = {
+			tenant_id: data.data.TenantId,
+			company_id: data.data.CompanyId,
+			evaluation_id: data.data.EvaluationId,
+			report_type: "Observations",
+			created_by: "SYSTEM",
+		};
+
+		try {
+			const response: createStartReportResponseDTO =
+				await reportsService.createExcelReport(reportData);
+			if (response.report_id) {
+				const startReportBody: startReportDTO = {
+					tenant_id: data.data.TenantId,
+					company_id: data.data.CompanyId,
+				};
+				try {
+					const startResponse = await reportsService.startExcelReport(
+						response.report_id,
+						startReportBody
+					);
+					if (startResponse) {
+						setReportID(response.report_id);
+						toast({
+							title: `Report Generation Started`,
+							description: `Your report is being generated. You will be notified once it's ready.`,
+							variant: "default",
+							className: "bg-green-ryzr",
+						});
+					}
+				} catch (error) {
+					toast({
+						title: `Error starting report generation`,
+						description: `There was an error while starting the report generation. Please try again later!`,
+						variant: "destructive",
+					});
+					console.error("Error starting report generation:", error);
+				}
+			}
+		} catch (error) {
+			toast({
+				title: `Error creating report`,
+				description: `There was an error while creating the report. Please try again later!`,
+				variant: "destructive",
+			});
+		} finally {
+			setIsReportGenerating(false);
+		}
+	};
+
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
 			<section className="flex justify-between items-center w-full bg-black text-white pt-10 px-6 sm:px-12 lg:px-16">
@@ -212,7 +273,9 @@ function EvaluationDetails() {
 							Generate <ArrowDown className="w-4 h-4" />
 						</DropdownMenuTrigger>
 						<DropdownMenuContent>
-							<DropdownMenuItem>Report(.xlxs)</DropdownMenuItem>
+							<DropdownMenuItem onClick={generateExcelReport}>
+								Report(.xlxs)
+							</DropdownMenuItem>
 							<DropdownMenuItem>
 								Exec. summary(.pptx)
 							</DropdownMenuItem>
