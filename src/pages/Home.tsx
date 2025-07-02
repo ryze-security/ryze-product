@@ -16,7 +16,12 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { CardStack } from "@/components/ui/card-stack";
+import confetti from "canvas-confetti";
 import { Input } from "@/components/ui/input";
+import { RoundSpinner } from "@/components/ui/spinner";
+import { useToast } from "@/hooks/use-toast";
+import { contactUsBodyDTO } from "@/models/landing_page/contact_usDTOs";
+import landingPageService from "@/services/landingPageServices";
 import { useIsMobile } from "@/utils/useIsMobile";
 import {
 	ChevronLeft,
@@ -26,10 +31,25 @@ import {
 	icons,
 	MoveRightIcon,
 } from "lucide-react";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 
+type ContactUsInputs = {
+	name: string;
+	email: string;
+	companyName?: string;
+};
+
 function Home() {
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<ContactUsInputs>();
+
+	const { toast } = useToast();
+
 	const items = [
 		{ label: "Home", href: "/", disabled: false },
 		{ label: "About", href: "/about", disabled: false },
@@ -148,13 +168,75 @@ function Home() {
 
 	const isMobile = useIsMobile();
 
+	const [isContactSubmitting, setIsContactSubmitting] = useState(false);
+
 	const scrollRef = useRef<HTMLDivElement>(null);
+	const formBodyRef = useRef<HTMLDivElement>(null);
 
 	const scrollLeft = () => {
 		scrollRef.current?.scrollBy({ left: -550, behavior: "smooth" });
 	};
 	const scrollRight = () => {
 		scrollRef.current?.scrollBy({ left: 550, behavior: "smooth" });
+	};
+
+	const handleCelebrate = () => {
+		const end = Date.now() + 0.5 * 1000; // 3 seconds
+		const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
+
+		const frame = () => {
+			if (Date.now() > end) return;
+			const rect = formBodyRef.current?.getBoundingClientRect();
+
+			const x = (rect.left + rect.width / 2) / window.innerWidth;
+			const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+			const origin = { x, y };
+
+			confetti({
+				particleCount: 2,
+				angle: 90,
+				spread: 75,
+				startVelocity: 60,
+				origin: {x: (rect.left + rect.width / 2) / window.innerWidth, y: (rect.top + rect.height) / window.innerHeight},
+				colors: colors,
+			});
+
+			requestAnimationFrame(frame);
+		};
+
+		frame();
+	};
+
+	const onContactUsSubmit: SubmitHandler<ContactUsInputs> = async (data) => {
+		setIsContactSubmitting(true);
+		const contactUsBody: contactUsBodyDTO = {
+			email: data.email,
+			details: `Name: ${data.name}, Company: ${
+				data.companyName || "N/A"
+			}`,
+		};
+		try {
+			const response = await landingPageService.contactUs(contactUsBody);
+			if (response) {
+				handleCelebrate();
+				toast({
+					title: "Thank you for contacting us!",
+					description:
+						"We will get back to you soon.",
+					className: "bg-green-ryzr text-white",
+				});
+			}
+		} catch (error) {
+			toast({
+				title: "Error",
+				description:
+					"Failed to submit contact form. Please try again later.",
+				variant: "destructive",
+			});
+		} finally {
+			setIsContactSubmitting(false);
+		}
 	};
 
 	return (
@@ -197,9 +279,7 @@ function Home() {
 								with speed and precision
 							</span>
 						</p>
-						<Link
-							to="/login"
-						>
+						<Link to="/login">
 							<Button
 								className="font-roboto font-semibold 
 											text-[clamp(0.75rem,2.3vw,1rem)] 
@@ -403,50 +483,80 @@ function Home() {
 							</p>
 						</div>
 						<div className="w-full md:w-[52%] p-8 pt-0 md:pt-8 lg:pt-12 lg:p-12">
-							<div className="flex flex-col gap-4 md:gap-8 text-black">
-								<div className="flex flex-col md:flex-row gap-4 md:justify-between">
-									<div className="flex flex-col gap-2 w-full md:w-[48%]">
+							<form onSubmit={handleSubmit(onContactUsSubmit)}>
+								<div
+									className="flex flex-col gap-4 md:gap-8 text-black"
+									ref={formBodyRef}
+								>
+									<div className="flex flex-col md:flex-row gap-4 md:justify-between">
+										<div className="flex flex-col gap-2 w-full md:w-[48%]">
+											<p className="md:text-lg text-base font-medium">
+												Name{" "}
+												<span className="text-rose-600">
+													*
+												</span>
+											</p>
+											<Input
+												className={`bg-[#EBEBEB] h-14 w-full rounded-3xl border-0 ${
+													errors.name
+														? "border-2 border-rose-500"
+														: ""
+												}`}
+												placeholder="Name"
+												{...register("name", {
+													required: true,
+												})}
+												type="text"
+											/>
+										</div>
+										<div className="flex flex-col gap-2 w-full md:w-[48%]">
+											<p className="md:text-lg text-base font-medium">
+												Email{" "}
+												<span className="text-rose-600">
+													*
+												</span>
+											</p>
+											<Input
+												className={`bg-[#EBEBEB] h-14 w-full rounded-3xl border-0 ${
+													errors.email
+														? "border-2 border-rose-500"
+														: ""
+												}`}
+												placeholder="Email"
+												type="email"
+												{...register("email", {
+													required: true,
+												})}
+											/>
+										</div>
+									</div>
+									<div className="flex flex-col gap-2">
 										<p className="md:text-lg text-base font-medium">
-											Name{" "}
-											<span className="text-rose-600">
-												*
+											Company Name{" "}
+											<span className="text-[#5A5A5A]">
+												(optional)
 											</span>
 										</p>
 										<Input
 											className="bg-[#EBEBEB] h-14 w-full rounded-3xl border-0"
-											placeholder="Name"
+											placeholder="Company Name"
+											type="text"
+											{...register("companyName")}
 										/>
 									</div>
-									<div className="flex flex-col gap-2 w-full md:w-[48%]">
-										<p className="md:text-lg text-base font-medium">
-											Email{" "}
-											<span className="text-rose-600">
-												*
-											</span>
-										</p>
-										<Input
-											className="bg-[#EBEBEB] h-14 w-full rounded-3xl border-0"
-											placeholder="Email"
-											type="email"
-										/>
-									</div>
+									<Button
+										className="w-full bg-violet-light-ryzr h-14 rounded-full py-5 px-9 text-white font-semibold md:text-xl text-lg hover:bg-violet-ryzr"
+										type="submit"
+										disabled={isContactSubmitting}
+									>
+										{isContactSubmitting ? (
+											<RoundSpinner />
+										) : (
+											"Submit"
+										)}
+									</Button>
 								</div>
-								<div className="flex flex-col gap-2">
-									<p className="md:text-lg text-base font-medium">
-										Company Name{" "}
-										<span className="text-[#5A5A5A]">
-											(optional)
-										</span>
-									</p>
-									<Input
-										className="bg-[#EBEBEB] h-14 w-full rounded-3xl border-0"
-										placeholder="Company Name"
-									/>
-								</div>
-								<Button className="w-full bg-violet-light-ryzr h-14 rounded-full py-5 px-9 text-white font-semibold md:text-xl text-lg hover:bg-violet-ryzr">
-									Submit
-								</Button>
-							</div>
+							</form>
 						</div>
 					</div>
 				</section>
