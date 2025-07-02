@@ -25,3 +25,18 @@ export interface reportResultDTO {
 	created_by: string;
 	results: any[];
 }
+
+export interface reportResultListDTO {
+	evaluation_id: string;
+	total_count: number;
+	reports: [
+		{
+			report_id: string;
+			eval_id: string;
+			report_type: string;
+			processing_status: string;
+			created_at: string;
+			created_by: string;
+		}
+	];
+}

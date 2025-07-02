@@ -7,7 +7,7 @@ import {
 } from "@/models/evaluation/EvaluationDTOs";
 import evaluationService from "@/services/evaluationServices";
 import { ColumnDef } from "@tanstack/react-table";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -16,93 +16,193 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArrowDown, Ellipsis } from "lucide-react";
-
-const columns: ColumnDef<Evaluation>[] = [
-	{
-		accessorKey: "tg_company_display_name",
-		header: "Auditee Title",
-	},
-	{
-		accessorKey: "collection_display_name",
-		header: "Controls",
-	},
-	{
-		accessorKey: "overall_score",
-		header: "Evaluation Score",
-	},
-	{
-		accessorKey: "processing_status",
-		header: ({ column }) => {
-			return (
-				<DropdownMenu>
-					<DropdownMenuTrigger className="p-0 hover:bg-transparent hover:text-white/70 text-base flex justify-between items-center gap-2">
-						Status
-						<Ellipsis className="h-4 w-4" />
-					</DropdownMenuTrigger>
-					<DropdownMenuContent>
-					<DropdownMenuLabel>Filter by status</DropdownMenuLabel>
-					<DropdownMenuSeparator />
-						<DropdownMenuItem
-							onClick={() => column.setFilterValue("pending")}
-						>
-							<span
-								className={`px-2 py-1 rounded bg-yellow-600`}
-							>
-								Pending
-							</span>
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							onClick={() => column.setFilterValue("completed")}
-						>
-							<span
-								className={`px-2 py-1 rounded bg-green-ryzr`}
-							>
-								Completed
-							</span>
-						</DropdownMenuItem>
-						<DropdownMenuItem
-							onClick={() => column.setFilterValue("failed")}
-						>
-							<span
-								className={`px-2 py-1 rounded bg-red-ryzr`}
-							>
-								Failed
-							</span>
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			);
-		},
-		cell: ({ row }) => {
-			const evals: string = row.getValue("processing_status");
-			return (
-				<span
-					className={`px-2 py-1 rounded ${
-						evals === "completed"
-							? "bg-green-ryzr"
-							: evals === "failed"
-							? "bg-red-ryzr"
-							: "bg-yellow-600"
-					}`}
-				>
-					{evals.charAt(0).toUpperCase() + evals.slice(1)}
-				</span>
-			);
-		},
-	},
-	{
-		accessorKey: "created_at",
-		header: "Conducted On",
-	},
-	{
-		accessorKey: "created_by",
-		header: "Created By",
-	},
-];
+import {
+	ArrowDown,
+	ChevronsUpDown,
+	Ellipsis,
+	MoreHorizontal,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+	reportResultDTO,
+	reportResultListDTO,
+} from "@/models/reports/ExcelDTOs";
+import reportsService from "@/services/reportsServices";
+import { RoundSpinner } from "@/components/ui/spinner";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import * as dfd from "danfojs";
 
 function EvaluationDashboard() {
+	const [reportList, setReportList] =
+		React.useState<reportResultListDTO>(null);
 	const { toast } = useToast();
+
+	const columns: ColumnDef<Evaluation>[] = [
+		{
+			accessorKey: "tg_company_display_name",
+			header: "Auditee Title",
+		},
+		{
+			accessorKey: "collection_display_name",
+			header: "Controls",
+		},
+		{
+			accessorKey: "overall_score",
+			header: "Evaluation Score",
+		},
+		{
+			accessorKey: "processing_status",
+			header: ({ column }) => {
+				return (
+					<DropdownMenu>
+						<DropdownMenuTrigger className="p-0 hover:bg-transparent hover:text-white/70 text-base flex justify-between items-center gap-2">
+							Status
+							<Ellipsis className="h-4 w-4" />
+						</DropdownMenuTrigger>
+						<DropdownMenuContent>
+							<DropdownMenuLabel>
+								Filter by status
+							</DropdownMenuLabel>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem
+								onClick={() => column.setFilterValue("pending")}
+							>
+								<span
+									className={`px-2 py-1 rounded bg-yellow-600`}
+								>
+									Pending
+								</span>
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() =>
+									column.setFilterValue("completed")
+								}
+							>
+								<span
+									className={`px-2 py-1 rounded bg-green-ryzr`}
+								>
+									Completed
+								</span>
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() => column.setFilterValue("failed")}
+							>
+								<span
+									className={`px-2 py-1 rounded bg-red-ryzr`}
+								>
+									Failed
+								</span>
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				);
+			},
+			cell: ({ row }) => {
+				const evals: string = row.getValue("processing_status");
+				return (
+					<span
+						className={`px-2 py-1 rounded ${
+							evals === "completed"
+								? "bg-green-ryzr"
+								: evals === "failed"
+								? "bg-red-ryzr"
+								: "bg-yellow-600"
+						}`}
+					>
+						{evals.charAt(0).toUpperCase() + evals.slice(1)}
+					</span>
+				);
+			},
+		},
+		{
+			accessorKey: "created_at",
+			header: "Conducted On",
+		},
+		{
+			accessorKey: "created_by",
+			header: "Created By",
+		},
+		{
+			id: "actions",
+			enableHiding: false,
+			cell: ({ row }) => {
+				const evaluation = row.original;
+				return (
+					<DropdownMenu>
+						<DropdownMenuTrigger
+							asChild
+							onClick={(e) => e.stopPropagation()} // Prevent row click
+						>
+							<Button variant="ghost" className="h-8 w-8 p-0">
+								<span className="sr-only">Open menu</span>
+								<MoreHorizontal />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent
+							align="end"
+							onClick={(e) => e.stopPropagation()} // Prevent row click
+						>
+							<DropdownMenuLabel>Actions</DropdownMenuLabel>
+							<DropdownMenuItem
+								onSelect={(e) => e.preventDefault()}
+								onClick={async (e) => {
+									e.stopPropagation();
+									setReportDialogOpen(true);
+									try {
+										const response =
+											await reportsService.getReportList(
+												"7077beec-a9ef-44ef-a21b-83aab58872c9",
+												evaluation.tg_company_id,
+												evaluation.eval_id
+											);
+										if (response.total_count === 0) {
+											toast({
+												title: "No reports found",
+												description:
+													"No reports have been generated for this evaluation.",
+												variant: "default",
+											});
+											setReportDialogOpen(false);
+										} else {
+											setReportList(response);
+											setReportCompanyName(
+												evaluation.tg_company_id
+											);
+										}
+									} catch (error) {
+										toast({
+											title: "Error",
+											description: `Failed to fetch reports. Please try again later!`,
+											variant: "destructive",
+										});
+									}
+								}}
+							>
+								Download Report
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				);
+			},
+		},
+	];
+
+	const [reportDialogOpen, setReportDialogOpen] = useState<boolean>(false);
+	const [reportCompanyName, setReportCompanyName] = React.useState<
+		string | null
+	>(null);
 
 	const [evaluations, setEvaluations] =
 		React.useState<listEvaluationsDTO | null>({
@@ -110,6 +210,8 @@ function EvaluationDashboard() {
 			total_count: 0,
 		});
 	const [isEvalLoading, setIsEvalLoading] = React.useState<boolean>(false);
+	const [isReportGenerating, setIsReportGenerating] =
+		React.useState<boolean>(false);
 
 	useEffect(() => {
 		async function fetchEvaluations() {
@@ -180,6 +282,150 @@ function EvaluationDashboard() {
 					rowLinkPrefix="/evaluation/"
 					isLoading={isEvalLoading}
 				/>
+				<Dialog
+					open={reportDialogOpen}
+					onOpenChange={(isOpen) => {
+						setReportDialogOpen(isOpen);
+						if (!isOpen) {
+							setReportList(null);
+							setReportCompanyName(null);
+						}
+					}}
+				>
+					<DialogContent className="overflow-y-auto max-h-[90vh] h-fit scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-800">
+						<DialogHeader>
+							<DialogTitle>Download Reports</DialogTitle>
+							<DialogDescription>
+								Here you can download any report you generated
+								for this evaluation.
+							</DialogDescription>
+						</DialogHeader>
+						{!reportList ? (
+							<RoundSpinner />
+						) : (
+							<Collapsible className="flex w-[350px] flex-col gap-2">
+								<div className="flex items-center justify-between gap-4 px-4">
+									<h4 className="text-sm font-semibold">
+										This evaluation has{" "}
+										{reportList.total_count} reports.
+									</h4>
+									<CollapsibleTrigger asChild>
+										<Button
+											variant="ghost"
+											size="icon"
+											className="size-8"
+										>
+											<ChevronsUpDown />
+											<span className="sr-only">
+												Toggle
+											</span>
+										</Button>
+									</CollapsibleTrigger>
+								</div>
+								<Button
+									variant="ghost"
+									className="rounded-md border w-fit justify-start px-4 py-2 font-mono text-sm"
+									disabled={isReportGenerating}
+									onClick={async (e) => {
+										try {
+											setIsReportGenerating(true);
+											const response: reportResultDTO =
+												await reportsService.getExcelReportResult(
+													"7077beec-a9ef-44ef-a21b-83aab58872c9",
+													reportCompanyName,
+													reportList.reports[0]
+														.report_id
+												);
+											if (response) {
+												const df = new dfd.DataFrame(
+													response.results
+												);
+
+												dfd.toExcel(df, {
+													fileName: "report.xlsx",
+													sheetName:
+														"Evaluation Report",
+												});
+											}
+										} catch (error) {
+											toast({
+												title: "Error",
+												description: `Failed to download report. Please try again later!`,
+												variant: "destructive",
+											});
+										} finally {
+											setIsReportGenerating(false);
+										}
+									}}
+								>
+									{`${
+										reportList.reports[0].report_id
+									}  ${new Date(
+										reportList.reports[0].created_at
+									).toLocaleDateString()} ${new Date(
+										reportList.reports[0].created_at
+									).toLocaleTimeString()}`}
+								</Button>
+								<CollapsibleContent className="flex flex-col gap-2">
+									{reportList.reports
+										.slice(1)
+										.map((report, index) => (
+											<Button
+												variant="ghost"
+												key={index}
+												className="rounded-md border justify-start px-4 py-2 font-mono text-sm w-fit"
+												disabled={isReportGenerating}
+												onClick={async (e) => {
+													try {
+														setIsReportGenerating(
+															true
+														);
+														const response: reportResultDTO =
+															await reportsService.getExcelReportResult(
+																"7077beec-a9ef-44ef-a21b-83aab58872c9",
+																reportCompanyName,
+																report.report_id
+															);
+														if (response) {
+															const df =
+																new dfd.DataFrame(
+																	response.results
+																);
+
+															dfd.toExcel(df, {
+																fileName:
+																	"report.xlsx",
+																sheetName:
+																	"Evaluation Report",
+															});
+														}
+													} catch (error) {
+														toast({
+															title: "Error",
+															description: `Failed to download report. Please try again later!`,
+															variant:
+																"destructive",
+														});
+													} finally {
+														setIsReportGenerating(
+															false
+														);
+													}
+												}}
+											>
+												{`${
+													report.report_id
+												} ${new Date(
+													report.created_at
+												).toLocaleDateString()} 
+												${new Date(report.created_at).toLocaleTimeString()}`}
+											</Button>
+										))}
+								</CollapsibleContent>
+							</Collapsible>
+						)}
+					</DialogContent>
+				</Dialog>
 			</section>
 		</div>
 	);

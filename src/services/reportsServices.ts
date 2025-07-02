@@ -2,6 +2,7 @@ import {
 	createReportDTO,
 	createStartReportResponseDTO,
 	reportResultDTO,
+	reportResultListDTO,
 	startReportDTO,
 } from "@/models/reports/ExcelDTOs";
 import axios from "axios";
@@ -23,7 +24,7 @@ export class ReportsService {
 					},
 				}
 			);
-			if (response.status !== 200) {
+			if (response.status !== 201) {
 				throw response;
 			}
 			return response.data;
@@ -51,7 +52,7 @@ export class ReportsService {
 					},
 				}
 			);
-			if (response.status !== 200) {
+			if (response.status !== 202) {
 				throw response;
 			}
 			return response.data;
@@ -64,22 +65,50 @@ export class ReportsService {
 		}
 	}
 
-    async getExcelReportResult(tenant_id: string,company_id: string, report_id: string): Promise<reportResultDTO|any> {
-        try{
-            const response = await axios.get<reportResultDTO>(
-                `${config.ryzrApiURL}/api/v1/${tenant_id}/${company_id}/${report_id}`
-            );
-            if (response.status !== 200) {
-                throw response;
-            }
-            return response.data;
-        }
-        catch (error) {
-            const errorInfo = handleAxiosError(error);
-            console.error("Error fetching report result:", errorInfo.message);
+	async getExcelReportResult(
+		tenant_id: string,
+		company_id: string,
+		report_id: string
+	): Promise<reportResultDTO | any> {
+		try {
+			const response = await axios.get<reportResultDTO>(
+				`${config.ryzrApiURL}/api/v1/${tenant_id}/${company_id}/${report_id}`
+			);
+			if (response.status !== 200) {
+				throw response;
+			}
+			return response.data;
+		} catch (error) {
+			const errorInfo = handleAxiosError(error);
+			console.error("Error fetching report result:", errorInfo.message);
 
-            //rethrowing for conditional rendering
-            throw errorInfo;
-        }
-    }
+			//rethrowing for conditional rendering
+			throw errorInfo;
+		}
+	}
+
+	async getReportList(
+		tenant_id: string,
+		company_id: string,
+		eval_id: string
+	): Promise<reportResultListDTO | any> {
+		try {
+			const response = await axios.get<reportResultListDTO>(
+				`${config.ryzrApiURL}/api/v1/evaluation/${tenant_id}/${company_id}/${eval_id}`
+			);
+			if (response.status !== 200) {
+				throw response;
+			}
+			return response.data;
+		} catch (error) {
+			const errorInfo = handleAxiosError(error);
+			console.error("Error fetching report list:", errorInfo.message);
+
+			//rethrowing for conditional rendering
+			throw errorInfo;
+		}
+	}
 }
+
+const reportsService = new ReportsService();
+export default reportsService;
