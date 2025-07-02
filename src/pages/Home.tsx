@@ -159,7 +159,6 @@ function Home() {
 
 	return (
 		<div className="min-h-screen font-roboto w-full overflow-x-hidden overflow-y-hidden lg:overflow-y-auto relative">
-			{/* TODO: Remove border */}
 			<Navbar items={items} />
 
 			{/* Main Hero Section */}
@@ -177,8 +176,8 @@ function Home() {
 								className="block w-full h-full bg-transparent opacity-50"
 							>
 								<source
-									src="/assets\com-gif-to-mp4-converter-unscreen-ezgif.com-gif-to-webm-converter.webm"
-									type="video/webm"
+									src="/assets\200w-ezgif.com-gif-to-mp4-converter.mp4"
+									type="video/mp4"
 								/>
 							</video>
 							<div className="absolute inset-0 flex items-center justify-center z-30">
@@ -314,11 +313,10 @@ function Home() {
 						</FadeInSection>
 					</div>
 				</div>
-				{/* TODO: change this stack to trigger card change on scroll */}
 				<div className="w-full lg:w-[51%] lg:bg-gradient-to-b from-violet-light-ryzr to-transparent flex justify-center items-center">
 					<FadeInSection delay={0.4}>
 						<div className="w-fit mx-auto lg:mt-0 my-8">
-							<CardStack offset={-10} items={FeatureCARDS} />
+							<CardStack offset={20} items={FeatureCARDS} />
 						</div>
 					</FadeInSection>
 				</div>
