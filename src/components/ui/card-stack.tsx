@@ -33,27 +33,44 @@ export const CardStack = ({
 		interval = setInterval(() => {
 			setCards((prevCards: Card[]) => {
 				const newArray = [...prevCards]; // create a copy of the array
-				newArray.unshift(newArray.pop()!); // move the last element to the front
+				newArray.push(newArray.shift()!); // move the last element to the front
 				return newArray;
 			});
 		}, 5000);
 	};
 
 	return (
-		<div className="relative w-[90vw] lg:max-w-[400px] xl:max-w-[600px] h-[24vh] min-h-[155px]
-		max-h-[170px] md:min-h-[220px] lg:min-h-[260px] xl:min-h-[250px]">
+		<div
+			className="relative w-[90vw] lg:max-w-[400px] xl:max-w-[600px] h-[24vh] min-h-[155px]
+		max-h-[170px] md:min-h-[220px] lg:min-h-[260px] xl:min-h-[250px]"
+		>
 			{cards.map((card, index) => {
+				let animation = {
+					top: index * -CARD_OFFSET,
+					y:0,
+					opacity: index === 0 ? 0 : 1 - index * 0.1,
+					scale: 1 - index * SCALE_FACTOR,
+					zIndex: cards.length - index,
+				};
+
+				// Add downward movement for top card
+				if (index === 0) {
+					animation = {
+						...animation,
+						opacity: 1,
+					};
+				}
 				return (
 					<motion.div
 						key={card.id}
-						className="absolute bg-white h-full w-full rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-xl border border-neutral-200 shadow-black/[0.1] flex flex-col justify-between font-roboto"
+						className="absolute bg-white h-fit w-full rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-xl border border-neutral-200 shadow-black/[0.1] flex flex-col justify-between font-roboto"
 						style={{
 							transformOrigin: "top center",
 						}}
-						animate={{
-							top: index * -CARD_OFFSET,
-							scale: 1 - index * SCALE_FACTOR,
-							zIndex: cards.length - index,
+						animate={animation}
+						transition={{
+							duration: 1,
+							ease: "easeInOut",
 						}}
 					>
 						<div>

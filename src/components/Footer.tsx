@@ -66,7 +66,7 @@ function Footer(props: Props) {
 							Get Monthly insights on latest updates and security
 							tips.
 						</p>
-						<div className="bg-[#1E1E1E66] mt-5 flex flex-row justify-between rounded-full w-full md:w-full lg:w-[453px] md:h-fit h-[55px] p-2 gap-2 sm:gap-0">
+						<div className="bg-[#1E1E1E66] mt-5 flex flex-row justify-between rounded-full w-full md:w-full lg:w-[453px] md:h-fit min-h-[55px] h-fit p-2 gap-2 sm:gap-0">
 							<Input
 								type="email"
 								placeholder="Enter your email"
