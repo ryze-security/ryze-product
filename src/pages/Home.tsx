@@ -26,6 +26,7 @@ import { useIsMobile } from "@/utils/useIsMobile";
 import {
 	ChevronLeft,
 	ChevronRight,
+	Coins,
 	FileText,
 	Heading,
 	icons,
@@ -98,16 +99,16 @@ function Home() {
 
 	const IconCards = [
 		{
-			icon: <MeetingIcon className="w-[60vw] md:w-full" />,
-			heading: "Client advisory & strategic consulting",
-			content:
-				"Conduct gap analysis of client practices vs industry standards & create remediation plans.",
-		},
-		{
 			icon: <MeterIcon width="287" className="w-[60vw] md:w-full" />,
 			heading: "Third-party risk management",
 			content:
 				"Conduct comprehensive vendor due diligence, manage contact renewals & perform vendor edits.",
+		},
+		{
+			icon: <MeetingIcon className="w-[60vw] md:w-full" />,
+			heading: "Client advisory & strategic consulting",
+			content:
+				"Conduct gap analysis of client practices vs industry standards & create remediation plans.",
 		},
 		{
 			icon: <ReportIcon width="251" className="w-[60vw] md:w-full" />,
@@ -198,7 +199,10 @@ function Home() {
 				angle: 90,
 				spread: 75,
 				startVelocity: 60,
-				origin: {x: (rect.left + rect.width / 2) / window.innerWidth, y: (rect.top + rect.height) / window.innerHeight},
+				origin: {
+					x: (rect.left + rect.width / 2) / window.innerWidth,
+					y: (rect.top + rect.height) / window.innerHeight,
+				},
 				colors: colors,
 			});
 
@@ -222,8 +226,7 @@ function Home() {
 				handleCelebrate();
 				toast({
 					title: "Thank you for contacting us!",
-					description:
-						"We will get back to you soon.",
+					description: "We will get back to you soon.",
 					className: "bg-green-ryzr text-white",
 				});
 			}
@@ -263,7 +266,7 @@ function Home() {
 								/>
 							</video>
 							<div className="absolute inset-0 flex items-center justify-center z-30">
-								<h1 className="text-[10vw] lg:text-8xl font-bold text-white bg-transparent px-6 py-4 rounded-lg tracking-wide">
+								<h1 className="text-[13vw] md:text-[15vw] lg:text-9xl font-bold text-white bg-transparent px-6 py-4 rounded-lg tracking-wide">
 									Ryzr.
 								</h1>
 							</div>
@@ -272,16 +275,23 @@ function Home() {
 
 					{/* CTA Button and Tagline */}
 					<section className="w-full text-center px-4 mt-8">
-						<p className="text-[5vw] md:text-5xl font-bold max-w-4xl mx-auto mb-4 md:mb-6 leading-relaxed tracking-wide">
+						<p className="text-[5vw] md:text-5xl font-bold max-w-4xl mx-auto mb-1 md:mb-2 leading-relaxed tracking-wide">
 							Transforming security reviews
 							<br />
 							<span className="bg-[linear-gradient(to_right,#7030A0,#DA3D49,#EB7135,#1AC7F7,#EB7135,#DA3D49,#7030A0)] bg-clip-text text-transparent animate-gradient leading-relaxed">
 								with speed and precision
 							</span>
 						</p>
-						<Link to="/login">
-							<Button
-								className="font-roboto font-semibold 
+						<FadeInSection delay={0.2}>
+							<p className="text-[2.5vw] md:text-xl font-thin max-w-4xl mx-auto mb-4 md:mb-6 leading-relaxed tracking-wide opacity-80">
+								Power of AI. Delivered for Cybersecurity.
+							</p>
+						</FadeInSection>
+
+						<FadeInSection delay={0.6}>
+							<Link to="/login">
+								<Button
+									className="font-roboto font-semibold 
 											text-[clamp(0.75rem,2.3vw,1rem)] 
 											rounded-full 
 											px-[clamp(0.7rem,5vw,2rem)] 
@@ -292,10 +302,11 @@ function Home() {
 											tracking-wide 
 											transition-transform 
 											hover:scale-[1.03] sm:w-fit"
-							>
-								Get Started <MoveRightIcon />
-							</Button>
-						</Link>
+								>
+									Get Started <MoveRightIcon />
+								</Button>
+							</Link>
+						</FadeInSection>
 					</section>
 
 					{/* Product Image with Glow */}
@@ -314,7 +325,7 @@ function Home() {
 			</FadeInSection>
 
 			{/* Advantages Section */}
-			<section className="relative w-full grid md:grid-cols-3 gap-10 px-4 xl:px-24 mt-12 z-10">
+			<section className="relative w-full grid md:grid-cols-3 gap-10 px-4 lg:px-20 xl:px-24 mt-12 z-10">
 				{[
 					{
 						icon: (
@@ -331,12 +342,12 @@ function Home() {
 					},
 					{
 						icon: (
-							<CashIcon className="min-w-9 max-w-9 md:max-w-11 md:min-w-11 max-h-[40px] lg:min-h-[50px]" />
+							<Coins className="min-w-9 md:min-w-11 min-h-[40px] lg:min-h-[50px] text-[#666666]" />
 						),
 						text: (
 							<>
 								<span className="text-violet-light-ryzr">
-									Reduce costs
+									Save costs
 								</span>{" "}
 								tied to low value documentation reviews
 							</>
@@ -359,7 +370,7 @@ function Home() {
 					<FadeInSection delay={idx * 0.4} key={idx}>
 						<div className="flex gap-6 max-w-[90vw] h-full md:max-w-md items-center">
 							{item.icon}
-							<p className="text-white align-middle text-wrap text-sm lg:text-lg xl:text-xl">
+							<p className="text-white align-middle text-wrap text-base lg:text-xl xl:text-2xl">
 								{item.text}
 							</p>
 						</div>
@@ -405,14 +416,14 @@ function Home() {
 			{/* Use Case Cards */}
 			<FadeInSection>
 				<section className="relative z-10 w-full mt-20 px-4 md:px-24 flex flex-col">
-					<h2 className="font-medium text-[33px] leading-9 lg:leading-tight lg:text-6xl md:text-5xl tracking-tighter">
+					<h2 className="font-semibold text-[33px] leading-9 lg:leading-tight lg:text-6xl md:text-5xl tracking-tighter">
 						<span className="text-violet-light-ryzr">
 							Empower your team
 						</span>
 						<br />
 						without replacing their judgement
 					</h2>
-					<p className="mt-4 md:mt-6 text-[#9A9A9A] text-[17px] leading-6 md:text-xl lg:text-2xl tracking-tight">
+					<p className="mt-4 md:mt-6 text-[#9A9A9A] text-[17px] leading-6 md:text-xl lg:text-2xl tracking-tight font-normal">
 						Explore use cases that harness precise insights, saving
 						time, cutting costs, and boosting efficiency.
 					</p>
@@ -571,9 +582,9 @@ function Home() {
 								Frequently <br />
 								Asked Questions
 							</h2>
-							<p className="text-base md:text-[21px] mt-3 md:mt-6 text-[#9A9A9A] tracking-tight text-justify">
+							{/* <p className="text-base md:text-[21px] mt-3 md:mt-6 text-[#9A9A9A] tracking-tight text-justify">
 								Don't see the answers you're looking for?
-							</p>
+							</p> */}
 						</div>
 						<div className="w-full lg:w-[51%]">
 							{FAQs.map((faq, index) => (
