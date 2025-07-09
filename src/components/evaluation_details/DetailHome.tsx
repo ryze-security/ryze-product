@@ -13,7 +13,7 @@ import {
 } from "@tanstack/react-table";
 import { ProgressBarDataTable } from "../ProgressBarDataTable";
 import { Button } from "../ui/button";
-import { ArrowDownAZIcon, ArrowUpAZIcon, MoveLeft } from "lucide-react";
+import { ArrowDownAZIcon, ArrowUpAZIcon, ArrowUpDownIcon, MoveLeft } from "lucide-react";
 import QuestionForm from "./QuestionForm";
 import {
 	HoverCard,
@@ -67,7 +67,7 @@ const columns: ColumnDef<controlResponse>[] = [
 					) : column.getIsSorted() === "desc" ? (
 						<ArrowUpAZIcon className="h-4 w-4" />
 					) : (
-						""
+						<ArrowUpDownIcon className="h-4 w-4" />
 					)}
 				</Button>
 			);
@@ -94,7 +94,7 @@ const columns: ColumnDef<controlResponse>[] = [
 					) : column.getIsSorted() === "desc" ? (
 						<ArrowUpAZIcon className="h-4 w-4" />
 					) : (
-						""
+						<ArrowUpDownIcon className="h-4 w-4" />
 					)}
 				</Button>
 			);
@@ -163,7 +163,7 @@ const questionColumns: ColumnDef<questionResponse>[] = [
 					) : column.getIsSorted() === "desc" ? (
 						<ArrowUpAZIcon className="h-4 w-4" />
 					) : (
-						""
+						<ArrowUpDownIcon className="h-4 w-4" />
 					)}
 				</Button>
 			);
@@ -176,8 +176,25 @@ const questionColumns: ColumnDef<questionResponse>[] = [
 			const observation: string = row.original.Response.Observation;
 			return (
 				<span className="text-wrap">
-					{observation.split(" ").slice(0, 30).join(" ")}
-					{observation.split(" ").length > 30 && "..."}
+					{observation.split(" ").length > 30 ? (
+						<HoverCard>
+							<HoverCardTrigger className="text-left">
+								<span>
+									{observation
+										.split(" ")
+										.slice(0, 30)
+										.join(" ")}
+									{observation.split(" ").length > 30 &&
+										"..."}
+								</span>
+							</HoverCardTrigger>
+							<HoverCardContent className="bg-gray-ryzr">
+								<span className="w-20 ">{observation}</span>
+							</HoverCardContent>
+						</HoverCard>
+					) : (
+						observation
+					)}
 				</span>
 			);
 		},
