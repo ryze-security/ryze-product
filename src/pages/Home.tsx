@@ -102,19 +102,19 @@ function Home() {
 			icon: <MeterIcon width="287" className="w-[60vw] md:w-full" />,
 			heading: "Third-party risk management",
 			content:
-				"Conduct comprehensive vendor due diligence, manage contact renewals & perform vendor edits.",
+				"Conduct comprehensive vendor due diligence, manage contract renewals & perform vendor audits.",
 		},
 		{
 			icon: <MeetingIcon className="w-[60vw] md:w-full" />,
 			heading: "Client advisory & strategic consulting",
 			content:
-				"Conduct gap analysis of client practices vs industry standards & create remediation plans.",
+				"Conduct gap analysis of client practices vs industry standards & generate actionable reports.",
 		},
 		{
 			icon: <ReportIcon width="251" className="w-[60vw] md:w-full" />,
 			heading: "Internal audit, policy review & enhancement",
 			content:
-				"Review internal policies for compliance with industry standards & framework.",
+				"Review internal policies for compliance with industry standards & frameworks.",
 		},
 		{
 			icon: (
@@ -122,7 +122,7 @@ function Home() {
 			),
 			heading: "ISO certifications audit & assurance",
 			content:
-				"Conduct automated Stage 1 documentation reviews for IOS 27001 audits & policy alignment",
+				"Conduct automated Stage 1 documentation reviews for ISO 27001 audits & policy alignment.",
 		},
 	];
 
@@ -489,8 +489,8 @@ function Home() {
 							</h2>
 							<p className="text-base md:text-lg lg:text-lg xl:text-[21px] mt-6 text-[#9A9A9A] tracking-tight ">
 								We’d love to help customize your AI agent to fit
-								your unique risk and compliance needs—completely
-								free.
+								your unique risk and compliance needs—
+								<span className="text-violet-light-ryzr">completely free.</span>
 							</p>
 						</div>
 						<div className="w-full md:w-[52%] p-8 pt-0 md:pt-8 lg:pt-12 lg:p-12">
