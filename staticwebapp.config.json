@@ -1,6 +1,12 @@
 {
+	"routes": [
+		{
+			"route": "/api/*",
+			"rewrite": "https://ryzr-be-cwacd8a5c6c8d7bd.francecentral-01.azurewebsites.net/api/:*"
+		}
+	],
 	"navigationFallback": {
 		"rewrite": "/index.html",
-		"exclude": ["/api/*", "/static/*", "/images/*"]
+		"exclude": ["/api/*"]
 	}
 }
