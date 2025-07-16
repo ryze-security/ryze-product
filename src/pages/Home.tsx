@@ -26,15 +26,21 @@ import { useIsMobile } from "@/utils/useIsMobile";
 import {
 	ChevronLeft,
 	ChevronRight,
+	CloudUploadIcon,
 	Coins,
+	EditIcon,
+	FileEditIcon,
+	FilesIcon,
 	FileText,
 	Heading,
 	icons,
 	MoveRightIcon,
+	SearchIcon,
 } from "lucide-react";
 import React, { useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import TabbedFeatures, { Tab } from "@/components/home/TabbedFeatures";
 
 type ContactUsInputs = {
 	name: string;
@@ -58,41 +64,92 @@ function Home() {
 		{ label: "Disabled", href: "#", disabled: true },
 	];
 
-	const FeatureCARDS = [
+	const FeatureCARDS: Tab[] = [
 		{
-			id: 0,
-			heading: "Define.",
-			subheading: "Control Framework",
+			label: "Upload",
+			labelIcon: <CloudUploadIcon />,
 			content: (
-				<p>
-					Review documentation against leading standards and
-					frameworks like ISO 27001, NIST CSF and more - or define
-					your own custom framework.
-				</p>
+				<div className="flex flex-col gap-2">
+					<CloudUploadIcon className="w-12 h-12 mb-1" />
+					<h2 className="font-semibold text-[26px] md:text-3xl mb-1">
+						Upload Documents
+					</h2>
+					<span className="text-white font-light mb-2 bg-violet-ryzr text-sm md:text-base lg:text-lg w-fit rounded-3xl px-2">
+						All at once. In any format.
+					</span>
+					Drag and drop security policies, procedures, ISAE reports,
+					SOC Type 2 reports, SIG questionnaires, ISO 27001 SoA, etc.
+				</div>
 			),
 		},
 		{
-			id: 1,
-			heading: "Identify.",
-			subheading: "Gaps precisely",
+			label: "Define",
+			labelIcon: <EditIcon />,
 			content: (
-				<p>
-					Use AI to analyze security policies, SOC Type 2 reports, SIG
-					questionnaires, etc. for compliance gaps - speeding up
-					audits, and saving time.
-				</p>
+				<div className="flex flex-col gap-2">
+					<EditIcon className="w-12 h-12 mb-1" />
+					<h2 className="font-semibold text-[26px] md:text-3xl mb-1">
+						Define control framework
+					</h2>
+					<span className="text-white font-light mb-2 bg-violet-ryzr text-sm md:text-base lg:text-lg w-fit rounded-3xl px-2">
+						Set requirements.
+					</span>
+					Define your own custom framework or use predefined industry
+					standards and frameworks such as ISO 27001, NIST CSF, and
+					others.
+				</div>
 			),
 		},
 		{
-			id: 2,
-			heading: "Generate.",
-			subheading: "Actionable reports",
+			label: "Extract",
+			labelIcon: <SearchIcon />,
 			content: (
-				<p>
-					Generate risk reports with MITRE ATT&CK-aligned insights and
-					tailored remediation plans and roadmaps for management’s
-					decision making.
-				</p>
+				<div className="flex flex-col gap-2">
+					<SearchIcon className="w-12 h-12 mb-1" />
+					<h2 className="font-semibold text-[26px] md:text-3xl mb-1">
+						Extract data
+					</h2>
+					<span className="text-white font-light mb-2 bg-violet-ryzr text-sm md:text-base lg:text-lg w-fit rounded-3xl px-2">
+						AI powered document intelligence.
+					</span>
+					Extract key data in moments with Ryzr’s AI-powered document
+					intelligence — saving time and improving accuracy. No more
+					digging through documents.
+				</div>
+			),
+		},
+		{
+			label: "Review",
+			labelIcon: <FileEditIcon />,
+			content: (
+				<div className="flex flex-col gap-2 mb-1">
+					<FileEditIcon className="w-12 h-12" />
+					<h2 className="font-semibold text-[26px] md:text-3xl mb-1">Review gaps</h2>
+					<span className="text-white font-light mb-2 bg-violet-ryzr text-sm md:text-base lg:text-lg w-fit rounded-3xl px-2">
+						Instantly pinpoint gaps.
+					</span>
+					Identify security gaps with precision — Ryzr’s AI agent
+					understands security context and links every insight
+					directly to its exact place in your documents.
+				</div>
+			),
+		},
+		{
+			label: "Report",
+			labelIcon: <FilesIcon />,
+			content: (
+				<div className="flex flex-col gap-2">
+					<FilesIcon className="w-12 h-12 mb-1" />
+					<h2 className="font-semibold text-[26px] md:text-3xl mb-1">
+						Generate actionable reports
+					</h2>
+					<span className="text-white font-light mb-2 bg-violet-ryzr text-sm md:text-base lg:text-lg w-fit rounded-3xl px-2">
+						Effortless report creation.
+					</span>
+					Effortlessly generate detailed observation reports with
+					MITRE ATT&CK-aligned insights, formal risk statements, and
+					tailored recommendations.
+				</div>
 			),
 		},
 	];
@@ -405,11 +462,12 @@ function Home() {
 					</div>
 				</div>
 				<div className="w-full lg:w-[51%] lg:bg-gradient-to-b from-violet-light-ryzr to-transparent flex justify-center items-center">
-					<FadeInSection delay={0.4}>
-						<div className="w-fit mx-auto lg:mt-0 my-8">
-							<CardStack offset={20} items={FeatureCARDS} />
-						</div>
-					</FadeInSection>
+					<div className="w-full mx-2 h-full lg:mt-0">
+						<FadeInSection delay={0.4}>
+							{/* <CardStack offset={20} items={FeatureCARDS} /> */}
+							<TabbedFeatures tabs={FeatureCARDS} />
+						</FadeInSection>
+					</div>
 				</div>
 			</section>
 
@@ -490,7 +548,9 @@ function Home() {
 							<p className="text-base md:text-lg lg:text-lg xl:text-[21px] mt-6 text-[#9A9A9A] tracking-tight ">
 								We’d love to help customize your AI agent to fit
 								your unique risk and compliance needs—
-								<span className="text-violet-light-ryzr">completely free.</span>
+								<span className="text-violet-light-ryzr">
+									completely free.
+								</span>
 							</p>
 						</div>
 						<div className="w-full md:w-[52%] p-8 pt-0 md:pt-8 lg:pt-12 lg:p-12">
