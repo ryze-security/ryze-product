@@ -59,9 +59,8 @@ function Home() {
 
 	const items = [
 		{ label: "Home", href: "/", disabled: false },
-		{ label: "About", href: "/about", disabled: false },
-		{ label: "Contact", href: "/contact", disabled: false },
-		{ label: "Disabled", href: "#", disabled: true },
+		{ label: "About", href: "#features", disabled: false },
+		{ label: "Contact", href: "#contact-us", disabled: false },
 	];
 
 	const FeatureCARDS: Tab[] = [
@@ -124,7 +123,9 @@ function Home() {
 			content: (
 				<div className="flex flex-col gap-2 mb-1">
 					<FileEditIcon className="w-12 h-12" />
-					<h2 className="font-semibold text-[26px] md:text-3xl mb-1">Review gaps</h2>
+					<h2 className="font-semibold text-[26px] md:text-3xl mb-1">
+						Review gaps
+					</h2>
 					<span className="text-white font-light mb-2 bg-violet-ryzr text-sm md:text-base lg:text-lg w-fit rounded-3xl px-2">
 						Instantly pinpoint gaps.
 					</span>
@@ -186,36 +187,102 @@ function Home() {
 	const FAQs = [
 		{
 			trigger: "Is my data protected?",
-			content:
-				"We place a strong emphasis on safeguarding your data. By default, we do not utilize your data for training our models. All data is securely stored in ISO 27001-certified data centers located in Europe. Our models are private and trained using proprietary data exclusively developed by our in-house team.",
+			content: (
+				<p>
+					We place a strong emphasis on safeguarding your data. By
+					default, we do not utilize your data for training our
+					models. All data is securely stored in ISO 27001-certified
+					data centers located in Europe. Our models are private and
+					trained using proprietary data exclusively developed by our
+					in-house team.
+				</p>
+			),
 		},
 		{
 			trigger:
 				"How reliable are your AI agents, and how do you manage errors or incorrect results?",
-			content:
-				"Our AI agents are designed to understand regulatory frameworks, auditor terminology, and technical cybersecurity knowledge, achieving an accuracy rate of over 90%. In case of any errors or incorrect results, we swiftly address them through iterative improvements and updates to ensure the system continuously learns and refines its performance.",
+			content: (
+				<p>
+					Our AI agents are designed to understand regulatory
+					frameworks, auditor terminology, and technical cybersecurity
+					knowledge, achieving an accuracy rate of over 90%. In case
+					of any errors or incorrect results, we swiftly address them
+					through iterative improvements and updates to ensure the
+					system continuously learns and refines its performance.
+				</p>
+			),
 		},
 		{
 			trigger: "Can we replace humans with Ryzr?",
-			content:
-				"Our AI agent is designed to enhance human productivity, not replace humans. It automates operational tasks, providing intelligent recommendations that save time, allowing professionals to focus on high-priority tasks like closing security gaps and exploring technical issues. This approach combines the efficiency of AI with human expertise, driving more effective and precise results.",
+			content: (
+				<p>
+					Our AI agent is designed to enhance human productivity, not
+					replace humans. It automates operational tasks, providing
+					intelligent recommendations that save time, allowing
+					professionals to focus on high-priority tasks like closing
+					security gaps and exploring technical issues. This approach
+					combines the efficiency of AI with human expertise, driving
+					more effective and precise results.
+				</p>
+			),
 		},
 		{
 			trigger:
 				"Can you help customize my AI agent to suit my organization’s needs?",
-			content:
-				"Absolutely! We can help you define specific risk and control frameworks to align with your unique compliance requirements, that too for free!",
+			content: (
+				<p>
+					Absolutely! We can help you define specific risk and control
+					frameworks to align with your unique compliance
+					requirements, that too for free!
+				</p>
+			),
+		},
+		{
+			trigger: "How much does Ryzr cost?",
+			content: (
+				<p>
+					Our plans start at only 50 EUR per month per user, with
+					affordable options for larger teams. We’re dedicated to
+					making AI accessible, helping organizations increase
+					productivity and improve margins.{" "}
+					<Button
+						variant="link"
+						className="p-0 text-sm md:text-base lg:text-lg h-fit w-fit text-[#d7d7d7dd] underline"
+						onClick={() => {
+							const el = document.getElementById("contact-us");
+							if (el) {
+								const yOffset = -150; // Scroll ?px *above* the element
+								const y =
+									el.getBoundingClientRect().top +
+									window.pageYOffset +
+									yOffset;
+
+								window.scrollTo({ top: y, behavior: "smooth" });
+							}
+						}}
+					>
+						Contact us
+					</Button>{" "}
+					for customized plans that suit your requirements.
+				</p>
+			),
 		},
 		{
 			trigger: "Do you provide a free trial?",
-			content:
-				"Yes, we offer a free trial that allows you to experience how our AI agent automates the tedious, manual tasks of auditing—such as performing compliance checks, writing risk reports, and more—giving you a firsthand look at its capabilities before making any commitment.",
+			content: (
+				<p>
+					Yes, we offer a free trial that allows you to experience how
+					our AI agent automates the tedious, manual tasks of
+					auditing—such as performing compliance checks, writing risk
+					reports, and more—giving you a firsthand look at its
+					capabilities before making any commitment.
+				</p>
+			),
 		},
 	];
 
 	const ProductLinks = [
 		{ name: "Features", target: "features" },
-		{ name: "Pricing", href: "/#" },
 		{ name: "Product", target: "product" },
 		{ name: "FAQ", target: "faq" },
 	];
@@ -437,7 +504,10 @@ function Home() {
 			</section>
 
 			{/* Features Section */}
-			<section id="features" className="relative z-10 w-full mt-12 bg-white min-h-[30vh] lg:min-h-[60vh] flex flex-col lg:flex-row max-lg:bg-gradient-to-t from-violet-light-ryzr to-white">
+			<section
+				id="features"
+				className="relative z-10 w-full mt-12 bg-white min-h-[30vh] lg:min-h-[60vh] flex flex-col lg:flex-row max-lg:bg-gradient-to-t from-violet-light-ryzr to-white"
+			>
 				<div className="w-full lg:w-[49%]">
 					<div className="py-12 px-6 md:py-20 lg:px-24 text-black">
 						<h2 className="font-semibold text-3xl lg:text-[56px] leading-none tracking-tight">
@@ -474,7 +544,10 @@ function Home() {
 
 			{/* Use Case Cards */}
 			<FadeInSection>
-				<section id="product" className="relative z-10 w-full mt-20 px-4 md:px-24 flex flex-col">
+				<section
+					id="product"
+					className="relative z-10 w-full mt-20 px-4 md:px-24 flex flex-col"
+				>
 					<h2 className="font-semibold text-[33px] leading-9 lg:leading-tight lg:text-6xl md:text-5xl tracking-tighter">
 						<span className="text-violet-light-ryzr">
 							Empower your team
@@ -536,7 +609,10 @@ function Home() {
 
 			{/* Contact Us Section */}
 			<FadeInSection>
-				<section id="contact-us" className="relative z-10 w-full mt-20 px-4 md:px-8 lg:px-24">
+				<section
+					id="contact-us"
+					className="relative z-10 w-full mt-20 px-4 md:px-8 lg:px-24"
+				>
 					<div className="bg-white rounded-3xl flex flex-col md:flex-row">
 						<div className="w-full md:w-[48%] p-8 md:p-10 lg:p-16">
 							<h2 className="text-4xl text-black md:text-[38px] lg:text-[41px] xl:text-6xl font-medium tracking-tighter">
@@ -636,7 +712,10 @@ function Home() {
 
 			{/* FAQ Section */}
 			<FadeInSection>
-				<section id="faq" className="relative z-10 w-full mt-20 mb-32 px-4 md:px-24">
+				<section
+					id="faq"
+					className="relative z-10 w-full mt-20 mb-32 px-4 md:px-24"
+				>
 					<div className="w-full flex flex-col lg:flex-row">
 						<div className="w-full lg:w-[49%] mb-8 lg:mb-0">
 							<h2 className="text-[42px] md:text-5xl lg:text-[52px] xl:text-[64px] font-semibold tracking-tighter leading-tight text-white">
