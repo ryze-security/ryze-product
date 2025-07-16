@@ -214,9 +214,10 @@ function Home() {
 	];
 
 	const ProductLinks = [
-		{ name: "Features", href: "/#" },
+		{ name: "Features", target: "features" },
 		{ name: "Pricing", href: "/#" },
-		{ name: "Product", href: "/#" },
+		{ name: "Product", target: "product" },
+		{ name: "FAQ", target: "faq" },
 	];
 
 	const LegalLinks = [
@@ -436,7 +437,7 @@ function Home() {
 			</section>
 
 			{/* Features Section */}
-			<section className="relative z-10 w-full mt-12 bg-white min-h-[30vh] lg:min-h-[60vh] flex flex-col lg:flex-row max-lg:bg-gradient-to-t from-violet-light-ryzr to-white">
+			<section id="features" className="relative z-10 w-full mt-12 bg-white min-h-[30vh] lg:min-h-[60vh] flex flex-col lg:flex-row max-lg:bg-gradient-to-t from-violet-light-ryzr to-white">
 				<div className="w-full lg:w-[49%]">
 					<div className="py-12 px-6 md:py-20 lg:px-24 text-black">
 						<h2 className="font-semibold text-3xl lg:text-[56px] leading-none tracking-tight">
@@ -473,7 +474,7 @@ function Home() {
 
 			{/* Use Case Cards */}
 			<FadeInSection>
-				<section className="relative z-10 w-full mt-20 px-4 md:px-24 flex flex-col">
+				<section id="product" className="relative z-10 w-full mt-20 px-4 md:px-24 flex flex-col">
 					<h2 className="font-semibold text-[33px] leading-9 lg:leading-tight lg:text-6xl md:text-5xl tracking-tighter">
 						<span className="text-violet-light-ryzr">
 							Empower your team
@@ -535,7 +536,7 @@ function Home() {
 
 			{/* Contact Us Section */}
 			<FadeInSection>
-				<section className="relative z-10 w-full mt-20 px-4 md:px-8 lg:px-24">
+				<section id="contact-us" className="relative z-10 w-full mt-20 px-4 md:px-8 lg:px-24">
 					<div className="bg-white rounded-3xl flex flex-col md:flex-row">
 						<div className="w-full md:w-[48%] p-8 md:p-10 lg:p-16">
 							<h2 className="text-4xl text-black md:text-[38px] lg:text-[41px] xl:text-6xl font-medium tracking-tighter">
@@ -635,7 +636,7 @@ function Home() {
 
 			{/* FAQ Section */}
 			<FadeInSection>
-				<section className="relative z-10 w-full mt-20 mb-32 px-4 md:px-24">
+				<section id="faq" className="relative z-10 w-full mt-20 mb-32 px-4 md:px-24">
 					<div className="w-full flex flex-col lg:flex-row">
 						<div className="w-full lg:w-[49%] mb-8 lg:mb-0">
 							<h2 className="text-[42px] md:text-5xl lg:text-[52px] xl:text-[64px] font-semibold tracking-tighter leading-tight text-white">

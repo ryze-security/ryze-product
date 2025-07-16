@@ -6,7 +6,8 @@ import { Input } from "./ui/input";
 interface Props {
 	ProductLinks?: {
 		name: string;
-		href: string;
+		href?: string;
+		target?: string;
 	}[];
 	LegalLinks?: {
 		name: string;
@@ -16,6 +17,17 @@ interface Props {
 
 function Footer(props: Props) {
 	const { ProductLinks = [], LegalLinks = [] } = props;
+
+	const handleScrollTo = (sectionId: string) => {
+		const el = document.getElementById(sectionId);
+		if (el) {
+			const yOffset = -150; // Scroll 40px *above* the element
+			const y =
+				el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+			window.scrollTo({ top: y, behavior: "smooth" });
+		}
+	};
 
 	return (
 		<div className="relative z-10 w-full font-roboto bg-[#0A0A0A]">
@@ -34,6 +46,13 @@ function Footer(props: Props) {
 									key={index}
 									variant="link"
 									className="text-[#8A8A8A] w-fit text-left justify-start text-base md:text-xl"
+									onClick={() => {
+										if (link.href) {
+											null;
+										} else {
+											handleScrollTo(link.target);
+										}
+									}}
 								>
 									{link.name}
 								</Button>
