@@ -38,14 +38,14 @@ function Footer(props: Props) {
 					<div className="flex flex-row w-full lg:w-[60%] gap-8">
 						{/* Product */}
 						<div className="flex flex-col w-full sm:w-[50%]">
-							<h3 className="text-xl md:text-2xl leading-relaxed text-[#DDDDDD] mb-2">
+							<h3 className="text-xl font-semibold md:text-2xl leading-relaxed text-[#DDDDDD] mb-2">
 								Product
 							</h3>
 							{ProductLinks.map((link, index) => (
 								<Button
 									key={index}
 									variant="link"
-									className="text-[#8A8A8A] w-fit text-left justify-start text-base md:text-xl"
+									className="text-[#8A8A8A] px-0 w-fit text-left justify-start text-base md:text-xl"
 									onClick={() => {
 										if (link.href) {
 											null;
@@ -61,14 +61,14 @@ function Footer(props: Props) {
 
 						{/* Legal */}
 						<div className="flex flex-col w-full sm:w-[50%]">
-							<h3 className="text-xl md:text-2xl leading-relaxed text-[#DDDDDD] mb-2">
+							<h3 className="text-xl md:text-2xl font-semibold leading-relaxed text-[#DDDDDD] mb-2">
 								Legal
 							</h3>
 							{LegalLinks.map((link, index) => (
 								<Button
 									key={index}
 									variant="link"
-									className="text-[#8A8A8A] w-fit text-left justify-start text-base md:text-xl"
+									className="text-[#8A8A8A] px-0 w-fit text-left justify-start text-base md:text-xl"
 								>
 									{link.name}
 								</Button>

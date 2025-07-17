@@ -14,14 +14,26 @@ import { Menu } from "lucide-react";
 interface Props {
 	items?: {
 		label: string;
-		href: string;
-		disabled?: boolean;
+		href?: string;
+		target?: string;
+		disabled: boolean;
 	}[];
 }
 
 function Navbar(props: Props) {
 	const { items } = props;
 	const navigate = useNavigate();
+
+	const handleScrollTo = (sectionId: string) => {
+		const el = document.getElementById(sectionId);
+		if (el) {
+			const yOffset = -150; // Scroll 40px *above* the element
+			const y =
+				el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+			window.scrollTo({ top: y, behavior: "smooth" });
+		}
+	};
 
 	return (
 		<div className="flex items-center w-full h-[70px] font-roboto fixed z-50">
@@ -43,8 +55,10 @@ function Navbar(props: Props) {
 								}`}
 								disabled={item.disabled}
 								onClick={() => {
-									if (!item.disabled) {
+									if (!item.disabled && item.href) {
 										navigate(item.href);
+									} else if (!item.disabled && item.target) {
+										handleScrollTo(item.target);
 									}
 								}}
 							>
