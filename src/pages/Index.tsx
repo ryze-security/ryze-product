@@ -147,7 +147,7 @@ function Index() {
 
 				<div className="max-w-7xl items-start w-full px-4 flex gap-4 justify-start">
 					{/* Card 1 */}
-					<div className="flex flex-col bg-[#1A1A1A] rounded-xl p-6 shadow-md w-[48%] h-[330px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-light-ryzr scrollbar-track-transparent">
+					<div className="flex flex-col bg-[#18181B] rounded-xl p-6 shadow-md w-[48%] h-[330px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-light-ryzr scrollbar-track-transparent">
 						<div className="flex items-center flex-grow justify-between mb-2">
 							<h2 className="flex gap-2 text-xl text-gray-light-ryzr font-semibold tracking-wide pl-4">
 								<Building />
@@ -170,7 +170,7 @@ function Index() {
 							>
 								<Button
 									variant="outline"
-									className="w-2/3 gap-2 border-violet-ryzr hover:bg-violet-ryzr hover:text-white hover:border-violet-ryzr bg-gray-ryzr text-violet-ryzr font-bold"
+									className="w-2/3 gap-2 border-violet-ryzr hover:bg-violet-ryzr hover:text-white hover:border-violet-ryzr bg-[#18181B] text-violet-ryzr font-bold"
 								>
 									View more
 								</Button>
@@ -179,7 +179,7 @@ function Index() {
 					</div>
 
 					{/* Card 2 */}
-					<div className="flex flex-col bg-[#1A1A1A] rounded-xl p-6 shadow-md w-[48%] h-[330px]">
+					<div className="flex flex-col bg-[#18181B] rounded-xl p-6 shadow-md w-[48%] h-[330px]">
 						<div className="flex justify-between mb-2">
 							<h2 className="flex gap-2 text-xl text-gray-light-ryzr font-semibold tracking-wide pl-4">
 								<TriangleAlert />
@@ -198,7 +198,7 @@ function Index() {
 							>
 								<Button
 									variant="outline"
-									className="w-2/3 gap-2 border-violet-ryzr hover:bg-violet-ryzr hover:text-white hover:border-violet-ryzr bg-gray-ryzr text-violet-ryzr font-bold"
+									className="w-2/3 gap-2 border-violet-ryzr hover:bg-violet-ryzr hover:text-white hover:border-violet-ryzr bg-[#18181B] text-violet-ryzr font-bold"
 								>
 									View more
 								</Button>

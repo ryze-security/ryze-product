@@ -58,9 +58,9 @@ function Home() {
 	const { toast } = useToast();
 
 	const items = [
-		{ label: "Home", href: "/", disabled: false },
-		{ label: "About", href: "#features", disabled: false },
-		{ label: "Contact", href: "#contact-us", disabled: false },
+		{ label: "About", target: "features", disabled: false },
+		{ label: "Use cases", target: "product", disabled: false },
+		{ label: "Get a demo", target: "contact-us", disabled: false },
 	];
 
 	const FeatureCARDS: Tab[] = [

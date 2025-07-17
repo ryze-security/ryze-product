@@ -112,7 +112,7 @@ export function AppSidebar() {
 			<SidebarFooter className="flex items-center gap-3 px-4 py-3 border-t">
 				<Button
 					variant="outline"
-					className="w-full gap-2 border-rose-500 hover:bg-rose-500 hover:text-white hover:border-rose-500"
+					className="w-full gap-2 bg-transparent border-rose-500 hover:bg-rose-500 hover:text-white hover:border-rose-500"
 				>
 					<span className="flex items-center gap-2">
 						<LogOut className="w-4 h-4" />
