@@ -77,7 +77,7 @@ function Footer(props: Props) {
 					</div>
 
 					{/* Newsletter */}
-					<div className="w-full lg:w-fit xl:w-[40%] flex flex-col">
+					{/* <div className="w-full lg:w-fit xl:w-[40%] flex flex-col">
 						<h3 className="text-2xl md:text-3xl leading-none text-[#DDDDDD] mb-2">
 							Subscribe to Newsletter
 						</h3>
@@ -95,7 +95,7 @@ function Footer(props: Props) {
 								Subscribe
 							</Button>
 						</div>
-					</div>
+					</div> */}
 				</div>
 
 				{/* Footer Bottom */}
