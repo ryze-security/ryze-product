@@ -60,27 +60,10 @@ function Home() {
 	const items = [
 		{ label: "About", target: "features", disabled: false },
 		{ label: "Use cases", target: "product", disabled: false },
-		{ label: "Get a demo", target: "contact-us", disabled: false },
+		{ label: "Book a demo", target: "contact-us", disabled: false },
 	];
 
 	const FeatureCARDS: Tab[] = [
-		{
-			label: "Upload",
-			labelIcon: <CloudUploadIcon />,
-			content: (
-				<div className="flex flex-col gap-2">
-					<CloudUploadIcon className="w-12 h-12 mb-1" />
-					<h2 className="font-semibold text-[26px] md:text-3xl mb-1">
-						Upload Documents
-					</h2>
-					<span className="text-white font-light mb-2 bg-violet-ryzr text-sm md:text-base lg:text-lg w-fit rounded-3xl px-2">
-						All at once. In any format.
-					</span>
-					Drag and drop security policies, procedures, ISAE reports,
-					SOC Type 2 reports, SIG questionnaires, ISO 27001 SoA, etc.
-				</div>
-			),
-		},
 		{
 			label: "Define",
 			labelIcon: <EditIcon />,
@@ -96,6 +79,23 @@ function Home() {
 					Define your own custom framework or use predefined industry
 					standards and frameworks such as ISO 27001, NIST CSF, and
 					others.
+				</div>
+			),
+		},
+		{
+			label: "Upload",
+			labelIcon: <CloudUploadIcon />,
+			content: (
+				<div className="flex flex-col gap-2">
+					<CloudUploadIcon className="w-12 h-12 mb-1" />
+					<h2 className="font-semibold text-[26px] md:text-3xl mb-1">
+						Upload Documents
+					</h2>
+					<span className="text-white font-light mb-2 bg-violet-ryzr text-sm md:text-base lg:text-lg w-fit rounded-3xl px-2">
+						All at once. In any format.
+					</span>
+					Drag and drop security policies, procedures, ISAE reports,
+					SOC Type 2 reports, SIG questionnaires, ISO 27001 SoA, etc.
 				</div>
 			),
 		},
