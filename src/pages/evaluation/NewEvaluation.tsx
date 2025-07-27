@@ -130,24 +130,24 @@ const NewEvaluation = () => {
 				"selectedFrameworks",
 			]);
 			const documentLength = methods.getValues("documents").length;
-			if(documentLength === 0){
+			if (documentLength === 0) {
 				methods.setError("documents", {
 					type: "manual",
 					message: "Please select at least one document.",
-				})
+				});
 			}
 			if (!result || documentLength === 0) {
 				toast({
 					title: "Error",
 					description:
 						methods.formState.errors.auditee?.message ||
-						methods.formState.errors.selectedFrameworks?.message  ||
-						methods.formState.errors.documents?.message, 
+						methods.formState.errors.selectedFrameworks?.message ||
+						methods.formState.errors.documents?.message,
 					variant: "destructive",
 				});
 				return;
 			}
-		} else if( currentStep === 0 && stepId > 0) {
+		} else if (currentStep === 0 && stepId > 0) {
 			const result = await methods.trigger([
 				"auditee",
 				"selectedFrameworks",
@@ -198,9 +198,7 @@ const NewEvaluation = () => {
 			collection_id: "collection_1", //change later when framework endpoints are ready
 			created_by: "SYSTEM",
 			model_used: "azure-gpt04-mini",
-			document_list: [
-				...data.documents.map((doc) => doc.file_id),
-			],
+			document_list: [...data.documents.map((doc) => doc.file_id)],
 		};
 
 		try {
@@ -245,9 +243,7 @@ const NewEvaluation = () => {
 	const onRunClick = async () => {
 		const documentLength = methods.getValues("documents").length;
 		const frameworkLength = methods.getValues("selectedFrameworks").length;
-		const isValid =
-			(documentLength > 0) &&
-			frameworkLength > 0;
+		const isValid = documentLength > 0 && frameworkLength > 0;
 
 		if (isValid) {
 			methods.handleSubmit(submit, onError)();
@@ -452,12 +448,20 @@ const NewEvaluation = () => {
 													)}
 												/>
 											</div>
-											<Button
-												type="button"
-												variant="secondary"
-											>
-												<PlusCircleIcon /> Add
-											</Button>
+											<AlertDialogBox
+												trigger={
+													<Button
+														type="button"
+														variant="secondary"
+													>
+														<PlusCircleIcon /> Add
+													</Button>
+												}
+												title="Alert!"
+												subheading="You are leaving this page, any unsaved changes will be lost. Are you sure you want to proceed?"
+												actionLabel="Confirm"
+												actionHref={"/auditee/new"}
+											/>
 										</div>
 									</div>
 
@@ -500,10 +504,7 @@ const NewEvaluation = () => {
 											validate: (
 												val: FilesUploadResponseDTO[]
 											) => {
-												if (
-													(!val ||
-														val.length === 0)
-												) {
+												if (!val || val.length === 0) {
 													return "Please select at least one file.";
 												}
 

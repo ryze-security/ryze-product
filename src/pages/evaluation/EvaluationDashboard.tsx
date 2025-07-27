@@ -61,6 +61,14 @@ function EvaluationDashboard() {
 		{
 			accessorKey: "overall_score",
 			header: "Evaluation Score",
+			cell: ({ row }) => {
+				const score: number = row.getValue("overall_score");
+				return (
+					<span className="text-white font-semibold">
+						{Number.isNaN(score) ? 0 : score}
+					</span>
+				);
+			}
 		},
 		{
 			accessorKey: "processing_status",
@@ -228,9 +236,11 @@ function EvaluationDashboard() {
 								overall_score:
 									evaluation.processing_status === "pending"
 										? 0
-										: Number.parseFloat(
-												evaluation.overall_score?.toFixed(
-													2
+										: Math.round(
+												Number.parseFloat(
+													evaluation.overall_score?.toFixed(
+														2
+													)
 												)
 										  ),
 								created_at: new Date(

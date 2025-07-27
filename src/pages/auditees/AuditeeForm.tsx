@@ -50,6 +50,10 @@ const services = [
 		label: "Consulting",
 		value: "consulting",
 	},
+	{
+		label: "None",
+		value: "none",
+	},
 ];
 
 const companyDataTypes = [
@@ -368,7 +372,7 @@ function AuditeeForm() {
 									control={methods.control}
 									name="auditeeData"
 									options={companyDataTypes}
-									label="What is the type of data processed?"
+									label="Type of data processed?"
 								/>
 							</div>
 							{/* Submit Button */}
