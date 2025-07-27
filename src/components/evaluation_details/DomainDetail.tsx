@@ -11,7 +11,12 @@ import {
 	PaginationState,
 	SortingState,
 } from "@tanstack/react-table";
-import { ArrowDownAZIcon, ArrowUpAZIcon, ArrowUpDownIcon, MoveLeft } from "lucide-react";
+import {
+	ArrowDownAZIcon,
+	ArrowUpAZIcon,
+	ArrowUpDownIcon,
+	MoveLeft,
+} from "lucide-react";
 import QuestionForm from "./QuestionForm";
 import {
 	HoverCard,
@@ -21,6 +26,7 @@ import {
 import { FormProvider, useForm } from "react-hook-form";
 import { AlertDialogBox } from "../AlertDialogBox";
 import { RoundSpinner } from "../ui/spinner";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 interface Props {
 	domainData: domainResponse;
@@ -96,31 +102,11 @@ const columns: ColumnDef<controlResponse>[] = [
 			const missing_elements: string = row.original.missing_elements;
 			const compliance: number = row.original.Response.Score;
 			return (
-				<span className="text-wrap">
-					{compliance === 100 ? (
-						<span>No missing elements</span>
-					) : missing_elements.split(" ").length > 30 ? (
-						<HoverCard>
-							<HoverCardTrigger className="text-left">
-								<span>
-									{missing_elements
-										.split(" ")
-										.slice(0, 30)
-										.join(" ")}
-									{missing_elements.split(" ").length > 30 &&
-										"..."}
-								</span>
-							</HoverCardTrigger>
-							<HoverCardContent className="bg-gray-ryzr">
-								<span className="w-20 ">
-									{missing_elements}
-								</span>
-							</HoverCardContent>
-						</HoverCard>
-					) : (
-						missing_elements
-					)}
-				</span>
+				<MarkdownRenderer
+					content={compliance == 100 ? null : missing_elements}
+					truncateAt={30}
+					emptyState="No missing elements found"
+				/>
 			);
 		},
 	},
@@ -164,27 +150,11 @@ const questionColumns: ColumnDef<questionResponse>[] = [
 		cell: ({ row }) => {
 			const observation: string = row.original.Response.Observation;
 			return (
-				<span className="text-wrap">
-					{observation.split(" ").length > 30 ? (
-						<HoverCard>
-							<HoverCardTrigger className="text-left">
-								<span>
-									{observation
-										.split(" ")
-										.slice(0, 30)
-										.join(" ")}
-									{observation.split(" ").length > 30 &&
-										"..."}
-								</span>
-							</HoverCardTrigger>
-							<HoverCardContent className="bg-gray-ryzr">
-								<span className="w-20 ">{observation}</span>
-							</HoverCardContent>
-						</HoverCard>
-					) : (
-						observation
-					)}
-				</span>
+				<MarkdownRenderer
+					content={observation}
+					truncateAt={30}
+					emptyState="No observation found"
+				/>
 			);
 		},
 	},
@@ -310,9 +280,42 @@ function DomainDetail(props: Props) {
 		}
 	}, [selectedRow]);
 
+	//This effect is used to simulate the browser history state so user can back and forward easily
+	useEffect(() => {
+		// This function will run when the user clicks back/forward
+		const handlePopState = (event) => {
+			if (event.state && event.state.selectedControl) {
+				setSelectedRow(event.state.selectedControl);
+			} else {
+				setSelectedRow(null);
+			}
+
+			if (event.state && event.state.selectedQuestion) {
+				setSelectedQuestion(event.state.selectedQuestion);
+			} else {
+				setSelectedQuestion(null);
+			}
+		};
+
+		window.addEventListener("popstate", handlePopState);
+
+		// Clean up the event listener when the component unmounts
+		return () => {
+			window.removeEventListener("popstate", handlePopState);
+		};
+	}, []);
+
 	const handleBack = () => {
+		const url = new URL(window.location.href);
 		if (selectedQuestion) {
 			setSelectedQuestion(null);
+
+			url.searchParams.delete("question");
+			history.pushState(
+				{controlId: selectedRow?.controlId },
+				"",
+				url
+			);
 		} else if (selectedRow) {
 			setSelectedRow(null);
 			setQuestionFilter("");
@@ -321,6 +324,9 @@ function DomainDetail(props: Props) {
 				pageIndex: 0,
 				pageSize: 10,
 			});
+
+			url.searchParams.delete("controlId");
+			history.pushState({}, "", url);
 		}
 	};
 
@@ -486,6 +492,17 @@ function DomainDetail(props: Props) {
 									{ keepDirty: false }
 								);
 								setSelectedQuestion(row);
+								const url = new URL(window.location.href);
+								if (row.q_id) {
+									url.searchParams.set("question", row.q_id);
+								} else {
+									url.searchParams.delete("question");
+								}
+								history.pushState(
+									{ selectedQuestion: row },
+									"",
+									url
+								);
 							}}
 							externalFilter={questionFilter}
 							setExternalFilter={setQuestionFilter}
@@ -503,6 +520,20 @@ function DomainDetail(props: Props) {
 						isLoading={isLoading}
 						onRowClick={(row) => {
 							setSelectedRow(row);
+							const url = new URL(window.location.href);
+							if (row.controlId) {
+								url.searchParams.set(
+									"controlId",
+									row.controlId
+								);
+							} else {
+								url.searchParams.delete("controlId");
+							}
+							history.pushState(
+								{ selectedControl: row },
+								"",
+								url
+							);
 						}}
 						externalFilter={controlFilter}
 						setExternalFilter={setControlFilter}

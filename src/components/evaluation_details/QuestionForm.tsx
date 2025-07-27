@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { ArrowBigLeft, ArrowBigRight, PencilLine } from "lucide-react";
 import { useFormContext } from "react-hook-form";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 interface Props {
 	questionData: questionResponse[];
@@ -21,11 +22,10 @@ function QuestionForm(props: Props) {
 	const [index, setIndex] = useState<number>(questionIndex);
 
 	const [isObservationEditing, setisObservationEditing] = useState(false);
-	
+
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-	const { register, setValue, watch, reset } =
-		useFormContext();
+	const { register, setValue, watch, reset } = useFormContext();
 
 	// This effect is used to set the selected question and formatted evidence when the question data or index changes
 	useEffect(() => {
@@ -37,7 +37,6 @@ function QuestionForm(props: Props) {
 	// the observation
 	useEffect(() => {
 		if (isObservationEditing && textareaRef.current) {
-			
 			const el = textareaRef.current;
 			el.focus();
 
@@ -52,8 +51,11 @@ function QuestionForm(props: Props) {
 
 	useEffect(() => {
 		setValue("observation", selectedQuestion?.Response.Observation || "", {
-			shouldDirty: false,});
-		setValue("score", selectedQuestion?.Response.Score || false, {shouldDirty: false});
+			shouldDirty: false,
+		});
+		setValue("score", selectedQuestion?.Response.Score || false, {
+			shouldDirty: false,
+		});
 	}, [selectedQuestion, setValue]);
 
 	// This function is used to update the observation
@@ -81,11 +83,15 @@ function QuestionForm(props: Props) {
 			setIndex(newIndex);
 			setSelectedQuestion(questionData[newIndex]);
 			updateEvidence(newIndex);
-			reset({
-				observation: questionData[newIndex]?.Response.Observation || "",
-				score: questionData[newIndex]?.Response.Score || false,
-				questionId: questionData[newIndex]?.q_id || "",
-			}, { keepDirty: false})
+			reset(
+				{
+					observation:
+						questionData[newIndex]?.Response.Observation || "",
+					score: questionData[newIndex]?.Response.Score || false,
+					questionId: questionData[newIndex]?.q_id || "",
+				},
+				{ keepDirty: false }
+			);
 		}
 	};
 
@@ -95,11 +101,15 @@ function QuestionForm(props: Props) {
 			setIndex(newIndex);
 			setSelectedQuestion(questionData[newIndex]);
 			updateEvidence(newIndex);
-			reset({
-				observation: questionData[newIndex]?.Response.Observation || "",
-				score: questionData[newIndex]?.Response.Score || false,
-				questionId: questionData[newIndex]?.q_id || "",
-			}, { keepDirty: false})
+			reset(
+				{
+					observation:
+						questionData[newIndex]?.Response.Observation || "",
+					score: questionData[newIndex]?.Response.Score || false,
+					questionId: questionData[newIndex]?.q_id || "",
+				},
+				{ keepDirty: false }
+			);
 		}
 	};
 
@@ -140,8 +150,14 @@ function QuestionForm(props: Props) {
 					<div className="flex w-fit gap-2">
 						<Button
 							type="button"
-							onClick={() => setValue("score", true, { shouldDirty: true })}
-							className={`min-w-20 max-w-20 py-1 px-6 rounded-full ${watch("score") ? "hover:bg-green-ryzr" : "hover:bg-zinc-800"} text-white ${
+							onClick={() =>
+								setValue("score", true, { shouldDirty: true })
+							}
+							className={`min-w-20 max-w-20 py-1 px-6 rounded-full ${
+								watch("score")
+									? "hover:bg-green-ryzr"
+									: "hover:bg-zinc-800"
+							} text-white ${
 								watch("score") ? "bg-green-ryzr" : "bg-zinc-700"
 							}`}
 						>
@@ -149,8 +165,14 @@ function QuestionForm(props: Props) {
 						</Button>
 						<Button
 							type="button"
-							onClick={() => setValue("score", false, { shouldDirty: true })}
-							className={`min-w-20 max-w-20 py-1 px-6 rounded-full text-white ${!watch("score") ? "hover:bg-red-ryzr" : "hover:bg-zinc-800"} ${
+							onClick={() =>
+								setValue("score", false, { shouldDirty: true })
+							}
+							className={`min-w-20 max-w-20 py-1 px-6 rounded-full text-white ${
+								!watch("score")
+									? "hover:bg-red-ryzr"
+									: "hover:bg-zinc-800"
+							} ${
 								!watch("score") ? "bg-red-ryzr" : "bg-zinc-700"
 							}`}
 						>
@@ -176,10 +198,10 @@ function QuestionForm(props: Props) {
 					<div className="bg-zinc-900 gap-2 flex rounded-md rounded-tl-none border border-zinc-700 p-4">
 						{isObservationEditing ? (
 							<textarea
-							ref={(e) => {
-								textareaRef.current = e;
-								register("observation").ref(e);
-							}}
+								ref={(e) => {
+									textareaRef.current = e;
+									register("observation").ref(e);
+								}}
 								className="w-full bg-zinc-800 p-2 text-white border-none resize-none focus:outline-none rounded"
 								value={watch("observation")}
 								onChange={(e) => {
@@ -188,9 +210,11 @@ function QuestionForm(props: Props) {
 								placeholder="Enter your observation..."
 							/>
 						) : (
-							<span className="flex flex-wrap opacity-85">
-								{watch("observation")}
-							</span>
+							<div className="w-full opacity-85">
+								<MarkdownRenderer
+									content={watch("observation")}
+								/>
+							</div>
 						)}
 					</div>
 				</div>

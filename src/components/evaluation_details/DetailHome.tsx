@@ -13,7 +13,12 @@ import {
 } from "@tanstack/react-table";
 import { ProgressBarDataTable } from "../ProgressBarDataTable";
 import { Button } from "../ui/button";
-import { ArrowDownAZIcon, ArrowUpAZIcon, ArrowUpDownIcon, MoveLeft } from "lucide-react";
+import {
+	ArrowDownAZIcon,
+	ArrowUpAZIcon,
+	ArrowUpDownIcon,
+	MoveLeft,
+} from "lucide-react";
 import QuestionForm from "./QuestionForm";
 import {
 	HoverCard,
@@ -24,6 +29,9 @@ import { Separator } from "../ui/separator";
 import { FormProvider, useForm } from "react-hook-form";
 import { RoundSpinner } from "../ui/spinner";
 import { AlertDialogBox } from "../AlertDialogBox";
+import { marked, use } from "marked";
+import DOMPurify from "dompurify";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 interface Props {
 	overallScore: string;
@@ -107,31 +115,11 @@ const columns: ColumnDef<controlResponse>[] = [
 			const missing_elements: string = row.original.missing_elements;
 			const compliance: number = row.original.Response.Score;
 			return (
-				<span className="text-wrap">
-					{compliance === 100 ? (
-						<span>No missing elements</span>
-					) : missing_elements.split(" ").length > 30 ? (
-						<HoverCard>
-							<HoverCardTrigger className="text-left">
-								<span>
-									{missing_elements
-										.split(" ")
-										.slice(0, 30)
-										.join(" ")}
-									{missing_elements.split(" ").length > 30 &&
-										"..."}
-								</span>
-							</HoverCardTrigger>
-							<HoverCardContent className="bg-gray-ryzr">
-								<span className="w-20 ">
-									{missing_elements}
-								</span>
-							</HoverCardContent>
-						</HoverCard>
-					) : (
-						missing_elements
-					)}
-				</span>
+				<MarkdownRenderer
+					content={compliance == 100 ? null : missing_elements}
+					truncateAt={30}
+					emptyState="No missing elements found"
+				/>
 			);
 		},
 	},
@@ -175,31 +163,36 @@ const questionColumns: ColumnDef<questionResponse>[] = [
 		cell: ({ row }) => {
 			const observation: string = row.original.Response.Observation;
 			return (
-				<span className="text-wrap">
-					{observation.split(" ").length > 30 ? (
-						<HoverCard>
-							<HoverCardTrigger className="text-left">
-								<span>
-									{observation
-										.split(" ")
-										.slice(0, 30)
-										.join(" ")}
-									{observation.split(" ").length > 30 &&
-										"..."}
-								</span>
-							</HoverCardTrigger>
-							<HoverCardContent className="bg-gray-ryzr">
-								<span className="w-20 ">{observation}</span>
-							</HoverCardContent>
-						</HoverCard>
-					) : (
-						observation
-					)}
-				</span>
+				<MarkdownRenderer
+					content={observation}
+					truncateAt={30}
+					emptyState="No observation found"
+				/>
 			);
 		},
 	},
 ];
+
+const getInitialState = (): {
+	selectedControl: string;
+	selectedQuestion: string;
+} => {
+	const store = {
+		selectedControl: null,
+		selectedQuestion: null,
+	};
+	if (typeof window === "undefined") return store; // Guard for server-side rendering
+	const params = new URLSearchParams(window.location.search);
+	const selectedControlFromUrl = params.get("controlId");
+	const selectedQuestionsFromUrl = params.get("question");
+	if (selectedControlFromUrl) {
+		store.selectedControl = selectedControlFromUrl;
+	}
+	if (selectedQuestionsFromUrl) {
+		store.selectedQuestion = selectedQuestionsFromUrl;
+	}
+	return store;
+};
 
 function DetailHome(props: Props) {
 	const {
@@ -224,6 +217,7 @@ function DetailHome(props: Props) {
 	const [selectedRow, setSelectedRow] = useState<controlResponse>(null);
 	const [selectedQuestion, setSelectedQuestion] =
 		useState<questionResponse>(null);
+	//TODO: whole question system can be refactored to use index instead of entire question object
 	const [updatedQuestions, setUpdatedQuestions] = React.useState<
 		questionResponse[]
 	>([]);
@@ -249,15 +243,21 @@ function DetailHome(props: Props) {
 	const [isQuestionUpdating, setIsQuestionUpdating] =
 		useState<boolean>(false);
 
+	const [initialState] = useState(getInitialState);
+
+	const [isInitialSyncCompleted, setIsInitialSyncCompleted] =
+		useState<boolean>(false);
+
 	// updated combinedControls to have the score in percentage
 	const updatedControlResponseList = React.useMemo(() => {
-		return combinedControls.map((control) => ({
+		const updatedControls = combinedControls.map((control) => ({
 			...control,
 			Response: {
 				...control.Response,
 				Score: Math.round(control.Response.Score * 100),
 			},
 		}));
+		return updatedControls;
 	}, [combinedControls]);
 
 	// This effect is used to set the combined controls when the domain data map changes
@@ -342,9 +342,96 @@ function DetailHome(props: Props) {
 		setCardData(newCardData);
 	}, [domainDataMap]);
 
+	//This effect is used to simulate the browser history state so user can back and forward easily
+	useEffect(() => {
+		// This function will run when the user clicks back/forward
+		const handlePopState = (event) => {
+			if (event.state && event.state.selectedControl) {
+				setSelectedRow(event.state.selectedControl);
+			} else {
+				setSelectedRow(null);
+			}
+
+			if (event.state && event.state.selectedQuestion) {
+				setSelectedQuestion(event.state.selectedQuestion);
+			} else {
+				setSelectedQuestion(null);
+			}
+		};
+
+		window.addEventListener("popstate", handlePopState);
+
+		// Clean up the event listener when the component unmounts
+		return () => {
+			window.removeEventListener("popstate", handlePopState);
+		};
+	}, []);
+
+	useEffect(() => {
+		if (
+			combinedControls.length === 0 ||
+			!initialState.selectedControl ||
+			isInitialSyncCompleted
+		) {
+			if (!isInitialSyncCompleted && !initialState.selectedControl) {
+				setIsInitialSyncCompleted(true);
+			}
+			return;
+		}
+
+		const initialControl = updatedControlResponseList.find(
+			(control) => control.controlId === initialState.selectedControl
+		);
+
+		if (initialControl) {
+			setSelectedRow(initialControl);
+
+			if (!initialState.selectedQuestion) {
+				setIsInitialSyncCompleted(true);
+			}
+		} else {
+			setIsInitialSyncCompleted(true);
+		}
+	}, [combinedControls, initialState, isInitialSyncCompleted]);
+
+	useEffect(() => {
+		if (
+			isInitialSyncCompleted ||
+			updatedQuestions.length === 0 ||
+			!initialState.selectedQuestion ||
+			!selectedRow
+		) {
+			return;
+		}
+
+		if (selectedRow.controlId !== initialState.selectedControl) {
+			return;
+		}
+
+		const initialQuestion = updatedQuestions.find(
+			(question) => question.q_id === initialState.selectedQuestion
+		);
+
+		if (initialQuestion) {
+			setSelectedQuestion(initialQuestion);
+			methods.reset({
+				score: initialQuestion.Response.Score,
+				observation: initialQuestion.Response.Observation,
+				questionId: initialQuestion.q_id,
+			});
+			setIsInitialSyncCompleted(true);
+		} else {
+			setIsInitialSyncCompleted(true);
+		}
+	}, [updatedQuestions, initialState, selectedRow, isInitialSyncCompleted]);
+
 	const handleBack = () => {
+		const url = new URL(window.location.href);
 		if (selectedQuestion) {
 			setSelectedQuestion(null);
+
+			url.searchParams.delete("question");
+			history.pushState({ controlId: selectedRow?.controlId }, "", url);
 		} else if (selectedRow) {
 			setSelectedRow(null);
 			setQuestionFilter("");
@@ -353,6 +440,9 @@ function DetailHome(props: Props) {
 				pageIndex: 0,
 				pageSize: 10,
 			});
+
+			url.searchParams.delete("controlId");
+			history.pushState({}, "", url);
 		}
 	};
 
@@ -591,6 +681,22 @@ function DetailHome(props: Props) {
 												row.Response.Observation,
 											questionId: row.q_id,
 										});
+										const url = new URL(
+											window.location.href
+										);
+										if (row.q_id) {
+											url.searchParams.set(
+												"question",
+												row.q_id
+											);
+										} else {
+											url.searchParams.delete("question");
+										}
+										history.pushState(
+											{ selectedQuestion: row },
+											"",
+											url
+										);
 									}}
 									externalFilter={questionFilter}
 									setExternalFilter={setQuestionFilter}
@@ -609,6 +715,20 @@ function DetailHome(props: Props) {
 								filterKey="controlId"
 								onRowClick={(row) => {
 									setSelectedRow(row);
+									const url = new URL(window.location.href);
+									if (row.controlId) {
+										url.searchParams.set(
+											"controlId",
+											row.controlId
+										);
+									} else {
+										url.searchParams.delete("controlId");
+									}
+									history.pushState(
+										{ selectedControl: row },
+										"",
+										url
+									);
 								}}
 								externalFilter={controlFilter}
 								setExternalFilter={setControlFilter}
