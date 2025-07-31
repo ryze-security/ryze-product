@@ -35,7 +35,7 @@ function Layout() {
 	}, [isLoaded, isSignedIn, userStatus, dispatch]);
 
 	return (
-		<SidebarProvider>
+		<SidebarProvider defaultOpen={false}>
 			<AppSidebar />
 			<main className="w-full h-screen">
 				<Outlet />
