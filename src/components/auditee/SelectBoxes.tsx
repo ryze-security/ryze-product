@@ -37,13 +37,7 @@ const SingleSelectBox: React.FC<SingleSelectBoxProps> = ({
 
 	return (
 		<div className="space-y-2">
-			{label && (
-				<label
-					className="text-lg font-roboto"
-				>
-					{label}
-				</label>
-			)}
+			{label && <label className="text-lg font-roboto">{label}</label>}
 			<Controller
 				name={name}
 				control={control}
@@ -113,11 +107,7 @@ const MultiSelectBox: React.FC<MultiSelectBoxProps> = ({
 
 	return (
 		<div className="space-y-2">
-			{label && (
-				<label className="text-lg font-roboto">
-					{label}
-				</label>
-			)}
+			{label && <label className="text-lg font-roboto">{label}</label>}
 			<Controller
 				name={name}
 				control={control}
@@ -126,7 +116,9 @@ const MultiSelectBox: React.FC<MultiSelectBoxProps> = ({
 					<div className="flex gap-3 flex-wrap">
 						{options.map((option) => {
 							const selectedValues = field.value || [];
-							const isSelected = selectedValues.includes(option.value);
+							const isSelected = selectedValues.includes(
+								option.value
+							);
 
 							return (
 								<button
@@ -139,17 +131,41 @@ const MultiSelectBox: React.FC<MultiSelectBoxProps> = ({
 							: "bg-gray-ryzr text-zinc-200 border-gray-ryzr/70 hover:bg-gray-ryzr/90"
 					}`}
 									onClick={() => {
-										const currentValues = getValues(name) || [];
-										let updatedValues : string[];
+										const currentValues =
+											getValues(name) || [];
+										let updatedValues: string[];
 
-										if (isSelected) {
-											// Remove the option if already selected
-											updatedValues = currentValues.filter(
-												(value: string) => value !== option.value
-											);
+										if (option.value === "none") {
+											// If 'none' is clicked, it's either the only selection or it's removed.
+											updatedValues = isSelected
+												? []
+												: ["none"];
 										} else {
-											// Add the option if not selected
-											updatedValues = [...currentValues, option.value];
+											// For any other option, first remove 'none' if it's present.
+											const valuesWithoutNone =
+												currentValues.filter(
+													(value) => value !== "none"
+												);
+											const isCurrentlySelected =
+												valuesWithoutNone.includes(
+													option.value
+												);
+
+											if (isCurrentlySelected) {
+												// If the option is already selected, remove it.
+												updatedValues =
+													valuesWithoutNone.filter(
+														(value) =>
+															value !==
+															option.value
+													);
+											} else {
+												// Otherwise, add it.
+												updatedValues = [
+													...valuesWithoutNone,
+													option.value,
+												];
+											}
 										}
 
 										field.onChange(updatedValues);

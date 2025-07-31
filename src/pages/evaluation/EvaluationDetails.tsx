@@ -64,6 +64,16 @@ function EvaluationDetails() {
 
 	const goToStep = (stepId: number) => {
 		setCurrentStep(stepId);
+		const url = new URL(
+			window.location.href
+		);
+		url.searchParams.delete("question");
+		url.searchParams.delete("controlId");
+		history.pushState(
+			null,
+			"",
+			url
+		);
 	};
 
 	// This effect is used to set the domain data map when the data is loaded
@@ -276,10 +286,10 @@ function EvaluationDetails() {
 							<DropdownMenuItem onClick={generateExcelReport}>
 								Report(.xlxs)
 							</DropdownMenuItem>
-							<DropdownMenuItem>
+							<DropdownMenuItem className="text-gray-light-ryzr">
 								Exec. summary(.pptx)
 							</DropdownMenuItem>
-							<DropdownMenuItem>
+							<DropdownMenuItem className="text-gray-light-ryzr">
 								Policy statements(.docx)
 							</DropdownMenuItem>
 						</DropdownMenuContent>
