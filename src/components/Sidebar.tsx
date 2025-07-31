@@ -64,6 +64,7 @@ export function AppSidebar() {
 			onMouseLeave={() => {
 				setOpen(false);
 			}}
+			className="z-50"
 		>
 			<SidebarContent>
 				<Link to={"/home"}>
