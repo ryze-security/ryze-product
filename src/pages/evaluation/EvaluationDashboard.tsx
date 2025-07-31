@@ -65,7 +65,7 @@ function EvaluationDashboard() {
 				const score: number = row.getValue("overall_score");
 				return (
 					<span className="text-white font-semibold">
-						{Number.isNaN(score) ? 0 : score}
+						{score == null || score==undefined || Number.isNaN(score) ? 0 : score}
 					</span>
 				);
 			}
