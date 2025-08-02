@@ -27,7 +27,7 @@ import {
 	icons,
 	IdCardIcon,
 } from "lucide-react";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const steps = [
@@ -62,8 +62,20 @@ function EvaluationDetails() {
 
 	const { data, status, error } = useAppSelector((state) => state.evaluation);
 
+	const homeRef = useRef(null);
+	const domainDetailRef = useRef(null);
+
 	const goToStep = (stepId: number) => {
 		setCurrentStep(stepId);
+
+		if(homeRef?.current){
+			homeRef.current?.resetSelection();
+		}
+
+		if(domainDetailRef?.current){
+			domainDetailRef.current?.resetSelection();
+		}
+
 		const url = new URL(
 			window.location.href
 		);
@@ -91,15 +103,6 @@ function EvaluationDetails() {
 
 		setIsLoading(false);
 	}, [data]);
-
-	// This effect is used to set the loading state based on the status of the evaluation data
-	// useEffect(() => {
-	// 	if (status === "loading") {
-	// 		setIsLoading(true);
-	// 	} else {
-	// 		setIsLoading(false);
-	// 	}
-	// }, [status]);
 
 	// This effect is used to fetch the evaluation data when the component mounts
 	useEffect(() => {
@@ -315,6 +318,7 @@ function EvaluationDetails() {
 										stepChangefn={goToStep}
 										evalMetadata={data.data.metadata}
 										questionUpdatefn={updateQuestion}
+										ref={homeRef}
 									/>
 								)}
 
@@ -332,6 +336,7 @@ function EvaluationDetails() {
 												questionUpdatefn={
 													updateQuestion
 												}
+												ref={domainDetailRef}
 											/>
 										)
 								)}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { Card, CardContent } from "../ui/card";
 import {
 	controlResponse,
@@ -194,7 +194,7 @@ const getInitialState = (): {
 	return store;
 };
 
-function DetailHome(props: Props) {
+const DetailHome = forwardRef((props: Props, ref) => {
 	const {
 		overallScore,
 		domainDataMap,
@@ -367,6 +367,8 @@ function DetailHome(props: Props) {
 		};
 	}, []);
 
+
+	//The effects below are used to initial load the selection from shareable link
 	useEffect(() => {
 		if (
 			combinedControls.length === 0 ||
@@ -460,6 +462,13 @@ function DetailHome(props: Props) {
 		await questionUpdatefn(observation, score, questionId);
 		setIsQuestionUpdating(false);
 	};
+
+	useImperativeHandle(ref, () => ({
+		resetSelection() {
+			setSelectedRow(null)
+			setSelectedQuestion(null)
+		}
+	}));
 
 	return (
 		<div className="max-w-7xl w-full px-4">
@@ -743,7 +752,7 @@ function DetailHome(props: Props) {
 			</section>
 		</div>
 	);
-}
+});
 
 const InfoCard = ({
 	heading,
