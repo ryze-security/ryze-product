@@ -3,7 +3,12 @@ import {
 	domainResponse,
 	questionResponse,
 } from "@/models/evaluation/EvaluationDTOs";
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import React, {
+	forwardRef,
+	useEffect,
+	useImperativeHandle,
+	useState,
+} from "react";
 import { Button } from "../ui/button";
 import { ProgressBarDataTable } from "../ProgressBarDataTable";
 import {
@@ -256,8 +261,13 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 	// and to set the SNo for each question
 	useEffect(() => {
 		if (selectedRow) {
-			const updatedQuestionResponseList =
-				selectedRow.QuestionResponseList.map((question, index) => {
+			const updatedQuestionResponseList = [
+				...selectedRow.QuestionResponseList,
+			]
+				.sort((a, b) =>
+					a.q_id.localeCompare(b.q_id, undefined, { numeric: true })
+				)
+				.map((question, index) => {
 					const updatedQuestion = {
 						...question,
 						SNo: (index + 1).toString(),
@@ -306,11 +316,7 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 			setSelectedQuestion(null);
 
 			url.searchParams.delete("question");
-			history.pushState(
-				{controlId: selectedRow?.controlId },
-				"",
-				url
-			);
+			history.pushState({ controlId: selectedRow?.controlId }, "", url);
 		} else if (selectedRow) {
 			setSelectedRow(null);
 			setQuestionFilter("");
@@ -327,10 +333,10 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 
 	useImperativeHandle(ref, () => ({
 		resetSelection() {
-			setSelectedRow(null)
-			setSelectedQuestion(null)
-		}
-	}))
+			setSelectedRow(null);
+			setSelectedQuestion(null);
+		},
+	}));
 
 	const onSubmit = async (data: any) => {
 		setIsQuestionUpdating(true);

@@ -1,4 +1,9 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import React, {
+	forwardRef,
+	useEffect,
+	useImperativeHandle,
+	useState,
+} from "react";
 import { Card, CardContent } from "../ui/card";
 import {
 	controlResponse,
@@ -308,8 +313,13 @@ const DetailHome = forwardRef((props: Props, ref) => {
 	// and to set the SNo for each question
 	useEffect(() => {
 		if (selectedRow) {
-			const updatedQuestionResponseList =
-				selectedRow.QuestionResponseList.map((question, index) => {
+			const updatedQuestionResponseList = [
+				...selectedRow.QuestionResponseList,
+			]
+				.sort((a, b) =>
+					a.q_id.localeCompare(b.q_id, undefined, { numeric: true })
+				)
+				.map((question, index) => {
 					const updatedQuestion = {
 						...question,
 						SNo: (index + 1).toString(),
@@ -323,6 +333,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 					};
 					return updatedQuestion;
 				});
+
 			setUpdatedQuestions(updatedQuestionResponseList);
 		}
 	}, [selectedRow]);
@@ -366,7 +377,6 @@ const DetailHome = forwardRef((props: Props, ref) => {
 			window.removeEventListener("popstate", handlePopState);
 		};
 	}, []);
-
 
 	//The effects below are used to initial load the selection from shareable link
 	useEffect(() => {
@@ -465,9 +475,9 @@ const DetailHome = forwardRef((props: Props, ref) => {
 
 	useImperativeHandle(ref, () => ({
 		resetSelection() {
-			setSelectedRow(null)
-			setSelectedQuestion(null)
-		}
+			setSelectedRow(null);
+			setSelectedQuestion(null);
+		},
 	}));
 
 	return (
