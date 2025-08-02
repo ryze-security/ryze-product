@@ -3,7 +3,12 @@ import {
 	domainResponse,
 	questionResponse,
 } from "@/models/evaluation/EvaluationDTOs";
-import React, { useEffect, useState } from "react";
+import React, {
+	forwardRef,
+	useEffect,
+	useImperativeHandle,
+	useState,
+} from "react";
 import { Button } from "../ui/button";
 import { ProgressBarDataTable } from "../ProgressBarDataTable";
 import {
@@ -18,11 +23,6 @@ import {
 	MoveLeft,
 } from "lucide-react";
 import QuestionForm from "./QuestionForm";
-import {
-	HoverCard,
-	HoverCardContent,
-	HoverCardTrigger,
-} from "../ui/hover-card";
 import { FormProvider, useForm } from "react-hook-form";
 import { AlertDialogBox } from "../AlertDialogBox";
 import { RoundSpinner } from "../ui/spinner";
@@ -160,7 +160,7 @@ const questionColumns: ColumnDef<questionResponse>[] = [
 	},
 ];
 
-function DomainDetail(props: Props) {
+const DomainDetail = forwardRef((props: Props, ref) => {
 	const { domainData, currentPage, questionUpdatefn } = props;
 	const methods = useForm<QuestionFormFields>({
 		defaultValues: {
@@ -261,8 +261,13 @@ function DomainDetail(props: Props) {
 	// and to set the SNo for each question
 	useEffect(() => {
 		if (selectedRow) {
-			const updatedQuestionResponseList =
-				selectedRow.QuestionResponseList.map((question, index) => {
+			const updatedQuestionResponseList = [
+				...selectedRow.QuestionResponseList,
+			]
+				.sort((a, b) =>
+					a.q_id.localeCompare(b.q_id, undefined, { numeric: true })
+				)
+				.map((question, index) => {
 					const updatedQuestion = {
 						...question,
 						SNo: (index + 1).toString(),
@@ -311,11 +316,7 @@ function DomainDetail(props: Props) {
 			setSelectedQuestion(null);
 
 			url.searchParams.delete("question");
-			history.pushState(
-				{controlId: selectedRow?.controlId },
-				"",
-				url
-			);
+			history.pushState({ controlId: selectedRow?.controlId }, "", url);
 		} else if (selectedRow) {
 			setSelectedRow(null);
 			setQuestionFilter("");
@@ -329,6 +330,13 @@ function DomainDetail(props: Props) {
 			history.pushState({}, "", url);
 		}
 	};
+
+	useImperativeHandle(ref, () => ({
+		resetSelection() {
+			setSelectedRow(null);
+			setSelectedQuestion(null);
+		},
+	}));
 
 	const onSubmit = async (data: any) => {
 		setIsQuestionUpdating(true);
@@ -546,6 +554,6 @@ function DomainDetail(props: Props) {
 			</section>
 		</div>
 	);
-}
+});
 
 export default DomainDetail;

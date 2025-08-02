@@ -350,6 +350,9 @@ function EvaluationDashboard() {
 												const df = new dfd.DataFrame(
 													response.results
 												);
+												const columnsToDrop = ["report_id"]
+
+												df.drop({ columns: columnsToDrop, inplace: true});
 
 												dfd.toExcel(df, {
 													fileName: "report.xlsx",

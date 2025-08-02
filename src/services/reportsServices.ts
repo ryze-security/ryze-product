@@ -15,7 +15,7 @@ export class ReportsService {
 	): Promise<createStartReportResponseDTO | any> {
 		try {
 			const response = await axios.post<createStartReportResponseDTO>(
-				`${config.ryzrApiURL}/api/v1/`,
+				`${config.ryzrApiURL}/api/v1/reports/`,
 				userData,
 				{
 					headers: {
@@ -43,7 +43,7 @@ export class ReportsService {
 	): Promise<createStartReportResponseDTO | any> {
 		try {
 			const response = await axios.post<createStartReportResponseDTO>(
-				`${config.ryzrApiURL}/api/v1/${report_id}/start`,
+				`${config.ryzrApiURL}/api/v1/reports/${report_id}/start`,
 				report_body,
 				{
 					headers: {
@@ -72,7 +72,7 @@ export class ReportsService {
 	): Promise<reportResultDTO | any> {
 		try {
 			const response = await axios.get<reportResultDTO>(
-				`${config.ryzrApiURL}/api/v1/${tenant_id}/${company_id}/${report_id}`
+				`${config.ryzrApiURL}/api/v1/reports/${tenant_id}/${company_id}/${report_id}`
 			);
 			if (response.status !== 200) {
 				throw response;
@@ -94,7 +94,7 @@ export class ReportsService {
 	): Promise<reportResultListDTO | any> {
 		try {
 			const response = await axios.get<reportResultListDTO>(
-				`${config.ryzrApiURL}/api/v1/evaluation/${tenant_id}/${company_id}/${eval_id}`
+				`${config.ryzrApiURL}/api/v1/reports/evaluation/${tenant_id}/${company_id}/${eval_id}`
 			);
 			if (response.status !== 200) {
 				throw response;
