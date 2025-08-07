@@ -18,6 +18,7 @@ import evaluationService from "@/services/evaluationServices";
 import reportsService, { ReportsService } from "@/services/reportsServices";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadEvaluationData } from "@/store/slices/evaluationSlice";
+import { addNotification } from "@/store/slices/notificationSlice";
 import {
 	ArrowDown,
 	BuildingIcon,
@@ -248,6 +249,11 @@ function EvaluationDetails() {
 							variant: "default",
 							className: "bg-green-ryzr",
 						});
+						dispatch(addNotification({
+							user: "System",
+							action: "started generating",
+							target: "an Excel report",
+						}))
 					}
 				} catch (error) {
 					toast({
@@ -255,6 +261,11 @@ function EvaluationDetails() {
 						description: `There was an error while starting the report generation. Please try again later!`,
 						variant: "destructive",
 					});
+					dispatch(addNotification({
+						user: "System",
+						action: "failed in generating",
+						target: "an Excel report",
+					}))
 					console.error("Error starting report generation:", error);
 				}
 			}

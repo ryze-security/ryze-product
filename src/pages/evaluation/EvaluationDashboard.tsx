@@ -277,6 +277,14 @@ function EvaluationDashboard() {
 		fetchEvaluations();
 	}, []);
 
+	const formatHeaderCells = (text: string): string => {
+		return text
+			.replace(/_/g, " ")
+			.split(" ")
+			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(" ");
+	};
+
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
 			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-6 sm:px-12 lg:px-16">
@@ -374,12 +382,14 @@ function EvaluationDashboard() {
 														"Evaluation Report"
 													);
 
+												//Formats and adds headers
 												const headerRow =
 													worksheet.addRow(
 														df.columns
 													);
 												headerRow.eachCell(
 													(cell, index) => {
+														cell.value = formatHeaderCells(cell.value.toString())
 														cell.font = {
 															bold: true,
 															color: {
@@ -405,6 +415,7 @@ function EvaluationDashboard() {
 													df
 												) as Array<Record<string, any>>;
 
+												//Adds and formats data rows
 												jsonData.forEach((record) => {
 													const row =
 														worksheet.addRow(
@@ -433,6 +444,12 @@ function EvaluationDashboard() {
 												worksheet.columns.forEach(
 													(columns) => {
 														columns.width = 20;
+														columns.border ={
+															top: { style: "thin" },
+															bottom: { style: "thin" },
+															left: { style: "thin" },
+															right: { style: "thin" },
+														}
 													}
 												);
 
@@ -444,7 +461,10 @@ function EvaluationDashboard() {
 														type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 													}
 												);
-												FileSaver.saveAs(blob, "report.xlsx");
+												FileSaver.saveAs(
+													blob,
+													"report.xlsx"
+												);
 											}
 										} catch (error) {
 											toast({
