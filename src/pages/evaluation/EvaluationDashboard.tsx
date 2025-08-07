@@ -43,6 +43,8 @@ import {
 	CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import * as dfd from "danfojs";
+import * as ExcelJS from "exceljs";
+import * as FileSaver from "file-saver";
 
 function EvaluationDashboard() {
 	const [reportList, setReportList] =
@@ -65,10 +67,14 @@ function EvaluationDashboard() {
 				const score: number = row.getValue("overall_score");
 				return (
 					<span className="text-white font-semibold">
-						{score == null || score==undefined || Number.isNaN(score) ? 0 : score}
+						{score == null ||
+						score == undefined ||
+						Number.isNaN(score)
+							? 0
+							: score}
 					</span>
 				);
-			}
+			},
 		},
 		{
 			accessorKey: "processing_status",
@@ -271,6 +277,14 @@ function EvaluationDashboard() {
 		fetchEvaluations();
 	}, []);
 
+	const formatHeaderCells = (text: string): string => {
+		return text
+			.replace(/_/g, " ")
+			.split(" ")
+			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(" ");
+	};
+
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
 			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-6 sm:px-12 lg:px-16">
@@ -350,15 +364,107 @@ function EvaluationDashboard() {
 												const df = new dfd.DataFrame(
 													response.results
 												);
-												const columnsToDrop = ["report_id"]
+												const columnsToDrop = [
+													"report_id",
+												];
 
-												df.drop({ columns: columnsToDrop, inplace: true});
-
-												dfd.toExcel(df, {
-													fileName: "report.xlsx",
-													sheetName:
-														"Evaluation Report",
+												df.drop({
+													columns: columnsToDrop,
+													inplace: true,
 												});
+
+												const workbook =
+													new ExcelJS.Workbook();
+												workbook.creator = "Ryzr";
+												workbook.created = new Date();
+												const worksheet =
+													workbook.addWorksheet(
+														"Evaluation Report"
+													);
+
+												//Formats and adds headers
+												const headerRow =
+													worksheet.addRow(
+														df.columns
+													);
+												headerRow.eachCell(
+													(cell, index) => {
+														cell.value = formatHeaderCells(cell.value.toString())
+														cell.font = {
+															bold: true,
+															color: {
+																argb: "FFFFFFFF",
+															},
+															size: 12,
+															name: "SF Pro Display Regular",
+														};
+														cell.fill = {
+															type: "pattern",
+															pattern: "solid",
+															fgColor: {
+																argb: "FFB05AEF",
+															},
+														};
+														cell.alignment = {
+															vertical: "top",
+														};
+													}
+												);
+
+												const jsonData = dfd.toJSON(
+													df
+												) as Array<Record<string, any>>;
+
+												//Adds and formats data rows
+												jsonData.forEach((record) => {
+													const row =
+														worksheet.addRow(
+															Object.values(
+																record
+															)
+														);
+
+													row.eachCell(
+														(cell, index) => {
+															cell.font = {
+																size: 12,
+																name: "SF Pro Display Regular",
+																color: {
+																	argb: "FF000000",
+																},
+															};
+															cell.alignment = {
+																vertical: "top",
+																wrapText: true,
+															};
+														}
+													);
+												});
+
+												worksheet.columns.forEach(
+													(columns) => {
+														columns.width = 20;
+														columns.border ={
+															top: { style: "thin" },
+															bottom: { style: "thin" },
+															left: { style: "thin" },
+															right: { style: "thin" },
+														}
+													}
+												);
+
+												const buffer =
+													await workbook.xlsx.writeBuffer();
+												const blob = new Blob(
+													[buffer],
+													{
+														type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+													}
+												);
+												FileSaver.saveAs(
+													blob,
+													"report.xlsx"
+												);
 											}
 										} catch (error) {
 											toast({
