@@ -22,7 +22,7 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "@/components/ui/sidebar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { NotificationBell } from "./NotificationBell";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -35,6 +35,7 @@ import {
 	markAllAsRead,
 	markAsRead,
 } from "@/store/slices/notificationSlice";
+import { useClerk } from "@clerk/clerk-react";
 
 // Menu items.
 const items = [
@@ -72,6 +73,13 @@ export function AppSidebar() {
 		(state: RootState) => state.notifications
 	) as NotificationDTO[];
 	const unreadCount = notifications.filter((n) => n.unread).length;
+	const { signOut } = useClerk();
+	const navigate = useNavigate();
+
+	const handleLogout = async () => {
+		await signOut();
+		navigate("/");
+	};
 
 	const handleDismiss = (e: any, id: number) => {
 		e.stopPropagation();
@@ -173,7 +181,11 @@ export function AppSidebar() {
 											<button
 												className="text-left text-foreground/80 after:absolute after:inset-0"
 												onClick={() =>
-													dispatch(markAsRead(notification.id))
+													dispatch(
+														markAsRead(
+															notification.id
+														)
+													)
 												}
 											>
 												<span className="font-medium text-foreground hover:underline">
@@ -221,6 +233,7 @@ export function AppSidebar() {
 				<Button
 					variant="outline"
 					className="w-full gap-2 bg-transparent border-rose-500 hover:bg-rose-500 hover:text-white hover:border-rose-500"
+					onClick={handleLogout}
 				>
 					<span className="flex items-left gap-2">
 						<LogOut className="w-4 h-4" />
