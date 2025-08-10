@@ -7,5 +7,6 @@ import EvaluationDashboard from "./evaluation/EvaluationDashboard";
 import EvaluationDetails from "./evaluation/EvaluationDetails";
 import VulnerableAuditeeDashboard from "./auditees/VulnerableAuditeeDashboard";
 import DeviationDashboard from "./frameworks/DeviationDashboard";
+import SignupPage from "./SignUp";
 
-export { Home, LoginPage, NewEvaluation, AuditeeDashboard, AuditeeForm, EvaluationDashboard, EvaluationDetails, VulnerableAuditeeDashboard, DeviationDashboard };
+export { Home, LoginPage, NewEvaluation, AuditeeDashboard, AuditeeForm, EvaluationDashboard, EvaluationDetails, VulnerableAuditeeDashboard, DeviationDashboard, SignupPage };
