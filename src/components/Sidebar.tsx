@@ -36,6 +36,7 @@ import {
 	markAsRead,
 } from "@/store/slices/notificationSlice";
 import { useClerk } from "@clerk/clerk-react";
+import { fetchUserAppData, logout } from "@/store/slices/appUserSlice";
 
 // Menu items.
 const items = [
@@ -78,6 +79,7 @@ export function AppSidebar() {
 
 	const handleLogout = async () => {
 		await signOut();
+		dispatch(logout());
 		navigate("/");
 	};
 
