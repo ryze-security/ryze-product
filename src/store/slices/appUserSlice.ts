@@ -1,11 +1,8 @@
 import { AuthorizationDTO } from "@/models/auth/AuthDTOs";
-import { useAuthenticatedAxios } from "@/services/axiosInstance";
 import {
 	createAsyncThunk,
 	createSlice,
-	isRejectedWithValue,
 } from "@reduxjs/toolkit";
-import reducer from "./companySlice";
 import { AxiosInstance } from "axios";
 
 const loadInitialState = (): AuthorizationDTO => {

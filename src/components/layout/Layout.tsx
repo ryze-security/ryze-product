@@ -6,7 +6,7 @@ import { useAuth, useClerk } from "@clerk/clerk-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store/storeIndex";
 import { fetchUserAppData, logout } from "@/store/slices/appUserSlice";
-import { useAuthenticatedAxios } from "@/services/axiosInstance";
+import axiosInstance from "@/services/axiosInstance";
 
 function Layout() {
 	const { isSignedIn, isLoaded } = useAuth();
@@ -15,7 +15,7 @@ function Layout() {
 	const userStatus = useAppSelector(
 		(state: RootState) => state.appUser.status
 	);
-	const axios = useAuthenticatedAxios();
+	const axios = axiosInstance;
 	const navigate = useNavigate();
 
 	useEffect(() => {

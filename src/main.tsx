@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 import { store } from "./store/storeIndex.ts";
 import { BrowserRouter, useNavigate } from "react-router-dom";
 import { ClerkProvider } from "@clerk/clerk-react";
+import AxiosInterceptor from "./components/AxiosInterceptor.tsx";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -13,15 +14,15 @@ if (!PUBLISHABLE_KEY) {
 }
 
 function Root() {
-    return (
-        <ClerkProvider
-            publishableKey={PUBLISHABLE_KEY}
-        >
-            <Provider store={store}>
-                <App />
-            </Provider>
-        </ClerkProvider>
-    );
+	return (
+		<ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+			<Provider store={store}>
+				<AxiosInterceptor>
+					<App />
+				</AxiosInterceptor>
+			</Provider>
+		</ClerkProvider>
+	);
 }
 
 const root = createRoot(document.getElementById("root")!);
