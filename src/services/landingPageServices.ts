@@ -2,17 +2,16 @@ import {
 	contactUsBodyDTO,
 	contactUsResponseDTO,
 } from "@/models/landing_page/contact_usDTOs";
-import axios from "axios";
-import config from "./config";
 import { handleAxiosError } from "@/utils/handleAxiosError";
+import axiosInstance from "./axiosInstance";
 
 export class LandingPageServices {
 	async contactUs(
 		body: contactUsBodyDTO
 	): Promise<contactUsResponseDTO | any> {
 		try {
-			const response = await axios.post<contactUsResponseDTO>(
-				`${config.ryzrApiURL}/api/v1/contact`,
+			const response = await axiosInstance.post<contactUsResponseDTO>(
+				`/api/v1/contact`,
 				body,
 				{
 					headers: {

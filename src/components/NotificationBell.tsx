@@ -1,38 +1,8 @@
-"use client";
-
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
 import { NotificationDTO } from "@/models/notification/NotificationDTO";
-import {
-	dismissNotification,
-	markAllAsRead,
-	markAsRead,
-} from "@/store/slices/notificationSlice";
 import { RootState } from "@/store/storeIndex";
-import { formatRelativeTime } from "@/utils/formatTimestamp";
-import { Bell, X } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-
-function Dot({ className }: { className?: string }) {
-	return (
-		<svg
-			width="6"
-			height="6"
-			fill="currentColor"
-			viewBox="0 0 6 6"
-			xmlns="http://www.w3.org/2000/svg"
-			className={className}
-			aria-hidden="true"
-		>
-			<circle cx="3" cy="3" r="3" />
-		</svg>
-	);
-}
+import { Bell} from "lucide-react";
+import { useSelector } from "react-redux";
 
 function NotificationBell() {
 	const notifications = useSelector(

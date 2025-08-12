@@ -29,6 +29,8 @@ function AuditeeDashboard() {
 
 	const [auditeeData, setAuditeeData] = React.useState<CompanyListDto[]>([]);
 
+	const userData = useAppSelector((state) => state.appUser);
+
 	useMemo(() => {
 		setAuditeeData(
 			data.map((company: CompanyListDto) => {
@@ -44,7 +46,7 @@ function AuditeeDashboard() {
 
 	useEffect(() => {
 		if (auditeeData.length === 0) {
-			dispatch(loadCompanyData("7077beec-a9ef-44ef-a21b-83aab58872c9"));
+			dispatch(loadCompanyData(userData.tenant_id));
 		} else if (status == "failed") {
 			toast({
 				title: "Error",

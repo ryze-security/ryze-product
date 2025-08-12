@@ -17,6 +17,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "../ui/dialog";
+import { useAppSelector } from "@/store/hooks";
 
 interface FileUploadAreaProps {
 	control: any;
@@ -37,12 +38,13 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 	>([]);
 	const [open, setOpen] = useState(false);
 	const { toast } = useToast();
+	const userData = useAppSelector((state) => state.appUser);
 
 	const fetchCompanyFile = async () => {
 		setIsFilesLoading(true);
 		try {
 			const response = await fileService.getAllCompanyFiles(
-				"7077beec-a9ef-44ef-a21b-83aab58872c9", //change later to a value fetched from store or cookie
+				userData.tenant_id,
 				control._formValues.auditee.value
 			);
 			setExistingCompanyFiles(response);
@@ -71,7 +73,7 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 		for (const file of acceptedFiles) {
 			try {
 				const response = await fileService.uploadFile(
-					"7077beec-a9ef-44ef-a21b-83aab58872c9",
+					userData.tenant_id,
 					control._formValues.auditee.value,
 					file,
 					"SYSTEM"
@@ -101,7 +103,7 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 
 	// 	try {
 	// 		await fileService.deleteFile(
-	// 			"7077beec-a9ef-44ef-a21b-83aab58872c9",
+	// 			userData.tenant_id,
 	// 			"beta321",
 	// 			fileToRemove.file_id,
 	// 			"SYSTEM"

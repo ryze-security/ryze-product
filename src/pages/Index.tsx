@@ -1,5 +1,3 @@
-import FrameworkListItem from "@/components/dashboard/FrameworkListItem";
-import RecentReviews from "@/components/dashboard/RecentReviews";
 import SmallDisplayCard from "@/components/dashboard/SmallDisplayCard";
 import TableRowWithNumber from "@/components/dashboard/TableRowWithNumber";
 import { Button } from "@/components/ui/button";
@@ -9,6 +7,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAppSelector } from "@/store/hooks";
 import {
 	Building,
 	CircleAlert,
@@ -18,8 +17,6 @@ import {
 	Table,
 	TriangleAlert,
 } from "lucide-react";
-import { title } from "process";
-import React from "react";
 import { Link } from "react-router-dom";
 
 function Index() {
@@ -86,6 +83,8 @@ function Index() {
 		return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
 	}
 
+	const userData = useAppSelector((state => state.appUser));
+
 	return (
 		<div className="font-roboto text-white w-full min-h-screen p-6">
 			{/* Header */}
@@ -94,7 +93,7 @@ function Index() {
 					<div className="flex flex-col gap-2">
 						{/* Left: Welcome message */}
 						<h1 className="text-4xl font-semibold text-white tracking-wide">
-							Welcome, Aditya!
+							Welcome, {userData.first_name}!
 						</h1>
 
 						{/* Subtitle */}

@@ -4,16 +4,16 @@ import {
 	CompanyUpdateDto,
 } from "@/models/company/companyDTOs";
 import { handleAxiosError } from "@/utils/handleAxiosError";
-import axios from "axios";
-import config from "./config";
+import axiosInstance from "./axiosInstance";
 
 export class CompanyService {
+
 	async getCompanyByTenantId(
 		tenant_id: string
 	): Promise<CompanyListDto[] | any> {
 		try {
-			const response = await axios.get<CompanyListDto[]>(
-				`${config.ryzrApiURL}/api/v1/companies/${tenant_id}`
+			const response = await axiosInstance.get<CompanyListDto[]>(
+				`/api/v1/companies/${tenant_id}`
 			);
 			if (response.status !== 200) {
 				throw response;
@@ -33,8 +33,8 @@ export class CompanyService {
 		companyId: string
 	): Promise<CompanyListDto | any> {
 		try {
-			const response = await axios.get<CompanyListDto>(
-				`${config.ryzrApiURL}/api/v1/companies/${tenantId}/${companyId}`
+			const response = await axiosInstance.get<CompanyListDto>(
+				`/api/v1/companies/${tenantId}/${companyId}`
 			);
 			if (response.status !== 200) {
 				throw response;
@@ -53,8 +53,8 @@ export class CompanyService {
 		companyData: CompanyCreateDto
 	): Promise<CompanyListDto | any> {
 		try {
-			const response = await axios.post<CompanyListDto>(
-				`${config.ryzrApiURL}/api/v1/companies`,
+			const response = await axiosInstance.post<CompanyListDto>(
+				`/api/v1/companies`,
 				companyData,
 				{
 					headers: {
@@ -88,13 +88,13 @@ export class CompanyService {
 		};
 
 		try {
-			const response = await axios.patch<CompanyListDto>(
-				`${config.ryzrApiURL}/api/v1/companies/${tenantId}/${companyId}`,
+			const response = await axiosInstance.patch<CompanyListDto>(
+				`/api/v1/companies/${tenantId}/${companyId}`,
 				payload,
 				{
 					headers: {
 						"Content-Type": "application/json",
-						"Accept": "application/json",
+						Accept: "application/json",
 					},
 				}
 			);

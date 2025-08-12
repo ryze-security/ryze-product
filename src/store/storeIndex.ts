@@ -2,14 +2,19 @@ import { configureStore } from "@reduxjs/toolkit";
 import companyReducers from "./slices/companySlice";
 import evaluationReducers from "./slices/evaluationSlice";
 import notificationReducers from "./slices/notificationSlice";
+import appUserReducers from "./slices/appUserSlice";
 import { saveState } from "@/utils/handleLocalStorage";
+import { localStorageMiddleware } from "./localStorageMIddleware";
 
 export const store = configureStore({
 	reducer: {
 		company: companyReducers,
 		evaluation: evaluationReducers,
 		notifications: notificationReducers,
+		appUser: appUserReducers,
 	},
+	middleware: (getDefaultMiddleware) =>
+		getDefaultMiddleware().concat(localStorageMiddleware),
 });
 
 var currentNotifications = store.getState().notifications;

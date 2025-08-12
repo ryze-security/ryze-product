@@ -5,17 +5,16 @@ import {
 	reportResultListDTO,
 	startReportDTO,
 } from "@/models/reports/ExcelDTOs";
-import axios from "axios";
-import config from "./config";
 import { handleAxiosError } from "@/utils/handleAxiosError";
+import axiosInstance from "./axiosInstance";
 
 export class ReportsService {
 	async createExcelReport(
 		userData: createReportDTO
 	): Promise<createStartReportResponseDTO | any> {
 		try {
-			const response = await axios.post<createStartReportResponseDTO>(
-				`${config.ryzrApiURL}/api/v1/reports/`,
+			const response = await axiosInstance.post<createStartReportResponseDTO>(
+				`/api/v1/reports/`,
 				userData,
 				{
 					headers: {
@@ -42,8 +41,8 @@ export class ReportsService {
 		report_body: startReportDTO
 	): Promise<createStartReportResponseDTO | any> {
 		try {
-			const response = await axios.post<createStartReportResponseDTO>(
-				`${config.ryzrApiURL}/api/v1/reports/${report_id}/start`,
+			const response = await axiosInstance.post<createStartReportResponseDTO>(
+				`/api/v1/reports/${report_id}/start`,
 				report_body,
 				{
 					headers: {
@@ -71,8 +70,8 @@ export class ReportsService {
 		report_id: string
 	): Promise<reportResultDTO | any> {
 		try {
-			const response = await axios.get<reportResultDTO>(
-				`${config.ryzrApiURL}/api/v1/reports/${tenant_id}/${company_id}/${report_id}`
+			const response = await axiosInstance.get<reportResultDTO>(
+				`/api/v1/reports/${tenant_id}/${company_id}/${report_id}`
 			);
 			if (response.status !== 200) {
 				throw response;
@@ -93,8 +92,8 @@ export class ReportsService {
 		eval_id: string
 	): Promise<reportResultListDTO | any> {
 		try {
-			const response = await axios.get<reportResultListDTO>(
-				`${config.ryzrApiURL}/api/v1/reports/evaluation/${tenant_id}/${company_id}/${eval_id}`
+			const response = await axiosInstance.get<reportResultListDTO>(
+				`/api/v1/reports/evaluation/${tenant_id}/${company_id}/${eval_id}`
 			);
 			if (response.status !== 200) {
 				throw response;

@@ -1,7 +1,7 @@
-import { SignIn } from "@clerk/clerk-react";
+import { SignIn, SignUp } from "@clerk/clerk-react";
 import { Link } from "react-router-dom";
 
-export default function LoginPage() {
+export default function SignupPage() {
 	return (
 		<div className="min-h-screen bg-black flex items-center justify-center px-auto font-roboto text-white">
 			<nav className="fixed top-0 left-0 w-full z-50 transition-transform duration-700 ease-in-out transform -translate-y-full animate-slideInDown bg-opacity-5 bg-black backdrop-blur-sm shadow-lg">
@@ -15,8 +15,8 @@ export default function LoginPage() {
 				</div>
 			</nav>
 			<div className="w-full max-w-md text-center">
-				<SignIn
-					signUpUrl="/sign-up"
+				<SignUp
+					signInUrl="/login"
 					forceRedirectUrl="/home"
 					fallbackRedirectUrl="/home"
 				/>

@@ -14,7 +14,7 @@ import {
 	CompanyUpdateDto,
 } from "@/models/company/companyDTOs";
 import companyService from "@/services/companyServices";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadCompanyData } from "@/store/slices/companySlice";
 import { Edit, Lock } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
@@ -81,6 +81,7 @@ function AuditeeForm() {
 	const { auditeeId } = useParams();
 	const isEditMode = Boolean(auditeeId);
 	const { toast } = useToast();
+	const userData = useAppSelector((state) => state.appUser);
 
 	const methods = useForm({
 		defaultValues: {
@@ -114,7 +115,7 @@ function AuditeeForm() {
 				try {
 					const data: CompanyListDto =
 						await companyService.getCompanyByCompanyId(
-							"7077beec-a9ef-44ef-a21b-83aab58872c9",
+							userData.tenant_id,
 							auditeeId
 						);
 					methods.reset({
@@ -141,7 +142,7 @@ function AuditeeForm() {
 	const onSubmit = async (data: any) => {
 		setIsLoading(true);
 		const companyData: CompanyCreateDto = {
-			tenant_id: "7077beec-a9ef-44ef-a21b-83aab58872c9", //TODO: get tenant id from auth context
+			tenant_id: userData.tenant_id,
 			company_name: data.auditeeName,
 			company_type: data.auditeeData[0],
 			created_by: "FE_SYSTEM", //TODO: get user id from auth context
@@ -157,12 +158,12 @@ function AuditeeForm() {
 					service_type: data.auditeeService,
 				};
 				const response = await companyService.updateCompany(
-					"7077beec-a9ef-44ef-a21b-83aab58872c9",
+					userData.tenant_id,
 					auditeeId as string,
 					updateData
 				);
 				dispatch(
-					loadCompanyData("7077beec-a9ef-44ef-a21b-83aab58872c9")
+					loadCompanyData(userData.tenant_id)
 				);
 				methods.reset({
 					auditeeName: response.tg_company_display_name,
@@ -181,7 +182,7 @@ function AuditeeForm() {
 					companyData
 				);
 				dispatch(
-					loadCompanyData("7077beec-a9ef-44ef-a21b-83aab58872c9")
+					loadCompanyData(userData.tenant_id)
 				);
 				toast({
 					title: "Auditee created successfully!",
