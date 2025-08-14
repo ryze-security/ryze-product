@@ -153,7 +153,7 @@ function QuestionForm(props: Props) {
 				</div> */}
 				{/* Question Name and changing arrows */}
 				<div className="flex w-full border-b-black border-b-2">
-					<div className="flex flex-col justify-between my-6 ml-6">
+					<div className="flex flex-col justify-between my-6 mb-0 ml-6">
 						<span className="text-2xl font-light text-[#AAAAAA] tracking-normal px-4 py-1">
 							Question
 						</span>
@@ -166,7 +166,7 @@ function QuestionForm(props: Props) {
 				<div className="flex w-full">
 					<div className="py-6 pl-10 w-[50%] border-r border-black flex flex-col gap-2">
 						{/* Compliance status and toggle button */}
-						<div className="flex gap-2">
+						<div className="flex justify-between w-11/12">
 							<Popover open={open} onOpenChange={setOpen}>
 								<PopoverTrigger asChild>
 									<Button
