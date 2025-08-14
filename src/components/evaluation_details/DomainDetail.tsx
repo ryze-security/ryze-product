@@ -27,6 +27,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { AlertDialogBox } from "../AlertDialogBox";
 import { RoundSpinner } from "../ui/spinner";
 import MarkdownRenderer from "./MarkdownRenderer";
+import ProgressCircle from "./ProgressCircle";
 
 interface Props {
 	domainData: domainResponse;
@@ -425,7 +426,7 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 							)}
 						</div>
 						<div className="flex justify-between">
-							<div className="flex max-w-fit gap-2">
+							<div className="flex max-w-[85%] flex-col w-full h-fit gap-5">
 								<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
 									{selectedRow.controlId}
 								</div>
@@ -434,19 +435,22 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 										{selectedRow.Description}
 									</div>
 									<div>
-										<p className="text-base w-10/12 text-gray-light-ryzr">
+										<p className="text-base w-full text-gray-light-ryzr">
 											{selectedRow.control_description}
 										</p>
 									</div>
 								</div>
+								<div className="w-[27%] bg-gradient-to-r rounded-md py-1 px-2 from-gray-light-ryzr/50 to-transparent ">
+									{selectedRow.QuestionResponseList.length}{" "}
+									Total Questions
+								</div>
 							</div>
 
-							<div className="min-w-[104px] h-[101px] bg-violet-ryzr rounded-lg flex flex-col justify-center align-middle items-center">
-								<h1 className="text-4xl font-semibold text-white">
-									{selectedRow.Response.Score}%
-								</h1>
-								<p className="text-sm">Compliance</p>
-							</div>
+							<ProgressCircle
+								progress={selectedRow.Response.Score}
+								size={140}
+								strokeWidth={12}
+							/>
 						</div>
 					</div>
 				) : (
