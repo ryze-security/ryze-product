@@ -37,6 +37,7 @@ import { AlertDialogBox } from "../AlertDialogBox";
 import { marked, use } from "marked";
 import DOMPurify from "dompurify";
 import MarkdownRenderer from "./MarkdownRenderer";
+import ProgressCircle from "./ProgressCircle";
 
 interface Props {
 	overallScore: string;
@@ -223,9 +224,24 @@ const DetailHome = forwardRef((props: Props, ref) => {
 	const [selectedQuestion, setSelectedQuestion] =
 		useState<questionResponse>(null);
 	//TODO: whole question system can be refactored to use index instead of entire question object
-	const [updatedQuestions, setUpdatedQuestions] = React.useState<
-		questionResponse[]
-	>([]);
+	const updatedQuestions: questionResponse[] = React.useMemo(() => {
+		if (!selectedRow) {
+			return []; // Return an empty array if no row is selected
+		}
+		// This logic is the same as your old useEffect
+		return [...selectedRow.QuestionResponseList]
+			.sort((a, b) =>
+				a.q_id.localeCompare(b.q_id, undefined, { numeric: true })
+			)
+			.map((question, index) => ({
+				...question,
+				SNo: (index + 1).toString(),
+				Response: {
+					...question.Response,
+					Score: question.Response.Score === "true",
+				},
+			}));
+	}, [selectedRow]);
 
 	const [controlSort, setControlSort] = useState<SortingState>([]);
 	const [controlFilter, setControlFilter] = useState<string>("");
@@ -310,34 +326,34 @@ const DetailHome = forwardRef((props: Props, ref) => {
 		}
 	}, [updatedQuestions]);
 
-	// This effect is used to convert the score to a boolean
-	// and to set the SNo for each question
-	useEffect(() => {
-		if (selectedRow) {
-			const updatedQuestionResponseList = [
-				...selectedRow.QuestionResponseList,
-			]
-				.sort((a, b) =>
-					a.q_id.localeCompare(b.q_id, undefined, { numeric: true })
-				)
-				.map((question, index) => {
-					const updatedQuestion = {
-						...question,
-						SNo: (index + 1).toString(),
-						Response: {
-							...question.Response,
-							Score:
-								question.Response.Score === "true"
-									? true
-									: false,
-						},
-					};
-					return updatedQuestion;
-				});
+	// // This effect is used to convert the score to a boolean
+	// // and to set the SNo for each question
+	// useEffect(() => {
+	// 	if (selectedRow) {
+	// 		const updatedQuestionResponseList = [
+	// 			...selectedRow.QuestionResponseList,
+	// 		]
+	// 			.sort((a, b) =>
+	// 				a.q_id.localeCompare(b.q_id, undefined, { numeric: true })
+	// 			)
+	// 			.map((question, index) => {
+	// 				const updatedQuestion = {
+	// 					...question,
+	// 					SNo: (index + 1).toString(),
+	// 					Response: {
+	// 						...question.Response,
+	// 						Score:
+	// 							question.Response.Score === "true"
+	// 								? true
+	// 								: false,
+	// 					},
+	// 				};
+	// 				return updatedQuestion;
+	// 			});
 
-			setUpdatedQuestions(updatedQuestionResponseList);
-		}
-	}, [selectedRow]);
+	// 		setUpdatedQuestions(updatedQuestionResponseList);
+	// 	}
+	// }, [selectedRow]);
 
 	useEffect(() => {
 		const newCardData: CardData[] = [];
@@ -366,6 +382,16 @@ const DetailHome = forwardRef((props: Props, ref) => {
 
 			if (event.state && event.state.selectedQuestion) {
 				setSelectedQuestion(event.state.selectedQuestion);
+				console.log(
+					"Setting selected question from history state",
+					selectedQuestion
+				);
+				methods.reset({
+					score: event.state.selectedQuestion.Response.Score,
+					observation:
+						event.state.selectedQuestion.Response.Observation,
+					questionId: event.state.selectedQuestion.q_id,
+				});
 			} else {
 				setSelectedQuestion(null);
 			}
@@ -646,7 +672,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 							</div>
 
 							<div className="flex justify-between">
-								<div className="flex max-w-fit gap-2">
+								<div className="flex max-w-[85%] flex-col w-full h-fit gap-5">
 									<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
 										{selectedRow.serial}
 									</div>
@@ -655,21 +681,27 @@ const DetailHome = forwardRef((props: Props, ref) => {
 											{selectedRow.Description}
 										</div>
 										<div>
-											<p className="text-base w-10/12 text-gray-light-ryzr">
+											<p className="text-base w-full text-gray-light-ryzr">
 												{
 													selectedRow.control_description
 												}
 											</p>
 										</div>
 									</div>
+									<div className="w-[27%] bg-gradient-to-r rounded-md py-1 px-2 from-gray-light-ryzr/50 to-transparent ">
+										{
+											selectedRow.QuestionResponseList
+												.length
+										}{" "}
+										Total Questions
+									</div>
 								</div>
 
-								<div className="min-w-[104px] h-[101px] bg-violet-ryzr rounded-lg flex flex-col justify-center align-middle items-center">
-									<h1 className="text-4xl font-semibold text-white">
-										{selectedRow.Response.Score}%
-									</h1>
-									<p className="text-sm">Compliance</p>
-								</div>
+								<ProgressCircle
+									progress={selectedRow.Response.Score}
+									size={152}
+									strokeWidth={12}
+								/>
 							</div>
 						</div>
 					)}
@@ -713,7 +745,10 @@ const DetailHome = forwardRef((props: Props, ref) => {
 											url.searchParams.delete("question");
 										}
 										history.pushState(
-											{ selectedQuestion: row },
+											{
+												selectedRow: selectedRow,
+												selectedQuestion: row,
+											},
 											"",
 											url
 										);
@@ -745,7 +780,10 @@ const DetailHome = forwardRef((props: Props, ref) => {
 										url.searchParams.delete("controlId");
 									}
 									history.pushState(
-										{ selectedControl: row },
+										{
+											selectedControl: row,
+											selectedQuestion: null,
+										},
 										"",
 										url
 									);
