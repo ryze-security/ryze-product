@@ -97,7 +97,7 @@ function Index() {
 						</h1>
 
 						{/* Subtitle */}
-						<p className="text-base text-zinc-500">{`Last logged in ${getFormattedDateTime()}`}</p>
+						{/* <p className="text-base text-zinc-500">{`Last logged in ${getFormattedDateTime()}`}</p> */}
 					</div>
 
 					{/* Right: Button */}
