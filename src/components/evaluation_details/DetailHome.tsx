@@ -228,6 +228,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 		if (!selectedRow) {
 			return []; // Return an empty array if no row is selected
 		}
+		debugger;
 		// This logic is the same as your old useEffect
 		return [...selectedRow.QuestionResponseList]
 			.sort((a, b) =>
@@ -238,7 +239,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 				SNo: (index + 1).toString(),
 				Response: {
 					...question.Response,
-					Score: question.Response.Score === "true",
+					Score: question.Response.Score === "true" ? true : question.Response.Score === "false" ? false : null,
 				},
 			}));
 	}, [selectedRow]);
@@ -382,10 +383,6 @@ const DetailHome = forwardRef((props: Props, ref) => {
 
 			if (event.state && event.state.selectedQuestion) {
 				setSelectedQuestion(event.state.selectedQuestion);
-				console.log(
-					"Setting selected question from history state",
-					selectedQuestion
-				);
 				methods.reset({
 					score: event.state.selectedQuestion.Response.Score,
 					observation:
