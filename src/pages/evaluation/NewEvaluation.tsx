@@ -21,6 +21,7 @@ import {
 import { RoundSpinner } from "@/components/ui/spinner";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { collectionDataDTO } from "@/models/collection/collectionDTOs";
 import { CompanyListDto } from "@/models/company/companyDTOs";
 import {
 	createEvaluationDTO,
@@ -29,6 +30,7 @@ import {
 import { FilesUploadResponseDTO } from "@/models/files/FilesUploadResponseDTO";
 import evaluationService from "@/services/evaluationServices";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { loadCollections } from "@/store/slices/collectionSlice";
 import { loadCompanyData } from "@/store/slices/companySlice";
 import { ColumnDef } from "@tanstack/react-table";
 import { Check, ChevronsUpDown, PlusCircleIcon } from "lucide-react";
@@ -58,6 +60,10 @@ const NewEvaluation = () => {
 	const auditees = useAppSelector(
 		(state) => state.company.data
 	) as CompanyListDto[];
+
+	const { collection, status, error } = useAppSelector(
+		(state) => state.collections
+	);
 
 	const userData = useAppSelector((state) => state.appUser);
 
@@ -272,6 +278,9 @@ const NewEvaluation = () => {
 		if (auditees.length === 0) {
 			dispatch(loadCompanyData(userData.tenant_id));
 		}
+		if (collection.collections.length === 0) {
+			dispatch(loadCollections(userData.tenant_id));
+		}
 	}, []);
 
 	return (
@@ -473,27 +482,44 @@ const NewEvaluation = () => {
 											What is the reference for the
 											framework?
 										</label>
-										<div className="flex flex-row justify-start gap-4 flex-wrap">
-											{frameworks.map((f) => (
-												<FrameworkCard
-													key={f.value}
-													name={f.name}
-													value={f.value}
-													fieldName="selectedFrameworks"
-													control={methods.control}
-													error={
-														!!methods.formState
-															.errors
-															.selectedFrameworks
-													} // Pass the error state
-													setFocus={methods.setFocus} // Pass the setFocus function
-												/>
-											))}
-											{/* Add link to framework section */}
-											<div className="flex gap-2 justify-center cursor-pointer rounded-sm border p-4 font-roboto sm:w-28 bg-zinc-800 text-zinc-400 transition-all text-opacity-80 duration-100 hover:scale-110">
+										{status === "succeeded" ? (
+											<div className="flex flex-row justify-start gap-4 flex-wrap">
+												{collection.collections.map(
+													(f) => (
+														<FrameworkCard
+															key={
+																f.collection_id
+															}
+															name={
+																f.collection_display_name
+															}
+															value={
+																f.collection_id
+															}
+															fieldName="selectedFrameworks"
+															control={
+																methods.control
+															}
+															error={
+																!!methods
+																	.formState
+																	.errors
+																	.selectedFrameworks
+															} // Pass the error state
+															setFocus={
+																methods.setFocus
+															} // Pass the setFocus function
+														/>
+													)
+												)}
+												{/* Add link to framework section */}
+												{/* <div className="flex gap-2 justify-center cursor-pointer rounded-sm border p-4 font-roboto sm:w-28 bg-zinc-800 text-zinc-400 transition-all text-opacity-80 duration-100 hover:scale-110">
 												<PlusCircleIcon /> Add
+											</div> */}
 											</div>
-										</div>
+										) : (
+											<RoundSpinner />
+										)}
 									</div>
 								</div>
 							)}
