@@ -62,6 +62,7 @@ function EvaluationDetails() {
 	const [isReportGenerating, setIsReportGenerating] = useState(false);
 
 	const { data, status, error } = useAppSelector((state) => state.evaluation);
+	const userData = useAppSelector((state) => state.appUser);
 
 	const homeRef = useRef(null);
 	const domainDetailRef = useRef(null);
@@ -127,7 +128,7 @@ function EvaluationDetails() {
 				) {
 					await dispatch(
 						loadEvaluationData({
-							tenant_id: "7077beec-a9ef-44ef-a21b-83aab58872c9",
+							tenant_id: userData.tenant_id,
 							companyId: companyId ?? "",
 							evaluationId: evaluationId ?? "",
 						})
@@ -186,7 +187,7 @@ function EvaluationDetails() {
 
 			await dispatch(
 				loadEvaluationData({
-					tenant_id: "7077beec-a9ef-44ef-a21b-83aab58872c9",
+					tenant_id: userData.tenant_id,
 					companyId: companyId ?? "",
 					evaluationId: evaluationId ?? "",
 				})

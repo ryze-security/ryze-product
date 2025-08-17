@@ -45,11 +45,13 @@ import {
 import * as dfd from "danfojs";
 import * as ExcelJS from "exceljs";
 import * as FileSaver from "file-saver";
+import { useAppSelector } from "@/store/hooks";
 
 function EvaluationDashboard() {
 	const [reportList, setReportList] =
 		React.useState<reportResultListDTO>(null);
 	const { toast } = useToast();
+	const userData = useAppSelector((state) => state.appUser);
 
 	const columns: ColumnDef<Evaluation>[] = [
 		{
@@ -177,7 +179,7 @@ function EvaluationDashboard() {
 									try {
 										const response =
 											await reportsService.getReportList(
-												"7077beec-a9ef-44ef-a21b-83aab58872c9",
+												userData.tenant_id,
 												evaluation.tg_company_id,
 												evaluation.eval_id
 											);
@@ -232,7 +234,7 @@ function EvaluationDashboard() {
 			setIsEvalLoading(true);
 			try {
 				const response = await evaluationService.getEvaluations(
-					"7077beec-a9ef-44ef-a21b-83aab58872c9"
+					userData.tenant_id
 				);
 				if (response.total_count !== 0) {
 					response.evaluations = response.evaluations.map(
@@ -355,7 +357,7 @@ function EvaluationDashboard() {
 											setIsReportGenerating(true);
 											const response: reportResultDTO =
 												await reportsService.getExcelReportResult(
-													"7077beec-a9ef-44ef-a21b-83aab58872c9",
+													userData.tenant_id,
 													reportCompanyName,
 													reportList.reports[0]
 														.report_id
@@ -493,7 +495,7 @@ function EvaluationDashboard() {
 														);
 														const response: reportResultDTO =
 															await reportsService.getExcelReportResult(
-																"7077beec-a9ef-44ef-a21b-83aab58872c9",
+																userData.tenant_id,
 																reportCompanyName,
 																report.report_id
 															);
