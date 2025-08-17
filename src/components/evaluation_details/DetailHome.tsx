@@ -64,7 +64,7 @@ interface QuestionFormFields {
 
 const columns: ColumnDef<controlResponse>[] = [
 	{
-		accessorKey: "controlId",
+		accessorKey: "serial",
 		header: ({ column }) => {
 			return (
 				<Button
@@ -257,6 +257,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 	const updatedControlResponseList = React.useMemo(() => {
 		const updatedControls = combinedControls.map((control) => ({
 			...control,
+			serial: control.controlId.substring(2),
 			Response: {
 				...control.Response,
 				Score: Math.round(control.Response.Score * 100),
@@ -647,7 +648,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 							<div className="flex justify-between">
 								<div className="flex max-w-fit gap-2">
 									<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
-										{selectedRow.controlId}
+										{selectedRow.serial}
 									</div>
 									<div className="flex flex-col gap-2">
 										<div className="text-4xl font-semibold text-white tracking-wide">

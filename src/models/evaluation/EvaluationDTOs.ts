@@ -74,6 +74,7 @@ export interface domainResponse {
 export interface controlResponse {
 	Order: number;
 	controlId: string;
+	serial: string;
 	Description: string;
 	control_description: string;
 	missing_elements: string;
