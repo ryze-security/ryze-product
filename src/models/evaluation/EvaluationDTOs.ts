@@ -113,3 +113,15 @@ export interface updateQuestionResponseDTO {
 	question_id: string;
 	eval_id: string;
 }
+
+export interface deleteEvaluationResponseDTO {
+	status: string;
+	data: deleteEvaluationData;
+}
+
+interface deleteEvaluationData {
+	message: string;
+	eval_id: string;
+	questions_deleted: number;
+	previous_status: string;
+}

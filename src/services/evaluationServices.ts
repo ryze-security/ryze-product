@@ -1,6 +1,7 @@
 import {
 	createEvaluationDTO,
 	createEvaluationResponseDTO,
+	deleteEvaluationResponseDTO,
 	evalutaionDetailDTO,
 	listEvaluationsDTO,
 	startEvaluationResponseDTO,
@@ -132,6 +133,28 @@ export class EvaluationService {
 		} catch (error) {
 			const errorInfo = handleAxiosError(error);
 			console.error("Error fetching company:", errorInfo.message);
+
+			//rethrowing for conditional rendering
+			throw errorInfo;
+		}
+	}
+
+	async deleteEvaluation(
+		tenant_id: string,
+		company_id: string,
+		eval_id: string
+	): Promise<deleteEvaluationResponseDTO | any> {
+		try {
+			const response = await axiosInstance.delete(
+				`/api/v1/evaluations/${tenant_id}/${company_id}/${eval_id}`
+			);
+			if (response.status !== 200) {
+				throw response;
+			}
+			return response.data;
+		} catch (error) {
+			const errorInfo = handleAxiosError(error);
+			console.error("Error deleting evaluation:", errorInfo.message);
 
 			//rethrowing for conditional rendering
 			throw errorInfo;
