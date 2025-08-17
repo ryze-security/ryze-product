@@ -153,7 +153,7 @@ function QuestionForm(props: Props) {
 				</div> */}
 				{/* Question Name and changing arrows */}
 				<div className="flex w-full border-b-black border-b-2">
-					<div className="flex flex-col justify-between my-6 mb-0 ml-6">
+					<div className="flex flex-col justify-between my-6 mb-0 ml-6 w-8/12">
 						<span className="text-2xl font-light text-[#AAAAAA] tracking-normal px-4 py-1">
 							Question
 						</span>
@@ -162,114 +162,115 @@ function QuestionForm(props: Props) {
 							<span className="flex flex-wrap">{`${selectedQuestion?.question}`}</span>
 						</div>
 					</div>
+					{/* Compliance status and toggle button */}
+					<div className="flex gap-3 justify-end mr-6 w-4/12 my-auto">
+						<Popover open={open} onOpenChange={setOpen}>
+							<PopoverTrigger asChild>
+								<Button
+									variant="outline"
+									role="combobox"
+									aria-expanded={open}
+									disabled={!isObservationEditing}
+									className={`w-[200px] justify-between bg-gray-light-ryzr text-white ${
+										watch("score") === null
+											? "bg-zinc-700 hover:bg-zinc-700/75"
+											: watch("score")
+											? "bg-green-ryzr hover:bg-green-ryzr/75"
+											: "bg-red-ryzr hover:bg-red-ryzr/75"
+									} transition-opacity duration-200 disabled:opacity-100 font-semibold`}
+								>
+									{
+										complianceStatus.find(
+											(status) =>
+												status.value ===
+												String(watch("score"))
+										)?.label
+									}
+									<ChevronsUpDownIcon
+										className={cn(
+											"ml-2 h-4 w-4 shrink-0",
+											isObservationEditing
+												? "opacity-75"
+												: "opacity-0"
+										)}
+									/>
+								</Button>
+							</PopoverTrigger>
+							<PopoverContent className="w-[200px] p-0">
+								<Command>
+									<CommandList>
+										<CommandEmpty>
+											No framework found.
+										</CommandEmpty>
+										<CommandGroup>
+											{complianceStatus.map(
+												(status, index) => (
+													<CommandItem
+														key={index}
+														value={status.value}
+														onSelect={(
+															currentValue
+														) => {
+															const finalValue =
+																currentValue ===
+																"true"
+																	? true
+																	: currentValue ===
+																	  "false"
+																	? false
+																	: null;
+															setValue(
+																"score",
+																finalValue,
+																{
+																	shouldDirty:
+																		true,
+																}
+															);
+															setOpen(false);
+														}}
+													>
+														<CheckIcon
+															className={cn(
+																"mr-2 h-4 w-4",
+																String(
+																	watch(
+																		"score"
+																	)
+																) ===
+																	status.value
+																	? "opacity-100"
+																	: "opacity-0"
+															)}
+														/>
+														{status.label}
+													</CommandItem>
+												)
+											)}
+										</CommandGroup>
+									</CommandList>
+								</Command>
+							</PopoverContent>
+						</Popover>
+						<Button
+							onClick={() => {
+								setisObservationEditing(!isObservationEditing);
+							}}
+							className="bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white font-bold px-4"
+						>
+							{isObservationEditing ? (
+								<Lock className="opacity-80" />
+							) : (
+								<PencilLine className="opacity-80" />
+							)}
+						</Button>
+					</div>
 				</div>
 				<div className="flex w-full">
-					<div className="py-6 pl-10 w-[50%] border-r border-black flex flex-col gap-2">
-						{/* Compliance status and toggle button */}
-						<div className="flex justify-between w-11/12">
-							<Popover open={open} onOpenChange={setOpen}>
-								<PopoverTrigger asChild>
-									<Button
-										variant="outline"
-										role="combobox"
-										aria-expanded={open}
-										disabled={!isObservationEditing}
-										className={`w-[200px] justify-between bg-gray-light-ryzr text-white ${
-											watch("score") === null
-												? "bg-zinc-700 hover:bg-zinc-700/75"
-												: watch("score")
-												? "bg-green-ryzr hover:bg-green-ryzr/75"
-												: "bg-red-ryzr hover:bg-red-ryzr/75"
-										} transition-opacity duration-200 disabled:opacity-100 font-semibold`}
-									>
-										{
-											complianceStatus.find(
-												(status) =>
-													status.value ===
-													String(watch("score"))
-											)?.label
-										}
-										<ChevronsUpDownIcon
-											className={cn(
-												"ml-2 h-4 w-4 shrink-0",
-												isObservationEditing
-													? "opacity-75"
-													: "opacity-0"
-											)}
-										/>
-									</Button>
-								</PopoverTrigger>
-								<PopoverContent className="w-[200px] p-0">
-									<Command>
-										<CommandList>
-											<CommandEmpty>
-												No framework found.
-											</CommandEmpty>
-											<CommandGroup>
-												{complianceStatus.map(
-													(status, index) => (
-														<CommandItem
-															key={index}
-															value={status.value}
-															onSelect={(
-																currentValue
-															) => {
-																const finalValue =
-																	currentValue ===
-																	"true"
-																		? true
-																		: currentValue ===
-																		  "false"
-																		? false
-																		: null;
-																setValue(
-																	"score",
-																	finalValue,
-																	{
-																		shouldDirty:
-																			true,
-																	}
-																);
-																setOpen(false);
-															}}
-														>
-															<CheckIcon
-																className={cn(
-																	"mr-2 h-4 w-4",
-																	String(
-																		watch(
-																			"score"
-																		)
-																	) ===
-																		status.value
-																		? "opacity-100"
-																		: "opacity-0"
-																)}
-															/>
-															{status.label}
-														</CommandItem>
-													)
-												)}
-											</CommandGroup>
-										</CommandList>
-									</Command>
-								</PopoverContent>
-							</Popover>
-							<Button
-								onClick={() => {
-									setisObservationEditing(
-										!isObservationEditing
-									);
-								}}
-								className="bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white font-bold px-4"
-							>
-								{isObservationEditing ? (
-									<Lock className="opacity-80" />
-								) : (
-									<PencilLine className="opacity-80" />
-								)}
-							</Button>
-						</div>
+					<div className="py-6 pl-10 w-[50%] border-r border-black flex flex-col">
+						<span className="text-2xl font-light text-[#AAAAAA] tracking-normal pb-0 py-1">
+							Observation
+						</span>
 						{/* Observation and textarea */}
 						<div className="gap-2 flex mt-4 w-11/12">
 							{isObservationEditing ? (
@@ -295,8 +296,8 @@ function QuestionForm(props: Props) {
 						</div>
 					</div>
 					{/* Evidence */}
-					<div className="flex flex-col py-6 pl-6 pr-4 w-[50%] gap-2">
-						<span className="text-2xl font-light text-[#AAAAAA] tracking-normal px-4 py-1">
+					<div className="flex flex-col py-6 pl-6 pr-4 w-[50%]">
+						<span className="text-2xl font-light text-[#AAAAAA] tracking-normal pb-0 py-1">
 							Evidence
 						</span>
 						<div className="gap-2 flex flex-col mt-4 w-11/12">
@@ -311,10 +312,20 @@ function QuestionForm(props: Props) {
 				</div>
 			</section>
 			<div className="flex justify-between w-full">
-				<Button variant="outline" onClick={handleLeftArrowClick} className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm" disabled={index === 0}>
+				<Button
+					variant="outline"
+					onClick={handleLeftArrowClick}
+					className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
+					disabled={index === 0}
+				>
 					<ChevronLeft className="mr-2 h-4 w-4" /> Previous
 				</Button>
-				<Button variant="outline" onClick={handleRightArrowClick} className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm" disabled={index === questionData.length-1}>
+				<Button
+					variant="outline"
+					onClick={handleRightArrowClick}
+					className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
+					disabled={index === questionData.length - 1}
+				>
 					<ChevronRight className="mr-2 h-4 w-4" /> Next
 				</Button>
 			</div>
