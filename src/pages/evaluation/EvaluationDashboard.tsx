@@ -46,12 +46,14 @@ import * as dfd from "danfojs";
 import * as ExcelJS from "exceljs";
 import * as FileSaver from "file-saver";
 import { useAppSelector } from "@/store/hooks";
+import { AlertDialogBox } from "@/components/AlertDialogBox";
 
 function EvaluationDashboard() {
 	const [reportList, setReportList] =
 		React.useState<reportResultListDTO>(null);
 	const { toast } = useToast();
 	const userData = useAppSelector((state) => state.appUser);
+	const [refreshTrigger, setRefreshTrigger] = React.useState<number>(0);
 
 	const columns: ColumnDef<Evaluation>[] = [
 		{
@@ -208,6 +210,51 @@ function EvaluationDashboard() {
 							>
 								Download Report
 							</DropdownMenuItem>
+							<AlertDialogBox
+								trigger={
+									<DropdownMenuItem
+										onSelect={(e) => e.preventDefault()}
+										onClick={(e) => e.stopPropagation()}
+										className="text-rose-600 focus:text-white focus:bg-rose-600"
+									>
+										Delete Evaluation
+									</DropdownMenuItem>
+								}
+								title="Are You Sure?"
+								subheading={`Are you sure you want to delete this evaluation? This action cannot be undone.`}
+								actionLabel="Delete"
+								onAction={() => {
+									const performDelete = async () => {
+										try {
+											const response =
+												await evaluationService.deleteEvaluation(
+													userData.tenant_id,
+													evaluation.tg_company_id,
+													evaluation.eval_id
+												);
+											if (response.status === "success") {
+												setRefreshTrigger(
+													(prev) => prev + 1
+												);
+												toast({
+													title: "Report Deleted!",
+													description:
+														"The report has been deleted successfully",
+													variant: "destructive",
+												});
+											}
+										} catch (error) {
+											toast({
+												title: "Error",
+												description: `An error occurred while deleting the evaluation. Please try again later!`,
+												variant: "destructive",
+											});
+										}
+									};
+
+									performDelete();
+								}}
+							/>
 						</DropdownMenuContent>
 					</DropdownMenu>
 				);
@@ -277,7 +324,7 @@ function EvaluationDashboard() {
 		}
 
 		fetchEvaluations();
-	}, []);
+	}, [refreshTrigger]);
 
 	const formatHeaderCells = (text: string): string => {
 		return text
@@ -366,7 +413,7 @@ function EvaluationDashboard() {
 												const df = new dfd.DataFrame(
 													response.results
 												);
-												
+
 												const workbook =
 													new ExcelJS.Workbook();
 												workbook.creator = "Ryzr";
@@ -383,7 +430,10 @@ function EvaluationDashboard() {
 													);
 												headerRow.eachCell(
 													(cell, index) => {
-														cell.value = formatHeaderCells(cell.value.toString())
+														cell.value =
+															formatHeaderCells(
+																cell.value.toString()
+															);
 														cell.font = {
 															bold: true,
 															color: {
@@ -438,12 +488,20 @@ function EvaluationDashboard() {
 												worksheet.columns.forEach(
 													(columns) => {
 														columns.width = 20;
-														columns.border ={
-															top: { style: "thin" },
-															bottom: { style: "thin" },
-															left: { style: "thin" },
-															right: { style: "thin" },
-														}
+														columns.border = {
+															top: {
+																style: "thin",
+															},
+															bottom: {
+																style: "thin",
+															},
+															left: {
+																style: "thin",
+															},
+															right: {
+																style: "thin",
+															},
+														};
 													}
 												);
 

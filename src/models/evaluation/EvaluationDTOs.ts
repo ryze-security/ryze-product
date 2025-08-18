@@ -74,6 +74,7 @@ export interface domainResponse {
 export interface controlResponse {
 	Order: number;
 	controlId: string;
+	serial: string;
 	Description: string;
 	control_description: string;
 	missing_elements: string;
@@ -111,4 +112,16 @@ export interface updateQuestionResponseDTO {
 	updated_fields: string[];
 	question_id: string;
 	eval_id: string;
+}
+
+export interface deleteEvaluationResponseDTO {
+	status: string;
+	data: deleteEvaluationData;
+}
+
+interface deleteEvaluationData {
+	message: string;
+	eval_id: string;
+	questions_deleted: number;
+	previous_status: string;
 }

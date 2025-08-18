@@ -7,16 +7,21 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/hooks/use-toast";
+import { CreditsDataDTO } from "@/models/credits/creditsDTOs";
+import creditsService from "@/services/creditsServices";
 import { useAppSelector } from "@/store/hooks";
 import {
 	Building,
 	CircleAlert,
+	Coins,
 	icons,
 	PlusCircleIcon,
 	Search,
 	Table,
 	TriangleAlert,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function Index() {
@@ -67,23 +72,46 @@ function Index() {
 		"Information security in supplier relationships",
 	];
 
-	function getFormattedDateTime() {
-		const now = new Date();
+	// function getFormattedDateTime() {
+	// 	const now = new Date();
 
-		const pad = (n: number) => n.toString().padStart(2, "0");
+	// 	const pad = (n: number) => n.toString().padStart(2, "0");
 
-		const day = pad(now.getDate());
-		const month = pad(now.getMonth() + 1); // Months are 0-indexed
-		const year = now.getFullYear();
+	// 	const day = pad(now.getDate());
+	// 	const month = pad(now.getMonth() + 1); // Months are 0-indexed
+	// 	const year = now.getFullYear();
 
-		const hours = pad(now.getHours());
-		const minutes = pad(now.getMinutes());
-		const seconds = pad(now.getSeconds());
+	// 	const hours = pad(now.getHours());
+	// 	const minutes = pad(now.getMinutes());
+	// 	const seconds = pad(now.getSeconds());
 
-		return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
-	}
+	// 	return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+	// }
 
-	const userData = useAppSelector((state => state.appUser));
+	const { toast } = useToast();
+
+	const userData = useAppSelector((state) => state.appUser);
+	const [credits, setCredits] = useState<number>(0);
+
+	useEffect(() => {
+		const fetchCredits = async () => {
+			try {
+				const response = (await creditsService.getCreditsByTenantId(
+					userData.tenant_id
+				)) as CreditsDataDTO;
+				setCredits(response.remaining_credits);
+			} catch (error) {
+				toast({
+					title: "Error fetching credits",
+					description:
+						"There was an error fetching your credits. Please try again later.",
+					variant: "destructive",
+				});
+			}
+		};
+
+		fetchCredits();
+	});
 
 	return (
 		<div className="font-roboto text-white w-full min-h-screen p-6">
@@ -97,7 +125,7 @@ function Index() {
 						</h1>
 
 						{/* Subtitle */}
-						<p className="text-base text-zinc-500">{`Last logged in ${getFormattedDateTime()}`}</p>
+						{/* <p className="text-base text-zinc-500">{`Last logged in ${getFormattedDateTime()}`}</p> */}
 					</div>
 
 					{/* Right: Button */}
@@ -132,7 +160,7 @@ function Index() {
 
 			{/* Cards */}
 			<section className="flex flex-col gap-4 justify-start bg-black text-white pt-10 px-6 sm:px-12 lg:px-16 w-[90%]">
-				<div className="max-w-7xl w-full pl-4 flex gap-4">
+				<div className="max-w-7xl w-full pl-4 grid grid-cols-4">
 					{views.map((view) => (
 						<SmallDisplayCard
 							title={view.title}
@@ -142,11 +170,20 @@ function Index() {
 							changeDescription={view.changeDescription}
 						/>
 					))}
+					{
+						<SmallDisplayCard
+							title="Credits"
+							icon={<Coins />}
+							value={credits}
+							warning={true}
+							footer="No. of available credits"
+						/>
+					}
 				</div>
 
-				<div className="max-w-7xl items-start w-full px-4 flex gap-4 justify-start">
+				<div className="max-w-7xl items-start w-full pl-4 grid grid-cols-2 grid-rows-1">
 					{/* Card 1 */}
-					<div className="flex flex-col bg-[#18181B] rounded-xl p-6 shadow-md w-[48%] h-[330px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-light-ryzr scrollbar-track-transparent">
+					<div className="flex flex-col bg-[#18181B] rounded-xl p-6 shadow-md w-[98%] h-[330px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-light-ryzr scrollbar-track-transparent">
 						<div className="flex items-center flex-grow justify-between mb-2">
 							<h2 className="flex gap-2 text-xl text-gray-light-ryzr font-semibold tracking-wide pl-4">
 								<Building />
@@ -178,7 +215,7 @@ function Index() {
 					</div>
 
 					{/* Card 2 */}
-					<div className="flex flex-col bg-[#18181B] rounded-xl p-6 shadow-md w-[48%] h-[330px]">
+					<div className="flex flex-col bg-[#18181B] rounded-xl p-6 shadow-md w-[98%] h-[330px]">
 						<div className="flex justify-between mb-2">
 							<h2 className="flex gap-2 text-xl text-gray-light-ryzr font-semibold tracking-wide pl-4">
 								<TriangleAlert />
@@ -187,7 +224,10 @@ function Index() {
 						</div>
 						<div className="flex flex-grow flex-col">
 							{deviations.map((deviation, index) => (
-								<DeviationRows key={index} deviation={deviation} />
+								<DeviationRows
+									key={index}
+									deviation={deviation}
+								/>
 							))}
 						</div>
 						<div className="w-full">
