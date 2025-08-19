@@ -110,8 +110,11 @@ function Index() {
 			}
 		};
 
-		fetchCredits();
-	});
+		if(userData.tenant_id) {
+			fetchCredits();
+		}
+
+	}, [userData.tenant_id]);
 
 	return (
 		<div className="font-roboto text-white w-full min-h-screen p-6">
