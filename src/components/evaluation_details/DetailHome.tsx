@@ -377,12 +377,14 @@ const DetailHome = forwardRef((props: Props, ref) => {
 		const handlePopState = (event) => {
 			if (event.state && event.state.selectedControl) {
 				setSelectedRow(event.state.selectedControl);
+				console.warn("Selected Row: ",selectedRow);
 			} else {
 				setSelectedRow(null);
 			}
 
 			if (event.state && event.state.selectedQuestion) {
 				setSelectedQuestion(event.state.selectedQuestion);
+				console.warn("Selected Question: ",selectedQuestion);
 				methods.reset({
 					score: event.state.selectedQuestion.Response.Score,
 					observation:
