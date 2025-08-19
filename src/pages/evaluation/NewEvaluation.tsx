@@ -484,38 +484,29 @@ const NewEvaluation = () => {
 										</label>
 										{status === "succeeded" ? (
 											<div className="flex flex-row justify-start gap-4 flex-wrap">
-												{collection.collections.map(
-													(f) => (
-														<FrameworkCard
-															key={
-																f.collection_id
-															}
-															name={
-																f.collection_display_name
-															}
-															value={
-																f.collection_id
-															}
-															fieldName="selectedFrameworks"
-															control={
-																methods.control
-															}
-															error={
-																!!methods
-																	.formState
-																	.errors
-																	.selectedFrameworks
-															} // Pass the error state
-															setFocus={
-																methods.setFocus
-															} // Pass the setFocus function
-														/>
-													)
-												)}
+												{frameworks.map((f) => (
+													<FrameworkCard
+														key={f.value}
+														name={f.name}
+														value={f.value}
+														fieldName="selectedFrameworks"
+														control={
+															methods.control
+														}
+														error={
+															!!methods.formState
+																.errors
+																.selectedFrameworks
+														} // Pass the error state
+														setFocus={
+															methods.setFocus
+														} // Pass the setFocus function
+													/>
+												))}
 												{/* Add link to framework section */}
-												{/* <div className="flex gap-2 justify-center cursor-pointer rounded-sm border p-4 font-roboto sm:w-28 bg-zinc-800 text-zinc-400 transition-all text-opacity-80 duration-100 hover:scale-110">
-												<PlusCircleIcon /> Add
-											</div> */}
+												<div className="flex gap-2 justify-center cursor-pointer rounded-sm border p-4 font-roboto sm:w-28 bg-zinc-800 text-zinc-400 transition-all text-opacity-80 duration-100 hover:scale-110">
+													<PlusCircleIcon /> Add
+												</div>
 											</div>
 										) : (
 											<RoundSpinner />
