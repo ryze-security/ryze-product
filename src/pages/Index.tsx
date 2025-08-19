@@ -109,8 +109,9 @@ function Index() {
 				});
 			}
 		};
-
-		if (userData.tenant_id) {
+    
+    
+		if(userData.tenant_id) {
 			fetchCredits();
 		}
 	}, [userData.tenant_id]);
