@@ -48,7 +48,6 @@ function QuestionForm(props: Props) {
 	useMemo(() => {
 		setSelectedQuestion(questionData[questionIndex]);
 	}, [questionData, questionIndex]);
-	console.warn("selectedQuestion in question Form", selectedQuestion);
 	
 
 	const [formattedEvidence, setFormattedEvidence] = useState<string[]>([]);
