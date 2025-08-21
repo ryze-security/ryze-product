@@ -94,6 +94,7 @@ function AuditeeForm() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isFetchingData, setIsFetchingData] = useState(false);
 	const [isHeadingEditing, setIsHeadingEditing] = useState(false);
+	const [auditeeData, setAuditeeData] = useState<CompanyListDto>(null);
 
 	const inputRef = useRef<HTMLInputElement>(null);
 	const spanRef = useRef<HTMLSpanElement>(null);
@@ -118,6 +119,7 @@ function AuditeeForm() {
 							userData.tenant_id,
 							auditeeId
 						);
+					setAuditeeData(data);
 					methods.reset({
 						auditeeName: data.tg_company_display_name,
 						auditeeData: data.data_type,
@@ -162,9 +164,7 @@ function AuditeeForm() {
 					auditeeId as string,
 					updateData
 				);
-				dispatch(
-					loadCompanyData(userData.tenant_id)
-				);
+				dispatch(loadCompanyData(userData.tenant_id));
 				methods.reset({
 					auditeeName: response.tg_company_display_name,
 					auditeeData: response.data_type,
@@ -181,9 +181,7 @@ function AuditeeForm() {
 				const response = await companyService.createCompany(
 					companyData
 				);
-				dispatch(
-					loadCompanyData(userData.tenant_id)
-				);
+				dispatch(loadCompanyData(userData.tenant_id));
 				toast({
 					title: "Auditee created successfully!",
 					description: `The auditee with name: ${response.tg_company_display_name} has been created successfully.`,
@@ -348,13 +346,15 @@ function AuditeeForm() {
 								<div className="flex justify-start gap-4">
 									<InfoCard
 										heading="Reviews conducted"
-										data={"55"}
-										info="-8% month over month"
+										data={auditeeData?.evaluations_count}
+										info=""
+										loading={isFetchingData}
 									/>
 									<InfoCard
 										heading="Documents reviewed"
-										data={"410"}
-										info="+18% month over month"
+										data={auditeeData?.documents_count}
+										info=""
+										loading={isFetchingData}
 									/>
 								</div>
 							)}

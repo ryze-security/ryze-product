@@ -1,21 +1,17 @@
 import { GenericDataTable } from "@/components/GenericDataTable";
 import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { CompanyListDto } from "@/models/company/companyDTOs";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { loadCompanyData } from "@/store/slices/companySlice";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
-import React from "react";
+import { ArrowDown01Icon, ArrowUp01Icon, ArrowUpDownIcon } from "lucide-react";
+import React, { useEffect, useMemo } from "react";
 
-interface VulnerableAuditeeDto {
-	id: string;
-	auditee_name: string;
-	reviews_conducted: number;
-	deviations_recorded: number;
-	created_on: string;
-}
-
-const columns: ColumnDef<VulnerableAuditeeDto>[] = [
+const columns: ColumnDef<CompanyListDto>[] = [
 	{
-		accessorKey: "id",
+		accessorKey: "SNo",
 		header: ({ column }) => {
 			return (
 				<Button
@@ -25,27 +21,39 @@ const columns: ColumnDef<VulnerableAuditeeDto>[] = [
 					}
 					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
-					ID
-					<ArrowUpDown className="h-4 w-4" />
+					SNo.
+					{column.getIsSorted() === "asc" ? (
+						<ArrowDown01Icon className="h-4 w-4" />
+					) : column.getIsSorted() === "desc" ? (
+						<ArrowUp01Icon className="h-4 w-4" />
+					) : (
+						<ArrowUpDownIcon className="h-4 w-4" />
+					)}
 				</Button>
 			);
 		},
 		sortingFn: (a, b) => {
-			const valueA = parseInt(a.getValue<string>("id"));
-			const valueB = parseInt(b.getValue<string>("id"));
-			return valueA - valueB; // Sort numerically
+			return a.getValue<number>("SNo") - b.getValue<number>("SNo"); // Sort numerically
 		},
 	},
 	{
-		accessorKey: "auditee_name",
+		accessorKey: "tg_company_display_name",
 		header: "Auditee",
 	},
 	{
-		accessorKey: "reviews_conducted",
+		accessorKey: "evaluations_count",
 		header: "Reviews",
+		cell: ({ row }) => {
+			const evaluationsCount: number = row.original.evaluations_count;
+			return (
+				<div className="rounded-full text-center flex items-center justify-center min-w-16 h-7 w-fit bg-[#404040]">
+					{evaluationsCount}
+				</div>
+			);
+		},
 	},
 	{
-		accessorKey: "deviations_recorded",
+		accessorKey: "deviations_count",
 		header: ({ column }) => {
 			return (
 				<Button
@@ -56,56 +64,63 @@ const columns: ColumnDef<VulnerableAuditeeDto>[] = [
 					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
 					Deviations
-					<ArrowUpDown className="h-4 w-4" />
+					{column.getIsSorted() === "asc" ? (
+						<ArrowDown01Icon className="h-4 w-4" />
+					) : column.getIsSorted() === "desc" ? (
+						<ArrowUp01Icon className="h-4 w-4" />
+					) : (
+						<ArrowUpDownIcon className="h-4 w-4" />
+					)}
 				</Button>
+			);
+		},
+		cell: ({ row }) => {
+			const deviationCount: number = row.original.deviations_count;
+			return (
+				<div className="rounded-full text-center flex items-center justify-center min-w-16 h-7 w-fit bg-[#404040]">
+					{deviationCount}
+				</div>
 			);
 		},
 	},
 	{
 		accessorKey: "created_on",
-		header: "Last reviewed",
+		header: "Created On",
 	},
 ];
 
 function VulnerableAuditeeDashboard() {
-	// Mock data for vulnerable auditees
-	const mockVulnerableAuditeeData: VulnerableAuditeeDto[] = [
-		{
-			id: "1",
-			auditee_name: "Acme Corporation",
-			reviews_conducted: 12,
-			deviations_recorded: 5,
-			created_on: "2023-05-15",
-		},
-		{
-			id: "2",
-			auditee_name: "Global Tech Solutions",
-			reviews_conducted: 8,
-			deviations_recorded: 3,
-			created_on: "2023-06-10",
-		},
-		{
-			id: "3",
-			auditee_name: "Innovatech Ltd.",
-			reviews_conducted: 15,
-			deviations_recorded: 7,
-			created_on: "2023-04-20",
-		},
-		{
-			id: "4",
-			auditee_name: "Pioneer Industries",
-			reviews_conducted: 10,
-			deviations_recorded: 6,
-			created_on: "2023-07-01",
-		},
-		{
-			id: "5",
-			auditee_name: "NextGen Enterprises",
-			reviews_conducted: 9,
-			deviations_recorded: 4,
-			created_on: "2023-03-12",
-		},
-	];
+	const dispatch = useAppDispatch();
+	const { toast } = useToast();
+
+	const companies = useAppSelector((state) => state.company);
+	const userData = useAppSelector((state) => state.appUser);
+
+	const updatedCompanyData: CompanyListDto[] = useMemo(() => {
+		return [...companies.data]
+			.sort((a, b) => b.deviations_count - a.deviations_count)
+			.map((company, index) => ({
+				...company,
+				SNo: index + 1,
+				created_on: new Date(company.created_on).toLocaleDateString(
+					"en-UK"
+				),
+			}));
+	}, [companies.data]);
+
+	useEffect(() => {
+		if (userData.tenant_id && companies.data.length === 0) {
+			dispatch(loadCompanyData(userData.tenant_id))
+				.unwrap()
+				.catch((error) => {
+					toast({
+						title: "Error loading companies",
+						description: `Failed to load companies data! Please try again later.`,
+						variant: "destructive",
+					});
+				});
+		}
+	}, [userData.tenant_id, dispatch, companies.data.length]);
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
@@ -120,9 +135,11 @@ function VulnerableAuditeeDashboard() {
 			<section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-6 sm:px-12 lg:px-16">
 				<GenericDataTable
 					columns={columns}
-					data={mockVulnerableAuditeeData}
-					filterKey={"auditee_name"}
-					rowIdKey={["id"]}
+					data={updatedCompanyData}
+					filterKey={"tg_company_display_name"}
+					rowIdKey={["tg_company_id"]}
+					rowLinkPrefix="/auditee/edit/"
+					isLoading={companies.status === "loading"}
 				/>
 			</section>
 		</div>

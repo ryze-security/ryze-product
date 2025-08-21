@@ -135,13 +135,7 @@ export function GenericDataTable<TData, TValue>({
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>
 											{typeof cell.getValue() ===
-											"number" ? (
-												// Render a progress bar for Number columns
-												<div className="rounded-full text-center flex items-center justify-center min-w-[62px] h-[26px] w-fit bg-[#404040]">
-													{cell.getValue() as number}
-												</div>
-											) : typeof cell.getValue() ===
-											  "string" ? (
+											"string" ? (
 												// Truncate long text to 50 words
 												<div className="text-wrap">
 													{(cell.getValue() as string)
@@ -171,7 +165,9 @@ export function GenericDataTable<TData, TValue>({
 									className="text-center"
 								>
 									{isLoading ? (
-										<RoundSpinner />
+										<div className="flex justify-center items-center h-24">
+											<RoundSpinner />
+										</div>
 									) : (
 										"No results found."
 									)}
