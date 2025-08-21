@@ -215,7 +215,6 @@ function EvaluationDetails() {
 				description: `There was an error while updating your response. Please try again later!`,
 				variant: "destructive",
 			});
-			console.error("Error updating question:", error);
 		}
 	};
 
@@ -267,7 +266,6 @@ function EvaluationDetails() {
 						action: "failed in generating",
 						target: "an Excel report",
 					}))
-					console.error("Error starting report generation:", error);
 				}
 			}
 		} catch (error) {

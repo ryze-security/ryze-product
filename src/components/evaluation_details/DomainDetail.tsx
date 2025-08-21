@@ -27,6 +27,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { AlertDialogBox } from "../AlertDialogBox";
 import { RoundSpinner } from "../ui/spinner";
 import MarkdownRenderer from "./MarkdownRenderer";
+import ProgressCircle from "./ProgressCircle";
 
 interface Props {
 	domainData: domainResponse;
@@ -173,9 +174,29 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [selectedRow, setSelectedRow] = useState<controlResponse>(null);
 	const [updatedData, setUpdatedData] = useState<domainResponse>(domainData);
-	const [updatedQuestions, setUpdatedQuestions] = useState<
-		questionResponse[]
-	>([]);
+	const updatedQuestions: questionResponse[] = React.useMemo(() => {
+		if (!selectedRow) {
+			return []; // Return an empty array if no row is selected
+		}
+		// This logic is the same as your old useEffect
+		return [...selectedRow.QuestionResponseList]
+			.sort((a, b) =>
+				a.q_id.localeCompare(b.q_id, undefined, { numeric: true })
+			)
+			.map((question, index) => ({
+				...question,
+				SNo: (index + 1).toString(),
+				Response: {
+					...question.Response,
+					Score:
+						question.Response.Score === "true"
+							? true
+							: question.Response.Score === "false"
+							? false
+							: null,
+				},
+			}));
+	}, [selectedRow]);
 	const [selectedQuestion, setSelectedQuestion] =
 		useState<questionResponse>(null);
 
@@ -256,34 +277,6 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 			}
 		}
 	}, [updatedQuestions]);
-
-	// This effect is used to convert the score to a boolean
-	// and to set the SNo for each question
-	useEffect(() => {
-		if (selectedRow) {
-			const updatedQuestionResponseList = [
-				...selectedRow.QuestionResponseList,
-			]
-				.sort((a, b) =>
-					a.q_id.localeCompare(b.q_id, undefined, { numeric: true })
-				)
-				.map((question, index) => {
-					const updatedQuestion = {
-						...question,
-						SNo: (index + 1).toString(),
-						Response: {
-							...question.Response,
-							Score:
-								question.Response.Score === "true"
-									? true
-									: false,
-						},
-					};
-					return updatedQuestion;
-				});
-			setUpdatedQuestions(updatedQuestionResponseList);
-		}
-	}, [selectedRow]);
 
 	//This effect is used to simulate the browser history state so user can back and forward easily
 	useEffect(() => {
@@ -398,34 +391,9 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 									</Button>
 								)}
 							</div>
-							{selectedQuestion && methods.formState.isDirty && (
-								<div className="mb-4">
-									<AlertDialogBox
-										trigger={
-											<Button
-												className="rounded-full bg-sky-500 hover:bg-sky-600 transition-colors text-white p-2 w-20"
-												disabled={isQuestionUpdating}
-											>
-												{isQuestionUpdating ? (
-													<RoundSpinner />
-												) : (
-													<span className="font-bold text-white">
-														Update
-													</span>
-												)}
-											</Button>
-										}
-										subheading="Are you sure you want to save the changes to this question? Confirming will permanently update the evaluation record."
-										onAction={methods.handleSubmit(
-											onSubmit
-										)}
-										actionLabel="Confirm"
-									/>
-								</div>
-							)}
 						</div>
 						<div className="flex justify-between">
-							<div className="flex max-w-fit gap-2">
+							<div className="flex max-w-[85%] flex-col w-full h-fit gap-5">
 								<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
 									{selectedRow.controlId}
 								</div>
@@ -434,19 +402,22 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 										{selectedRow.Description}
 									</div>
 									<div>
-										<p className="text-base w-10/12 text-gray-light-ryzr">
+										<p className="text-base w-full text-gray-light-ryzr">
 											{selectedRow.control_description}
 										</p>
 									</div>
 								</div>
+								<div className="w-[27%] bg-gradient-to-r rounded-md py-1 px-2 from-gray-light-ryzr/50 to-transparent ">
+									{selectedRow.QuestionResponseList.length}{" "}
+									Total Questions
+								</div>
 							</div>
 
-							<div className="min-w-[104px] h-[101px] bg-violet-ryzr rounded-lg flex flex-col justify-center align-middle items-center">
-								<h1 className="text-4xl font-semibold text-white">
-									{selectedRow.Response.Score}%
-								</h1>
-								<p className="text-sm">Compliance</p>
-							</div>
+							<ProgressCircle
+								progress={selectedRow.Response.Score}
+								size={140}
+								strokeWidth={12}
+							/>
 						</div>
 					</div>
 				) : (
@@ -475,12 +446,16 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 			<section className="flex items-center w-full bg-black text-white mt-8 pt-4">
 				{selectedQuestion ? (
 					<FormProvider {...methods}>
-						<QuestionForm
-							questionData={updatedQuestions}
-							questionIndex={updatedQuestions.indexOf(
-								selectedQuestion
-							)}
-						/>
+						{updatedQuestions && updatedQuestions.length > 0 && (
+							<QuestionForm
+								questionData={updatedQuestions}
+								questionIndex={updatedQuestions.indexOf(
+									selectedQuestion
+								)}
+								submitFn={onSubmit}
+								isLoading={isQuestionUpdating}
+							/>
+						)}
 					</FormProvider>
 				) : selectedRow ? (
 					<div className="w-full">
@@ -507,7 +482,10 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 									url.searchParams.delete("question");
 								}
 								history.pushState(
-									{ selectedQuestion: row },
+									{
+										selectedControl: selectedRow,
+										selectedQuestion: row,
+									},
 									"",
 									url
 								);
@@ -538,7 +516,10 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 								url.searchParams.delete("controlId");
 							}
 							history.pushState(
-								{ selectedControl: row },
+								{
+									selectedControl: row,
+									selectedQuestion: null,
+								},
 								"",
 								url
 							);

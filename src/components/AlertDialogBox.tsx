@@ -14,12 +14,15 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 interface AlertDialogBoxProps {
-	trigger: React.ReactNode;
+	open?: boolean;
+	onOpenChange?: (open: boolean) => void;
+	trigger?: React.ReactNode;
 	title?: string;
 	subheading: string;
 	actionLabel: string;
 	onAction?: () => void;
 	actionHref?: string;
+	onCancel?: () => void;
 }
 
 export const AlertDialogBox: React.FC<AlertDialogBoxProps> = ({
@@ -29,19 +32,36 @@ export const AlertDialogBox: React.FC<AlertDialogBoxProps> = ({
 	actionLabel,
 	onAction,
 	actionHref,
+	open,
+	onOpenChange,
+	onCancel,
 }) => {
-	const [isOpen, setIsOpen] = useState(false);
+	const [isInternalOpen, setIsInternalOpen] = useState(false);
+
+	const isControlled = open !== undefined && onOpenChange !== undefined;
+
+	const currentOpen = isControlled ? open : isInternalOpen;
+	const handleOpenChange = isControlled ? onOpenChange : setIsInternalOpen;
 
 	const handleAction = () => {
 		if (onAction) {
 			onAction();
 		}
-		setIsOpen(false);
-	}
+		handleOpenChange(false);
+	};
+
+	const handleCancel = () => {
+		if (onCancel) {
+			onCancel();
+		}
+		handleOpenChange(false);
+	};
 
 	return (
-		<AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-			<AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
+		<AlertDialog open={currentOpen} onOpenChange={handleOpenChange}>
+			{trigger && (
+				<AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
+			)}
 
 			<AlertDialogContent>
 				<AlertDialogHeader>
@@ -52,7 +72,9 @@ export const AlertDialogBox: React.FC<AlertDialogBoxProps> = ({
 				</AlertDialogHeader>
 
 				<AlertDialogFooter>
-					<AlertDialogCancel>Cancel</AlertDialogCancel>
+					<AlertDialogCancel onClick={handleCancel}>
+						Cancel
+					</AlertDialogCancel>
 
 					{actionHref ? (
 						<AlertDialogAction asChild>
