@@ -7,10 +7,14 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { RoundSpinner } from "@/components/ui/spinner";
 import { useToast } from "@/hooks/use-toast";
+import { CompanyListDto } from "@/models/company/companyDTOs";
 import { CreditsDataDTO } from "@/models/credits/creditsDTOs";
+import companyService from "@/services/companyServices";
 import creditsService from "@/services/creditsServices";
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { loadCompanyData } from "@/store/slices/companySlice";
 import {
 	Building,
 	CircleAlert,
@@ -22,7 +26,7 @@ import {
 	TriangleAlert,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Index() {
 	// Dummy data for recent reviews
@@ -89,10 +93,14 @@ function Index() {
 	// }
 
 	const { toast } = useToast();
+	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
 
 	const userData = useAppSelector((state) => state.appUser);
+	const companies = useAppSelector((state) => state.company);
 	const [credits, setCredits] = useState<number>(0);
 
+	//effect for fetching credits
 	useEffect(() => {
 		const fetchCredits = async () => {
 			try {
@@ -109,10 +117,24 @@ function Index() {
 				});
 			}
 		};
-    
-    
-		if(userData.tenant_id) {
+
+		if (userData.tenant_id) {
 			fetchCredits();
+		}
+	}, [userData.tenant_id]);
+
+	//effect for fetching companies for vulnerable auditees
+	useEffect(() => {
+		if (userData.tenant_id) {
+			dispatch(loadCompanyData(userData.tenant_id))
+				.unwrap()
+				.catch((error) => {
+					toast({
+						title: "Error loading companies",
+						description: `Failed to load companies data: ${error}`,
+						variant: "destructive",
+					});
+				});
 		}
 	}, [userData.tenant_id]);
 
@@ -196,24 +218,39 @@ function Index() {
 								Deviation
 							</span>
 						</div>
-						{vulnerablities.map((vulnerability) => (
-							<TableRowWithNumber
-								companyName={vulnerability.companyName}
-								score={vulnerability.score}
-							/>
-						))}
+						{companies.status !== "succeeded" ? (
+							<div className="flex items-center justify-center h-full">
+								<RoundSpinner />
+							</div>
+						) : (
+							[...companies.data]
+								.sort(
+									(a, b) =>
+										b.deviations_count - a.deviations_count
+								)
+								.slice(0, 3)
+								.map((vulnerability) => (
+									<TableRowWithNumber
+										companyName={
+											vulnerability.tg_company_display_name
+										}
+										score={vulnerability.deviations_count}
+										link={vulnerability.tg_company_id}
+									/>
+								))
+						)}
 						<div className="w-full">
-							<Link
-								to={"/auditee/vulnerable"}
-								className="flex justify-center mb-2 mt-4 sticky bottom-0 bg-transparent"
-							>
+							<div className="flex justify-center mb-2 mt-4 sticky bottom-0 bg-transparent">
 								<Button
 									variant="outline"
 									className="w-2/3 gap-2 border-violet-ryzr hover:bg-violet-ryzr hover:text-white hover:border-violet-ryzr bg-[#18181B] text-violet-ryzr font-bold"
+									onClick={() =>
+										navigate("/auditee/vulnerable")
+									}
 								>
 									View more
 								</Button>
-							</Link>
+							</div>
 						</div>
 					</div>
 
@@ -234,17 +271,17 @@ function Index() {
 							))}
 						</div>
 						<div className="w-full">
-							<Link
-								to={"/framework/deviation"}
-								className="flex justify-center mb-2 mt-4"
-							>
+							<div className="flex justify-center mb-2 mt-4">
 								<Button
 									variant="outline"
 									className="w-2/3 gap-2 border-violet-ryzr hover:bg-violet-ryzr hover:text-white hover:border-violet-ryzr bg-[#18181B] text-violet-ryzr font-bold"
+									onClick={() =>
+										navigate("/framework/deviation")
+									}
 								>
 									View more
 								</Button>
-							</Link>
+							</div>
 						</div>
 					</div>
 				</div>
