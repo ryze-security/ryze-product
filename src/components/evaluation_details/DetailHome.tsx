@@ -34,8 +34,6 @@ import { Separator } from "../ui/separator";
 import { FormProvider, useForm } from "react-hook-form";
 import { RoundSpinner } from "../ui/spinner";
 import { AlertDialogBox } from "../AlertDialogBox";
-import { marked, use } from "marked";
-import DOMPurify from "dompurify";
 import MarkdownRenderer from "./MarkdownRenderer";
 import ProgressCircle from "./ProgressCircle";
 
@@ -228,7 +226,6 @@ const DetailHome = forwardRef((props: Props, ref) => {
 		if (!selectedRow) {
 			return []; // Return an empty array if no row is selected
 		}
-		debugger;
 		// This logic is the same as your old useEffect
 		return [...selectedRow.QuestionResponseList]
 			.sort((a, b) =>
@@ -239,7 +236,12 @@ const DetailHome = forwardRef((props: Props, ref) => {
 				SNo: (index + 1).toString(),
 				Response: {
 					...question.Response,
-					Score: question.Response.Score === "true" ? true : question.Response.Score === "false" ? false : null,
+					Score:
+						question.Response.Score === "true"
+							? true
+							: question.Response.Score === "false"
+							? false
+							: null,
 				},
 			}));
 	}, [selectedRow]);
@@ -327,35 +329,6 @@ const DetailHome = forwardRef((props: Props, ref) => {
 		}
 	}, [updatedQuestions]);
 
-	// // This effect is used to convert the score to a boolean
-	// // and to set the SNo for each question
-	// useEffect(() => {
-	// 	if (selectedRow) {
-	// 		const updatedQuestionResponseList = [
-	// 			...selectedRow.QuestionResponseList,
-	// 		]
-	// 			.sort((a, b) =>
-	// 				a.q_id.localeCompare(b.q_id, undefined, { numeric: true })
-	// 			)
-	// 			.map((question, index) => {
-	// 				const updatedQuestion = {
-	// 					...question,
-	// 					SNo: (index + 1).toString(),
-	// 					Response: {
-	// 						...question.Response,
-	// 						Score:
-	// 							question.Response.Score === "true"
-	// 								? true
-	// 								: false,
-	// 					},
-	// 				};
-	// 				return updatedQuestion;
-	// 			});
-
-	// 		setUpdatedQuestions(updatedQuestionResponseList);
-	// 	}
-	// }, [selectedRow]);
-
 	useEffect(() => {
 		const newCardData: CardData[] = [];
 
@@ -375,16 +348,15 @@ const DetailHome = forwardRef((props: Props, ref) => {
 	useEffect(() => {
 		// This function will run when the user clicks back/forward
 		const handlePopState = (event) => {
+			
 			if (event.state && event.state.selectedControl) {
 				setSelectedRow(event.state.selectedControl);
-				console.warn("Selected Row: ",selectedRow);
 			} else {
 				setSelectedRow(null);
 			}
 
 			if (event.state && event.state.selectedQuestion) {
 				setSelectedQuestion(event.state.selectedQuestion);
-				console.warn("Selected Question: ",selectedQuestion);
 				methods.reset({
 					score: event.state.selectedQuestion.Response.Score,
 					observation:
@@ -600,7 +572,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 				<div className="w-full mb-8 px-4">
 					{selectedRow && (
 						<div className="flex flex-col gap-2">
-							{/* Back Button and update button */}
+							{/* Back Button*/}
 							<div className="flex gap-2">
 								<div className="mb-4">
 									{selectedQuestion &&
@@ -640,34 +612,6 @@ const DetailHome = forwardRef((props: Props, ref) => {
 										</Button>
 									)}
 								</div>
-								{selectedQuestion &&
-									methods.formState.isDirty && (
-										<div className="mb-4">
-											<AlertDialogBox
-												trigger={
-													<Button
-														className="rounded-full bg-sky-500 hover:bg-sky-600 transition-colors text-white p-2 w-20"
-														disabled={
-															isQuestionUpdating
-														}
-													>
-														{isQuestionUpdating ? (
-															<RoundSpinner />
-														) : (
-															<span className="font-bold text-white">
-																Update
-															</span>
-														)}
-													</Button>
-												}
-												subheading="Are you sure you want to save the changes to this question? Confirming will permanently update the evaluation record."
-												onAction={methods.handleSubmit(
-													onSubmit
-												)}
-												actionLabel="Confirm"
-											/>
-										</div>
-									)}
 							</div>
 
 							<div className="flex justify-between">
@@ -707,12 +651,16 @@ const DetailHome = forwardRef((props: Props, ref) => {
 				</div>
 				{selectedQuestion ? (
 					<FormProvider {...methods}>
-						<QuestionForm
-							questionData={updatedQuestions}
-							questionIndex={updatedQuestions.indexOf(
-								selectedQuestion
-							)}
-						/>
+						{updatedQuestions && updatedQuestions.length > 0 && (
+							<QuestionForm
+								questionData={updatedQuestions}
+								questionIndex={updatedQuestions.indexOf(
+									selectedQuestion
+								)}
+								submitFn={onSubmit}
+								isLoading={isQuestionUpdating}
+							/>
+						)}
 					</FormProvider>
 				) : (
 					<>
@@ -745,7 +693,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 										}
 										history.pushState(
 											{
-												selectedRow: selectedRow,
+												selectedControl: selectedRow,
 												selectedQuestion: row,
 											},
 											"",

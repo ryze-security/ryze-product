@@ -1,5 +1,5 @@
 import { questionResponse } from "@/models/evaluation/EvaluationDTOs";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import {
 	ArrowBigLeft,
@@ -22,10 +22,14 @@ import {
 	CommandList,
 } from "../ui/command";
 import { cn } from "@/lib/utils";
+import { AlertDialogBox } from "../AlertDialogBox";
+import { RoundSpinner } from "../ui/spinner";
 
 interface Props {
 	questionData: questionResponse[];
 	questionIndex: number;
+	submitFn: (data: any) => void;
+	isLoading?: boolean;
 }
 
 const complianceStatus = [
@@ -35,11 +39,17 @@ const complianceStatus = [
 ];
 
 function QuestionForm(props: Props) {
-	const { questionData, questionIndex } = props;
+	const { questionData, questionIndex, submitFn, isLoading } = props;
 
 	const [selectedQuestion, setSelectedQuestion] = useState<questionResponse>(
 		questionData[questionIndex]
 	);
+
+	useMemo(() => {
+		setSelectedQuestion(questionData[questionIndex]);
+	}, [questionData, questionIndex]);
+	console.warn("selectedQuestion in question Form", selectedQuestion);
+	
 
 	const [formattedEvidence, setFormattedEvidence] = useState<string[]>([]);
 
@@ -47,10 +57,12 @@ function QuestionForm(props: Props) {
 
 	const [isObservationEditing, setisObservationEditing] = useState(false);
 	const [open, setOpen] = useState(false);
+	const [isAlertOpen, setIsAlertOpen] = useState(false);
 
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-	const { register, setValue, watch, reset } = useFormContext();
+	const { register, setValue, watch, reset, formState, handleSubmit } =
+		useFormContext();
 
 	// This effect is used to set the selected question and formatted evidence when the question data or index changes
 	useEffect(() => {
@@ -83,6 +95,12 @@ function QuestionForm(props: Props) {
 		});
 	}, [selectedQuestion, setValue]);
 
+	useEffect(() => {
+		if (!isObservationEditing && formState.isDirty) {
+			setIsAlertOpen(true);
+		}
+	}, [isObservationEditing, formState.isDirty]);
+
 	// This function is used to update the observation
 	const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setValue("observation", e.target.value, { shouldDirty: true });
@@ -107,6 +125,7 @@ function QuestionForm(props: Props) {
 			const newIndex = index - 1;
 			setIndex(newIndex);
 			setSelectedQuestion(questionData[newIndex]);
+			setisObservationEditing(false);
 			updateEvidence(newIndex);
 			reset(
 				{
@@ -126,6 +145,7 @@ function QuestionForm(props: Props) {
 			setIndex(newIndex);
 			setSelectedQuestion(questionData[newIndex]);
 			updateEvidence(newIndex);
+			setisObservationEditing(false);
 			reset(
 				{
 					observation:
@@ -252,13 +272,38 @@ function QuestionForm(props: Props) {
 								</Command>
 							</PopoverContent>
 						</Popover>
+						<AlertDialogBox
+							open={isAlertOpen}
+							onOpenChange={setIsAlertOpen}
+							subheading="Are you sure you want to save the changes to this question? Confirming will permanently update the evaluation record."
+							onAction={handleSubmit(submitFn)}
+							actionLabel="Confirm"
+							onCancel={() => {
+								reset(
+									{
+										observation:
+											selectedQuestion?.Response
+												.Observation || "",
+										score:
+											selectedQuestion?.Response.Score ||
+											false,
+										questionId:
+											selectedQuestion?.q_id || "",
+									},
+									{ keepDirty: false }
+								);
+							}}
+						/>
 						<Button
 							onClick={() => {
 								setisObservationEditing(!isObservationEditing);
 							}}
 							className="bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white font-bold px-4"
+							disabled={isLoading}
 						>
-							{isObservationEditing ? (
+							{isLoading ? (
+								<RoundSpinner />
+							) : isObservationEditing ? (
 								<Lock className="opacity-80" />
 							) : (
 								<PencilLine className="opacity-80" />
@@ -316,7 +361,7 @@ function QuestionForm(props: Props) {
 					variant="outline"
 					onClick={handleLeftArrowClick}
 					className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
-					disabled={index === 0}
+					disabled={index === 0 || isLoading}
 				>
 					<ChevronLeft className="mr-2 h-4 w-4" /> Previous
 				</Button>
@@ -324,7 +369,7 @@ function QuestionForm(props: Props) {
 					variant="outline"
 					onClick={handleRightArrowClick}
 					className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
-					disabled={index === questionData.length - 1}
+					disabled={index === questionData.length - 1 || isLoading}
 				>
 					<ChevronRight className="mr-2 h-4 w-4" /> Next
 				</Button>
