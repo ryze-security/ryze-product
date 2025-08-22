@@ -48,7 +48,6 @@ function QuestionForm(props: Props) {
 	useMemo(() => {
 		setSelectedQuestion(questionData[questionIndex]);
 	}, [questionData, questionIndex]);
-	
 
 	const [formattedEvidence, setFormattedEvidence] = useState<string[]>([]);
 
@@ -170,7 +169,7 @@ function QuestionForm(props: Props) {
 						</div>
 					))}
 				</div> */}
-				{/* Question Name and changing arrows */}
+				{/* Question Name*/}
 				<div className="flex w-full border-b-black border-b-2">
 					<div className="flex flex-col justify-between my-6 mb-0 ml-6 w-8/12">
 						<span className="text-2xl font-light text-[#AAAAAA] tracking-normal px-4 py-1">
@@ -356,22 +355,67 @@ function QuestionForm(props: Props) {
 				</div>
 			</section>
 			<div className="flex justify-between w-full">
-				<Button
-					variant="outline"
-					onClick={handleLeftArrowClick}
-					className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
-					disabled={index === 0 || isLoading}
-				>
-					<ChevronLeft className="mr-2 h-4 w-4" /> Previous
-				</Button>
-				<Button
-					variant="outline"
-					onClick={handleRightArrowClick}
-					className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
-					disabled={index === questionData.length - 1 || isLoading}
-				>
-					<ChevronRight className="mr-2 h-4 w-4" /> Next
-				</Button>
+				{formState.isDirty ? (
+					<AlertDialogBox
+						subheading="You have unsaved changes on this page! Clicking confirm will remove any unsaved changes."
+						actionLabel="Confirm"
+						trigger={
+							<Button
+								variant="outline"
+								className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
+								disabled={index === 0 || isLoading}
+							>
+								<ChevronLeft className="mr-2 h-4 w-4" />{" "}
+								Previous
+							</Button>
+						}
+						onAction={() => {
+							handleLeftArrowClick();
+						}}
+					/>
+				) : (
+					<Button
+						variant="outline"
+						onClick={handleLeftArrowClick}
+						className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
+						disabled={index === 0 || isLoading}
+					>
+						<ChevronLeft className="mr-2 h-4 w-4" /> Previous
+					</Button>
+				)}
+
+				{formState.isDirty ? (
+					<AlertDialogBox
+						subheading="You have unsaved changes on this page! Clicking confirm will remove any unsaved changes."
+						actionLabel="Confirm"
+						trigger={
+							<Button
+								variant="outline"
+								className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
+								disabled={
+									index === questionData.length - 1 ||
+									isLoading
+								}
+							>
+								<ChevronRight className="mr-2 h-4 w-4" /> Next
+							</Button>
+						}
+						onAction={() => {
+							handleRightArrowClick();
+						}}
+					/>
+				) : (
+					<Button
+						variant="outline"
+						onClick={handleRightArrowClick}
+						className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
+						disabled={
+							index === questionData.length - 1 || isLoading
+						}
+					>
+						<ChevronRight className="mr-2 h-4 w-4" /> Next
+					</Button>
+				)}
 			</div>
 		</div>
 	);

@@ -176,7 +176,6 @@ function AuditeeForm() {
 					variant: "default",
 					className: "bg-green-ryzr text-white",
 				});
-				console.log(data);
 			} else {
 				const response = await companyService.createCompany(
 					companyData

@@ -12,7 +12,7 @@ const InfoCard = ({ heading, data, info, loading = false }: InfoCardProps) => {
 	return (
 		<Card className="bg-gray-ryzr rounded-2xl shadow-lg">
 			<CardContent className="p-6 flex flex-col gap-2">
-				<div className="text-md text-violet-ryzr font-medium tracking-wide">
+				<div className="text-sm text-violet-light-ryzr font-semibold uppercase tracking-wider">
 					{heading}
 				</div>
 				{loading ? (
@@ -20,12 +20,12 @@ const InfoCard = ({ heading, data, info, loading = false }: InfoCardProps) => {
 						<RoundSpinner />
 					</div>
 				) : (
-					<div className="text-4xl text-white font-semibold">
+					<div className="text-5xl text-white font-extrabold">
 						{data}
 					</div>
 				)}
 				{info && (
-					<div className="text-md text-white opacity-60">{info}</div>
+					<div className="text-md text-white/70 opacity-60">{info}</div>
 				)}
 			</CardContent>
 		</Card>

@@ -39,7 +39,7 @@ const App = () => {
 						<Route path="/sign-up" element={<SignupPage />} />
 					</Route>
 
-					<Route element={<ProtectedRoute />}>
+					{/* <Route element={<ProtectedRoute />}> */}
 						<Route element={<Layout />}>
 							<Route path="/home" element={<Index />} />
 							<Route
@@ -75,7 +75,7 @@ const App = () => {
 								element={<DeviationDashboard />}
 							/>
 						</Route>
-					</Route>
+					{/* </Route> */}
 					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</TooltipProvider>
