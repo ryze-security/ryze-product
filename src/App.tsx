@@ -16,6 +16,7 @@ import {
 	VulnerableAuditeeDashboard,
 	DeviationDashboard,
 	SignupPage,
+	AuditeeDocuments,
 } from "./pages/pageIndex.ts";
 import {
 	Layout,
@@ -40,41 +41,42 @@ const App = () => {
 					</Route>
 
 					{/* <Route element={<ProtectedRoute />}> */}
-						<Route element={<Layout />}>
-							<Route path="/home" element={<Index />} />
-							<Route
-								path="/evaluation"
-								element={<EvaluationDashboard />}
-							/>
-							<Route
-								path="/evaluation/:companyId/:evaluationId"
-								element={<EvaluationDetails />}
-							/>
-							<Route
-								path="/new-evaluation"
-								element={<NewEvaluation />}
-							/>
-							<Route
-								path="/auditee/dashboard"
-								element={<AuditeeDashboard />}
-							/>
-							<Route
-								path="/auditee/new"
-								element={<AuditeeForm />}
-							/>
-							<Route
-								path="/auditee/edit/:auditeeId"
-								element={<AuditeeForm />}
-							/>
-							<Route
-								path="/auditee/vulnerable"
-								element={<VulnerableAuditeeDashboard />}
-							/>
-							<Route
-								path="/framework/deviation"
-								element={<DeviationDashboard />}
-							/>
-						</Route>
+					<Route element={<Layout />}>
+						<Route path="/home" element={<Index />} />
+						<Route
+							path="/evaluation"
+							element={<EvaluationDashboard />}
+						/>
+						<Route
+							path="/evaluation/:companyId/:evaluationId"
+							element={<EvaluationDetails />}
+						/>
+						<Route
+							path="/new-evaluation"
+							element={<NewEvaluation />}
+						/>
+						<Route
+							path="/auditee/dashboard"
+							element={<AuditeeDashboard />}
+						/>
+						<Route path="/auditee/new" element={<AuditeeForm />} />
+						<Route
+							path="/auditee/edit/:auditeeId"
+							element={<AuditeeForm />}
+						/>
+						<Route
+							path="/auditee/documents/:auditeeId"
+							element={<AuditeeDocuments />}
+						/>
+						<Route
+							path="/auditee/vulnerable"
+							element={<VulnerableAuditeeDashboard />}
+						/>
+						<Route
+							path="/framework/deviation"
+							element={<DeviationDashboard />}
+						/>
+					</Route>
 					{/* </Route> */}
 					<Route path="*" element={<NotFound />} />
 				</Routes>

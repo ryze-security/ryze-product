@@ -354,6 +354,7 @@ function AuditeeForm() {
 										data={auditeeData?.documents_count}
 										info=""
 										loading={isFetchingData}
+										id={auditeeId}
 									/>
 								</div>
 							)}
