@@ -47,7 +47,7 @@ interface QuestionFormFields {
 
 const columns: ColumnDef<controlResponse>[] = [
 	{
-		accessorKey: "controlId",
+		accessorKey: "serial",
 		header: ({ column }) => {
 			return (
 				<Button
@@ -228,6 +228,7 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 			(control) => {
 				const updatedControl = {
 					...control,
+					serial: control.controlId.substring(2),
 					Response: {
 						...control.Response,
 						Score: Math.round(control.Response.Score * 100),
@@ -395,7 +396,7 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 						<div className="flex justify-between">
 							<div className="flex max-w-[85%] flex-col w-full h-fit gap-5">
 								<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
-									{selectedRow.controlId}
+									{selectedRow.serial}
 								</div>
 								<div className="flex flex-col gap-2">
 									<div className="text-4xl font-semibold text-white tracking-wide">

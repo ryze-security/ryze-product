@@ -232,7 +232,8 @@ export function ProgressBarDataTable<TData, TValue>({
 									className="text-center"
 								>
 									{isLoading ? (
-										<RoundSpinner />
+										<div className="flex items-center justify-center"><RoundSpinner /></div>
+										
 									) : (
 										"No results found."
 									)}

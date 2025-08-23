@@ -1,13 +1,19 @@
-import { ProgressBarDataTable } from "@/components/ProgressBarDataTable";
+import { AlertDialogBox } from "@/components/AlertDialogBox";
 import PageHeader from "@/components/PageHeader";
-import { useToast } from "@/hooks/use-toast";
+import { ProgressBarDataTable } from "@/components/ProgressBarDataTable";
+import { Button } from "@/components/ui/button";
 import {
-	Evaluation,
-	listEvaluationsDTO,
-} from "@/models/evaluation/EvaluationDTOs";
-import evaluationService from "@/services/evaluationServices";
-import { ColumnDef } from "@tanstack/react-table";
-import React, { useEffect, useState } from "react";
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -16,44 +22,52 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { RoundSpinner } from "@/components/ui/spinner";
+import { useToast } from "@/hooks/use-toast";
+import { CompanyListDto } from "@/models/company/companyDTOs";
 import {
-	ArrowDown,
-	ChevronsUpDown,
-	Ellipsis,
-	MoreHorizontal,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@/components/ui/dialog";
+	Evaluation,
+	listEvaluationsDTO,
+} from "@/models/evaluation/EvaluationDTOs";
 import {
 	reportResultDTO,
 	reportResultListDTO,
 } from "@/models/reports/ExcelDTOs";
+import companyService from "@/services/companyServices";
+import evaluationService from "@/services/evaluationServices";
 import reportsService from "@/services/reportsServices";
-import { RoundSpinner } from "@/components/ui/spinner";
-import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { useAppSelector } from "@/store/hooks";
+import { ColumnDef } from "@tanstack/react-table";
+import { ChevronsUpDownIcon, Ellipsis, MoreHorizontalIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import * as dfd from "danfojs";
 import * as ExcelJS from "exceljs";
 import * as FileSaver from "file-saver";
-import { useAppSelector } from "@/store/hooks";
-import { AlertDialogBox } from "@/components/AlertDialogBox";
 
-function EvaluationDashboard() {
-	const [reportList, setReportList] =
-		React.useState<reportResultListDTO>(null);
-	const { toast } = useToast();
+function AuditeeEvaluations() {
 	const userData = useAppSelector((state) => state.appUser);
-	const [refreshTrigger, setRefreshTrigger] = React.useState<number>(0);
+	const { toast } = useToast();
+	const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
+	const { auditeeId } = useParams();
+	const navigate = useNavigate();
+	const [reportDialogOpen, setReportDialogOpen] = useState<boolean>(false);
+	const [auditeeName, setAuditeeName] = useState<string>();
+	const [evaluations, setEvaluations] = useState<listEvaluationsDTO | null>({
+		evaluations: [] as Evaluation[],
+		total_count: 0,
+	});
+	const [isEvalLoading, setIsEvalLoading] = useState<boolean>(false);
+	const [reportList, setReportList] = useState<reportResultListDTO>(null);
+	const [isReportListLoading, setIsReportListLoading] =
+		useState<boolean>(false);
+	const [isDeletingEvaluation, setIsDeletingEvaluation] =
+		useState<boolean>(false);
+	const [isAuditeeLoading, setIsAuditeeLoading] = useState<boolean>(true);
+	const [isReportGenerating, setIsReportGenerating] =
+		useState<boolean>(false);
+
+	const isLoading = isEvalLoading || isAuditeeLoading;
 
 	const columns: ColumnDef<Evaluation>[] = [
 		{
@@ -165,7 +179,7 @@ function EvaluationDashboard() {
 						>
 							<Button variant="ghost" className="h-8 w-8 p-0">
 								<span className="sr-only">Open menu</span>
-								<MoreHorizontal />
+								<MoreHorizontalIcon />
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent
@@ -175,10 +189,12 @@ function EvaluationDashboard() {
 							<DropdownMenuLabel>Actions</DropdownMenuLabel>
 							<DropdownMenuItem
 								onSelect={(e) => e.preventDefault()}
+								disabled={isReportListLoading}
 								onClick={async (e) => {
 									e.stopPropagation();
 									setReportDialogOpen(true);
 									try {
+										setIsReportListLoading(true);
 										const response =
 											await reportsService.getReportList(
 												userData.tenant_id,
@@ -195,9 +211,6 @@ function EvaluationDashboard() {
 											setReportDialogOpen(false);
 										} else {
 											setReportList(response);
-											setReportCompanyName(
-												evaluation.tg_company_id
-											);
 										}
 									} catch (error) {
 										toast({
@@ -205,6 +218,8 @@ function EvaluationDashboard() {
 											description: `Failed to fetch reports. Please try again later!`,
 											variant: "destructive",
 										});
+									} finally {
+										setIsReportListLoading(false);
 									}
 								}}
 							>
@@ -215,6 +230,7 @@ function EvaluationDashboard() {
 									<DropdownMenuItem
 										onSelect={(e) => e.preventDefault()}
 										onClick={(e) => e.stopPropagation()}
+										disabled={isDeletingEvaluation}
 										className="text-rose-600 focus:text-white focus:bg-rose-600"
 									>
 										Delete Evaluation
@@ -226,6 +242,7 @@ function EvaluationDashboard() {
 								onAction={() => {
 									const performDelete = async () => {
 										try {
+											setIsDeletingEvaluation(true);
 											const response =
 												await evaluationService.deleteEvaluation(
 													userData.tenant_id,
@@ -249,6 +266,8 @@ function EvaluationDashboard() {
 												description: `An error occurred while deleting the evaluation. Please try again later!`,
 												variant: "destructive",
 											});
+										} finally {
+											setIsDeletingEvaluation(false);
 										}
 									};
 
@@ -262,28 +281,17 @@ function EvaluationDashboard() {
 		},
 	];
 
-	const [reportDialogOpen, setReportDialogOpen] = useState<boolean>(false);
-	const [reportCompanyName, setReportCompanyName] = React.useState<
-		string | null
-	>(null);
-
-	const [evaluations, setEvaluations] =
-		React.useState<listEvaluationsDTO | null>({
-			evaluations: [],
-			total_count: 0,
-		});
-	const [isEvalLoading, setIsEvalLoading] = React.useState<boolean>(false);
-	const [isReportGenerating, setIsReportGenerating] =
-		React.useState<boolean>(false);
-
+	//Effect used to load evaluations for the auditee
 	useEffect(() => {
 		async function fetchEvaluations() {
 			setIsEvalLoading(true);
 			try {
-				const response = await evaluationService.getEvaluations(
-					userData.tenant_id
-				);
-				if (response.total_count !== 0) {
+				const response: listEvaluationsDTO =
+					await evaluationService.getEvaluationsByCompanyId(
+						userData.tenant_id,
+						auditeeId
+					);
+				if (response.total_count > 0) {
 					response.evaluations = response.evaluations.map(
 						(evaluation: Evaluation) => {
 							return {
@@ -315,7 +323,7 @@ function EvaluationDashboard() {
 			} catch (error) {
 				toast({
 					title: "Error",
-					description: `Failed to fetch your data. Exiting with error: ${error}`,
+					description: `Failed to fetch the evaluations. Please try again later!`,
 					variant: "destructive",
 				});
 			} finally {
@@ -324,7 +332,35 @@ function EvaluationDashboard() {
 		}
 
 		fetchEvaluations();
-	}, [refreshTrigger, userData.tenant_id]);
+	}, [refreshTrigger, auditeeId, userData.tenant_id]);
+
+	//Effect to fetch auditee name
+	useEffect(() => {
+		const fetchAuditeeName = async () => {
+			setIsAuditeeLoading(true);
+			try {
+				const response: CompanyListDto =
+					await companyService.getCompanyByCompanyId(
+						userData.tenant_id,
+						auditeeId
+					);
+				if (response && response.tg_company_display_name) {
+					setAuditeeName(response.tg_company_display_name);
+				}
+			} catch (error) {
+				toast({
+					title: "Error",
+					description: `Failed to fetch auditee details. Please try again later!`,
+					variant: "destructive",
+				});
+				navigate("/auditee/edit/" + auditeeId);
+			} finally {
+				setIsAuditeeLoading(false);
+			}
+		};
+
+		fetchAuditeeName();
+	}, [auditeeId, userData.tenant_id]);
 
 	const formatHeaderCells = (text: string): string => {
 		return text
@@ -338,14 +374,28 @@ function EvaluationDashboard() {
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
 			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-6 sm:px-12 lg:px-16">
 				<PageHeader
-					heading="Past reviews"
-					subtitle="Browse through previously completed reviews to track progress and revisit findings."
+					heading={
+						<div className="flex items-center gap-2">
+							Manage Evaluations:{" "}
+							{isAuditeeLoading ? <RoundSpinner /> : auditeeName}
+						</div>
+					}
+					subtitle="Browse through evaluations related to this auditee. You can add, view, and delete evaluations as needed. Also reports can be downloaded for each evaluation."
 					buttonText="Add"
 					variant="add"
+					isLoading={isLoading}
 					buttonUrl="/new-evaluation"
-				/>
+				>
+					<Button
+						variant="default"
+						disabled={isLoading}
+						className={`bg-zinc-700 hover:bg-zinc-800 rounded-2xl transition-colors text-white font-bold text-md`}
+						onClick={() => navigate("/auditee/edit/" + auditeeId)}
+					>
+						{isLoading ? <RoundSpinner /> : "Back"}
+					</Button>
+				</PageHeader>
 			</section>
-
 			<section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-6 sm:px-12 lg:px-16">
 				<ProgressBarDataTable
 					columns={columns}
@@ -361,7 +411,6 @@ function EvaluationDashboard() {
 						setReportDialogOpen(isOpen);
 						if (!isOpen) {
 							setReportList(null);
-							setReportCompanyName(null);
 						}
 					}}
 				>
@@ -373,14 +422,14 @@ function EvaluationDashboard() {
 								for this evaluation.
 							</DialogDescription>
 						</DialogHeader>
-						{!reportList ? (
+						{isReportListLoading || !reportList ? (
 							<RoundSpinner />
 						) : (
 							<Collapsible className="flex w-[350px] flex-col gap-2">
 								<div className="flex items-center justify-between gap-4 px-4">
 									<h4 className="text-sm font-semibold">
 										This evaluation has{" "}
-										{reportList.total_count} reports.
+										{reportList?.total_count} reports.
 									</h4>
 									<CollapsibleTrigger asChild>
 										<Button
@@ -388,13 +437,14 @@ function EvaluationDashboard() {
 											size="icon"
 											className="size-8"
 										>
-											<ChevronsUpDown />
+											<ChevronsUpDownIcon />
 											<span className="sr-only">
 												Toggle
 											</span>
 										</Button>
 									</CollapsibleTrigger>
 								</div>
+								{/* Represents the first button which is always shown in the collapsible tab */}
 								<Button
 									variant="ghost"
 									className="rounded-md border w-fit justify-start px-4 py-2 font-mono text-sm"
@@ -405,7 +455,7 @@ function EvaluationDashboard() {
 											const response: reportResultDTO =
 												await reportsService.getExcelReportResult(
 													userData.tenant_id,
-													reportCompanyName,
+													auditeeId,
 													reportList.reports[0]
 														.report_id
 												);
@@ -530,11 +580,11 @@ function EvaluationDashboard() {
 									}}
 								>
 									{`${
-										reportList.reports[0].report_id
+										reportList?.reports[0].report_id
 									}  ${new Date(
-										reportList.reports[0].created_at
+										reportList?.reports[0].created_at
 									).toLocaleDateString()} ${new Date(
-										reportList.reports[0].created_at
+										reportList?.reports[0].created_at
 									).toLocaleTimeString()}`}
 								</Button>
 								<CollapsibleContent className="flex flex-col gap-2">
@@ -554,7 +604,7 @@ function EvaluationDashboard() {
 														const response: reportResultDTO =
 															await reportsService.getExcelReportResult(
 																userData.tenant_id,
-																reportCompanyName,
+																auditeeId,
 																report.report_id
 															);
 														if (response) {
@@ -602,4 +652,4 @@ function EvaluationDashboard() {
 	);
 }
 
-export default EvaluationDashboard;
+export default AuditeeEvaluations;

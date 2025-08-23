@@ -16,6 +16,8 @@ import {
 	VulnerableAuditeeDashboard,
 	DeviationDashboard,
 	SignupPage,
+	AuditeeDocuments,
+	AuditeeEvaluations,
 } from "./pages/pageIndex.ts";
 import {
 	Layout,
@@ -65,6 +67,14 @@ const App = () => {
 							<Route
 								path="/auditee/edit/:auditeeId"
 								element={<AuditeeForm />}
+							/>
+							<Route
+								path="/auditee/documents/:auditeeId"
+								element={<AuditeeDocuments />}
+							/>
+							<Route
+								path="/auditee/evaluations/:auditeeId"
+								element={<AuditeeEvaluations />}
 							/>
 							<Route
 								path="/auditee/vulnerable"

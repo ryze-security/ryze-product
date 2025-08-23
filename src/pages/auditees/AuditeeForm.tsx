@@ -176,7 +176,6 @@ function AuditeeForm() {
 					variant: "default",
 					className: "bg-green-ryzr text-white",
 				});
-				console.log(data);
 			} else {
 				const response = await companyService.createCompany(
 					companyData
@@ -349,12 +348,16 @@ function AuditeeForm() {
 										data={auditeeData?.evaluations_count}
 										info=""
 										loading={isFetchingData}
+										link={
+											"/auditee/evaluations/" + auditeeId
+										}
 									/>
 									<InfoCard
 										heading="Documents reviewed"
 										data={auditeeData?.documents_count}
 										info=""
 										loading={isFetchingData}
+										link={"/auditee/documents/" + auditeeId}
 									/>
 								</div>
 							)}

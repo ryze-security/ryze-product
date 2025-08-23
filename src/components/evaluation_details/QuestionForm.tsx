@@ -48,7 +48,6 @@ function QuestionForm(props: Props) {
 	useMemo(() => {
 		setSelectedQuestion(questionData[questionIndex]);
 	}, [questionData, questionIndex]);
-	
 
 	const [formattedEvidence, setFormattedEvidence] = useState<string[]>([]);
 
@@ -170,19 +169,19 @@ function QuestionForm(props: Props) {
 						</div>
 					))}
 				</div> */}
-				{/* Question Name and changing arrows */}
-				<div className="flex w-full border-b-black border-b-2">
-					<div className="flex flex-col justify-between my-6 mb-0 ml-6 w-8/12">
-						<span className="text-2xl font-light text-[#AAAAAA] tracking-normal px-4 py-1">
+				{/* Question Name and compliance button*/}
+				<div className="flex w-full border-b-black border-b-2 p-6">
+					<div className="flex flex-col justify-center w-8/12">
+						<span className="text-sm font-bold text-[#AAAAAA] tracking-wide uppercase mb-1">
 							Question
 						</span>
-						<div className="gap-2 flex rounded-md rounded-tl-none p-4 text-lg">
-							<span>{`${selectedQuestion?.SNo}`}.</span>
+						<div className="gap-2 flex text-lg">
+							<span className="font-semibold">{`${selectedQuestion?.SNo}`}.</span>
 							<span className="flex flex-wrap">{`${selectedQuestion?.question}`}</span>
 						</div>
 					</div>
 					{/* Compliance status and toggle button */}
-					<div className="flex gap-3 justify-end mr-6 w-4/12 my-auto">
+					<div className="flex gap-3 justify-end w-4/12 items-center">
 						<Popover open={open} onOpenChange={setOpen}>
 							<PopoverTrigger asChild>
 								<Button
@@ -297,7 +296,7 @@ function QuestionForm(props: Props) {
 							onClick={() => {
 								setisObservationEditing(!isObservationEditing);
 							}}
-							className="bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white font-bold px-4"
+							className="bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white font-bold p-2.5"
 							disabled={isLoading}
 						>
 							{isLoading ? (
@@ -311,12 +310,12 @@ function QuestionForm(props: Props) {
 					</div>
 				</div>
 				<div className="flex w-full">
-					<div className="py-6 pl-10 w-[50%] border-r border-black flex flex-col">
-						<span className="text-2xl font-light text-[#AAAAAA] tracking-normal pb-0 py-1">
+					<div className="p-6 w-1/2 border-r border-black flex flex-col gap-2">
+						<span className="text-sm font-bold text-[#AAAAAA] tracking-wide uppercase">
 							Observation
 						</span>
 						{/* Observation and textarea */}
-						<div className="gap-2 flex mt-4 w-11/12">
+						<div className="w-full">
 							{isObservationEditing ? (
 								<textarea
 									ref={(e) => {
@@ -340,14 +339,14 @@ function QuestionForm(props: Props) {
 						</div>
 					</div>
 					{/* Evidence */}
-					<div className="flex flex-col py-6 pl-6 pr-4 w-[50%]">
-						<span className="text-2xl font-light text-[#AAAAAA] tracking-normal pb-0 py-1">
+					<div className="flex flex-col p-6 w-1/2 gap-2">
+						<span className="text-sm font-bold text-[#AAAAAA] tracking-wide uppercase">
 							Evidence
 						</span>
-						<div className="gap-2 flex flex-col mt-4 w-11/12">
+						<div className="gap-2 flex flex-col">
 							{formattedEvidence.map((evidence, index) => (
 								<div className="flex gap-2" key={index}>
-									<span>{`${index + 1}.`}</span>
+									<span className="font-semibold">{`${index + 1}.`}</span>
 									<span className="flex flex-wrap opacity-85 leading-relaxed text-lg">{`${evidence}`}</span>
 								</div>
 							))}
@@ -356,22 +355,67 @@ function QuestionForm(props: Props) {
 				</div>
 			</section>
 			<div className="flex justify-between w-full">
-				<Button
-					variant="outline"
-					onClick={handleLeftArrowClick}
-					className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
-					disabled={index === 0 || isLoading}
-				>
-					<ChevronLeft className="mr-2 h-4 w-4" /> Previous
-				</Button>
-				<Button
-					variant="outline"
-					onClick={handleRightArrowClick}
-					className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
-					disabled={index === questionData.length - 1 || isLoading}
-				>
-					<ChevronRight className="mr-2 h-4 w-4" /> Next
-				</Button>
+				{formState.isDirty ? (
+					<AlertDialogBox
+						subheading="You have unsaved changes on this page! Clicking confirm will remove any unsaved changes."
+						actionLabel="Confirm"
+						trigger={
+							<Button
+								variant="outline"
+								className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
+								disabled={index === 0 || isLoading}
+							>
+								<ChevronLeft className="mr-2 h-4 w-4" />{" "}
+								Previous
+							</Button>
+						}
+						onAction={() => {
+							handleLeftArrowClick();
+						}}
+					/>
+				) : (
+					<Button
+						variant="outline"
+						onClick={handleLeftArrowClick}
+						className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
+						disabled={index === 0 || isLoading}
+					>
+						<ChevronLeft className="mr-2 h-4 w-4" /> Previous
+					</Button>
+				)}
+
+				{formState.isDirty ? (
+					<AlertDialogBox
+						subheading="You have unsaved changes on this page! Clicking confirm will remove any unsaved changes."
+						actionLabel="Confirm"
+						trigger={
+							<Button
+								variant="outline"
+								className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
+								disabled={
+									index === questionData.length - 1 ||
+									isLoading
+								}
+							>
+								<ChevronRight className="mr-2 h-4 w-4" /> Next
+							</Button>
+						}
+						onAction={() => {
+							handleRightArrowClick();
+						}}
+					/>
+				) : (
+					<Button
+						variant="outline"
+						onClick={handleRightArrowClick}
+						className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
+						disabled={
+							index === questionData.length - 1 || isLoading
+						}
+					>
+						<ChevronRight className="mr-2 h-4 w-4" /> Next
+					</Button>
+				)}
 			</div>
 		</div>
 	);
