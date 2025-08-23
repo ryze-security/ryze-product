@@ -129,7 +129,7 @@ function AuditeeDocuments() {
 										onClick={(e) => e.stopPropagation()}
 										className="text-rose-600 focus:text-white focus:bg-rose-600"
 									>
-										Delete Evaluation
+										Delete File
 									</DropdownMenuItem>
 								}
 								title="Are You Sure?"
