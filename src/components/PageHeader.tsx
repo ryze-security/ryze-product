@@ -34,7 +34,7 @@ function PageHeader(props: Props) {
 
 	return (
 		<div className="max-w-7xl w-full flex justify-between px-4">
-			<div className="flex flex-col gap-2">
+			<div className="flex flex-col gap-2 w-8/12">
 				{/* Left: Welcome message */}
 				<h1 className="text-4xl font-semibold text-white tracking-wide">
 					{heading}

@@ -348,13 +348,16 @@ function AuditeeForm() {
 										data={auditeeData?.evaluations_count}
 										info=""
 										loading={isFetchingData}
+										link={
+											"/auditee/evaluations/" + auditeeId
+										}
 									/>
 									<InfoCard
 										heading="Documents reviewed"
 										data={auditeeData?.documents_count}
 										info=""
 										loading={isFetchingData}
-										id={auditeeId}
+										link={"/auditee/documents/" + auditeeId}
 									/>
 								</div>
 							)}

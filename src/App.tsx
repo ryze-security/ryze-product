@@ -17,6 +17,7 @@ import {
 	DeviationDashboard,
 	SignupPage,
 	AuditeeDocuments,
+	AuditeeEvaluations,
 } from "./pages/pageIndex.ts";
 import {
 	Layout,
@@ -40,44 +41,51 @@ const App = () => {
 						<Route path="/sign-up" element={<SignupPage />} />
 					</Route>
 
-					{/* <Route element={<ProtectedRoute />}> */}
-					<Route element={<Layout />}>
-						<Route path="/home" element={<Index />} />
-						<Route
-							path="/evaluation"
-							element={<EvaluationDashboard />}
-						/>
-						<Route
-							path="/evaluation/:companyId/:evaluationId"
-							element={<EvaluationDetails />}
-						/>
-						<Route
-							path="/new-evaluation"
-							element={<NewEvaluation />}
-						/>
-						<Route
-							path="/auditee/dashboard"
-							element={<AuditeeDashboard />}
-						/>
-						<Route path="/auditee/new" element={<AuditeeForm />} />
-						<Route
-							path="/auditee/edit/:auditeeId"
-							element={<AuditeeForm />}
-						/>
-						<Route
-							path="/auditee/documents/:auditeeId"
-							element={<AuditeeDocuments />}
-						/>
-						<Route
-							path="/auditee/vulnerable"
-							element={<VulnerableAuditeeDashboard />}
-						/>
-						<Route
-							path="/framework/deviation"
-							element={<DeviationDashboard />}
-						/>
+					<Route element={<ProtectedRoute />}>
+						<Route element={<Layout />}>
+							<Route path="/home" element={<Index />} />
+							<Route
+								path="/evaluation"
+								element={<EvaluationDashboard />}
+							/>
+							<Route
+								path="/evaluation/:companyId/:evaluationId"
+								element={<EvaluationDetails />}
+							/>
+							<Route
+								path="/new-evaluation"
+								element={<NewEvaluation />}
+							/>
+							<Route
+								path="/auditee/dashboard"
+								element={<AuditeeDashboard />}
+							/>
+							<Route
+								path="/auditee/new"
+								element={<AuditeeForm />}
+							/>
+							<Route
+								path="/auditee/edit/:auditeeId"
+								element={<AuditeeForm />}
+							/>
+							<Route
+								path="/auditee/documents/:auditeeId"
+								element={<AuditeeDocuments />}
+							/>
+							<Route
+								path="/auditee/evaluations/:auditeeId"
+								element={<AuditeeEvaluations />}
+							/>
+							<Route
+								path="/auditee/vulnerable"
+								element={<VulnerableAuditeeDashboard />}
+							/>
+							<Route
+								path="/framework/deviation"
+								element={<DeviationDashboard />}
+							/>
+						</Route>
 					</Route>
-					{/* </Route> */}
 					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</TooltipProvider>

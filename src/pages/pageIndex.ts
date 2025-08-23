@@ -9,5 +9,6 @@ import VulnerableAuditeeDashboard from "./auditees/VulnerableAuditeeDashboard";
 import DeviationDashboard from "./frameworks/DeviationDashboard";
 import SignupPage from "./SignUp";
 import AuditeeDocuments from "./auditees/AuditeeDocuments";
+import AuditeeEvaluations from "./auditees/AuditeeEvaluations";
 
-export { Home, LoginPage, NewEvaluation, AuditeeDashboard, AuditeeForm, EvaluationDashboard, EvaluationDetails, VulnerableAuditeeDashboard, DeviationDashboard, SignupPage, AuditeeDocuments };
+export { Home, LoginPage, NewEvaluation, AuditeeDashboard, AuditeeForm, EvaluationDashboard, EvaluationDetails, VulnerableAuditeeDashboard, DeviationDashboard, SignupPage, AuditeeDocuments, AuditeeEvaluations };

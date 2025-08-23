@@ -7,7 +7,7 @@ type InfoCardProps = {
 	data: string | number;
 	info?: string;
 	loading?: boolean;
-	id?: string;
+	link?: string;
 };
 
 const InfoCard = ({
@@ -15,11 +15,11 @@ const InfoCard = ({
 	data,
 	info,
 	loading = false,
-	id,
+	link,
 }: InfoCardProps) => {
 	return (
 		<Link
-			to={id && `/auditee/documents/${id}`}
+			to={link && link}
 			className="no-underline hover:opacity-80 duration-200 transition-opacity"
 		>
 			<Card className="bg-gray-ryzr rounded-2xl shadow-lg">
