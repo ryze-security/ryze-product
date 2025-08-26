@@ -25,7 +25,6 @@ function SmallDisplayCard(props: Props) {
 		percentageChange,
 		changeDescription,
 		warning = false,
-		footer,
 	} = props;
 
 	function formatNumberWithCommas(num: number | string): string {
@@ -34,56 +33,27 @@ function SmallDisplayCard(props: Props) {
 
 	return (
 		<div
-			className={`bg-[#18181B] rounded-3xl flex flex-col w-[96%] min-h-[148px] justify-start gap-3 pl-6 py-5 ${
-				warning && value === 0 ? "border-2 border-red-ryzr" : ""
-			}`}
+			className={`
+        bg-[#18181B] rounded-3xl flex flex-col w-full p-6 
+        justify-center gap-2
+        ${
+			warning && value === 0
+				? "border-2 border-red-ryzr"
+				: "border-2 border-transparent"
+		}
+    `}
 		>
-			<div className="text-gray-light-ryzr text-xl font-semibold tracking-wide flex gap-2">
-				{
-					<>
-						{icon} <span>{title}</span>
-					</>
-				}
-			</div>
-			<div className="flex gap-6  items-center">
-				<span className="text-5xl font-semibold text-white">
-					{formatNumberWithCommas(value)}
-				</span>
-				{changeDescription && percentageChange && (
-					<div
-						className={`rounded-full text-center flex items-center justify-center min-w-[62px] h-[26px] ${
-							changeDescription &&
-							changeDescription === "positive"
-								? "bg-green-ryzr"
-								: "bg-red-ryzr"
-						}`}
-					>
-						{changeDescription && percentageChange && (
-							<TooltipProvider>
-								<Tooltip>
-									<TooltipTrigger>
-										<p className="text-sm">
-											{changeDescription &&
-											changeDescription === "positive"
-												? "+"
-												: "-"}
-											{percentageChange}%
-										</p>
-									</TooltipTrigger>
-									<TooltipContent className="bg-gray-ryzr/95">
-										<p>compared to last month</p>
-									</TooltipContent>
-								</Tooltip>
-							</TooltipProvider>
-						)}
-					</div>
-				)}
+			{/* Title: Smaller, uppercase, and muted for better hierarchy */}
+			<div className="flex items-center gap-2 text-sm font-semibold tracking-wider text-zinc-400 uppercase">
+				{icon}
+				<span>{title}</span>
 			</div>
 
-			<div>
-				<p className="font-light text-xs text-[#828282]">
-					{footer ? footer : "compared to last month"}
-				</p>
+			{/* Value: Large and bold to be the focal point */}
+			<div className="flex items-center">
+				<span className="text-5xl font-bold text-white">
+					{formatNumberWithCommas(value)}
+				</span>
 			</div>
 		</div>
 	);

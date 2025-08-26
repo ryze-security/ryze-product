@@ -31,6 +31,7 @@ export interface reportResultListDTO {
 	total_count: number;
 	reports: [
 		{
+			sNo: number;
 			report_id: string;
 			eval_id: string;
 			report_type: string;

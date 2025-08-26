@@ -1,6 +1,7 @@
 import {
 	Building2Icon,
 	Dot,
+	FileTextIcon,
 	Home,
 	List,
 	LogOut,
@@ -48,7 +49,7 @@ const items = [
 	{
 		title: "Past Reviews",
 		url: "/evaluation",
-		icon: LucideSearch,
+		icon: FileTextIcon,
 	},
 	{
 		title: "Auditees",
@@ -56,12 +57,12 @@ const items = [
 		icon: Building2Icon,
 	},
 	{
-		title: "Frameworks",
+		title: "Frameworks (Coming soon)",
 		url: "#",
 		icon: List,
 	},
 	{
-		title: "Profile",
+		title: "Profile (Coming soon)",
 		url: "#",
 		icon: User2,
 	},

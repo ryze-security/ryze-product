@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { RoundSpinner } from "./ui/spinner";
 import { Progress } from "./ui/progress";
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -31,6 +32,7 @@ interface DataTableProps<TData, TValue> {
 	rowLinkPrefix?: string;
 	isLoading?: boolean;
 	onRowClick?: (row: TData) => void;
+	disabledRow?: boolean;
 }
 
 export function GenericDataTable<TData, TValue>({
@@ -41,6 +43,7 @@ export function GenericDataTable<TData, TValue>({
 	rowLinkPrefix = "#",
 	isLoading = false,
 	onRowClick,
+	disabledRow = false,
 }: DataTableProps<TData, TValue>) {
 	const [filter, setFilter] = React.useState("");
 	const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -69,6 +72,7 @@ export function GenericDataTable<TData, TValue>({
 	});
 
 	const handleRowClick = (row: TData) => {
+		if(disabledRow) return;
 		if (rowIdKey && rowLinkPrefix !== "#") {
 			const ids = rowIdKey
 				.map((key) => row[key])
@@ -130,7 +134,7 @@ export function GenericDataTable<TData, TValue>({
 								<TableRow
 									key={row.id}
 									onClick={() => handleRowClick(row.original)}
-									className="cursor-pointer hover:bg-zinc-800 transition text-white/70"
+									className={cn("cursor-pointer hover:bg-zinc-800 transition text-white/70", disabledRow && "cursor-not-allowed hover:bg-zinc-900")}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>

@@ -17,9 +17,9 @@ const loadInitialState = (): AuthorizationDTO => {
 	return {
 		clerk_user_id: "",
 		email: "",
-		first_name: "",
+		first_name: "Aditya",
 		last_name: "",
-		tenant_id: "",
+		tenant_id: "7077beec-a9ef-44ef-a21b-83aab58872c9",
 		user_id: "",
 		created_at: "",
 		status: "idle",
