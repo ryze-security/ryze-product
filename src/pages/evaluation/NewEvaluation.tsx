@@ -28,6 +28,7 @@ import {
 	createEvaluationResponseDTO,
 } from "@/models/evaluation/EvaluationDTOs";
 import { FilesUploadResponseDTO } from "@/models/files/FilesUploadResponseDTO";
+import collectionService from "@/services/collectionServices";
 import evaluationService from "@/services/evaluationServices";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadCollections } from "@/store/slices/collectionSlice";
@@ -79,12 +80,11 @@ const NewEvaluation = () => {
 	}, [auditees]);
 
 	const frameworks = [
-		{ name: "NIST CSF", value: "nistcsf" },
-		{ name: "ISO 27001", value: "iso27001" },
-		{ name: "SOC 2", value: "soc2" },
-		{ name: "GDPR", value: "gdpr" },
-		{ name: "ISO 27701", value: "iso27701" },
-		{ name: "Internal", value: "internal" },
+		{ name: "NIST CSF (Coming Soon)", value: "nistcsf" },
+		{ name: "SOC 2 (Coming Soon)", value: "soc2" },
+		{ name: "GDPR (Coming Soon)", value: "gdpr" },
+		{ name: "ISO 27701 (Coming Soon)", value: "iso27701" },
+		{ name: "Internal (Coming Soon)", value: "internal" },
 	];
 
 	const [currentStep, setCurrentStep] = useState(0);
@@ -483,10 +483,30 @@ const NewEvaluation = () => {
 											framework?
 										</label>
 										{status === "succeeded" ? (
-											<div className="flex flex-row justify-start gap-4 flex-wrap">
+											<div className="grid grid-cols-6 justify-start gap-5 w-11/12">
+												{collection.collections.map((f) => (
+													<FrameworkCard
+														key={f.collection_id}
+														name={f.collection_display_name}
+														value={f.collection_id}
+														fieldName="selectedFrameworks"
+														control={
+															methods.control
+														}
+														error={
+															!!methods.formState
+																.errors
+																.selectedFrameworks
+														} // Pass the error state
+														setFocus={
+															methods.setFocus
+														} // Pass the setFocus function
+													/>
+												))}
 												{frameworks.map((f) => (
 													<FrameworkCard
 														key={f.value}
+														disabed = {true}
 														name={f.name}
 														value={f.value}
 														fieldName="selectedFrameworks"
@@ -503,8 +523,8 @@ const NewEvaluation = () => {
 														} // Pass the setFocus function
 													/>
 												))}
-												{/* Add link to framework section */}
-												<div className="flex gap-2 justify-center cursor-pointer rounded-sm border p-4 font-roboto sm:w-28 bg-zinc-800 text-zinc-400 transition-all text-opacity-80 duration-100 hover:scale-110">
+												{/* TODO:Add link to framework section */}
+												<div className="flex gap-2 justify-center cursor-pointer rounded-sm border p-4 font-roboto sm:w-full bg-zinc-800 text-zinc-400 transition-all text-opacity-80 duration-100 hover:scale-110">
 													<PlusCircleIcon /> Add
 												</div>
 											</div>
