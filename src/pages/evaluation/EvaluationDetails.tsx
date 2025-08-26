@@ -23,6 +23,7 @@ import {
 	ArrowDown,
 	BuildingIcon,
 	DatabaseIcon,
+	FileTextIcon,
 	FileUserIcon,
 	HomeIcon,
 	icons,
@@ -37,6 +38,7 @@ const steps = [
 	{ id: 2, label: "People", icon: <FileUserIcon /> },
 	{ id: 3, label: "Physical", icon: <IdCardIcon /> },
 	{ id: 4, label: "Technological", icon: <DatabaseIcon /> },
+	{ id: 5, label: "Reports", icon: <FileTextIcon /> },
 ];
 
 const Home = React.lazy(
@@ -45,6 +47,10 @@ const Home = React.lazy(
 
 const DomainDetail = React.lazy(
 	() => import("@/components/evaluation_details/DomainDetail")
+);
+
+const ReportsTable = React.lazy(
+	() => import("@/components/evaluation_details/EvaluationReports")
 );
 
 function EvaluationDetails() {
@@ -70,24 +76,18 @@ function EvaluationDetails() {
 	const goToStep = (stepId: number) => {
 		setCurrentStep(stepId);
 
-		if(homeRef?.current){
+		if (homeRef?.current) {
 			homeRef.current?.resetSelection();
 		}
 
-		if(domainDetailRef?.current){
+		if (domainDetailRef?.current) {
 			domainDetailRef.current?.resetSelection();
 		}
 
-		const url = new URL(
-			window.location.href
-		);
+		const url = new URL(window.location.href);
 		url.searchParams.delete("question");
 		url.searchParams.delete("controlId");
-		history.pushState(
-			null,
-			"",
-			url
-		);
+		history.pushState(null, "", url);
 	};
 
 	// This effect is used to set the domain data map when the data is loaded
@@ -249,11 +249,13 @@ function EvaluationDetails() {
 							variant: "default",
 							className: "bg-green-ryzr",
 						});
-						dispatch(addNotification({
-							user: "System",
-							action: "started generating",
-							target: "an Excel report",
-						}))
+						dispatch(
+							addNotification({
+								user: "System",
+								action: "started generating",
+								target: "an Excel report",
+							})
+						);
 					}
 				} catch (error) {
 					toast({
@@ -261,11 +263,13 @@ function EvaluationDetails() {
 						description: `There was an error while starting the report generation. Please try again later!`,
 						variant: "destructive",
 					});
-					dispatch(addNotification({
-						user: "System",
-						action: "failed in generating",
-						target: "an Excel report",
-					}))
+					dispatch(
+						addNotification({
+							user: "System",
+							action: "failed in generating",
+							target: "an Excel report",
+						})
+					);
 				}
 			}
 		} catch (error) {
@@ -296,14 +300,17 @@ function EvaluationDetails() {
 							Generate <ArrowDown className="w-4 h-4" />
 						</DropdownMenuTrigger>
 						<DropdownMenuContent>
-							<DropdownMenuItem onClick={generateExcelReport}>
+							<DropdownMenuItem
+								onClick={generateExcelReport}
+								disabled={isReportGenerating}
+							>
 								Report(.xlxs)
 							</DropdownMenuItem>
 							<DropdownMenuItem className="text-gray-light-ryzr">
-								Exec. summary(.pptx)
+								Exec. summary(.pptx) (Coming Soon)
 							</DropdownMenuItem>
 							<DropdownMenuItem className="text-gray-light-ryzr">
-								Policy statements(.docx)
+								Policy statements(.docx) (Coming Soon)
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
@@ -349,6 +356,14 @@ function EvaluationDetails() {
 												ref={domainDetailRef}
 											/>
 										)
+								)}
+
+								{currentStep === steps.length - 1 && (
+									<ReportsTable
+										tenantId={data.data.TenantId}
+										companyId={data.data.CompanyId}
+										evaluationId={data.data.EvaluationId}
+									/>
 								)}
 							</Suspense>
 						</>

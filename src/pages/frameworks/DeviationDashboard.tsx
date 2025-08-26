@@ -89,7 +89,7 @@ const columns: ColumnDef<DeviationDto>[] = [
 	},
 	{
 		accessorKey: "control_name",
-		header: "Non-compiliant control",
+		header: "Non-compliant control",
 	},
 	{
 		accessorKey: "deviations_recorded",
@@ -102,7 +102,7 @@ const columns: ColumnDef<DeviationDto>[] = [
 					}
 					className="p-0 hover:bg-transparent hover:text-white/70 text-base"
 				>
-					Occurances
+					Occurrences
 					<ArrowUpDown className="h-4 w-4" />
 				</Button>
 			);
