@@ -1,3 +1,4 @@
+import ComingSoonBorder from "@/components/ComingSoonBorder";
 import SmallDisplayCard from "@/components/dashboard/SmallDisplayCard";
 import TableRowWithNumber from "@/components/dashboard/TableRowWithNumber";
 import { Button } from "@/components/ui/button";
@@ -50,24 +51,18 @@ function Index() {
 	const views = [
 		{
 			title: "Auditees registered",
-			icon: <Building />,
+			icon: <Building className="text-violet-light-ryzr" />,
 			value: 106,
-			percentageChange: 10,
-			changeDescription: "positive",
 		},
 		{
 			title: "Reviews conducted",
-			icon: <FileTextIcon />,
+			icon: <FileTextIcon className="text-violet-light-ryzr" />,
 			value: 358,
-			percentageChange: 5,
-			changeDescription: "positive",
 		},
 		{
 			title: "Deviation recorded",
-			icon: <CircleAlert />,
+			icon: <CircleAlert className="text-violet-light-ryzr" />,
 			value: 2434,
-			percentageChange: 15,
-			changeDescription: "negative",
 		},
 	];
 
@@ -160,8 +155,10 @@ function Index() {
 									Auditee
 								</DropdownMenuItem>
 							</Link>
-							<DropdownMenuItem className="font-roboto text-gray-light-ryzr">
-								Framework (Coming soon)
+							<DropdownMenuItem className="font-roboto text-gray-light-ryzr cursor-not-allowed">
+								<ComingSoonBorder variant="inline">
+									Framework
+								</ComingSoonBorder>
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
@@ -169,21 +166,19 @@ function Index() {
 			</section>
 
 			{/* Cards */}
-			<section className="flex flex-col gap-4 justify-start bg-black text-white pt-10 px-6 sm:px-12 lg:px-16 w-[90%]">
+			<section className="flex flex-col gap-2 justify-start bg-black text-white pt-10 px-6 sm:px-12 lg:px-16 w-[90%]">
 				<div className="max-w-7xl w-full pl-4 grid grid-cols-4 gap-2">
 					{views.map((view) => (
 						<SmallDisplayCard
 							title={view.title}
 							icon={view.icon}
 							value={view.value}
-							percentageChange={view.percentageChange}
-							changeDescription={view.changeDescription}
 						/>
 					))}
 					{
 						<SmallDisplayCard
 							title="Credits"
-							icon={<Coins />}
+							icon={<Coins className="text-violet-light-ryzr" />}
 							value={credits}
 							warning={true}
 						/>
@@ -195,7 +190,7 @@ function Index() {
 					<div className="flex flex-col bg-[#18181B] rounded-xl p-6 shadow-md w-full h-[330px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-light-ryzr scrollbar-track-transparent">
 						<div className="flex items-center justify-between mb-2">
 							<h2 className="flex gap-2 text-xl text-gray-light-ryzr font-semibold tracking-wide pl-4">
-								<Building />
+								<Building className="text-violet-light-ryzr" />
 								<span>Vulnerable auditees</span>
 							</h2>
 							<span className="text-sm text-gray-light-ryzr pr-4">
@@ -252,7 +247,7 @@ function Index() {
 					<div className="flex flex-col bg-[#18181B] rounded-xl p-6 shadow-md w-full h-[330px]">
 						<div className="flex justify-between mb-2">
 							<h2 className="flex gap-2 text-xl text-gray-light-ryzr font-semibold tracking-wide pl-4">
-								<CircleAlert />
+								<CircleAlert className="text-violet-light-ryzr" />
 								<span>Frequent deviations</span>
 							</h2>
 						</div>

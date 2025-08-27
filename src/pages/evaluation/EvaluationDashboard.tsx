@@ -327,11 +327,107 @@ function EvaluationDashboard() {
 	}, [refreshTrigger, userData.tenant_id]);
 
 	const formatHeaderCells = (text: string): string => {
+		const wordsToRemove = ["display", "name"];
 		return text
 			.replace(/_/g, " ")
 			.split(" ")
+			.filter((word) => !wordsToRemove.includes(word.toLowerCase()))
 			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 			.join(" ");
+	};
+
+	const handleReportDownload = async (reportId: string) => {
+		try {
+			setIsReportGenerating(true);
+			const response: reportResultDTO =
+				await reportsService.getExcelReportResult(
+					userData.tenant_id,
+					reportCompanyName,
+					reportId
+				);
+			const df = new dfd.DataFrame(response.results);
+
+			const workbook = new ExcelJS.Workbook();
+			workbook.creator = "Ryzr";
+			workbook.created = new Date();
+			const worksheet = workbook.addWorksheet("Evaluation Report");
+
+			const headerRow = worksheet.addRow(df.columns);
+			headerRow.eachCell((cell, index) => {
+				cell.value = formatHeaderCells(cell.value.toString());
+				cell.font = {
+					bold: true,
+					color: {
+						argb: "FFFFFFFF",
+					},
+					size: 12,
+					name: "SF Pro Display Regular",
+				};
+				cell.fill = {
+					type: "pattern",
+					pattern: "solid",
+					fgColor: {
+						argb: "FFB05AEF",
+					},
+				};
+				cell.alignment = {
+					vertical: "top",
+				};
+			});
+
+			const jsonData = dfd.toJSON(df) as Array<Record<string, any>>;
+
+			//Adds and formats data rows
+			jsonData.forEach((record) => {
+				const row = worksheet.addRow(Object.values(record));
+
+				row.eachCell((cell, index) => {
+					cell.font = {
+						size: 12,
+						name: "SF Pro Display Regular",
+						color: {
+							argb: "FF000000",
+						},
+					};
+					cell.alignment = {
+						vertical: "top",
+						wrapText: true,
+					};
+				});
+			});
+
+			worksheet.columns.forEach((columns) => {
+				columns.width = 20;
+				columns.border = {
+					top: {
+						style: "thin",
+					},
+					bottom: {
+						style: "thin",
+					},
+					left: {
+						style: "thin",
+					},
+					right: {
+						style: "thin",
+					},
+				};
+			});
+
+			const buffer = await workbook.xlsx.writeBuffer();
+			const blob = new Blob([buffer], {
+				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			});
+			FileSaver.saveAs(blob, "report.xlsx");
+		} catch {
+			toast({
+				title: "Error",
+				description: `Failed to download report. Please try again later!`,
+				variant: "destructive",
+			});
+		} finally {
+			setIsReportGenerating(false);
+		}
 	};
 
 	return (
@@ -399,134 +495,10 @@ function EvaluationDashboard() {
 									variant="ghost"
 									className="rounded-md border w-fit justify-start px-4 py-2 font-mono text-sm"
 									disabled={isReportGenerating}
-									onClick={async (e) => {
-										try {
-											setIsReportGenerating(true);
-											const response: reportResultDTO =
-												await reportsService.getExcelReportResult(
-													userData.tenant_id,
-													reportCompanyName,
-													reportList.reports[0]
-														.report_id
-												);
-											if (response) {
-												const df = new dfd.DataFrame(
-													response.results
-												);
-
-												const workbook =
-													new ExcelJS.Workbook();
-												workbook.creator = "Ryzr";
-												workbook.created = new Date();
-												const worksheet =
-													workbook.addWorksheet(
-														"Evaluation Report"
-													);
-
-												//Formats and adds headers
-												const headerRow =
-													worksheet.addRow(
-														df.columns
-													);
-												headerRow.eachCell(
-													(cell, index) => {
-														cell.value =
-															formatHeaderCells(
-																cell.value.toString()
-															);
-														cell.font = {
-															bold: true,
-															color: {
-																argb: "FFFFFFFF",
-															},
-															size: 12,
-															name: "SF Pro Display Regular",
-														};
-														cell.fill = {
-															type: "pattern",
-															pattern: "solid",
-															fgColor: {
-																argb: "FFB05AEF",
-															},
-														};
-														cell.alignment = {
-															vertical: "top",
-														};
-													}
-												);
-
-												const jsonData = dfd.toJSON(
-													df
-												) as Array<Record<string, any>>;
-
-												//Adds and formats data rows
-												jsonData.forEach((record) => {
-													const row =
-														worksheet.addRow(
-															Object.values(
-																record
-															)
-														);
-
-													row.eachCell(
-														(cell, index) => {
-															cell.font = {
-																size: 12,
-																name: "SF Pro Display Regular",
-																color: {
-																	argb: "FF000000",
-																},
-															};
-															cell.alignment = {
-																vertical: "top",
-																wrapText: true,
-															};
-														}
-													);
-												});
-
-												worksheet.columns.forEach(
-													(columns) => {
-														columns.width = 20;
-														columns.border = {
-															top: {
-																style: "thin",
-															},
-															bottom: {
-																style: "thin",
-															},
-															left: {
-																style: "thin",
-															},
-															right: {
-																style: "thin",
-															},
-														};
-													}
-												);
-
-												const buffer =
-													await workbook.xlsx.writeBuffer();
-												const blob = new Blob(
-													[buffer],
-													{
-														type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-													}
-												);
-												FileSaver.saveAs(
-													blob,
-													"report.xlsx"
-												);
-											}
-										} catch (error) {
-											toast({
-												title: "Error",
-												description: `Failed to download report. Please try again later!`,
-												variant: "destructive",
-											});
-										} finally {
-											setIsReportGenerating(false);
-										}
+									onClick={(e) => {
+										handleReportDownload(
+											reportList.reports[0].report_id
+										);
 									}}
 								>
 									{`${
@@ -546,42 +518,10 @@ function EvaluationDashboard() {
 												key={index}
 												className="rounded-md border justify-start px-4 py-2 font-mono text-sm w-fit"
 												disabled={isReportGenerating}
-												onClick={async (e) => {
-													try {
-														setIsReportGenerating(
-															true
-														);
-														const response: reportResultDTO =
-															await reportsService.getExcelReportResult(
-																userData.tenant_id,
-																reportCompanyName,
-																report.report_id
-															);
-														if (response) {
-															const df =
-																new dfd.DataFrame(
-																	response.results
-																);
-
-															dfd.toExcel(df, {
-																fileName:
-																	"report.xlsx",
-																sheetName:
-																	"Evaluation Report",
-															});
-														}
-													} catch (error) {
-														toast({
-															title: "Error",
-															description: `Failed to download report. Please try again later!`,
-															variant:
-																"destructive",
-														});
-													} finally {
-														setIsReportGenerating(
-															false
-														);
-													}
+												onClick={(e) => {
+													handleReportDownload(
+														report.report_id
+													);
 												}}
 											>
 												{`${

@@ -1,3 +1,4 @@
+import ComingSoonBorder from "@/components/ComingSoonBorder";
 import NavHeader from "@/components/evaluation_details/nav-header";
 import { Button } from "@/components/ui/button";
 import {
@@ -299,7 +300,7 @@ function EvaluationDetails() {
 						>
 							Generate <ArrowDown className="w-4 h-4" />
 						</DropdownMenuTrigger>
-						<DropdownMenuContent>
+						<DropdownMenuContent className="gap-1 flex flex-col">
 							<DropdownMenuItem
 								onClick={generateExcelReport}
 								disabled={isReportGenerating}
@@ -307,10 +308,21 @@ function EvaluationDetails() {
 								Report(.xlxs)
 							</DropdownMenuItem>
 							<DropdownMenuItem className="text-gray-light-ryzr">
-								Exec. summary(.pptx) (Coming Soon)
+								<ComingSoonBorder
+									variant="inline"
+									className="w-full"
+								>
+									Exec. summary(.pptx)
+								</ComingSoonBorder>
 							</DropdownMenuItem>
+
 							<DropdownMenuItem className="text-gray-light-ryzr">
-								Policy statements(.docx) (Coming Soon)
+								<ComingSoonBorder
+									variant="inline"
+									className="w-full"
+								>
+									Policy statements(.docx)
+								</ComingSoonBorder>
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>

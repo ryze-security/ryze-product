@@ -11,10 +11,7 @@ interface Props {
 	title: string;
 	icon: React.ReactNode;
 	value: number;
-	percentageChange?: number;
-	changeDescription?: string;
 	warning?: boolean;
-	footer?: string;
 }
 
 function SmallDisplayCard(props: Props) {
@@ -22,8 +19,6 @@ function SmallDisplayCard(props: Props) {
 		title,
 		icon,
 		value,
-		percentageChange,
-		changeDescription,
 		warning = false,
 	} = props;
 
@@ -44,7 +39,7 @@ function SmallDisplayCard(props: Props) {
     `}
 		>
 			{/* Title: Smaller, uppercase, and muted for better hierarchy */}
-			<div className="flex items-center gap-2 text-sm font-semibold tracking-wider text-zinc-400 uppercase">
+			<div className="flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-light-ryzr uppercase">
 				{icon}
 				<span>{title}</span>
 			</div>
