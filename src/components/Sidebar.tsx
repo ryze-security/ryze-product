@@ -190,16 +190,7 @@ function DesktopSidebar() {
 											<button
 												className="text-left text-foreground/80 after:absolute after:inset-0"
 												onClick={() =>
-													dispatch(
-														markAsRead(
-															notification.id
-														)
-													)
-													dispatch(
-														markAsRead(
-															notification.id
-														)
-													)
+													dispatch(markAsRead(notification.id))
 												}
 											>
 												<span className="font-medium text-foreground hover:underline">
@@ -250,16 +241,6 @@ function DesktopSidebar() {
 						</SidebarMenuButton>
 					</SidebarMenuItem>
 				</SidebarMenu>
-				<Button
-					variant="outline"
-					className="w-full gap-2 bg-transparent border-rose-500 hover:bg-rose-500 hover:text-white hover:border-rose-500"
-					onClick={handleLogout}
-				>
-					<span className="flex items-left gap-2">
-						<LogOut className="w-4 h-4" />
-						{open && <span>Logout</span>}
-					</span>
-				</Button>
 			</SidebarFooter>
 		</Sidebar>
 	);
