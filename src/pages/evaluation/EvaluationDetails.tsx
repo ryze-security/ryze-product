@@ -307,7 +307,7 @@ function EvaluationDetails() {
 							>
 								Report(.xlxs)
 							</DropdownMenuItem>
-							<DropdownMenuItem className="text-gray-light-ryzr">
+							<DropdownMenuItem className="text-gray-light-ryzr cursor-not-allowed">
 								<ComingSoonBorder
 									variant="inline"
 									className="w-full"
@@ -316,7 +316,7 @@ function EvaluationDetails() {
 								</ComingSoonBorder>
 							</DropdownMenuItem>
 
-							<DropdownMenuItem className="text-gray-light-ryzr">
+							<DropdownMenuItem className="text-gray-light-ryzr cursor-not-allowed">
 								<ComingSoonBorder
 									variant="inline"
 									className="w-full"

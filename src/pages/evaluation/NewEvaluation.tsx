@@ -484,37 +484,39 @@ const NewEvaluation = () => {
 											framework?
 										</label>
 										{status === "succeeded" ? (
-											<div className="grid grid-cols-6 justify-start gap-3 w-full">
+											<div className="grid grid-cols-6 justify-start gap-2 w-11/12">
 												{collection.collections.map(
 													(f) => (
-														<FrameworkCard
-															key={
-																f.collection_id
-															}
-															name={
-																f.collection_display_name
-															}
-															value={
-																f.collection_id
-															}
-															fieldName="selectedFrameworks"
-															control={
-																methods.control
-															}
-															error={
-																!!methods
-																	.formState
-																	.errors
-																	.selectedFrameworks
-															} // Pass the error state
-															setFocus={
-																methods.setFocus
-															} // Pass the setFocus function
-														/>
+														<div className="p-1">
+															<FrameworkCard
+																key={
+																	f.collection_id
+																}
+																name={
+																	f.collection_display_name
+																}
+																value={
+																	f.collection_id
+																}
+																fieldName="selectedFrameworks"
+																control={
+																	methods.control
+																}
+																error={
+																	!!methods
+																		.formState
+																		.errors
+																		.selectedFrameworks
+																} // Pass the error state
+																setFocus={
+																	methods.setFocus
+																} // Pass the setFocus function
+															/>
+														</div>
 													)
 												)}
 												{frameworks.map((f) => (
-													<ComingSoonBorder className="hover:scale-110 transition-transform duration-100">
+													<ComingSoonBorder className="transition-transform duration-100 group hover:scale-105">
 														<FrameworkCard
 															key={f.value}
 															disabed={true}
@@ -533,12 +535,15 @@ const NewEvaluation = () => {
 															setFocus={
 																methods.setFocus
 															} // Pass the setFocus function
+															className="group-hover:scale-100"
 														/>
 													</ComingSoonBorder>
 												))}
 												{/* TODO:Add link to framework section */}
-												<div className="flex gap-2 justify-center cursor-pointer rounded-sm border p-4 font-roboto sm:w-full bg-zinc-800 text-zinc-400 transition-all text-opacity-80 duration-100 hover:scale-110">
-													Req. Framework
+												<div className="p-1">
+													<div className="flex gap-2 justify-center cursor-pointer rounded-sm border p-4 font-roboto sm:w-full bg-zinc-800 text-zinc-400 transition-all text-opacity-80 duration-100 hover:scale-110">
+														Req. Framework
+													</div>
 												</div>
 											</div>
 										) : (

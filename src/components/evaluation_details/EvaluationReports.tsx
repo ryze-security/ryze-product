@@ -206,21 +206,30 @@ function EvaluationReports(props: Props) {
 	};
 
 	return (
-		<section
-			className={cn(
-				"flex items-center w-full bg-black text-white mt-8 pt-4",
-				className
-			)}
-		>
-			<GenericDataTable
-				columns={reportColumns}
-				data={reports}
-				isLoading={isReportListLoading}
-				filterKey="reportName"
-				onRowClick={(row) => handleReportDownload(row.report_id)}
-				disabledRow={isReportDownloading}
-			/>
-		</section>
+		<div className="max-w-7xl w-full">
+			<div className="w-full px-4">
+				<div>
+					<div className="text-5xl font-semibold text-zinc-400/85 tracking-wide">
+						Available Evaluation Reports
+					</div>
+				</div>	
+			</div>
+			<section
+				className={cn(
+					"flex items-center w-full bg-black text-white mt-8 pt-4",
+					className
+				)}
+			>
+				<GenericDataTable
+					columns={reportColumns}
+					data={reports}
+					isLoading={isReportListLoading}
+					filterKey="reportName"
+					onRowClick={(row) => handleReportDownload(row.report_id)}
+					disabledRow={isReportDownloading}
+				/>
+			</section>
+		</div>
 	);
 }
 

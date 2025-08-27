@@ -16,7 +16,7 @@ function ComingSoonBorder(props: Props) {
 				<div>{children}</div>
 
 				{/* The "Soon" label */}
-				<span className="inline-block rounded-full bg-violet-light-ryzr px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-white">
+				<span className="inline-block rounded-full bg-zinc-700 px-2 py-0.5 text-xs font-medium uppercase tracking-wider text-zinc-400">
 					Soon
 				</span>
 			</div>
@@ -25,10 +25,10 @@ function ComingSoonBorder(props: Props) {
 
 	return (
 		<div
-			className={`relative rounded-xl border border-violet-ryzr p-1 ${className}`}
+			className={`relative rounded-xl border border-zinc-700 p-1 ${className}`}
 		>
 			{/* The "Soon" label */}
-			<span className="absolute -top-3 right-4 inline-block rounded-full bg-violet-light-ryzr px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white z-50">
+			<span className="absolute -top-3 right-4 inline-block rounded-full bg-zinc-700 px-3 py-1 text-xs font-medium uppercase tracking-wider text-zinc-400 z-20">
 				Soon
 			</span>
 

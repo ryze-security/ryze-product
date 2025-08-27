@@ -235,7 +235,7 @@ function DesktopSidebar() {
 						</PopoverContent>
 					</Popover>
 					<SidebarMenuItem>
-						<SidebarMenuButton className="bg-destructive text-destructive-foreground hover:bg-destructive/90 font-semibold">
+						<SidebarMenuButton className="bg-destructive text-destructive-foreground hover:bg-destructive/90 font-semibold" onClick={handleLogout}>
 							<LogOut className="w-4 h-4" />
 							<span>Logout</span>
 						</SidebarMenuButton>
@@ -254,9 +254,17 @@ function MobileNavbar() {
 	const unreadCount = notifications.filter((n) => n.unread).length;
 	const [isSheetOpen, setIsSheetOpen] = useState(false);
 	const [notificationsVisible, setNotificationsVisible] = useState(false);
+	const { signOut } = useClerk();
+	const navigate = useNavigate();
 
 	const handleLinkClick = () => {
 		setIsSheetOpen(false);
+	};
+
+	const handleLogout = async () => {
+		await signOut();
+		dispatch(logout());
+		navigate("/");
 	};
 
 	const handleDismiss = (e: any, id: number) => {
@@ -451,6 +459,7 @@ function MobileNavbar() {
 								<Button
 									variant="destructive"
 									className="w-full justify-start gap-2 mt-2"
+									onClick={handleLogout}
 								>
 									<LogOut className="w-4 h-4" />
 									<span>Logout</span>

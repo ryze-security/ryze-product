@@ -9,6 +9,7 @@ interface FrameworkCardProps {
 	error: boolean;
 	setFocus: (field: string) => void;
 	disabed?: boolean;
+	className?: string;
 }
 
 export const FrameworkCard = ({
@@ -19,6 +20,7 @@ export const FrameworkCard = ({
 	error,
 	setFocus,
 	disabed = false,
+	className = ""
 }: FrameworkCardProps) => {
 	const { field } = useController({ name: fieldName, control, rules: {validate: v => v.length > 0 || "Please select atleast one control framework!"} });
 
@@ -48,6 +50,7 @@ export const FrameworkCard = ({
 					? "border-violet-ryzr text-violet-ryzr scale-105"
 					: "border-zinc-900 text-zinc-400 text-opacity-80",
 				disabed && "opacity-50 cursor-not-allowed",
+				className
 			)}
 		>
 			{name}
