@@ -65,7 +65,7 @@ function QuestionForm(props: Props) {
 	// This effect is used to set the selected question and formatted evidence when the question data or index changes
 	useEffect(() => {
 		setIndex(questionIndex);
-		updateEvidence(questionIndex);
+		// updateEvidence(newIndex);
 	}, [questionData, questionIndex]);
 
 	// This effect is used to change the text area size and focus on it when editing
@@ -109,14 +109,14 @@ function QuestionForm(props: Props) {
 	};
 
 	// This function is used to update the formatted evidence
-	const updateEvidence = (currentIndex: number) => {
-		const rawEvidence = questionData[currentIndex]?.Response.evidence || "";
-		const result = rawEvidence
-			.split(/\d+\.\s/)
-			.filter(Boolean)
-			.map((item) => item.trim().replace(/^['"]|['"]$/g, ""));
-		setFormattedEvidence(result);
-	};
+	// const updateEvidence = (currentIndex: number) => {
+	// 	const rawEvidence = questionData[currentIndex]?.Response.evidence || "";
+	// 	const result = rawEvidence
+	// 		.split(/\d+\.\s/)
+	// 		.filter(Boolean)
+	// 		.map((item) => item.trim().replace(/^['"]|['"]$/g, ""));
+	// 	setFormattedEvidence(result);
+	// };
 
 	const handleLeftArrowClick = () => {
 		if (index > 0) {
@@ -124,7 +124,7 @@ function QuestionForm(props: Props) {
 			setIndex(newIndex);
 			setSelectedQuestion(questionData[newIndex]);
 			setisObservationEditing(false);
-			updateEvidence(newIndex);
+			// updateEvidence(newIndex);
 			reset(
 				{
 					observation:
@@ -142,7 +142,7 @@ function QuestionForm(props: Props) {
 			const newIndex = index + 1;
 			setIndex(newIndex);
 			setSelectedQuestion(questionData[newIndex]);
-			updateEvidence(newIndex);
+			// updateEvidence(newIndex);
 			setisObservationEditing(false);
 			reset(
 				{
@@ -176,7 +176,9 @@ function QuestionForm(props: Props) {
 							Question
 						</span>
 						<div className="gap-2 flex text-lg">
-							<span className="font-semibold">{`${selectedQuestion?.SNo}`}.</span>
+							<span className="font-semibold">
+								{`${selectedQuestion?.SNo}`}.
+							</span>
 							<span className="flex flex-wrap">{`${selectedQuestion?.question}`}</span>
 						</div>
 					</div>
@@ -344,12 +346,7 @@ function QuestionForm(props: Props) {
 							Evidence
 						</span>
 						<div className="gap-2 flex flex-col">
-							{formattedEvidence.map((evidence, index) => (
-								<div className="flex gap-2" key={index}>
-									<span className="font-semibold">{`${index + 1}.`}</span>
-									<span className="flex flex-wrap opacity-85 leading-relaxed text-lg">{`${evidence}`}</span>
-								</div>
-							))}
+							<span className="flex flex-wrap opacity-85 leading-relaxed text-lg">{`${selectedQuestion?.Response.evidence}`}</span>
 						</div>
 					</div>
 				</div>

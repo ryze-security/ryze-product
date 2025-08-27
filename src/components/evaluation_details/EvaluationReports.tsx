@@ -102,9 +102,11 @@ function EvaluationReports(props: Props) {
 	}, [tenantId, companyId, evaluationId]);
 
 	const formatHeaderCells = (text: string): string => {
+		const wordsToRemove = ["display", "name"];
 		return text
 			.replace(/_/g, " ")
 			.split(" ")
+			.filter((word) => !wordsToRemove.includes(word.toLowerCase()))
 			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 			.join(" ");
 	};

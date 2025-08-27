@@ -1,4 +1,5 @@
 import { AlertDialogBox } from "@/components/AlertDialogBox";
+import ComingSoonBorder from "@/components/ComingSoonBorder";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { FileUploadArea } from "@/components/newevaluation/FileUploadArea";
 import { FrameworkCard } from "@/components/newevaluation/FrameworkCard";
@@ -80,11 +81,11 @@ const NewEvaluation = () => {
 	}, [auditees]);
 
 	const frameworks = [
-		{ name: "NIST CSF (Coming Soon)", value: "nistcsf" },
-		{ name: "SOC 2 (Coming Soon)", value: "soc2" },
-		{ name: "GDPR (Coming Soon)", value: "gdpr" },
-		{ name: "ISO 27701 (Coming Soon)", value: "iso27701" },
-		{ name: "Internal (Coming Soon)", value: "internal" },
+		{ name: "NIST CSF", value: "nistcsf" },
+		{ name: "SOC 2", value: "soc2" },
+		{ name: "GDPR", value: "gdpr" },
+		{ name: "ISO 27701", value: "iso27701" },
+		{ name: "Internal", value: "internal" },
 	];
 
 	const [currentStep, setCurrentStep] = useState(0);
@@ -483,49 +484,61 @@ const NewEvaluation = () => {
 											framework?
 										</label>
 										{status === "succeeded" ? (
-											<div className="grid grid-cols-6 justify-start gap-5 w-11/12">
-												{collection.collections.map((f) => (
-													<FrameworkCard
-														key={f.collection_id}
-														name={f.collection_display_name}
-														value={f.collection_id}
-														fieldName="selectedFrameworks"
-														control={
-															methods.control
-														}
-														error={
-															!!methods.formState
-																.errors
-																.selectedFrameworks
-														} // Pass the error state
-														setFocus={
-															methods.setFocus
-														} // Pass the setFocus function
-													/>
-												))}
+											<div className="grid grid-cols-6 justify-start gap-3 w-full">
+												{collection.collections.map(
+													(f) => (
+														<FrameworkCard
+															key={
+																f.collection_id
+															}
+															name={
+																f.collection_display_name
+															}
+															value={
+																f.collection_id
+															}
+															fieldName="selectedFrameworks"
+															control={
+																methods.control
+															}
+															error={
+																!!methods
+																	.formState
+																	.errors
+																	.selectedFrameworks
+															} // Pass the error state
+															setFocus={
+																methods.setFocus
+															} // Pass the setFocus function
+														/>
+													)
+												)}
 												{frameworks.map((f) => (
-													<FrameworkCard
-														key={f.value}
-														disabed = {true}
-														name={f.name}
-														value={f.value}
-														fieldName="selectedFrameworks"
-														control={
-															methods.control
-														}
-														error={
-															!!methods.formState
-																.errors
-																.selectedFrameworks
-														} // Pass the error state
-														setFocus={
-															methods.setFocus
-														} // Pass the setFocus function
-													/>
+													<ComingSoonBorder className="hover:scale-110 transition-transform duration-100">
+														<FrameworkCard
+															key={f.value}
+															disabed={true}
+															name={f.name}
+															value={f.value}
+															fieldName="selectedFrameworks"
+															control={
+																methods.control
+															}
+															error={
+																!!methods
+																	.formState
+																	.errors
+																	.selectedFrameworks
+															} // Pass the error state
+															setFocus={
+																methods.setFocus
+															} // Pass the setFocus function
+														/>
+													</ComingSoonBorder>
 												))}
 												{/* TODO:Add link to framework section */}
 												<div className="flex gap-2 justify-center cursor-pointer rounded-sm border p-4 font-roboto sm:w-full bg-zinc-800 text-zinc-400 transition-all text-opacity-80 duration-100 hover:scale-110">
-													<PlusCircleIcon /> Add
+													Req. Framework
 												</div>
 											</div>
 										) : (

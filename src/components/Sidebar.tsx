@@ -38,6 +38,7 @@ import {
 } from "@/store/slices/notificationSlice";
 import { useClerk } from "@clerk/clerk-react";
 import { fetchUserAppData, logout } from "@/store/slices/appUserSlice";
+import ComingSoonBorder from "./ComingSoonBorder";
 
 // Menu items.
 const items = [
@@ -57,12 +58,12 @@ const items = [
 		icon: Building2Icon,
 	},
 	{
-		title: "Frameworks (Coming soon)",
+		title: "Frameworks",
 		url: "#",
 		icon: List,
 	},
 	{
-		title: "Profile (Coming soon)",
+		title: "Profile",
 		url: "#",
 		icon: User2,
 	},
@@ -126,9 +127,11 @@ export function AppSidebar() {
 								<SidebarMenuItem key={item.title}>
 									<SidebarMenuButton asChild>
 										{item.url === "#" ? (
-											<div className="text-gray-light-ryzr cursor-pointer">
+											<div className="text-gray-light-ryzr cursor-not-allowed">
 												<item.icon />
-												<span>{item.title}</span>
+												<ComingSoonBorder variant="inline">
+													<span>{item.title}</span>
+												</ComingSoonBorder>
 											</div>
 										) : (
 											<Link to={item.url}>
