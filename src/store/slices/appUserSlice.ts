@@ -6,6 +6,7 @@ import {
 import { AxiosInstance } from "axios";
 
 const loadInitialState = (): AuthorizationDTO => {
+	// TODO: remove this hardcoded user before beta release
 	if(process.env.NODE_ENV === 'development') {
 		return {
 			clerk_user_id: "",

@@ -33,6 +33,7 @@ interface DataTableProps<TData, TValue> {
 	isLoading?: boolean;
 	onRowClick?: (row: TData) => void;
 	disabledRow?: boolean;
+	pageSize?: number;
 }
 
 export function GenericDataTable<TData, TValue>({
@@ -44,20 +45,27 @@ export function GenericDataTable<TData, TValue>({
 	isLoading = false,
 	onRowClick,
 	disabledRow = false,
+	pageSize = 10,
 }: DataTableProps<TData, TValue>) {
 	const [filter, setFilter] = React.useState("");
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const navigate = useNavigate();
+	const [pagination, setPagination] = React.useState({
+		pageIndex: 0,
+		pageSize: pageSize,
+	})
 
 	const table = useReactTable({
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
+		onPaginationChange: setPagination,
 		getFilteredRowModel: getFilteredRowModel(),
 		state: {
 			globalFilter: filter,
 			sorting,
+			pagination,
 		},
 		onGlobalFilterChange: setFilter,
 		globalFilterFn: (row, columnId, filterValue) => {

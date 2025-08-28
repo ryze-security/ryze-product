@@ -47,10 +47,21 @@ import * as ExcelJS from "exceljs";
 import * as FileSaver from "file-saver";
 import { useAppSelector } from "@/store/hooks";
 import { AlertDialogBox } from "@/components/AlertDialogBox";
+import { GenericDataTable } from "@/components/GenericDataTable";
+
+interface ReportList {
+	sNo: number;
+	reportName: string;
+	report_id: string;
+	eval_id: string;
+	report_type: string;
+	processing_status: string;
+	created_at: string;
+	created_by: string;
+}
 
 function EvaluationDashboard() {
-	const [reportList, setReportList] =
-		React.useState<reportResultListDTO>(null);
+	const [reportList, setReportList] = React.useState<ReportList[]>([]);
 	const { toast } = useToast();
 	const userData = useAppSelector((state) => state.appUser);
 	const [refreshTrigger, setRefreshTrigger] = React.useState<number>(0);
@@ -153,6 +164,83 @@ function EvaluationDashboard() {
 			header: "Created By",
 		},
 		{
+			id: "reportNumber",
+			header: () => {
+				return <div className="text-center">Reports Generated</div>;
+			},
+			cell: ({ row }) => {
+				const evaluation = row.original;
+				return (
+					<div className="flex justify-center">
+						<Button
+							variant="outline"
+							className="p-4 hover:scale-105 hover:bg-violet-light-ryzr/70 duration-200 transition-all "
+							disabled={evaluation.num_reports === 0}
+							onSelect={(e) => e.preventDefault()}
+							onClick={async (e) => {
+								e.stopPropagation();
+								setReportDialogOpen(true);
+								try {
+									setReportListLoading(true);
+									const response =
+										await reportsService.getReportList(
+											userData.tenant_id,
+											evaluation.tg_company_id,
+											evaluation.eval_id
+										);
+									if (response.total_count === 0) {
+										toast({
+											title: "No reports found",
+											description:
+												"No reports have been generated for this evaluation.",
+											variant: "default",
+										});
+										setReportDialogOpen(false);
+									} else {
+										const updatedData = [
+											...response.reports,
+										]
+											.map((item, index) => {
+												return {
+													...item,
+													sNo: index + 1,
+													created_at: new Date(
+														item.created_at
+													).toLocaleDateString(),
+													reportName: `Report_${
+														index + 1
+													}`,
+												};
+											})
+											.sort((a, b) =>
+												b.created_at.localeCompare(
+													a.created_at
+												)
+											);
+										setReportList(updatedData);
+										setreportCompany({
+											id: evaluation.tg_company_id,
+											name: evaluation.tg_company_display_name,
+										});
+									}
+								} catch (error) {
+									toast({
+										title: "Error",
+										description: `Failed to fetch reports. Please try again later!`,
+										variant: "destructive",
+									});
+								} finally {
+									setReportListLoading(false);
+								}
+							}}
+						>
+							{evaluation.num_reports}
+						</Button>
+					</div>
+				);
+			},
+		},
+		{
 			id: "actions",
 			enableHiding: false,
 			cell: ({ row }) => {
@@ -173,43 +261,6 @@ function EvaluationDashboard() {
 							onClick={(e) => e.stopPropagation()} // Prevent row click
 						>
 							<DropdownMenuLabel>Actions</DropdownMenuLabel>
-							<DropdownMenuItem
-								onSelect={(e) => e.preventDefault()}
-								onClick={async (e) => {
-									e.stopPropagation();
-									setReportDialogOpen(true);
-									try {
-										const response =
-											await reportsService.getReportList(
-												userData.tenant_id,
-												evaluation.tg_company_id,
-												evaluation.eval_id
-											);
-										if (response.total_count === 0) {
-											toast({
-												title: "No reports found",
-												description:
-													"No reports have been generated for this evaluation.",
-												variant: "default",
-											});
-											setReportDialogOpen(false);
-										} else {
-											setReportList(response);
-											setReportCompanyName(
-												evaluation.tg_company_id
-											);
-										}
-									} catch (error) {
-										toast({
-											title: "Error",
-											description: `Failed to fetch reports. Please try again later!`,
-											variant: "destructive",
-										});
-									}
-								}}
-							>
-								Download Report
-							</DropdownMenuItem>
 							<AlertDialogBox
 								trigger={
 									<DropdownMenuItem
@@ -262,10 +313,35 @@ function EvaluationDashboard() {
 		},
 	];
 
+	const reportColumns: ColumnDef<ReportList>[] = [
+		{
+			accessorKey: "sNo",
+			header: "S.No",
+		},
+		{
+			accessorKey: "reportName",
+			header: "Report Name",
+		},
+		{
+			accessorKey: "report_type",
+			header: "Report Type",
+		},
+		{
+			accessorKey: "created_at",
+			header: "Created At",
+		},
+		{
+			accessorKey: "created_by",
+			header: "Created By",
+		},
+	];
+
 	const [reportDialogOpen, setReportDialogOpen] = useState<boolean>(false);
-	const [reportCompanyName, setReportCompanyName] = React.useState<
-		string | null
-	>(null);
+	const [reportListLoading, setReportListLoading] = useState<boolean>(false);
+	const [reportCompany, setreportCompany] = React.useState<{
+		id: string;
+		name: string;
+	}>({ id: "", name: "" });
 
 	const [evaluations, setEvaluations] =
 		React.useState<listEvaluationsDTO | null>({
@@ -342,7 +418,7 @@ function EvaluationDashboard() {
 			const response: reportResultDTO =
 				await reportsService.getExcelReportResult(
 					userData.tenant_id,
-					reportCompanyName,
+					reportCompany?.id,
 					reportId
 				);
 			const df = new dfd.DataFrame(response.results);
@@ -457,13 +533,15 @@ function EvaluationDashboard() {
 						setReportDialogOpen(isOpen);
 						if (!isOpen) {
 							setReportList(null);
-							setReportCompanyName(null);
+							setreportCompany(null);
 						}
 					}}
 				>
-					<DialogContent className="overflow-y-auto max-h-[90vh] h-fit scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-800">
+					<DialogContent className="overflow-y-auto max-h-[90vh] h-fit scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-800 max-w-2xl w-full">
 						<DialogHeader>
-							<DialogTitle>Download Reports</DialogTitle>
+							<DialogTitle>
+								Download Reports: {reportCompany?.name}
+							</DialogTitle>
 							<DialogDescription>
 								Here you can download any report you generated
 								for this evaluation.
@@ -472,68 +550,19 @@ function EvaluationDashboard() {
 						{!reportList ? (
 							<RoundSpinner />
 						) : (
-							<Collapsible className="flex w-[350px] flex-col gap-2">
-								<div className="flex items-center justify-between gap-4 px-4">
-									<h4 className="text-sm font-semibold">
-										This evaluation has{" "}
-										{reportList.total_count} reports.
-									</h4>
-									<CollapsibleTrigger asChild>
-										<Button
-											variant="ghost"
-											size="icon"
-											className="size-8"
-										>
-											<ChevronsUpDown />
-											<span className="sr-only">
-												Toggle
-											</span>
-										</Button>
-									</CollapsibleTrigger>
-								</div>
-								<Button
-									variant="ghost"
-									className="rounded-md border w-fit justify-start px-4 py-2 font-mono text-sm"
-									disabled={isReportGenerating}
-									onClick={(e) => {
-										handleReportDownload(
-											reportList.reports[0].report_id
-										);
-									}}
-								>
-									{`${
-										reportList.reports[0].report_id
-									}  ${new Date(
-										reportList.reports[0].created_at
-									).toLocaleDateString()} ${new Date(
-										reportList.reports[0].created_at
-									).toLocaleTimeString()}`}
-								</Button>
-								<CollapsibleContent className="flex flex-col gap-2">
-									{reportList.reports
-										.slice(1)
-										.map((report, index) => (
-											<Button
-												variant="ghost"
-												key={index}
-												className="rounded-md border justify-start px-4 py-2 font-mono text-sm w-fit"
-												disabled={isReportGenerating}
-												onClick={(e) => {
-													handleReportDownload(
-														report.report_id
-													);
-												}}
-											>
-												{`${
-													report.report_id
-												} ${new Date(
-													report.created_at
-												).toLocaleDateString()} 
-												${new Date(report.created_at).toLocaleTimeString()}`}
-											</Button>
-										))}
-								</CollapsibleContent>
-							</Collapsible>
+							<div className="w-full">
+								<GenericDataTable
+									columns={reportColumns}
+									data={reportList}
+									isLoading={reportListLoading}
+									filterKey="reportName"
+									onRowClick={(row) =>
+										handleReportDownload(row.report_id)
+									}
+									disabledRow={isReportGenerating}
+									pageSize={5}
+								/>
+							</div>
 						)}
 					</DialogContent>
 				</Dialog>

@@ -10,10 +10,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { RoundSpinner } from "@/components/ui/spinner";
 import { useToast } from "@/hooks/use-toast";
+import { frequentDeviationsDTO } from "@/models/collection/collectionDTOs";
 import { CompanyListDto } from "@/models/company/companyDTOs";
 import { CreditsDataDTO } from "@/models/credits/creditsDTOs";
+import { tenantDetailsDTO } from "@/models/tenant/TenantDTOs";
+import collectionService from "@/services/collectionServices";
 import companyService from "@/services/companyServices";
 import creditsService from "@/services/creditsServices";
+import tenantService from "@/services/tenantServices";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadCompanyData } from "@/store/slices/companySlice";
 import {
@@ -31,28 +35,28 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 function Index() {
-	// Dummy data for recent reviews
-	const vulnerablities = [
-		{
-			companyName: "Company A",
-			score: 62,
-		},
-		{
-			companyName: "Company B",
-			score: 47,
-		},
-		{
-			companyName: "Company C",
-			score: 24,
-		},
-	];
+	const { toast } = useToast();
+	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
 
-	// Dummy data for frameworks
+	const userData = useAppSelector((state) => state.appUser);
+	const companies = useAppSelector((state) => state.company);
+	const [tenantDetails, setTenantDetails] = useState<tenantDetailsDTO>(
+		{} as tenantDetailsDTO
+	);
+	const [loadingTenantDetails, setLoadingTenantDetails] =
+		useState<boolean>(false);
+
+	const [deviations, setDeviations] = useState<frequentDeviationsDTO>(
+		{} as frequentDeviationsDTO
+	);
+	const [loadingDeviations, setLoadingDeviations] = useState<boolean>(true);
+
 	const views = [
 		{
 			title: "Auditees registered",
 			icon: <Building className="text-violet-light-ryzr" />,
-			value: 106,
+			value: tenantDetails?.num_companies || 0,
 		},
 		{
 			title: "Reviews conducted",
@@ -66,40 +70,29 @@ function Index() {
 		},
 	];
 
-	const deviations = [
-		"Managing Information Security in the ICT Supply Chain",
-		"Employee screening",
-		"Information security in supplier relationships",
-	];
-
-	const { toast } = useToast();
-	const dispatch = useAppDispatch();
-	const navigate = useNavigate();
-
-	const userData = useAppSelector((state) => state.appUser);
-	const companies = useAppSelector((state) => state.company);
-	const [credits, setCredits] = useState<number>(0);
-
-	//effect for fetching credits
+	//effect for fetching tanant details
 	useEffect(() => {
-		const fetchCredits = async () => {
+		const fetchTenantDetails = async () => {
 			try {
-				const response = (await creditsService.getCreditsByTenantId(
+				setLoadingTenantDetails(true);
+				const response = (await tenantService.getTenantDetails(
 					userData.tenant_id
-				)) as CreditsDataDTO;
-				setCredits(response.remaining_credits);
+				)) as tenantDetailsDTO;
+				setTenantDetails(response);
 			} catch (error) {
 				toast({
-					title: "Error fetching credits",
+					title: "Error fetching details",
 					description:
-						"There was an error fetching your credits. Please try again later.",
+						"There was an error fetching your tenant's details. Please try again later.",
 					variant: "destructive",
 				});
+			} finally {
+				setLoadingTenantDetails(false);
 			}
 		};
 
 		if (userData.tenant_id) {
-			fetchCredits();
+			fetchTenantDetails();
 		}
 	}, [userData.tenant_id]);
 
@@ -115,6 +108,32 @@ function Index() {
 						variant: "destructive",
 					});
 				});
+		}
+	}, [userData.tenant_id]);
+
+	//effect for fetching frequent deviations
+	useEffect(() => {
+		const fetchDeviations = async () => {
+			try {
+				setLoadingDeviations(true);
+				const response = (await collectionService.getFrequentDeviations(
+					userData.tenant_id
+				)) as frequentDeviationsDTO;
+				setDeviations(response);
+			} catch (error) {
+				toast({
+					title: "Error fetching deviations",
+					description:
+						"There was an error fetching frequent deviations. Please try again later.",
+					variant: "destructive",
+				});
+			} finally {
+				setLoadingDeviations(false);
+			}
+		};
+
+		if (userData.tenant_id) {
+			fetchDeviations();
 		}
 	}, [userData.tenant_id]);
 
@@ -168,19 +187,22 @@ function Index() {
 			{/* Cards */}
 			<section className="flex flex-col gap-2 justify-start bg-black text-white pt-10 px-6 sm:px-12 lg:px-16 w-[90%]">
 				<div className="max-w-7xl w-full pl-4 grid grid-cols-4 gap-2">
-					{views.map((view) => (
+					{views.map((view, index) => (
 						<SmallDisplayCard
 							title={view.title}
 							icon={view.icon}
 							value={view.value}
+							key={index}
+							loading={loadingTenantDetails}
 						/>
 					))}
 					{
 						<SmallDisplayCard
 							title="Credits"
 							icon={<Coins className="text-violet-light-ryzr" />}
-							value={credits}
+							value={tenantDetails?.remaining_credits}
 							warning={true}
+							loading={loadingTenantDetails}
 						/>
 					}
 				</div>
@@ -252,12 +274,28 @@ function Index() {
 							</h2>
 						</div>
 						<div className="flex flex-grow flex-col">
-							{deviations.map((deviation, index) => (
-								<DeviationRows
-									key={index}
-									deviation={deviation}
-								/>
-							))}
+							{loadingDeviations ? (
+								<div className="flex items-center justify-center h-full">
+									<RoundSpinner />
+								</div>
+							) : deviations.deviations.length > 0 ? (
+								[...deviations.deviations]
+									.slice(0, 3)
+									.map((deviation, index) => (
+										<DeviationRows
+											key={index}
+											deviation={
+												deviation?.control_display_name
+											}
+										/>
+									))
+							) : (
+								<div className="flex items-center justify-center h-full">
+									<p className="text-gray-light-ryzr">
+										No deviations found.
+									</p>
+								</div>
+							)}
 						</div>
 						<div className="w-full">
 							<div className="flex justify-center mb-2 mt-4">

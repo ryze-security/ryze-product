@@ -33,7 +33,8 @@ export interface Evaluation {
 	model_used: string;
 	processing_status: string;
 	document_list: string[];
-	overall_score: Number;
+	overall_score: number;
+	num_reports: number;
 }
 
 export interface evalutaionDetailDTO {

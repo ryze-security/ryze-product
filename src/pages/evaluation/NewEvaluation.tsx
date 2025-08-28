@@ -752,7 +752,7 @@ const NewEvaluation = () => {
 				</Dialog>
 				<AlertDialogBox
 					title="Credit Balance Depleted"
-					subheading="You have used all of your available evaluation credits. To continue initiating new evaluations, please request additional credits."
+					subheading="Looks like you're out of credits! No problem—just let us know, and we'll be happy to top up your account for you."
 					actionLabel="Request Credits"
 					onCancel={() => navigate("/home")}
 					open={creditsAlert}
