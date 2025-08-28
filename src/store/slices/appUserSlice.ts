@@ -6,6 +6,18 @@ import {
 import { AxiosInstance } from "axios";
 
 const loadInitialState = (): AuthorizationDTO => {
+	if(process.env.NODE_ENV === 'development') {
+		return {
+			clerk_user_id: "",
+			email: "",
+			first_name: "Aditya",
+			last_name: "",
+			tenant_id: "7077beec-a9ef-44ef-a21b-83aab58872c9",
+			user_id: "",
+			created_at: "",
+			status: "idle",
+		};
+	}
 	try {
 		const storedState = localStorage.getItem("appUser");
 		if (storedState) {
