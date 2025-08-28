@@ -20,8 +20,10 @@ function SmallDisplayCard(props: Props) {
 	const { title, icon, value, warning = false, loading = false } = props;
 
 	function formatNumberWithCommas(num: number | string): string {
-		if (num) {
+		if (num !== null && num !== undefined) {
 			return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		} else {
+			return "0";
 		}
 	}
 

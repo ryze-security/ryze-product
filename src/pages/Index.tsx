@@ -230,8 +230,8 @@ function Index() {
 										b.deviations_count - a.deviations_count
 								)
 								.slice(0, 3)
-								.map((vulnerability) => (
-									<div className="h-full">
+								.map((vulnerability, index) => (
+									<div className="h-full" key={index}>
 										<TableRowWithNumber
 											companyName={
 												vulnerability.tg_company_display_name
