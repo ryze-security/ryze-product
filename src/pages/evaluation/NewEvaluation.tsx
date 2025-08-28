@@ -15,21 +15,35 @@ import {
 	CommandList,
 } from "@/components/ui/command";
 import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
 import { RoundSpinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { collectionDataDTO } from "@/models/collection/collectionDTOs";
 import { CompanyListDto } from "@/models/company/companyDTOs";
+import { CreditsDataDTO } from "@/models/credits/creditsDTOs";
 import {
 	createEvaluationDTO,
 	createEvaluationResponseDTO,
 } from "@/models/evaluation/EvaluationDTOs";
 import { FilesUploadResponseDTO } from "@/models/files/FilesUploadResponseDTO";
 import collectionService from "@/services/collectionServices";
+import creditsService from "@/services/creditsServices";
 import evaluationService from "@/services/evaluationServices";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadCollections } from "@/store/slices/collectionSlice";
@@ -91,6 +105,10 @@ const NewEvaluation = () => {
 	const [currentStep, setCurrentStep] = useState(0);
 	const [openCombo, setOpenCombo] = useState(false);
 	const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+
+	const [openDialog, setOpenDialog] = useState(false);
+
+	const [creditsAlert, setCreditsAlert] = useState(false);
 
 	const goNext = async (e: React.MouseEvent) => {
 		e.preventDefault();
@@ -284,6 +302,30 @@ const NewEvaluation = () => {
 		}
 	}, []);
 
+	useEffect(() => {
+		const fetchCredits = async () => {
+			try {
+				const response = (await creditsService.getCreditsByTenantId(
+					userData.tenant_id
+				)) as CreditsDataDTO;
+				if (response.remaining_credits <= 0) {
+					setCreditsAlert(true);
+				}
+			} catch (error) {
+				toast({
+					title: "Error fetching credits",
+					description:
+						"There was an error fetching your credits. Please try again later.",
+					variant: "destructive",
+				});
+			}
+		};
+
+		if (userData.tenant_id) {
+			fetchCredits();
+		}
+	}, [userData.tenant_id]);
+
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
 			{isSubmitLoading && <LoadingOverlay />}
@@ -343,7 +385,7 @@ const NewEvaluation = () => {
 									{/* Auditee Selection */}
 									<div className="space-y-4">
 										<label
-											className="block text-lg"
+											className="block text-lg max-w-fit"
 											htmlFor="auditee-select"
 										>
 											Select Auditee
@@ -541,8 +583,13 @@ const NewEvaluation = () => {
 												))}
 												{/* TODO:Add link to framework section */}
 												<div className="p-1">
-													<div className="flex gap-2 justify-center cursor-pointer rounded-sm border p-4 font-roboto sm:w-full bg-zinc-800 text-zinc-400 transition-all text-opacity-80 duration-100 hover:scale-110">
-														Req. Framework
+													<div
+														className="flex gap-2 justify-center cursor-pointer rounded-sm border p-4 font-roboto sm:w-full bg-zinc-800 text-zinc-400 transition-all text-opacity-80 duration-100 hover:scale-110"
+														onClick={() =>
+															setOpenDialog(true)
+														}
+													>
+														Request
 													</div>
 												</div>
 											</div>
@@ -645,6 +692,72 @@ const NewEvaluation = () => {
 						</form>
 					</FormProvider>
 				</div>
+				<Dialog open={openDialog} onOpenChange={setOpenDialog}>
+					<DialogContent className="sm:max-w-lg">
+						<div className="grid gap-1">
+							<DialogHeader className="text-xl font-bold">
+								New Framework Request
+							</DialogHeader>
+							<DialogDescription className="text-sm">
+								Submit a request for a new compliance framework
+								to be added to the platform.
+							</DialogDescription>
+						</div>
+						<Separator />
+						<div className="grid gap-4">
+							<div className="grid gap-3">
+								<Label htmlFor="frameworkName">
+									Framework Name
+								</Label>
+								<Input
+									id="frameworkName"
+									name="framework"
+									placeholder="e.g., NIST CSF 2.0"
+								/>
+							</div>
+							<div className="grid gap-3">
+								<Label htmlFor="details">
+									Additional Details (Optional)
+								</Label>
+								<Textarea
+									id="details"
+									name="details"
+									placeholder="Any specific requirements or versions?"
+								/>
+								<p className="text-sm text-zinc-400/70">
+									This will help our team prioritize new
+									additions.
+								</p>
+							</div>
+						</div>
+						<Separator />
+						<DialogFooter>
+							<DialogClose asChild>
+								<Button
+									variant="outline"
+									className="hover:bg-zinc-800 transition-colors text-white"
+								>
+									Cancel
+								</Button>
+							</DialogClose>
+							{/* TODO: integrate submit action and hookup the hook-form for the same  */}
+							<Button
+								className="bg-sky-500 hover:bg-sky-600 transition-colors 
+							duration-200 text-white"
+							>
+								Submit Request
+							</Button>
+						</DialogFooter>
+					</DialogContent>
+				</Dialog>
+				<AlertDialogBox
+					title="Credit Balance Depleted"
+					subheading="Looks like you're out of credits! No problem—just let us know, and we'll be happy to top up your account for you."
+					actionLabel="Request Credits"
+					onCancel={() => navigate("/home")}
+					open={creditsAlert}
+					onOpenChange={setCreditsAlert}
+				/>
 			</section>
 		</div>
 	);

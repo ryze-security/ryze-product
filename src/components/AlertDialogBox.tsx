@@ -78,10 +78,12 @@ export const AlertDialogBox: React.FC<AlertDialogBoxProps> = ({
 
 					{actionHref ? (
 						<AlertDialogAction asChild>
-							<Link to={actionHref}>{actionLabel}</Link>
+							<Link className="bg-sky-500 hover:bg-sky-600 transition-colors 
+							duration-200 text-white" to={actionHref}>{actionLabel}</Link>
 						</AlertDialogAction>
 					) : (
-						<AlertDialogAction onClick={handleAction}>
+						<AlertDialogAction className="bg-sky-500 hover:bg-sky-600 transition-colors 
+							duration-200 text-white" onClick={handleAction}>
 							{actionLabel}
 						</AlertDialogAction>
 					)}

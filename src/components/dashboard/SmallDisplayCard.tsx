@@ -6,24 +6,23 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "../ui/tooltip";
+import { RoundSpinner } from "../ui/spinner";
 
 interface Props {
 	title: string;
 	icon: React.ReactNode;
 	value: number;
 	warning?: boolean;
+	loading?: boolean;
 }
 
 function SmallDisplayCard(props: Props) {
-	const {
-		title,
-		icon,
-		value,
-		warning = false,
-	} = props;
+	const { title, icon, value, warning = false, loading = false } = props;
 
 	function formatNumberWithCommas(num: number | string): string {
-		return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		if (num) {
+			return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		}
 	}
 
 	return (
@@ -46,9 +45,13 @@ function SmallDisplayCard(props: Props) {
 
 			{/* Value: Large and bold to be the focal point */}
 			<div className="flex items-center">
-				<span className="text-5xl font-bold text-white">
-					{formatNumberWithCommas(value)}
-				</span>
+				{loading ? (
+					<RoundSpinner />
+				) : (
+					<span className="text-5xl font-bold text-white">
+						{formatNumberWithCommas(value)}
+					</span>
+				)}
 			</div>
 		</div>
 	);
