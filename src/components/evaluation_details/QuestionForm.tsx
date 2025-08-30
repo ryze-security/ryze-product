@@ -49,7 +49,7 @@ function QuestionForm(props: Props) {
 		setSelectedQuestion(questionData[questionIndex]);
 	}, [questionData, questionIndex]);
 
-	const [formattedEvidence, setFormattedEvidence] = useState<string[]>([]);
+	// const [formattedEvidence, setFormattedEvidence] = useState<string[]>([]);
 
 	const [index, setIndex] = useState<number>(questionIndex);
 
@@ -176,9 +176,7 @@ function QuestionForm(props: Props) {
 							Question
 						</span>
 						<div className="gap-2 flex text-lg">
-							<span className="font-semibold">
-								{`${selectedQuestion?.SNo}`}.
-							</span>
+							<span>{`${selectedQuestion?.SNo}`}.</span>
 							<span className="flex flex-wrap">{`${selectedQuestion?.question}`}</span>
 						</div>
 					</div>
@@ -346,7 +344,8 @@ function QuestionForm(props: Props) {
 							Evidence
 						</span>
 						<div className="gap-2 flex flex-col">
-							<span className="flex flex-wrap opacity-85 leading-relaxed text-lg">{`${selectedQuestion?.Response.evidence}`}</span>
+							<span className="flex flex-wrap text-opacity-85 leading-relaxed text-lg">{`${selectedQuestion?.Response.evidence}`}</span>
+							<span className="text-opacity-85 leading-relaxed text-lg">{selectedQuestion?.Response.page_numbers}</span>
 						</div>
 					</div>
 				</div>

@@ -1,6 +1,7 @@
 import ComingSoonBorder from "@/components/ComingSoonBorder";
 import SmallDisplayCard from "@/components/dashboard/SmallDisplayCard";
 import TableRowWithNumber from "@/components/dashboard/TableRowWithNumber";
+import TruncatedTooltip from "@/components/TruncatedTooltip";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -9,6 +10,11 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { RoundSpinner } from "@/components/ui/spinner";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { frequentDeviationsDTO } from "@/models/collection/collectionDTOs";
 import { CompanyListDto } from "@/models/company/companyDTOs";
@@ -207,17 +213,21 @@ function Index() {
 					}
 				</div>
 
-				<div className="max-w-7xl items-start w-full pl-4 grid grid-cols-2 grid-rows-1 gap-2">
+				<div className="max-w-7xl items-start w-full pl-4 grid grid-cols-2 gap-2">
 					{/* Card 1 */}
-					<div className="flex flex-col bg-[#18181B] rounded-xl p-6 shadow-md w-full h-[330px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-light-ryzr scrollbar-track-transparent">
-						<div className="flex items-center justify-between mb-2">
-							<h2 className="flex gap-2 text-xl text-gray-light-ryzr font-semibold tracking-wide pl-4">
-								<Building className="text-violet-light-ryzr" />
-								<span>Vulnerable auditees</span>
-							</h2>
-							<span className="text-sm text-gray-light-ryzr pr-4">
-								Deviation
-							</span>
+					<div className="flex flex-col bg-[#18181B] rounded-xl p-6 shadow-md w-full h-[330px]">
+					<div className="flex items-center gap-4 p-4 pt-0">
+							<div className="flex items-center gap-3 flex-grow">
+								<div className="flex-shrink-0">
+									<Building className="h-6 w-6 text-violet-ryzr" />
+								</div>
+								<h2 className="text-lg font-semibold tracking-wide text-gray-light-ryzr">
+									Vulnerable Auditees
+								</h2>
+							</div>
+							<div className="flex-shrink-0 text-gray-light-ryzr">
+								Deviations
+							</div>
 						</div>
 						{companies.status !== "succeeded" ? (
 							<div className="flex items-center justify-center h-full">
@@ -231,7 +241,6 @@ function Index() {
 								)
 								.slice(0, 3)
 								.map((vulnerability, index) => (
-									<div className="h-full" key={index}>
 										<TableRowWithNumber
 											companyName={
 												vulnerability.tg_company_display_name
@@ -241,7 +250,6 @@ function Index() {
 											}
 											link={vulnerability.tg_company_id}
 										/>
-									</div>
 								))
 						) : (
 							<div className="flex items-center justify-center h-full">
@@ -250,7 +258,7 @@ function Index() {
 								</p>
 							</div>
 						)}
-						<div className="w-full">
+						<div className="w-full flex-end">
 							<div className="flex justify-center mb-2 mt-4 sticky bottom-0 bg-transparent">
 								<Button
 									variant="outline"
@@ -267,11 +275,18 @@ function Index() {
 
 					{/* Card 2 */}
 					<div className="flex flex-col bg-[#18181B] rounded-xl p-6 shadow-md w-full h-[330px]">
-						<div className="flex justify-between mb-2">
-							<h2 className="flex gap-2 text-xl text-gray-light-ryzr font-semibold tracking-wide pl-4">
-								<CircleAlert className="text-violet-light-ryzr" />
-								<span>Frequent deviations</span>
-							</h2>
+						<div className="flex items-center gap-4 p-4 pt-0">
+							<div className="flex items-center gap-3 flex-grow">
+								<div className="flex-shrink-0">
+									<CircleAlert className="h-6 w-6 text-violet-ryzr" />
+								</div>
+								<h2 className="text-lg font-semibold tracking-wide text-gray-light-ryzr">
+									Frequent Deviations
+								</h2>
+							</div>
+							<div className="flex-shrink-0 px-3 text-gray-light-ryzr">
+								Fails
+							</div>
 						</div>
 						<div className="flex flex-grow flex-col">
 							{loadingDeviations ? (
@@ -287,6 +302,7 @@ function Index() {
 											deviation={
 												deviation?.control_display_name
 											}
+											count={deviation?.num_evals_failed}
 										/>
 									))
 							) : (
@@ -297,7 +313,7 @@ function Index() {
 								</div>
 							)}
 						</div>
-						<div className="w-full">
+						<div className="w-full flex-end">
 							<div className="flex justify-center mb-2 mt-4">
 								<Button
 									variant="outline"
@@ -317,14 +333,25 @@ function Index() {
 	);
 }
 
-const DeviationRows = ({ deviation }: { deviation: string }) => {
+const DeviationRows = ({
+	deviation,
+	count,
+}: {
+	deviation: string;
+	count: number;
+}) => {
 	return (
-		<div className="flex items-center gap-4 bg-transparent text-white rounded-xl p-3 w-full hover:bg-zinc-700 hover:bg-opacity-50 hover:shadow-md transition duration-150 ease-in-out hover:cursor-pointer">
-			<div className="flex items-center justify-center w-1/12">
+		<div className="flex items-center gap-4 bg-transparent text-white rounded-xl p-4 w-full hover:bg-zinc-700 hover:bg-opacity-50 hover:shadow-md transition duration-150 ease-in-out hover:cursor-pointer">
+			<div className="flex-shrink-0">
 				<CircleAlert className="text-[#404040]" />
 			</div>
-			<div className="flex flex-col justify-center w-11/12">
-				<p className="text-base">{deviation}</p>
+			<div className="flex-1 min-w-0">
+				<TruncatedTooltip text={deviation} />
+			</div>
+			<div className="flex-shrink-0">
+				<div className="rounded-full text-center flex items-center justify-center min-w-[62px] h-[26px] w-fit bg-[#404040]">
+					{count}
+				</div>
 			</div>
 		</div>
 	);

@@ -226,7 +226,7 @@ function EvaluationDetails() {
 			company_id: data.data.CompanyId,
 			evaluation_id: data.data.EvaluationId,
 			report_type: "Observations",
-			created_by: "SYSTEM",
+			created_by: `${userData.first_name} ${userData.last_name}`,
 		};
 
 		try {

@@ -421,7 +421,13 @@ function EvaluationDashboard() {
 					reportCompany?.id,
 					reportId
 				);
-			const df = new dfd.DataFrame(response.results);
+			const df = new dfd.DataFrame(
+				response.results.sort((a, b) =>
+					a.control_id.localeCompare(b.control_id, undefined, {
+						numeric: true,
+					})
+				)
+			);
 
 			const workbook = new ExcelJS.Workbook();
 			workbook.creator = "Ryzr";
@@ -458,6 +464,13 @@ function EvaluationDashboard() {
 				const row = worksheet.addRow(Object.values(record));
 
 				row.eachCell((cell, index) => {
+					if (index === 1) {
+						const originalValue = cell.value
+							? cell.value.toString()
+							: "";
+
+						cell.value = originalValue.slice(2);
+					}
 					cell.font = {
 						size: 12,
 						name: "SF Pro Display Regular",
@@ -472,8 +485,12 @@ function EvaluationDashboard() {
 				});
 			});
 
-			worksheet.columns.forEach((columns) => {
-				columns.width = 20;
+			worksheet.columns.forEach((columns, index) => {
+				if (index <= 2) {
+					columns.width = 25;
+				} else {
+					columns.width = 50;
+				}
 				columns.border = {
 					top: {
 						style: "thin",
