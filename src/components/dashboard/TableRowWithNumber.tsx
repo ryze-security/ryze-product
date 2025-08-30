@@ -3,6 +3,7 @@ import DateBox from "./DateBox";
 import { Progress } from "../ui/progress";
 import { Building } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import TruncatedTooltip from "../TruncatedTooltip";
 
 interface Props {
 	companyName: string;
@@ -21,7 +22,7 @@ function TableRowWithNumber(props: Props) {
 			onClick={() => link && navigate(`/auditee/edit/${link}`)}
 		>
 			{/* Icon - left aligned, if provided */}
-			<div className="flex items-center justify-center w-1/12">
+			<div className="flex-shrink-0">
 				{icon ? (
 					<div className="text-[#404040]">{icon}</div>
 				) : (
@@ -29,12 +30,12 @@ function TableRowWithNumber(props: Props) {
 				)}
 			</div>
 
-			<div className="flex flex-col justify-center w-1/2">
-				<p className="text-base tracking-wider">{companyName}</p>
+			<div className="flex-1 min-w-0">
+				<TruncatedTooltip text={companyName} className="tracking-wider" />
 			</div>
 
 			{/* Score Bar - pushed to the right */}
-			<div className="flex justify-end ml-auto max-w-20">
+			<div className="flex-shrink-0">
 				<div className="rounded-full text-center flex items-center justify-center min-w-[62px] h-[26px] w-fit bg-[#404040]">
 					{score}
 				</div>

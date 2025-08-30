@@ -225,8 +225,8 @@ function EvaluationDetails() {
 			tenant_id: data.data.TenantId,
 			company_id: data.data.CompanyId,
 			evaluation_id: data.data.EvaluationId,
-			report_type: "Observations",
-			created_by: "SYSTEM",
+			report_type: "Gap Analysis Report",
+			created_by: `${userData.first_name} ${userData.last_name}`,
 		};
 
 		try {

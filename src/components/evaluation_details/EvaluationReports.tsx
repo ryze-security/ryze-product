@@ -120,7 +120,13 @@ function EvaluationReports(props: Props) {
 					companyId,
 					reportId
 				);
-			const df = new dfd.DataFrame(response.results);
+			const df = new dfd.DataFrame(
+				response.results.sort((a, b) =>
+					a.control_id.localeCompare(b.control_id, undefined, {
+						numeric: true,
+					})
+				)
+			);
 
 			const workbook = new ExcelJS.Workbook();
 			workbook.creator = "Ryzr";
@@ -157,6 +163,14 @@ function EvaluationReports(props: Props) {
 				const row = worksheet.addRow(Object.values(record));
 
 				row.eachCell((cell, index) => {
+					if (index === 1) {
+						const originalValue = cell.value
+							? cell.value.toString()
+							: "";
+
+						cell.value = originalValue.slice(2);
+					}
+
 					cell.font = {
 						size: 12,
 						name: "SF Pro Display Regular",
@@ -171,8 +185,12 @@ function EvaluationReports(props: Props) {
 				});
 			});
 
-			worksheet.columns.forEach((columns) => {
-				columns.width = 20;
+			worksheet.columns.forEach((columns, index) => {
+				if (index <= 2) {
+					columns.width = 25;
+				} else {
+					columns.width = 50;
+				}
 				columns.border = {
 					top: {
 						style: "thin",
@@ -208,11 +226,15 @@ function EvaluationReports(props: Props) {
 	return (
 		<div className="max-w-7xl w-full">
 			<div className="w-full px-4">
-				<div>
+				<div className="grid gap-2">
 					<div className="text-5xl font-semibold text-zinc-400/85 tracking-wide">
-						Available Evaluation Reports
+						Generated reports
 					</div>
-				</div>	
+					<div className="text-lg text-zinc-400/75">
+						Your reports will appear in this section once they are
+						generated.
+					</div>
+				</div>
 			</div>
 			<section
 				className={cn(
