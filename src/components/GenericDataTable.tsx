@@ -34,6 +34,7 @@ interface DataTableProps<TData, TValue> {
 	onRowClick?: (row: TData) => void;
 	disabledRow?: boolean;
 	pageSize?: number;
+	clickableRow?: boolean;
 }
 
 export function GenericDataTable<TData, TValue>({
@@ -46,6 +47,7 @@ export function GenericDataTable<TData, TValue>({
 	onRowClick,
 	disabledRow = false,
 	pageSize = 10,
+	clickableRow = true,
 }: DataTableProps<TData, TValue>) {
 	const [filter, setFilter] = React.useState("");
 	const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -142,7 +144,9 @@ export function GenericDataTable<TData, TValue>({
 								<TableRow
 									key={row.id}
 									onClick={() => handleRowClick(row.original)}
-									className={cn("cursor-pointer hover:bg-zinc-800 transition text-white/70", disabledRow && "cursor-not-allowed hover:bg-zinc-900")}
+									className={cn("hover:bg-zinc-800 transition text-white/70", disabledRow && "cursor-not-allowed hover:bg-zinc-900",
+										clickableRow && !disabledRow && "cursor-pointer"
+									)}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>

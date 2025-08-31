@@ -42,13 +42,16 @@ import {
 	createEvaluationResponseDTO,
 } from "@/models/evaluation/EvaluationDTOs";
 import { FilesUploadResponseDTO } from "@/models/files/FilesUploadResponseDTO";
+import { requestCreditsBodyDTO, requestFrameworkBodyDTO } from "@/models/landing_page/contact_usDTOs";
 import collectionService from "@/services/collectionServices";
 import creditsService from "@/services/creditsServices";
+import customFormsService from "@/services/customFormsServices";
 import evaluationService from "@/services/evaluationServices";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadCollections } from "@/store/slices/collectionSlice";
 import { loadCompanyData } from "@/store/slices/companySlice";
 import { ColumnDef } from "@tanstack/react-table";
+import { set } from "date-fns";
 import { Check, ChevronsUpDown, PlusCircleIcon } from "lucide-react";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
@@ -213,6 +216,13 @@ const NewEvaluation = () => {
 		},
 	});
 
+	const frameworkForm = useForm({
+		defaultValues: {
+			framework: "",
+			details: "",
+		},
+	});
+
 	const watchedAuditeeName = methods.watch("auditee");
 
 	const { toast } = useToast();
@@ -325,6 +335,63 @@ const NewEvaluation = () => {
 			fetchCredits();
 		}
 	}, [userData.tenant_id]);
+
+	const [frameworkFormSubmitLoading, setFrameworkFormSubmitLoading] =
+		useState(false);
+	const frameworkFormSubmit = (data: any) => {
+		try {
+			setFrameworkFormSubmitLoading(true);
+			const response = customFormsService.customForm(
+				userData.user_id,
+				userData.tenant_id,
+				"request_framwork",
+				{
+					email: userData.email as string,
+					framework_name: data.framework as string,
+					additional_details: data.details as string,
+				} as requestFrameworkBodyDTO
+			);
+			toast({
+				title: "Request submitted",
+				description:
+					"Your framework request has been submitted successfully. We'll get back to you soon!",
+				variant: "default",
+				className: "bg-green-ryzr",
+			});
+		} catch (error) {
+			toast({
+				title: "Error",
+				description:
+					"There was an error submitting your request. Please try again later.",
+				variant: "destructive",
+			});
+		} finally {
+			setFrameworkFormSubmitLoading(false);
+			setOpenDialog(false);
+		}
+	};
+
+	const creditsAction = () => {
+		try{
+			const response = customFormsService.customForm(userData.user_id,userData.tenant_id,"request_credits", {email: userData.email as string} as requestCreditsBodyDTO);
+			toast({
+				title: "Request submitted",
+				description:
+					"Your credits request has been submitted successfully. We'll get back to you soon!",
+				variant: "default",
+				className: "bg-green-ryzr",
+			});
+			navigate("/home");
+		} catch(error) {
+			toast({
+				title: "Error",
+				description:
+					"There was an error submitting your request. Please try again later.",
+				variant: "destructive",
+			});
+			navigate("/home");
+		}
+	}
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
@@ -693,61 +760,88 @@ const NewEvaluation = () => {
 					</FormProvider>
 				</div>
 				<Dialog open={openDialog} onOpenChange={setOpenDialog}>
-					<DialogContent className="sm:max-w-lg">
-						<div className="grid gap-1">
-							<DialogHeader className="text-xl font-bold">
-								New Framework Request
-							</DialogHeader>
-							<DialogDescription className="text-sm">
-								Submit a request for a new compliance framework
-								to be added to the platform.
-							</DialogDescription>
-						</div>
-						<Separator />
-						<div className="grid gap-4">
-							<div className="grid gap-3">
-								<Label htmlFor="frameworkName">
-									Framework Name
-								</Label>
-								<Input
-									id="frameworkName"
-									name="framework"
-									placeholder="e.g., NIST CSF 2.0"
-								/>
-							</div>
-							<div className="grid gap-3">
-								<Label htmlFor="details">
-									Additional Details (Optional)
-								</Label>
-								<Textarea
-									id="details"
-									name="details"
-									placeholder="Any specific requirements or versions?"
-								/>
-								<p className="text-sm text-zinc-400/70">
-									This will help our team prioritize new
-									additions.
-								</p>
-							</div>
-						</div>
-						<Separator />
-						<DialogFooter>
-							<DialogClose asChild>
-								<Button
-									variant="outline"
-									className="hover:bg-zinc-800 transition-colors text-white"
-								>
-									Cancel
-								</Button>
-							</DialogClose>
-							{/* TODO: integrate submit action and hookup the hook-form for the same  */}
-							<Button
-								className="bg-sky-500 hover:bg-sky-600 transition-colors 
-							duration-200 text-white"
+					<DialogContent>
+						<FormProvider {...frameworkForm}>
+							<form
+								onSubmit={frameworkForm.handleSubmit(
+									frameworkFormSubmit
+								)}
+								className="sm:max-w-lg flex flex-col gap-4"
 							>
-								Submit Request
-							</Button>
-						</DialogFooter>
+								<div className="grid gap-1">
+									<DialogHeader className="text-xl font-bold">
+										New Framework Request
+									</DialogHeader>
+									<DialogDescription className="text-sm">
+										Submit a request for a new compliance
+										framework to be added to the platform.
+									</DialogDescription>
+								</div>
+								<Separator />
+								<div className="grid gap-4">
+									<div className="grid gap-3">
+										<Label htmlFor="frameworkName">
+											Framework Name
+										</Label>
+										<Input
+											id="frameworkName"
+											name="framework"
+											placeholder="e.g., NIST CSF 2.0"
+											{...frameworkForm.register(
+												"framework",
+												{ required: true }
+											)}
+										/>
+										{frameworkForm.formState.errors
+											.framework && (
+											<p className="text-sm text-rose-700">
+												Framework name is required
+											</p>
+										)}
+									</div>
+									<div className="grid gap-3">
+										<Label htmlFor="details">
+											Additional Details (Optional)
+										</Label>
+										<Textarea
+											id="details"
+											name="details"
+											placeholder="Any specific requirements or versions?"
+											{...frameworkForm.register(
+												"details"
+											)}
+										/>
+										<p className="text-sm text-zinc-400/70">
+											This will help our team prioritize
+											new additions.
+										</p>
+									</div>
+								</div>
+								<Separator />
+								<DialogFooter>
+									<DialogClose asChild>
+										<Button
+											variant="outline"
+											className="hover:bg-zinc-800 transition-colors text-white"
+											disabled={
+												frameworkFormSubmitLoading
+											}
+										>
+											Cancel
+										</Button>
+									</DialogClose>
+									{/* TODO: integrate submit action and hookup the hook-form for the same  */}
+									<Button
+										className="bg-sky-500 hover:bg-sky-600 transition-colors 
+							duration-200 text-white"
+										type="submit"
+										disabled={frameworkFormSubmitLoading}
+									>
+										Submit Request
+									</Button>
+								</DialogFooter>
+							</form>
+						</FormProvider>
 					</DialogContent>
 				</Dialog>
 				<AlertDialogBox
@@ -757,6 +851,7 @@ const NewEvaluation = () => {
 					onCancel={() => navigate("/home")}
 					open={creditsAlert}
 					onOpenChange={setCreditsAlert}
+					onAction={creditsAction}
 				/>
 			</section>
 		</div>

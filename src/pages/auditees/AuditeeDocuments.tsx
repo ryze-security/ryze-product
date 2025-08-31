@@ -81,6 +81,12 @@ function AuditeeDocuments() {
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.document":
 				[".docx"],
 			"text/plain": [".txt"],
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+				[".xlsx"],
+			"application/vnd.ms-excel": [".xls"],
+			"text/csv": [".csv"],
+			"application/vnd.openxmlformats-officedocument.presentationml.presentation":
+				[".pptx"],
 		},
 	});
 
@@ -245,7 +251,8 @@ function AuditeeDocuments() {
 				<PageHeader
 					heading={
 						<div className="flex items-center gap-2">
-							Manage Files: {isAuditeeLoading ? <RoundSpinner /> : auditeeName}
+							Manage Files:{" "}
+							{isAuditeeLoading ? <RoundSpinner /> : auditeeName}
 						</div>
 					}
 					subtitle="Browse through uploaded files related to this auditee. You can add, view, and delete files as needed."
@@ -270,6 +277,7 @@ function AuditeeDocuments() {
 					data={files}
 					filterKey={"file_name"}
 					isLoading={isLoading}
+					clickableRow={false}
 				/>
 
 				<Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
