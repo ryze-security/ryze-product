@@ -131,6 +131,12 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.document":
 				[".docx"],
 			"text/plain": [".txt"],
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+				[".xlsx"],
+			"application/vnd.ms-excel": [".xls"],
+			"text/csv": [".csv"],
+			"application/vnd.openxmlformats-officedocument.presentationml.presentation":
+				[".pptx"],
 		},
 	});
 

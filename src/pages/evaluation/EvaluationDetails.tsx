@@ -305,7 +305,7 @@ function EvaluationDetails() {
 								onClick={generateExcelReport}
 								disabled={isReportGenerating}
 							>
-								Report(.xlxs)
+								Report(.xlsx)
 							</DropdownMenuItem>
 							<DropdownMenuItem className="text-gray-light-ryzr cursor-not-allowed">
 								<ComingSoonBorder

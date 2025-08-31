@@ -131,6 +131,7 @@ function DeviationDashboard() {
 					data={deviations}
 					filterKey={"control_display_name"}
 					isLoading={isDeviationsLoading}
+					clickableRow={false}
 				/>
 			</section>
 		</div>

@@ -42,19 +42,24 @@ export const AlertDialogBox: React.FC<AlertDialogBoxProps> = ({
 
 	const currentOpen = isControlled ? open : isInternalOpen;
 	const handleOpenChange = isControlled ? onOpenChange : setIsInternalOpen;
+	const [isLoading, setIsLoading] = useState(false);
 
 	const handleAction = () => {
+		setIsLoading(true);
 		if (onAction) {
 			onAction();
 		}
 		handleOpenChange(false);
+		setIsLoading(false);
 	};
 
 	const handleCancel = () => {
+		setIsLoading(true);
 		if (onCancel) {
 			onCancel();
 		}
 		handleOpenChange(false);
+		setIsLoading(false);
 	};
 
 	return (
@@ -72,7 +77,7 @@ export const AlertDialogBox: React.FC<AlertDialogBoxProps> = ({
 				</AlertDialogHeader>
 
 				<AlertDialogFooter>
-					<AlertDialogCancel onClick={handleCancel}>
+					<AlertDialogCancel onClick={handleCancel} disabled={isLoading}>
 						Cancel
 					</AlertDialogCancel>
 
@@ -83,7 +88,7 @@ export const AlertDialogBox: React.FC<AlertDialogBoxProps> = ({
 						</AlertDialogAction>
 					) : (
 						<AlertDialogAction className="bg-sky-500 hover:bg-sky-600 transition-colors 
-							duration-200 text-white" onClick={handleAction}>
+							duration-200 text-white" onClick={handleAction} disabled={isLoading}>
 							{actionLabel}
 						</AlertDialogAction>
 					)}

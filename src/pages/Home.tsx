@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { RoundSpinner } from "@/components/ui/spinner";
 import { useToast } from "@/hooks/use-toast";
 import { contactUsBodyDTO } from "@/models/landing_page/contact_usDTOs";
-import landingPageService from "@/services/landingPageServices";
+import customFormsService from "@/services/customFormsServices";
 import { useIsMobile } from "@/utils/useIsMobile";
 import {
 	ChevronLeft,
@@ -346,7 +346,7 @@ function Home() {
 			}`,
 		};
 		try {
-			const response = await landingPageService.contactUs(contactUsBody);
+			const response = await customFormsService.contactUs(contactUsBody);
 			if (response) {
 				handleCelebrate();
 				toast({
