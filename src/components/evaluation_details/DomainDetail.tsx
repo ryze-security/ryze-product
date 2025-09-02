@@ -28,6 +28,7 @@ import { AlertDialogBox } from "../AlertDialogBox";
 import { RoundSpinner } from "../ui/spinner";
 import MarkdownRenderer from "./MarkdownRenderer";
 import ProgressCircle from "./ProgressCircle";
+import { Progress } from "../ui/progress";
 
 interface Props {
 	domainData: domainResponse;
@@ -93,6 +94,23 @@ const columns: ColumnDef<controlResponse>[] = [
 						<ArrowUpDownIcon className="h-4 w-4" />
 					)}
 				</Button>
+			);
+		},
+		cell: ({ row }) => {
+			const score: number = row.original.Response.Score;
+			return (
+				<div>
+					<div className="relative max-w-28">
+						<Progress
+							value={score == null || Number.isNaN(score) ? 0 : score as number}
+							className="h-6 bg-neutral-700 rounded-full"
+							indicatorColor="bg-violet-ryzr"
+						/>
+						<div className="absolute inset-0 flex justify-center items-center text-white text-xs font-semibold">
+							{score == null || Number.isNaN(score) ? 0 : score as number}%
+						</div>
+					</div>
+				</div>
 			);
 		},
 	},

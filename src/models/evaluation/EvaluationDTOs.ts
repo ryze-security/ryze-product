@@ -43,7 +43,7 @@ export interface evalutaionDetailDTO {
 }
 
 export interface evaluationDetailData {
-	Status: string
+	Status: string;
 	UserId: string;
 	TenantId: string;
 	CompanyId: string;
@@ -59,7 +59,7 @@ export interface evaluationDetailDataResponse {
 	DomainResponseList: domainResponse[];
 	Response: {
 		Score: number;
-	}
+	};
 }
 
 export interface domainResponse {
@@ -69,7 +69,7 @@ export interface domainResponse {
 	ControlResponseList: controlResponse[];
 	Response: {
 		Score: number;
-	}
+	};
 }
 
 export interface controlResponse {
@@ -82,7 +82,7 @@ export interface controlResponse {
 	QuestionResponseList: questionResponse[];
 	Response: {
 		Score: number;
-	}
+	};
 }
 
 export interface questionResponse {
@@ -92,13 +92,13 @@ export interface questionResponse {
 	controlId: string;
 	question: string;
 	question_hint: string;
-	Response:{
+	Response: {
 		Score: string | boolean;
 		Observation: string;
 		evidence: string;
 		audit_comments: string;
 		page_numbers: string;
-	}
+	};
 }
 
 export interface evaluationMetadata {
@@ -126,3 +126,20 @@ interface deleteEvaluationData {
 	questions_deleted: number;
 	previous_status: string;
 }
+
+export interface evaluationStatusDTO {
+	eval_id: string;
+	status: string;
+	progress: evaluationStatusProgress
+	cached_at: string;
+	etag: string;
+}
+
+export interface evaluationStatusProgress {
+	total_questions: number;
+	completed_questions: number;
+	failed_questions: number;
+	pending_questions: number;
+	in_progress_questions: number;
+	percentage_complete: number;
+};

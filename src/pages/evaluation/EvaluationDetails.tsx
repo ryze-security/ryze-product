@@ -177,7 +177,7 @@ function EvaluationDetails() {
 		questionId: string
 	) => {
 		try {
-			await evaluationService.updateQuestion(
+			await evaluationService.evaluationService.updateQuestion(
 				data.data.TenantId,
 				data.data.CompanyId,
 				data.data.EvaluationId,

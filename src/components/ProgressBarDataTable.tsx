@@ -182,24 +182,6 @@ export function ProgressBarDataTable<TData, TValue>({
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>
 											{typeof cell.getValue() ===
-											"number" ? (
-												// Render a progress bar for Number columns
-												<div className="relative max-w-28">
-													<Progress
-														value={
-															cell.getValue() == null || Number.isNaN(cell.getValue()) ? 0 : cell.getValue() as number
-														}
-														className="h-6 bg-neutral-700 rounded-full"
-														indicatorColor="bg-violet-ryzr"
-													/>
-													<div className="absolute inset-0 flex justify-center items-center text-white text-xs font-semibold">
-														{
-															cell.getValue() == null || Number.isNaN(cell.getValue()) ? 0 : cell.getValue() as String
-														}
-														%
-													</div>
-												</div>
-											) : typeof cell.getValue() ===
 											  "boolean" ? (
 												<div
 													className={`flex items-center justify-center text-center whitespace-nowrap min-w-fit max-w-40 py-2 px-5 rounded-full text-white ${

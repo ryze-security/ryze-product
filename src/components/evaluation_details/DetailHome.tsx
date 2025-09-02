@@ -36,6 +36,7 @@ import { RoundSpinner } from "../ui/spinner";
 import { AlertDialogBox } from "../AlertDialogBox";
 import MarkdownRenderer from "./MarkdownRenderer";
 import ProgressCircle from "./ProgressCircle";
+import { Progress } from "@/components/ui/progress";
 
 interface Props {
 	overallScore: string;
@@ -109,6 +110,23 @@ const columns: ColumnDef<controlResponse>[] = [
 						<ArrowUpDownIcon className="h-4 w-4" />
 					)}
 				</Button>
+			);
+		},
+		cell: ({ row }) => {
+			const score: number = row.original.Response.Score;
+			return (
+				<div>
+					<div className="relative max-w-28">
+						<Progress
+							value={score == null || Number.isNaN(score) ? 0 : score as number}
+							className="h-6 bg-neutral-700 rounded-full"
+							indicatorColor="bg-violet-ryzr"
+						/>
+						<div className="absolute inset-0 flex justify-center items-center text-white text-xs font-semibold">
+							{score == null || Number.isNaN(score) ? 0 : score as number}%
+						</div>
+					</div>
+				</div>
 			);
 		},
 	},
@@ -348,7 +366,6 @@ const DetailHome = forwardRef((props: Props, ref) => {
 	useEffect(() => {
 		// This function will run when the user clicks back/forward
 		const handlePopState = (event) => {
-			
 			if (event.state && event.state.selectedControl) {
 				setSelectedRow(event.state.selectedControl);
 			} else {
