@@ -42,8 +42,10 @@ import {
 	createEvaluationResponseDTO,
 } from "@/models/evaluation/EvaluationDTOs";
 import { FilesUploadResponseDTO } from "@/models/files/FilesUploadResponseDTO";
-import { requestCreditsBodyDTO, requestFrameworkBodyDTO } from "@/models/landing_page/contact_usDTOs";
-import collectionService from "@/services/collectionServices";
+import {
+	requestCreditsBodyDTO,
+	requestFrameworkBodyDTO,
+} from "@/models/landing_page/contact_usDTOs";
 import creditsService from "@/services/creditsServices";
 import customFormsService from "@/services/customFormsServices";
 import evaluationService from "@/services/evaluationServices";
@@ -51,7 +53,6 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadCollections } from "@/store/slices/collectionSlice";
 import { loadCompanyData } from "@/store/slices/companySlice";
 import { ColumnDef } from "@tanstack/react-table";
-import { set } from "date-fns";
 import { Check, ChevronsUpDown, PlusCircleIcon } from "lucide-react";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
@@ -227,41 +228,53 @@ const NewEvaluation = () => {
 
 	const { toast } = useToast();
 
-	const submit = async (data: any) => {
+	const submit = async (data: {
+		auditee: AuditeeOption;
+		selectedFrameworks: { name: string; value: string }[];
+		documents: FilesUploadResponseDTO[];
+	}) => {
 		setIsSubmitLoading(true);
-		const evaluationData: createEvaluationDTO = {
-			tenant_id: userData.tenant_id, //change later to a value fetched from store or cookie
-			company_id: data.auditee.value,
-			collection_id: "collection_1", //change later when framework endpoints are ready
-			created_by: "SYSTEM",
-			model_used: "azure-gpt04-mini",
-			document_list: [...data.documents.map((doc) => doc.file_id)],
-		};
+		const evaluationDatas: createEvaluationDTO[] = [];
+		data.selectedFrameworks.forEach((framework) => {
+			const evaluationData: createEvaluationDTO = {
+				tenant_id: userData.tenant_id,
+				company_id: data.auditee.value,
+				collection_id: framework.value, 
+				created_by: userData.user_id,
+				model_used: "azure-gpt04-mini",
+				document_list: [...data.documents.map((doc) => doc.file_id)],
+			};
+			evaluationDatas.push(evaluationData);
+		});
 
 		try {
-			const response = await evaluationService.createEvaluation(
-				evaluationData
-			);
-			const evalId: createEvaluationResponseDTO = response;
+			evaluationDatas.forEach(async (evaluationData) => {
+				const response =
+					await evaluationService.evaluationService.createEvaluation(
+						evaluationData
+					);
+				const evalId: createEvaluationResponseDTO = response;
 
-			try {
-				const response = await evaluationService.startEvaluation(
-					evalId.eval_id
-				);
-				toast({
-					title: "Evaluation is running",
-					description: `Evaluation is created and running successfully.`,
-					variant: "default",
-					className: "bg-green-ryzr",
-				});
-				navigate("/evaluation");
-			} catch (startError) {
-				toast({
-					title: "Error starting evaluation",
-					description: `Evaluation was created with id ${evalId.eval_id} but failed to start. Please visit reviews page to start it manually! NOTE to devs: subject to change.`,
-					variant: "destructive",
-				});
-			}
+				try {
+					const response =
+						await evaluationService.evaluationService.startEvaluation(
+							evalId.eval_id
+						);
+					toast({
+						title: "Evaluation is running",
+						description: `Evaluation is created and running successfully.`,
+						variant: "default",
+						className: "bg-green-ryzr",
+					});
+					navigate("/evaluation");
+				} catch (startError) {
+					toast({
+						title: "Error starting evaluation",
+						description: `Evaluation was created with id ${evalId.eval_id} but failed to start. Please visit reviews page to start it manually! NOTE to devs: subject to change.`,
+						variant: "destructive",
+					});
+				}
+			});
 		} catch (error) {
 			toast({
 				title: "Error creating evaluation",
@@ -312,6 +325,7 @@ const NewEvaluation = () => {
 		}
 	}, []);
 
+	//fetches credits for validity check
 	useEffect(() => {
 		const fetchCredits = async () => {
 			try {
@@ -338,6 +352,8 @@ const NewEvaluation = () => {
 
 	const [frameworkFormSubmitLoading, setFrameworkFormSubmitLoading] =
 		useState(false);
+
+	//request framework form submit action
 	const frameworkFormSubmit = (data: any) => {
 		try {
 			setFrameworkFormSubmitLoading(true);
@@ -371,9 +387,15 @@ const NewEvaluation = () => {
 		}
 	};
 
+	//request credit form submit action
 	const creditsAction = () => {
-		try{
-			const response = customFormsService.customForm(userData.user_id,userData.tenant_id,"request_credits", {email: userData.email as string} as requestCreditsBodyDTO);
+		try {
+			const response = customFormsService.customForm(
+				userData.user_id,
+				userData.tenant_id,
+				"request_credits",
+				{ email: userData.email as string } as requestCreditsBodyDTO
+			);
 			toast({
 				title: "Request submitted",
 				description:
@@ -382,7 +404,7 @@ const NewEvaluation = () => {
 				className: "bg-green-ryzr",
 			});
 			navigate("/home");
-		} catch(error) {
+		} catch (error) {
 			toast({
 				title: "Error",
 				description:
@@ -391,7 +413,7 @@ const NewEvaluation = () => {
 			});
 			navigate("/home");
 		}
-	}
+	};
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">

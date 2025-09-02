@@ -7,9 +7,9 @@ export interface AxiosErrorInfo {
 }
 
 export function handleAxiosError(error: unknown): AxiosErrorInfo {
-	if (axios.isAxiosError(error)) {
+	if (axios.isAxiosError(error)) {		
 		const axiosError = error as AxiosError<any>;
-		const statusCode = axiosError.response?.status ?? 500;
+		const statusCode = axiosError.status ?? 500;
 		const message =
 			axiosError.response?.data?.message ||
 			axiosError.message ||

@@ -11,7 +11,7 @@ interface LoadEvaluationArgs {
 export const loadEvaluationData = createAsyncThunk(
 	"evaluation/getEvaluationByDetails",
 	async ({ tenant_id, companyId, evaluationId }: LoadEvaluationArgs) => {
-		return await evaluationService.getEvaluationByDetails(
+		return await evaluationService.evaluationService.getEvaluationByDetails(
 			tenant_id,
 			companyId,
 			evaluationId

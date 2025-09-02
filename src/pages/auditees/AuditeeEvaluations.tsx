@@ -27,6 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import { CompanyListDto } from "@/models/company/companyDTOs";
 import {
 	Evaluation,
+	evaluationStatusDTO,
 	listEvaluationsDTO,
 } from "@/models/evaluation/EvaluationDTOs";
 import {
@@ -34,16 +35,20 @@ import {
 	reportResultListDTO,
 } from "@/models/reports/ExcelDTOs";
 import companyService from "@/services/companyServices";
-import evaluationService from "@/services/evaluationServices";
+import evaluationService, {
+	AdaptivePolling,
+	EvaluationStatusService,
+} from "@/services/evaluationServices";
 import reportsService from "@/services/reportsServices";
 import { useAppSelector } from "@/store/hooks";
 import { ColumnDef } from "@tanstack/react-table";
 import { ChevronsUpDownIcon, Ellipsis, MoreHorizontalIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import * as dfd from "danfojs";
 import * as ExcelJS from "exceljs";
 import * as FileSaver from "file-saver";
+import { Progress } from "@/components/ui/progress";
 
 function AuditeeEvaluations() {
 	const userData = useAppSelector((state) => state.appUser);
@@ -67,6 +72,94 @@ function AuditeeEvaluations() {
 	const [isReportGenerating, setIsReportGenerating] =
 		useState<boolean>(false);
 
+	const activePollers = useRef(new Map<string, AdaptivePolling>());
+	const statusService = useRef(new EvaluationStatusService());
+
+	//method to update status of evaluations in state
+	const handleStatusUpdate = useCallback((newStatus: evaluationStatusDTO) => {
+		setEvaluations((prev) => {
+			if (!prev) return prev;
+			const updatedEvals = prev.evaluations.map((ev) => {
+				if (ev.eval_id === newStatus.eval_id) {
+					return {
+						...ev,
+						processing_status: newStatus.status,
+					};
+				}
+				return ev;
+			});
+			return {
+				...prev,
+				evaluations: updatedEvals,
+			};
+		});
+	}, []);
+
+	//Polling mechanism
+	useEffect(() => {
+		const pollers = activePollers.current;
+		const currentStatusService = statusService.current;
+
+		const evaluationToPoll = evaluations?.evaluations.filter((ev) =>
+			[
+				"pending",
+				"in_progress",
+				"failed",
+				"processing_missing_elements",
+			].includes(ev.processing_status)
+		);
+
+		evaluationToPoll.forEach((ev) => {
+			if (!pollers.has(ev.eval_id)) {
+				const poller = new AdaptivePolling();
+
+				const fetchStatus = () =>
+					currentStatusService.getStatus(
+						userData.tenant_id,
+						ev.tg_company_id,
+						ev.eval_id
+					);
+
+				const onComplete = () => {
+					pollers.delete(ev.eval_id);
+					setRefreshTrigger((prev) => prev + 1); //TODO:a problem that may cause race condition but is rquired to refetch the evaluations after one completes as the status service does not provide scores
+				};
+
+				poller.startPolling(
+					fetchStatus,
+					handleStatusUpdate,
+					onComplete
+				);
+				pollers.set(ev.eval_id, poller);
+			}
+		});
+
+		pollers.forEach((poller, evalId) => {
+			const stillNeedsPolling = evaluations.evaluations.some(
+				(ev) =>
+					ev.eval_id === evalId &&
+					[
+						"pending",
+						"in_progress",
+						"failed",
+						"processing_missing_elements",
+					].includes(ev.processing_status)
+			);
+			if (!stillNeedsPolling) {
+				poller.stopPolling();
+				pollers.delete(evalId);
+			}
+		});
+	}, [evaluations.evaluations, userData.tenant_id, handleStatusUpdate]);
+
+	//cleanup pollers on unmount
+	useEffect(() => {
+		const pollers = activePollers.current;
+		return () => {
+			pollers.forEach((poller) => poller.stopPolling());
+		};
+	}, []);
+
 	const isLoading = isEvalLoading || isAuditeeLoading;
 
 	const columns: ColumnDef<Evaluation>[] = [
@@ -83,14 +176,29 @@ function AuditeeEvaluations() {
 			header: "Evaluation Score",
 			cell: ({ row }) => {
 				const score: number = row.getValue("overall_score");
+				const updatedScore =
+					score == null || score == undefined || Number.isNaN(score)
+						? 0
+						: score;
 				return (
-					<span className="text-white font-semibold">
-						{score == null ||
-						score == undefined ||
-						Number.isNaN(score)
-							? 0
-							: score}
-					</span>
+					<div>
+						{row.original.processing_status === "in_progress" || row.original.processing_status === "processing_missing_elements" ? (
+							<div className="flex justify-center max-w-28">
+								<RoundSpinner />
+							</div>
+						) : (
+							<div className="relative max-w-28">
+								<Progress
+									value={updatedScore}
+									className="h-6 bg-neutral-700 rounded-full"
+									indicatorColor="bg-violet-ryzr"
+								/>
+								<div className="absolute inset-0 flex justify-center items-center text-white text-xs font-semibold">
+									{updatedScore}%
+								</div>
+							</div>
+						)}
+					</div>
 				);
 			},
 		},
@@ -244,7 +352,7 @@ function AuditeeEvaluations() {
 										try {
 											setIsDeletingEvaluation(true);
 											const response =
-												await evaluationService.deleteEvaluation(
+												await evaluationService.evaluationService.deleteEvaluation(
 													userData.tenant_id,
 													evaluation.tg_company_id,
 													evaluation.eval_id
@@ -287,7 +395,7 @@ function AuditeeEvaluations() {
 			setIsEvalLoading(true);
 			try {
 				const response: listEvaluationsDTO =
-					await evaluationService.getEvaluationsByCompanyId(
+					await evaluationService.evaluationService.getEvaluationsByCompanyId(
 						userData.tenant_id,
 						auditeeId
 					);
