@@ -7,4 +7,6 @@ export type tenantDetailsDTO = {
 	credits_updated_at: string;
 	num_companies: number;
 	num_documents: number;
+	num_deviations: number;
+	num_evaluations: number;
 };

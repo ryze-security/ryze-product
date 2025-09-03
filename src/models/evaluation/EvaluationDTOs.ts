@@ -142,4 +142,5 @@ export interface evaluationStatusProgress {
 	pending_questions: number;
 	in_progress_questions: number;
 	percentage_complete: number;
+	score_percentage: number
 };

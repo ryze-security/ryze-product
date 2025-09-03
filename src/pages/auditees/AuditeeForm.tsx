@@ -425,6 +425,7 @@ function AuditeeForm() {
 										title="Are You Sure?"
 										actionLabel="Confirm"
 										actionHref="/auditee/dashboard"
+										confirmButtonClassName="bg-rose-600 hover:bg-rose-700 focus:ring-rose-600"
 									/>
 								) : (
 									<Button

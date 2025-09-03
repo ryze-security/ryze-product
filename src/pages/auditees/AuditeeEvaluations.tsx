@@ -84,6 +84,14 @@ function AuditeeEvaluations() {
 					return {
 						...ev,
 						processing_status: newStatus.status,
+						overall_score:
+							newStatus.status === "completed"
+								? parseInt(
+										newStatus.progress.score_percentage.toFixed(
+											2
+										)
+								  )
+								: 0,
 					};
 				}
 				return ev;
@@ -122,7 +130,6 @@ function AuditeeEvaluations() {
 
 				const onComplete = () => {
 					pollers.delete(ev.eval_id);
-					setRefreshTrigger((prev) => prev + 1); //TODO:a problem that may cause race condition but is rquired to refetch the evaluations after one completes as the status service does not provide scores
 				};
 
 				poller.startPolling(
@@ -182,7 +189,9 @@ function AuditeeEvaluations() {
 						: score;
 				return (
 					<div>
-						{row.original.processing_status === "in_progress" || row.original.processing_status === "processing_missing_elements" ? (
+						{row.original.processing_status === "in_progress" ||
+						row.original.processing_status ===
+							"processing_missing_elements" ? (
 							<div className="flex justify-center max-w-28">
 								<RoundSpinner />
 							</div>

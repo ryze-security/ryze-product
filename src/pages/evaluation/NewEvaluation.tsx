@@ -240,7 +240,7 @@ const NewEvaluation = () => {
 				tenant_id: userData.tenant_id,
 				company_id: data.auditee.value,
 				collection_id: framework.value, 
-				created_by: userData.user_id,
+				created_by: userData.first_name + " " + userData.last_name,
 				model_used: "azure-gpt04-mini",
 				document_list: [...data.documents.map((doc) => doc.file_id)],
 			};

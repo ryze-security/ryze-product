@@ -27,7 +27,7 @@ function PageHeader(props: Props) {
 		actionFn,
 		isLoading = false,
 		isClickable = true,
-		children
+		children,
 	} = props;
 
 	const navigate = useNavigate();
@@ -65,7 +65,7 @@ function PageHeader(props: Props) {
 							{<PlusCircleIcon />}
 							{isLoading ? <RoundSpinner /> : buttonText}
 						</Button>
-						{children && (children)}
+						{children && children}
 					</div>
 				) : (
 					<AlertDialogBox
@@ -82,6 +82,7 @@ function PageHeader(props: Props) {
 						subheading="Are you sure you want to cancel this operation? Clicking confirm will cause all your unsaved data to be lost."
 						actionLabel="Confirm"
 						actionHref={buttonUrl}
+						confirmButtonClassName="bg-rose-600 hover:bg-rose-700 focus:ring-rose-600"
 					/>
 				)
 			) : (
