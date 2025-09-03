@@ -173,6 +173,7 @@ function AuditeeDocuments() {
 
 									performDelete();
 								}}
+								confirmButtonClassName="bg-rose-600 hover:bg-rose-700 focus:ring-rose-600"
 							/>
 						</DropdownMenuContent>
 					</DropdownMenu>
@@ -307,7 +308,8 @@ function AuditeeDocuments() {
 										browse
 									</p>
 									<p className="text-md opacity-45">
-										Support for PDF, DOCX, DOC and TXT files
+										Support for PDF, DOCX, XLSX, XLS, CSV,
+										PPTX, DOC and TXT files
 									</p>
 								</div>
 								<Button

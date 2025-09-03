@@ -67,12 +67,12 @@ function Index() {
 		{
 			title: "Reviews conducted",
 			icon: <FileTextIcon className="text-violet-light-ryzr" />,
-			value: 358,
+			value: tenantDetails?.num_evaluations || 0,
 		},
 		{
 			title: "Deviation recorded",
 			icon: <CircleAlert className="text-violet-light-ryzr" />,
-			value: 2434,
+			value: tenantDetails?.num_deviations || 0,
 		},
 	];
 
@@ -284,8 +284,8 @@ function Index() {
 									Frequent Deviations
 								</h2>
 							</div>
-							<div className="flex-shrink-0 px-3 text-gray-light-ryzr">
-								Fails
+							<div className="flex-shrink-0 text-gray-light-ryzr">
+								Occurences
 							</div>
 						</div>
 						<div className="flex flex-grow flex-col">

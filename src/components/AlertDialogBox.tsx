@@ -9,6 +9,7 @@ import {
 	AlertDialogAction,
 	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { cn } from "@/lib/utils";
 import { AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -23,6 +24,7 @@ interface AlertDialogBoxProps {
 	onAction?: () => void;
 	actionHref?: string;
 	onCancel?: () => void;
+	confirmButtonClassName?: string;
 }
 
 export const AlertDialogBox: React.FC<AlertDialogBoxProps> = ({
@@ -35,6 +37,7 @@ export const AlertDialogBox: React.FC<AlertDialogBoxProps> = ({
 	open,
 	onOpenChange,
 	onCancel,
+	confirmButtonClassName = "",
 }) => {
 	const [isInternalOpen, setIsInternalOpen] = useState(false);
 
@@ -68,7 +71,7 @@ export const AlertDialogBox: React.FC<AlertDialogBoxProps> = ({
 				<AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
 			)}
 
-			<AlertDialogContent>
+			<AlertDialogContent className="bg-black">
 				<AlertDialogHeader>
 					<AlertDialogTitle>{`${title}`}</AlertDialogTitle>
 					<AlertDialogDescription>
@@ -77,18 +80,34 @@ export const AlertDialogBox: React.FC<AlertDialogBoxProps> = ({
 				</AlertDialogHeader>
 
 				<AlertDialogFooter>
-					<AlertDialogCancel onClick={handleCancel} disabled={isLoading}>
+					<AlertDialogCancel
+						onClick={handleCancel}
+						disabled={isLoading}
+					>
 						Cancel
 					</AlertDialogCancel>
 
 					{actionHref ? (
 						<AlertDialogAction asChild>
-							<Link className="bg-sky-500 hover:bg-sky-600 transition-colors 
-							duration-200 text-white" to={actionHref}>{actionLabel}</Link>
+							<Link
+								className={cn(
+									"bg-sky-500 hover:bg-sky-600 transition-colors duration-200 text-white",
+									confirmButtonClassName
+								)}
+								to={actionHref}
+							>
+								{actionLabel}
+							</Link>
 						</AlertDialogAction>
 					) : (
-						<AlertDialogAction className="bg-sky-500 hover:bg-sky-600 transition-colors 
-							duration-200 text-white" onClick={handleAction} disabled={isLoading}>
+						<AlertDialogAction
+							className={cn(
+								"bg-sky-500 hover:bg-sky-600 transition-colors duration-200 text-white",
+								confirmButtonClassName
+							)}
+							onClick={handleAction}
+							disabled={isLoading}
+						>
 							{actionLabel}
 						</AlertDialogAction>
 					)}

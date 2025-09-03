@@ -20,10 +20,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-	Ellipsis,
-	MoreHorizontal,
-} from "lucide-react";
+import { Ellipsis, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -32,9 +29,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import {
-	reportResultDTO,
-} from "@/models/reports/ExcelDTOs";
+import { reportResultDTO } from "@/models/reports/ExcelDTOs";
 import reportsService from "@/services/reportsServices";
 import { RoundSpinner } from "@/components/ui/spinner";
 import * as dfd from "danfojs";
@@ -78,6 +73,14 @@ function EvaluationDashboard() {
 					return {
 						...ev,
 						processing_status: newStatus.status,
+						overall_score:
+							newStatus.status === "completed"
+								? parseInt(
+										newStatus.progress.score_percentage.toFixed(
+											2
+										)
+								  )
+								: 0,
 					};
 				}
 				return ev;
@@ -116,7 +119,6 @@ function EvaluationDashboard() {
 
 				const onComplete = () => {
 					pollers.delete(ev.eval_id);
-					setRefreshTrigger((prev) => prev + 1); //TODO:a problem that may cause race condition but is rquired to refetch the evaluations after one completes as the status service does not provide scores
 				};
 
 				poller.startPolling(
@@ -318,6 +320,7 @@ function EvaluationDashboard() {
 													reportName: `Report_${
 														index + 1
 													}`,
+													report_type: item.report_type === "Observations" ? "Gap Analysis Report" : item.report_type,
 												};
 											})
 											.sort((a, b) =>
@@ -413,6 +416,7 @@ function EvaluationDashboard() {
 
 									performDelete();
 								}}
+								confirmButtonClassName="bg-rose-600 hover:bg-rose-700 focus:ring-rose-600"
 							/>
 						</DropdownMenuContent>
 					</DropdownMenu>
@@ -615,7 +619,7 @@ function EvaluationDashboard() {
 			const blob = new Blob([buffer], {
 				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 			});
-			FileSaver.saveAs(blob, "report.xlsx");
+			FileSaver.saveAs(blob, reportCompany.name + " report.xlsx");
 		} catch {
 			toast({
 				title: "Error",

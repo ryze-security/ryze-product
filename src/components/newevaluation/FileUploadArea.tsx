@@ -193,7 +193,8 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 									Drag and drop files here, or click to browse
 								</p>
 								<p className="text-md opacity-45">
-									Support for PDF, DOCX, DOC and TXT files
+									Support for PDF, DOCX, XLSX, XLS, CSV, PPTX,
+									DOC and TXT files
 								</p>
 							</div>
 							<Button

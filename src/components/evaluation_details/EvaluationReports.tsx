@@ -83,6 +83,7 @@ function EvaluationReports(props: Props) {
 								item.created_at
 							).toLocaleDateString(),
 							reportName: `Report_${index + 1}`,
+							report_type: item.report_type === "Observations" ? "Gap Analysis Report" : item.report_type,
 						};
 					})
 					.sort((a, b) => b.created_at.localeCompare(a.created_at));
