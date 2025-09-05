@@ -216,7 +216,7 @@ function Index() {
 				<div className="max-w-7xl items-start w-full pl-4 grid grid-cols-2 gap-2">
 					{/* Card 1 */}
 					<div className="flex flex-col bg-[#18181B] rounded-xl p-6 shadow-md w-full h-[330px]">
-					<div className="flex items-center gap-4 p-4 pt-0">
+						<div className="flex items-center gap-4 p-4 pt-0">
 							<div className="flex items-center gap-3 flex-grow">
 								<div className="flex-shrink-0">
 									<Building className="h-6 w-6 text-violet-ryzr" />
@@ -229,18 +229,20 @@ function Index() {
 								Deviations
 							</div>
 						</div>
-						{companies.status !== "succeeded" ? (
-							<div className="flex items-center justify-center h-full">
-								<RoundSpinner />
-							</div>
-						) : companies.data.length !== 0 ? (
-							[...companies.data]
-								.sort(
-									(a, b) =>
-										b.deviations_count - a.deviations_count
-								)
-								.slice(0, 3)
-								.map((vulnerability, index) => (
+						<div className="flex-grow">
+							{companies.status !== "succeeded" ? (
+								<div className="flex items-center justify-center h-full">
+									<RoundSpinner />
+								</div>
+							) : companies.data.length !== 0 ? (
+								[...companies.data]
+									.sort(
+										(a, b) =>
+											b.deviations_count -
+											a.deviations_count
+									)
+									.slice(0, 3)
+									.map((vulnerability, index) => (
 										<TableRowWithNumber
 											companyName={
 												vulnerability.tg_company_display_name
@@ -250,14 +252,15 @@ function Index() {
 											}
 											link={vulnerability.tg_company_id}
 										/>
-								))
-						) : (
-							<div className="flex items-center justify-center h-full">
-								<p className="text-gray-light-ryzr">
-									No auditees found.
-								</p>
-							</div>
-						)}
+									))
+							) : (
+								<div className="flex items-center justify-center h-full">
+									<p className="text-gray-light-ryzr">
+										No auditees found.
+									</p>
+								</div>
+							)}
+						</div>
 						<div className="w-full flex-end">
 							<div className="flex justify-center mb-2 mt-4 sticky bottom-0 bg-transparent">
 								<Button
@@ -294,17 +297,21 @@ function Index() {
 									<RoundSpinner />
 								</div>
 							) : deviations.deviations.length > 0 ? (
-								[...deviations.deviations]
-									.slice(0, 3)
-									.map((deviation, index) => (
-										<DeviationRows
-											key={index}
-											deviation={
-												deviation?.control_display_name
-											}
-											count={deviation?.num_evals_failed}
-										/>
-									))
+								<div className="h-full">
+									{[...deviations.deviations]
+										.slice(0, 3)
+										.map((deviation, index) => (
+											<DeviationRows
+												key={index}
+												deviation={
+													deviation?.control_display_name
+												}
+												count={
+													deviation?.num_evals_failed
+												}
+											/>
+										))}
+								</div>
 							) : (
 								<div className="flex items-center justify-center h-full">
 									<p className="text-gray-light-ryzr">

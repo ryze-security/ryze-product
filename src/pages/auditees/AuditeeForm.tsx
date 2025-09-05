@@ -147,7 +147,7 @@ function AuditeeForm() {
 			tenant_id: userData.tenant_id,
 			company_name: data.auditeeName,
 			company_type: data.auditeeData[0],
-			created_by: "FE_SYSTEM", //TODO: get user id from auth context
+			created_by: userData.first_name + " "+ userData.last_name,
 			data_type: data.auditeeData,
 			service_type: data.auditeeService,
 		};
