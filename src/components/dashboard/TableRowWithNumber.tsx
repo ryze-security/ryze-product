@@ -18,7 +18,7 @@ function TableRowWithNumber(props: Props) {
 
 	return (
 		<div
-			className="flex items-center gap-6 bg-transparent text-white rounded-xl p-4 w-full hover:bg-zinc-700 hover:bg-opacity-50 hover:shadow-md transition duration-150 ease-in-out hover:cursor-pointer"
+			className="flex items-center gap-4 bg-transparent text-white rounded-xl p-4 w-full hover:bg-zinc-700 hover:bg-opacity-50 hover:shadow-md transition duration-150 ease-in-out hover:cursor-pointer"
 			onClick={() => link && navigate(`/auditee/edit/${link}`)}
 		>
 			{/* Icon - left aligned, if provided */}

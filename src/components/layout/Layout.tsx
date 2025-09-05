@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { RootState } from "@/store/storeIndex";
 import { fetchUserAppData, logout } from "@/store/slices/appUserSlice";
 import axiosInstance from "@/services/axiosInstance";
+import { NotificationProvider } from "../notification/NotificationContext";
 
 function Layout() {
 	const { isSignedIn, isLoaded } = useAuth();
@@ -36,10 +37,12 @@ function Layout() {
 
 	return (
 		<SidebarProvider defaultOpen={false}>
-			<AppSidebar />
-			<main className="w-full h-screen">
-				<Outlet />
-			</main>
+			<NotificationProvider>
+				<AppSidebar />
+				<main className="w-full h-screen">
+					<Outlet />
+				</main>
+			</NotificationProvider>
 		</SidebarProvider>
 	);
 }

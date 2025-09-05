@@ -10,6 +10,7 @@ interface FrameworkCardProps {
 	setFocus: (field: string) => void;
 	disabed?: boolean;
 	className?: string;
+	multiSelectAllowed?: boolean;
 }
 
 export const FrameworkCard = ({
@@ -20,7 +21,8 @@ export const FrameworkCard = ({
 	error,
 	setFocus,
 	disabed = false,
-	className = ""
+	className = "",
+	multiSelectAllowed = true,
 }: FrameworkCardProps) => {
 	const { field } = useController({ name: fieldName, control, rules: {validate: v => v.length > 0 || "Please select atleast one control framework!"} });
 
@@ -35,6 +37,9 @@ export const FrameworkCard = ({
 
 	const handleCardClick = () => {
 		if (disabed) return;
+		if (!multiSelectAllowed && field.value?.length === 1 && !isSelected) {
+			return;
+		}
 		toggleSelect();
 		if (error) {
 			setFocus(fieldName); // Focus on the field if there's an error

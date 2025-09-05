@@ -19,7 +19,6 @@ import evaluationService from "@/services/evaluationServices";
 import reportsService, { ReportsService } from "@/services/reportsServices";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadEvaluationData } from "@/store/slices/evaluationSlice";
-import { addNotification } from "@/store/slices/notificationSlice";
 import {
 	ArrowDown,
 	BuildingIcon,
@@ -246,17 +245,10 @@ function EvaluationDetails() {
 						setReportID(response.report_id);
 						toast({
 							title: `Report Generation Started`,
-							description: `Your report is being generated. You will be notified once it's ready.`,
+							description: `Your report will be generated in an few minutes. You will be notified once it's ready.`,
 							variant: "default",
 							className: "bg-green-ryzr",
 						});
-						dispatch(
-							addNotification({
-								user: "System",
-								action: "started generating",
-								target: "an Excel report",
-							})
-						);
 					}
 				} catch (error) {
 					toast({
@@ -264,13 +256,6 @@ function EvaluationDetails() {
 						description: `There was an error while starting the report generation. Please try again later!`,
 						variant: "destructive",
 					});
-					dispatch(
-						addNotification({
-							user: "System",
-							action: "failed in generating",
-							target: "an Excel report",
-						})
-					);
 				}
 			}
 		} catch (error) {

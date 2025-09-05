@@ -642,6 +642,7 @@ const NewEvaluation = () => {
 																setFocus={
 																	methods.setFocus
 																} // Pass the setFocus function
+																multiSelectAllowed={false}
 															/>
 														</div>
 													)

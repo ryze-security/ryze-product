@@ -1,4 +1,5 @@
 import {
+	Bell,
 	Building2Icon,
 	ChevronDown,
 	Dot,
@@ -31,17 +32,18 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { formatRelativeTime } from "@/utils/formatTimestamp";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/storeIndex";
-import { NotificationDTO } from "@/models/notification/NotificationDTO";
-import {
-	dismissNotification,
-	markAllAsRead,
-	markAsRead,
-} from "@/store/slices/notificationSlice";
 import { useClerk } from "@clerk/clerk-react";
 import { fetchUserAppData, logout } from "@/store/slices/appUserSlice";
 import ComingSoonBorder from "./ComingSoonBorder";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { useState } from "react";
+import {
+	NotificationProvider,
+	useNotification,
+} from "./notification/NotificationContext";
+import { Separator } from "./ui/separator";
+import { RoundSpinner } from "./ui/spinner";
+import { cn } from "@/lib/utils";
 
 // Menu items.
 const items = [
@@ -75,10 +77,6 @@ const items = [
 function DesktopSidebar() {
 	const { setOpen, open, isMobile } = useSidebar();
 	const dispatch = useDispatch();
-	const notifications = useSelector(
-		(state: RootState) => state.notifications
-	) as NotificationDTO[];
-	const unreadCount = notifications.filter((n) => n.unread).length;
 	const { signOut } = useClerk();
 	const navigate = useNavigate();
 
@@ -86,11 +84,6 @@ function DesktopSidebar() {
 		await signOut();
 		dispatch(logout());
 		navigate("/");
-	};
-
-	const handleDismiss = (e: any, id: number) => {
-		e.stopPropagation();
-		dispatch(dismissNotification(id));
 	};
 
 	return (
@@ -152,90 +145,14 @@ function DesktopSidebar() {
 			</SidebarContent>
 			<SidebarFooter>
 				<SidebarMenu className="gap-3">
-					<Popover>
-						<PopoverTrigger asChild>
-							<SidebarMenuButton>
-								<NotificationBell />
-								<span>Notifications</span>
-							</SidebarMenuButton>
-						</PopoverTrigger>
-						<PopoverContent className="w-80 p-1">
-							<div className="flex items-baseline justify-between gap-4 px-3 py-2">
-								<div className="text-sm font-semibold">
-									Notifications
-								</div>
-								{unreadCount > 0 && (
-									<button
-										className="text-xs font-medium hover:underline"
-										onClick={() =>
-											dispatch(markAllAsRead())
-										}
-									>
-										Mark all as read
-									</button>
-								)}
-							</div>
-							<div
-								role="separator"
-								aria-orientation="horizontal"
-								className="-mx-1 my-1 h-px bg-border"
-							></div>
-							{notifications.map((notification) => (
-								<div
-									key={notification.id}
-									className="rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent group"
-								>
-									<div className="relative flex items-start pe-3">
-										<div className="flex-1 space-y-1">
-											<button
-												className="text-left text-foreground/80 after:absolute after:inset-0"
-												onClick={() =>
-													dispatch(markAsRead(notification.id))
-												}
-											>
-												<span className="font-medium text-foreground hover:underline">
-													{notification.user}
-												</span>{" "}
-												{notification.action}{" "}
-												<span className="font-medium text-foreground hover:underline">
-													{notification.target}
-												</span>
-												.
-											</button>
-											<div className="text-xs text-muted-foreground">
-												{formatRelativeTime(
-													notification.timestamp
-												)}
-											</div>
-										</div>
-										<button
-											onClick={(e) =>
-												handleDismiss(
-													e,
-													notification.id
-												)
-											}
-											className="absolute right-0 top-0 p-0 text-white opacity-0
-												group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-200"
-											aria-label="Dismiss notification"
-										>
-											<X size={14} />
-										</button>
-										{notification.unread && (
-											<div className="absolute end-0 self-center">
-												<span className="sr-only">
-													Unread
-												</span>
-												<Dot />
-											</div>
-										)}
-									</div>
-								</div>
-							))}
-						</PopoverContent>
-					</Popover>
 					<SidebarMenuItem>
-						<SidebarMenuButton className="bg-destructive text-destructive-foreground hover:bg-destructive/90 font-semibold" onClick={handleLogout}>
+						<NotificationBell />
+					</SidebarMenuItem>
+					<SidebarMenuItem>
+						<SidebarMenuButton
+							className="bg-destructive text-destructive-foreground hover:bg-destructive/90 font-semibold"
+							onClick={handleLogout}
+						>
 							<LogOut className="w-4 h-4" />
 							<span>Logout</span>
 						</SidebarMenuButton>
@@ -248,14 +165,22 @@ function DesktopSidebar() {
 
 function MobileNavbar() {
 	const dispatch = useDispatch();
-	const notifications = useSelector(
-		(state: RootState) => state.notifications
-	) as NotificationDTO[];
-	const unreadCount = notifications.filter((n) => n.unread).length;
 	const [isSheetOpen, setIsSheetOpen] = useState(false);
 	const [notificationsVisible, setNotificationsVisible] = useState(false);
 	const { signOut } = useClerk();
 	const navigate = useNavigate();
+
+	const {
+		notifications,
+		unreadCount,
+		loading,
+		markAsRead,
+		deleteNotification,
+		loadMoreNotifications,
+		loadingMore,
+		hasMore,
+		markAllAsRead,
+	} = useNotification();
 
 	const handleLinkClick = () => {
 		setIsSheetOpen(false);
@@ -267,9 +192,11 @@ function MobileNavbar() {
 		navigate("/");
 	};
 
-	const handleDismiss = (e: any, id: number) => {
-		e.stopPropagation();
-		dispatch(dismissNotification(id));
+	const handleScroll = (e) => {
+		const { scrollTop, clientHeight, scrollHeight } = e.currentTarget;
+		if (scrollHeight - scrollTop <= clientHeight + 50) {
+			loadMoreNotifications();
+		}
 	};
 
 	return (
@@ -312,10 +239,10 @@ function MobileNavbar() {
 									<img
 										src="/assets/Ryzr_White Logo_v2.png"
 										alt="Ryzr Logo"
-										className="w-6 h-6"
+										className="w-10 h-10"
 									/>
-									<div className="border-r-2 h-full border-l-gray-ryzr rounded-2xl" />
-									<span className="font-bold text-lg">
+									<div className="border-l-2 h-full border-l-gray-light-ryzr rounded-2xl" />
+									<span className="font-bold text-xl">
 										Ryzr.
 									</span>
 								</SidebarHeader>
@@ -360,7 +287,19 @@ function MobileNavbar() {
 									}
 								>
 									<span className="flex items-center gap-2">
-										<NotificationBell />
+										<div className="relative">
+											<Bell
+												size={16}
+												strokeWidth={2}
+												aria-hidden="true"
+											/>
+											{unreadCount > 0 && (
+												<span className="absolute top-0.5 right-0 transform translate-x-1/2 -translate-y-1/2 flex h-2.5 w-2.5 z-10">
+													<span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-violet-light-ryzr opacity-75"></span>
+													<span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-violet-ryzr"></span>
+												</span>
+											)}
+										</div>
 										<span>Notifications</span>
 									</span>
 									<ChevronDown
@@ -374,85 +313,114 @@ function MobileNavbar() {
 
 								{notificationsVisible && (
 									<div className="border rounded-md mt-2">
-										<div className="flex items-baseline justify-between gap-4 px-3 py-2">
-											<div className="text-sm font-semibold">
+										<div className="flex justify-between items-center p-3">
+											<h3 className="font-semibold text-white">
 												Notifications
-											</div>
+											</h3>
 											{unreadCount > 0 && (
-												<button
-													className="text-xs font-medium hover:underline"
-													onClick={() =>
-														dispatch(
-															markAllAsRead()
-														)
-													}
+												<Button
+													variant="secondary"
+													size="sm"
+													onClick={markAllAsRead}
 												>
 													Mark all as read
-												</button>
+												</Button>
 											)}
 										</div>
-										<div className="border-t my-1" />
-										<div className="max-h-48 overflow-y-auto">
-											{notifications.map(
-												(notification) => (
+										<Separator className="mb-1" />
+										{loading ? (
+											<div className="flex w-full justify-center">
+												<RoundSpinner />
+											</div>
+										) : notifications.length === 0 ? (
+											<p className="text-zinc-400 text-sm text-center py-4">
+												You're all caught up!
+											</p>
+										) : (
+											<div
+												className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent"
+												onScroll={handleScroll}
+											>
+												{notifications.map((n) => (
 													<div
-														key={notification.id}
-														className="rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent group"
+														key={n.notification_id}
+														className={cn(
+															"p-2 rounded-md transition-colors cursor-pointer",
+															!n.read
+																? "bg-sky-900/30 hover:bg-sky-900/50"
+																: "hover:bg-zinc-700/50"
+														)}
+														onClick={() => {
+															if (!n.read) {
+																markAsRead(n.notification_id);
+															}
+															switch (n.type) {
+																case "evaluation_completed":
+																	navigate(
+																		`/evaluation/${n.data.company_id}/${n.data.eval_id}`
+																	);
+																	break;
+																case "report_generation_completed":
+																	navigate(
+																		`/evaluation/${n.data.company_id}/${n.data.eval_id}`
+																	);
+																	break;
+																default:
+																	break;
+															}
+														} 
+														}
 													>
-														<div className="relative flex items-start pe-3">
-															<div
-																className="flex-1 space-y-1"
-																onClick={() =>
-																	dispatch(
-																		markAsRead(
-																			notification.id
-																		)
-																	)
-																}
-															>
-																<p>
-																	<span className="font-medium">
+														<div className="flex items-start">
+															<div className="flex flex-1 flex-col space-y-1">
+																<div className="flex justify-between items-center gap-2">
+																	<p className="font-bold flex-1 text-white text-sm">
 																		{
-																			notification.user
+																			n.title
 																		}
-																	</span>{" "}
-																	{
-																		notification.action
-																	}{" "}
-																	<span className="font-medium">
-																		{
-																			notification.target
-																		}
-																	</span>
-																	.
+																	</p>
+																	<Button
+																		variant="ghost"
+																		className="h-fit text-zinc-500 hover:text-white flex-shrink-0 hover:bg-transparent justify-end w-fit"
+																		size="icon"
+																		onClick={(
+																			e
+																		) => {
+																			e.stopPropagation();
+																			deleteNotification(
+																				n.notification_id
+																			);
+																		}}
+																	>
+																		<X
+																			size={
+																				14
+																			}
+																		/>
+																	</Button>
+																</div>
+																<p className="text-zinc-300 text-xs mt-1">
+																	{n.message}
 																</p>
-																<div className="text-xs text-muted-foreground">
-																	{formatRelativeTime(
-																		notification.timestamp
-																	)}
-																</div>
 															</div>
-															<button
-																onClick={(e) =>
-																	handleDismiss(
-																		e,
-																		notification.id
-																	)
-																}
-																className="absolute right-0 top-0 p-0 text-muted-foreground opacity-0 group-hover:opacity-100"
-															>
-																<X size={14} />
-															</button>
-															{notification.unread && (
-																<div className="absolute end-0 self-center">
-																	<Dot />
-																</div>
-															)}
 														</div>
 													</div>
-												)
-											)}
-										</div>
+												))}
+												{loadingMore && (
+													<div className="flex w-full justify-center">
+														<RoundSpinner />
+													</div>
+												)}
+												{!hasMore &&
+													notifications.length >
+														0 && (
+														<p className="text-zinc-400 text-sm text-center py-4">
+															You're all caught
+															up!
+														</p>
+													)}
+											</div>
+										)}
 									</div>
 								)}
 

@@ -14,7 +14,7 @@ const loadInitialState = (): AuthorizationDTO => {
 			first_name: "Aditya",
 			last_name: "Dev",
 			tenant_id: "7077beec-a9ef-44ef-a21b-83aab58872c9",
-			user_id: "",
+			user_id: "5aaaad12-7ab9-4db2-9768-010bafc7ab93",
 			created_at: "",
 			status: "idle",
 		};
