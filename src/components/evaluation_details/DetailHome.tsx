@@ -780,6 +780,15 @@ const InfoCard = ({
 	stepChangefn?: (stepId: number) => void;
 }) => {
 	const dataInInteger = parseInt(data);
+
+	const formatHeading = (text: string) => {
+        const firstSpaceIndex = text.indexOf(' ');
+        if (firstSpaceIndex === -1) {
+            return text;
+        }
+        return text.substring(0, firstSpaceIndex) + '\n' + text.substring(firstSpaceIndex + 1);
+    };
+
 	return (
 		<Card
 			className={`${
@@ -794,8 +803,10 @@ const InfoCard = ({
 			}}
 		>
 			<CardContent className="p-6 flex flex-col justify-between h-full">
-				<div className="flex-grow text-2xl text-white opacity-85 font-bold leading-snug whitespace-pre-wrap break-words">
-					{heading.split(" ").join("\n")}
+				<div className="flex-grow text-3xl text-white opacity-85 font-bold leading-snug">
+					<p className="line-clamp-2 whitespace-pre-wrap">
+						{formatHeading(heading)}
+					</p>
 				</div>
 				<div
 					className={`text-[48px] ${
