@@ -213,6 +213,13 @@ function EvaluationDashboard() {
 							</DropdownMenuLabel>
 							<DropdownMenuSeparator />
 							<DropdownMenuItem
+								onClick={() => column.setFilterValue("")}
+							>
+								<span className={`px-2 py-1 rounded bg-gray-light-ryzr`}>
+									Reset
+								</span>
+							</DropdownMenuItem>
+							<DropdownMenuItem
 								onClick={() =>
 									column.setFilterValue("in_progress")
 								}
@@ -235,6 +242,17 @@ function EvaluationDashboard() {
 								</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem
+								onClick={() =>
+									column.setFilterValue("cancelled")
+								}
+							>
+								<span
+									className={`px-2 py-1 rounded bg-red-ryzr`}
+								>
+									Cancelled
+								</span>
+							</DropdownMenuItem>
+							<DropdownMenuItem
 								onClick={() => column.setFilterValue("failed")}
 							>
 								<span
@@ -254,7 +272,7 @@ function EvaluationDashboard() {
 						className={`px-2 py-1 rounded ${
 							evals === "completed"
 								? "bg-green-ryzr"
-								: evals === "failed"
+								: evals === "failed" || evals === "cancelled"
 								? "bg-red-ryzr"
 								: "bg-yellow-600"
 						}`}
@@ -320,7 +338,11 @@ function EvaluationDashboard() {
 													reportName: `Report_${
 														index + 1
 													}`,
-													report_type: item.report_type === "Observations" ? "Gap Analysis Report" : item.report_type,
+													report_type:
+														item.report_type ===
+														"Observations"
+															? "Gap Analysis Report"
+															: item.report_type,
 												};
 											})
 											.sort((a, b) =>
@@ -356,6 +378,61 @@ function EvaluationDashboard() {
 			enableHiding: false,
 			cell: ({ row }) => {
 				const evaluation = row.original;
+				const isInProgress =
+					evaluation.processing_status === "in_progress" ||
+					evaluation.processing_status === "pending" ||
+					evaluation.processing_status ===
+						"processing_missing_elements";
+
+				const performDelete = async () => {
+					try {
+						const response =
+							await evaluationService.evaluationService.deleteEvaluation(
+								userData.tenant_id,
+								evaluation.tg_company_id,
+								evaluation.eval_id
+							);
+						if (response.status === "success") {
+							setRefreshTrigger((prev) => prev + 1);
+							toast({
+								title: "Report Deleted!",
+								description:
+									"The report has been deleted successfully",
+							});
+						}
+					} catch (error) {
+						toast({
+							title: "Error",
+							description: `An error occurred while deleting the evaluation. Please try again later!`,
+							variant: "destructive",
+						});
+					}
+				};
+
+				const cancelEvaluation = async () => {
+					try {
+						const response =
+							await evaluationService.evaluationService.cancelEvaluation(
+								userData.tenant_id,
+								evaluation.tg_company_id,
+								evaluation.eval_id
+							);
+						if (response) {
+							setRefreshTrigger((prev) => prev + 1);
+							toast({
+								title: "Evaluation Cancelled!",
+								description:
+									"The evaluation has been cancelled successfully",
+							});
+						}
+					} catch {
+						toast({
+							title: "Error",
+							description: `An error occurred while cancelling this evaluation. Please try again later!`,
+							variant: "destructive",
+						});
+					}
+				};
 				return (
 					<DropdownMenu>
 						<DropdownMenuTrigger
@@ -372,52 +449,43 @@ function EvaluationDashboard() {
 							onClick={(e) => e.stopPropagation()} // Prevent row click
 						>
 							<DropdownMenuLabel>Actions</DropdownMenuLabel>
-							<AlertDialogBox
-								trigger={
-									<DropdownMenuItem
-										onSelect={(e) => e.preventDefault()}
-										onClick={(e) => e.stopPropagation()}
-										className="text-rose-600 focus:text-white focus:bg-rose-600"
-									>
-										Delete Evaluation
-									</DropdownMenuItem>
-								}
-								title="Are You Sure?"
-								subheading={`Are you sure you want to delete this evaluation? This action cannot be undone.`}
-								actionLabel="Delete"
-								onAction={() => {
-									const performDelete = async () => {
-										try {
-											const response =
-												await evaluationService.evaluationService.deleteEvaluation(
-													userData.tenant_id,
-													evaluation.tg_company_id,
-													evaluation.eval_id
-												);
-											if (response.status === "success") {
-												setRefreshTrigger(
-													(prev) => prev + 1
-												);
-												toast({
-													title: "Report Deleted!",
-													description:
-														"The report has been deleted successfully",
-													variant: "destructive",
-												});
-											}
-										} catch (error) {
-											toast({
-												title: "Error",
-												description: `An error occurred while deleting the evaluation. Please try again later!`,
-												variant: "destructive",
-											});
-										}
-									};
-
-									performDelete();
-								}}
-								confirmButtonClassName="bg-rose-600 hover:bg-rose-700 focus:ring-rose-600"
-							/>
+							{isInProgress ? (
+								<AlertDialogBox
+									trigger={
+										<DropdownMenuItem
+											onSelect={(e) => e.preventDefault()}
+											onClick={(e) => e.stopPropagation()}
+											className="text-yellow-600 focus:text-white focus:bg-yellow-700 hover:bg-yellow-700"
+										>
+											Cancel Evaluation
+										</DropdownMenuItem>
+									}
+									title="Cancel Evaluation?"
+									subheading="This action will stop the current evaluation process and cannot be restarted again. Are you sure you want to continue?"
+									actionLabel="Confirm"
+									onAction={cancelEvaluation}
+									confirmButtonClassName="bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-600"
+								/>
+							) : (
+								<AlertDialogBox
+									trigger={
+										<DropdownMenuItem
+											onSelect={(e) => e.preventDefault()}
+											onClick={(e) => e.stopPropagation()}
+											className="text-rose-600 focus:text-white focus:bg-rose-600"
+										>
+											Delete Evaluation
+										</DropdownMenuItem>
+									}
+									title="Are You Sure?"
+									subheading={`Are you sure you want to delete this evaluation? This action cannot be undone.`}
+									actionLabel="Delete"
+									onAction={() => {
+										performDelete();
+									}}
+									confirmButtonClassName="bg-rose-600 hover:bg-rose-700 focus:ring-rose-600"
+								/>
+							)}
 						</DropdownMenuContent>
 					</DropdownMenu>
 				);
@@ -651,6 +719,9 @@ function EvaluationDashboard() {
 					rowIdKey={["tg_company_id", "eval_id"]}
 					rowLinkPrefix="/evaluation/"
 					isLoading={isEvalLoading}
+					isRowDisabled={(row) =>
+						row.processing_status !== "completed"
+					}
 				/>
 				<Dialog
 					open={reportDialogOpen}

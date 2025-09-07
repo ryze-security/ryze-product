@@ -1,3 +1,4 @@
+import { useToast } from "@/hooks/use-toast";
 import {
 	Notification,
 	NotificationListResponseDTO,
@@ -13,6 +14,8 @@ import React, {
 	useRef,
 	useState,
 } from "react";
+import { useNavigate } from "react-router-dom";
+import { ToastAction } from "../ui/toast";
 
 const NotificationContext = createContext(null);
 
@@ -25,6 +28,10 @@ export function NotificationProvider({ children }) {
 	const [hasMore, setHasMore] = useState(true);
 
 	const isOptimisticUpdateRef = useRef<boolean>(false);
+	const latestNotificationIdRef = useRef<string | null>(null);
+
+	const { toast } = useToast();
+	const navigate = useNavigate();
 
 	const { user_id, tenant_id } = useAppSelector((state) => state.appUser);
 
@@ -38,11 +45,7 @@ export function NotificationProvider({ children }) {
 			setNotifications(newNotifications);
 			setUnreadCount(resposne.unread_count);
 			setTotalCount(resposne.total_count);
-			// --- TEMPORARY WORKAROUND ---
-			// This assumes there are more notifications until the API returns an empty array.
-			// Once the backend `total_count` is fixed, this should be reverted to:
-			// setHasMore(newNotifications.length < response.total_count);
-			setHasMore(resposne.notifications.length > 0);
+			setHasMore(newNotifications.length < resposne.total_count);
 			if (loading) setLoading(false);
 		},
 		[loading, notifications]
@@ -50,7 +53,6 @@ export function NotificationProvider({ children }) {
 
 	//Effect to poll new notifications every 30 seconds
 	useEffect(() => {
-
 		if (!user_id || !tenant_id) return;
 
 		const poll = async () => {
@@ -61,6 +63,40 @@ export function NotificationProvider({ children }) {
 					10,
 					0
 				);
+				const newestNotification = response
+					.notifications[0] as Notification;
+
+				if (
+					latestNotificationIdRef.current === null &&
+					newestNotification
+				) {
+					latestNotificationIdRef.current =
+						newestNotification.notification_id;
+				} else if (
+					newestNotification &&
+					newestNotification.notification_id !==
+						latestNotificationIdRef.current &&
+					!newestNotification.read
+				) {
+					toast({
+						title: `${newestNotification.title}`,
+						description: `${newestNotification.message}`,
+						action: (
+							<ToastAction
+								altText="Go to page"
+								onClick={() => {
+									navigate(
+										`/evaluation/${newestNotification.data.company_id}/${newestNotification.data.eval_id}`
+									);
+								}}
+							>
+								View
+							</ToastAction>
+						),
+					});
+					latestNotificationIdRef.current =
+						newestNotification.notification_id;
+				}
 
 				if (
 					notifications.length === 0 ||
@@ -183,6 +219,10 @@ export function NotificationProvider({ children }) {
 			);
 
 			isOptimisticUpdateRef.current = true;
+			if(latestNotificationIdRef.current === notificationId) {
+				const newLatest = originalNotifications.filter(n => n.notification_id !== notificationId)[0];
+				latestNotificationIdRef.current = newLatest ? newLatest.notification_id : null;
+			}
 			setNotifications((prev) =>
 				prev.filter((n) => n.notification_id !== notificationId)
 			);

@@ -58,6 +58,7 @@ export const FrameworkCard = ({
 				className
 			)}
 		>
+			{/* TODO: add conditional tooltips if name is truncated */}
 			{name}
 		</div>
 	);
