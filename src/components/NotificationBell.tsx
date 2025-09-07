@@ -39,8 +39,8 @@ function NotificationBell() {
 						<Bell size={16} strokeWidth={2} aria-hidden="true" />
 						{unreadCount > 0 && (
 							<span className="absolute top-0.5 right-0 transform translate-x-1/2 -translate-y-1/2 flex h-2.5 w-2.5 z-10">
-								<span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-violet-light-ryzr opacity-75"></span>
-								<span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-violet-ryzr"></span>
+								<span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red opacity-75"></span>
+								<span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-red"></span>
 							</span>
 						)}
 					</div>
