@@ -1,6 +1,6 @@
 import ComingSoonBorder from "@/components/ComingSoonBorder";
+import { DynamicIcons } from "@/components/DynamicIcons";
 import NavHeader from "@/components/evaluation_details/nav-header";
-import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -21,25 +21,9 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadEvaluationData } from "@/store/slices/evaluationSlice";
 import {
 	ArrowDown,
-	BuildingIcon,
-	DatabaseIcon,
-	FileTextIcon,
-	FileUserIcon,
-	HomeIcon,
-	icons,
-	IdCardIcon,
 } from "lucide-react";
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-
-const steps = [
-	{ id: 0, label: "Home", icon: <HomeIcon /> },
-	{ id: 1, label: "Organizational", icon: <BuildingIcon /> },
-	{ id: 2, label: "People", icon: <FileUserIcon /> },
-	{ id: 3, label: "Physical", icon: <IdCardIcon /> },
-	{ id: 4, label: "Technological", icon: <DatabaseIcon /> },
-	{ id: 5, label: "Reports", icon: <FileTextIcon /> },
-];
 
 const Home = React.lazy(
 	() => import("@/components/evaluation_details/DetailHome")
@@ -72,6 +56,26 @@ function EvaluationDetails() {
 
 	const homeRef = useRef(null);
 	const domainDetailRef = useRef(null);
+
+	const dynamicSteps = useMemo(() => {
+		const homeStep = { id: 0, label: "Home", iconName: "Home" };
+
+		const domainSteps = Object.values(domainDataMap).map(
+			(domain, index) => ({
+				id: index + 1,
+				label: domain.Description,
+				iconName: domain.Description,
+			})
+		);
+
+		const reportStep = {
+			id: domainSteps.length + 1,
+			label: "Reports",
+			iconName: "Reports",
+		};
+
+		return [homeStep, ...domainSteps, reportStep];
+	}, [domainDataMap]);
 
 	const goToStep = (stepId: number) => {
 		setCurrentStep(stepId);
@@ -271,14 +275,19 @@ function EvaluationDetails() {
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
-			<section className="flex justify-between items-center w-full bg-black text-white pt-10 px-6 sm:px-12 lg:px-16">
+			<section className="flex justify-between gap-8 items-center w-full bg-black text-white pt-10 px-6 sm:px-12 lg:px-16">
 				{/* Eval Details name etc */}
-				<NavHeader
-					data={steps}
-					stepChangefn={goToStep}
-					currentStep={currentStep}
-				/>
-				<div className="mr-4">
+				<div className="flex-1 min-w-0">
+					<NavHeader
+						data={dynamicSteps.map((step) => ({
+							...step,
+							icon: <DynamicIcons name={step.iconName} />,
+						}))}
+						stepChangefn={goToStep}
+						currentStep={currentStep}
+					/>
+				</div>
+				<div className="flex-shrink-0">
 					<DropdownMenu>
 						<DropdownMenuTrigger
 							className={` bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold px-4 py-2 flex items-center gap-2`}
@@ -355,7 +364,7 @@ function EvaluationDetails() {
 										)
 								)}
 
-								{currentStep === steps.length - 1 && (
+								{currentStep === dynamicSteps.length - 1 && (
 									<ReportsTable
 										tenantId={data.data.TenantId}
 										companyId={data.data.CompanyId}

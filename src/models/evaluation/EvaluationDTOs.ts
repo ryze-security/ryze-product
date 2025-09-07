@@ -144,3 +144,9 @@ export interface evaluationStatusProgress {
 	percentage_complete: number;
 	score_percentage: number
 };
+
+export interface cancelEvaluationResponseDTO {
+	message: string;
+	eval_id: string;
+	status: string;
+}

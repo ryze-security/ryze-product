@@ -33,6 +33,7 @@ interface DataTableProps<TData, TValue> {
 	rowLinkPrefix?: string;
 	isLoading?: boolean;
 	onRowClick?: (row: TData) => void;
+	isRowDisabled?: (row: TData) => boolean;
 
 	// Optional external control
 	externalFilter?: string;
@@ -51,6 +52,7 @@ export function ProgressBarDataTable<TData, TValue>({
 	rowLinkPrefix = "#",
 	isLoading = false,
 	onRowClick,
+	isRowDisabled,
 	externalFilter,
 	setExternalFilter,
 	externalSorting,
@@ -100,7 +102,7 @@ export function ProgressBarDataTable<TData, TValue>({
 		state: {
 			globalFilter: filter,
 			sorting,
-			pagination
+			pagination,
 		},
 		onGlobalFilterChange: setFilter,
 		globalFilterFn: (row, columnId, filterValue) => {
@@ -173,40 +175,54 @@ export function ProgressBarDataTable<TData, TValue>({
 					</TableHeader>
 					<TableBody className="">
 						{table.getRowModel().rows.length ? (
-							table.getRowModel().rows.map((row) => (
-								<TableRow
-									key={row.id}
-									onClick={() => handleRowClick(row.original)}
-									className="cursor-pointer hover:bg-zinc-800 transition text-white/70"
-								>
-									{row.getVisibleCells().map((cell) => (
-										<TableCell key={cell.id}>
-											{typeof cell.getValue() ===
-											  "boolean" ? (
-												<div
-													className={`flex items-center justify-center text-center whitespace-nowrap min-w-fit max-w-40 py-2 px-5 rounded-full text-white ${
-														cell.getValue()
-															? "bg-green-ryzr"
-															: "bg-red-ryzr"
-													}`}
-												>
-													<div className="truncate">
-														{cell.getValue()
-															? "COMPLIANT"
-															: "NON-COMPLIANT"}
+							table.getRowModel().rows.map((row) => {
+								const isDisabled = isRowDisabled
+									? isRowDisabled(row.original)
+									: false;
+								return (
+									<TableRow
+										key={row.id}
+										onClick={() => {
+											if (!isDisabled) {
+												handleRowClick(row.original);
+											}
+										}}
+										className={
+											isDisabled
+												? "opacity-50 cursor-not-allowed" // Disabled styles
+												: "cursor-pointer hover:bg-zinc-800" // Enabled styles
+										}
+									>
+										{row.getVisibleCells().map((cell) => (
+											<TableCell key={cell.id}>
+												{typeof cell.getValue() ===
+												"boolean" ? (
+													<div
+														className={`flex items-center justify-center text-center whitespace-nowrap min-w-fit max-w-40 py-2 px-5 rounded-full text-white ${
+															cell.getValue()
+																? "bg-green-ryzr"
+																: "bg-red-ryzr"
+														}`}
+													>
+														<div className="truncate">
+															{cell.getValue()
+																? "COMPLIANT"
+																: "NON-COMPLIANT"}
+														</div>
 													</div>
-												</div>
-											) : (
-												// Render default cell content for other types
-												flexRender(
-													cell.column.columnDef.cell,
-													cell.getContext()
-												)
-											)}
-										</TableCell>
-									))}
-								</TableRow>
-							))
+												) : (
+													// Render default cell content for other types
+													flexRender(
+														cell.column.columnDef
+															.cell,
+														cell.getContext()
+													)
+												)}
+											</TableCell>
+										))}
+									</TableRow>
+								);
+							})
 						) : (
 							<TableRow>
 								<TableCell
@@ -214,8 +230,9 @@ export function ProgressBarDataTable<TData, TValue>({
 									className="text-center"
 								>
 									{isLoading ? (
-										<div className="flex items-center justify-center"><RoundSpinner /></div>
-										
+										<div className="flex items-center justify-center">
+											<RoundSpinner />
+										</div>
 									) : (
 										"No results found."
 									)}

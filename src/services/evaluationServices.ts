@@ -1,4 +1,5 @@
 import {
+	cancelEvaluationResponseDTO,
 	createEvaluationDTO,
 	createEvaluationResponseDTO,
 	deleteEvaluationResponseDTO,
@@ -229,6 +230,28 @@ export class EvaluationService {
 			throw errorInfo;
 		}
 	}
+
+	async cancelEvaluation(
+		tenantId: string,
+		companyId: string,
+		evalId: string
+	): Promise<cancelEvaluationResponseDTO | any> {
+		try {
+			const response = await axiosInstance.post(
+				`/api/v1/evaluations/${tenantId}/${companyId}/${evalId}/cancel`
+			);
+			if (response.status !== 200) {
+				throw response;
+			}
+			return response.data;
+		} catch (error) {
+			const errorInfo = handleAxiosError(error);
+			console.error("Error cancelling evaluation:", errorInfo.message);
+
+			//rethrowing for conditional rendering
+			throw errorInfo;
+		}
+	}
 }
 
 export class EvaluationStatusService {
@@ -308,16 +331,22 @@ export class AdaptivePolling {
 
 		this.startTimeId = window.setTimeout(() => {
 			this.startTimeId = null;
-			if(this.pollFn){
+			if (this.pollFn) {
 				this.pollFn();
-				this.intervalId = window.setInterval(this.pollFn, this.currentInterval);
+				this.intervalId = window.setInterval(
+					this.pollFn,
+					this.currentInterval
+				);
 			}
-		}, initialDelay)
-
+		}, initialDelay);
 	}
 
 	private adjustInterval(status: string, pollFn: () => void) {
-		const intervals = { pending: 20000, in_progress: 10000, processing_missing_elements: 10000 };
+		const intervals = {
+			pending: 20000,
+			in_progress: 10000,
+			processing_missing_elements: 10000,
+		};
 		const newInterval = intervals[status] || this.currentInterval;
 
 		if (newInterval !== this.currentInterval) {
@@ -328,7 +357,7 @@ export class AdaptivePolling {
 	}
 
 	stopPolling(): void {
-		if(this.startTimeId){
+		if (this.startTimeId) {
 			clearTimeout(this.startTimeId);
 			this.startTimeId = null;
 		}
