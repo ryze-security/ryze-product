@@ -219,6 +219,10 @@ export function NotificationProvider({ children }) {
 			);
 
 			isOptimisticUpdateRef.current = true;
+			if(latestNotificationIdRef.current === notificationId) {
+				const newLatest = originalNotifications.filter(n => n.notification_id !== notificationId)[0];
+				latestNotificationIdRef.current = newLatest ? newLatest.notification_id : null;
+			}
 			setNotifications((prev) =>
 				prev.filter((n) => n.notification_id !== notificationId)
 			);
