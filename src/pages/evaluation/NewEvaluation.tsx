@@ -345,10 +345,10 @@ const NewEvaluation = () => {
 			}
 		};
 
-		if (userData.tenant_id) {
+		if (userData.tenant_id && currentStep === 2) {
 			fetchCredits();
 		}
-	}, [userData.tenant_id]);
+	}, [userData.tenant_id, currentStep]);
 
 	const [frameworkFormSubmitLoading, setFrameworkFormSubmitLoading] =
 		useState(false);
@@ -608,7 +608,7 @@ const NewEvaluation = () => {
 										</div>
 									</div>
 
-									{/* TODO: Framework Selection */}
+									{/*Framework Selection */}
 									<div className="space-y-4 mt-10 w-full">
 										<label className="block text-lg">
 											What is the reference for the
@@ -671,7 +671,7 @@ const NewEvaluation = () => {
 														/>
 													</ComingSoonBorder>
 												))}
-												{/* TODO:Add link to framework section */}
+												{/*Add link to framework section */}
 												<div className="p-1">
 													<div
 														className="flex gap-2 justify-center cursor-pointer rounded-sm border p-4 font-roboto sm:w-full bg-zinc-800 text-zinc-400 transition-all text-opacity-80 duration-100 hover:scale-110"
