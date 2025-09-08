@@ -1,5 +1,5 @@
 import { useController } from "react-hook-form";
-import { cn } from "@/lib/utils"; // Assuming `cn` is your utility for combining classNames.
+import { cn } from "@/lib/utils";
 import TruncatedTooltip from "../TruncatedTooltip";
 
 interface FrameworkCardProps {
@@ -70,7 +70,6 @@ export const FrameworkCard = ({
 				className
 			)}
 		>
-			{/* TODO: add conditional tooltips if name is truncated */}
 			<TruncatedTooltip text={name} />
 		</div>
 	);
