@@ -1,5 +1,6 @@
 import { useController } from "react-hook-form";
 import { cn } from "@/lib/utils"; // Assuming `cn` is your utility for combining classNames.
+import TruncatedTooltip from "../TruncatedTooltip";
 
 interface FrameworkCardProps {
 	name: string;
@@ -24,13 +25,24 @@ export const FrameworkCard = ({
 	className = "",
 	multiSelectAllowed = true,
 }: FrameworkCardProps) => {
-	const { field } = useController({ name: fieldName, control, rules: {validate: v => v.length > 0 || "Please select atleast one control framework!"} });
+	const { field } = useController({
+		name: fieldName,
+		control,
+		rules: {
+			validate: (v) =>
+				v.length > 0 || "Please select atleast one control framework!",
+		},
+	});
 
-	const isSelected = field.value?.some((v: { name: string; value: string }) => v.value === value);
+	const isSelected = field.value?.some(
+		(v: { name: string; value: string }) => v.value === value
+	);
 
 	const toggleSelect = () => {
 		const newValue = isSelected
-			? field.value.filter((v: { name: string; value: string }) => v.value !== value)
+			? field.value.filter(
+					(v: { name: string; value: string }) => v.value !== value
+			  )
 			: [...(field.value || []), { name, value }];
 		field.onChange(newValue);
 	};
@@ -59,7 +71,7 @@ export const FrameworkCard = ({
 			)}
 		>
 			{/* TODO: add conditional tooltips if name is truncated */}
-			{name}
+			<TruncatedTooltip text={name} />
 		</div>
 	);
 };
