@@ -144,7 +144,7 @@ function Index() {
 	}, [userData.tenant_id]);
 
 	return (
-		<div className="font-roboto text-white w-full min-h-screen p-6 overflow-x-hidden">
+		<div className="font-roboto text-white w-full min-h-screen p-6">
 			{/* Header */}
 			<section className="w-full bg-black text-white pb-0 pt-10 px-3 sm:px-6 md:px-4 lg:px-16 mt-5 lg:mt-0">
 				<div className="max-w-7xl w-full flex flex-col lg:flex-row lg:items-center md:justify-between gap-4">
