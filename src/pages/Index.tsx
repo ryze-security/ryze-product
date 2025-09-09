@@ -146,11 +146,11 @@ function Index() {
 	return (
 		<div className="font-roboto text-white w-full min-h-screen p-6">
 			{/* Header */}
-			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-6 sm:px-12 lg:px-16">
-				<div className="max-w-7xl w-full flex justify-between px-4">
-					<div className="flex flex-col gap-2">
+			<section className="w-full bg-black text-white pb-0 pt-10 px-3 sm:px-6 md:px-4 lg:px-16 mt-5 lg:mt-0">
+				<div className="max-w-7xl w-full flex flex-col lg:flex-row lg:items-center md:justify-between gap-4">
+					<div className="flex flex-col gap-1">
 						{/* Left: Welcome message */}
-						<h1 className="text-4xl font-semibold text-white tracking-wide">
+						<h1 className="text-2xl md:text-4xl font-semibold text-white tracking-wide">
 							Welcome, {userData.first_name}!
 						</h1>
 
@@ -160,10 +160,10 @@ function Index() {
 
 					{/* Right: Button */}
 					<DropdownMenu>
-						<DropdownMenuTrigger>
+						<DropdownMenuTrigger asChild>
 							<Button
 								variant="default"
-								className="bg-sky-500 rounded-2xl hover:bg-sky-600 text-white font-bold text-md"
+								className="bg-sky-500 rounded-2xl hover:bg-sky-600 text-white font-bold text-md px-4 py-2 flex items-center gap-2 w-fit text-sm md:text-base"
 							>
 								<PlusCircleIcon />
 								New
@@ -191,8 +191,8 @@ function Index() {
 			</section>
 
 			{/* Cards */}
-			<section className="flex flex-col gap-2 justify-start bg-black text-white pt-10 px-6 sm:px-12 lg:px-16 w-[90%]">
-				<div className="max-w-7xl w-full pl-4 grid grid-cols-4 gap-2">
+			<section className="flex flex-col gap-2 justify-start bg-black text-white pt-10 px-3 sm:px-6 md:px-4 lg:px-16 lg:w-[90%]">
+				<div className="max-w-7xl w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
 					{views.map((view, index) => (
 						<SmallDisplayCard
 							title={view.title}
@@ -213,19 +213,19 @@ function Index() {
 					}
 				</div>
 
-				<div className="max-w-7xl items-start w-full pl-4 grid grid-cols-2 gap-2">
+				<div className="max-w-7xl items-start w-full grid grid-cols-1 sm:grid-cols-2 gap-2">
 					{/* Card 1 */}
-					<div className="flex flex-col bg-[#18181B] rounded-xl p-6 shadow-md w-full h-[330px]">
+					<div className="flex flex-col bg-[#18181B] rounded-3xl px-2 py-4 md:px-2 md:p-5 lg:px-2 lg:p-6 shadow-md w-full h-[330px]">
 						<div className="flex items-center gap-4 p-4 pt-0">
 							<div className="flex items-center gap-3 flex-grow">
 								<div className="flex-shrink-0">
-									<Building className="h-6 w-6 text-violet-ryzr" />
+									<Building className="sm:h-6 sm:w-6 text-violet-ryzr" />
 								</div>
-								<h2 className="text-lg font-semibold tracking-wide text-gray-light-ryzr">
+								<h2 className="text-lg lg:text-xl font-semibold tracking-wide text-gray-light-ryzr">
 									Vulnerable Auditees
 								</h2>
 							</div>
-							<div className="flex-shrink-0 text-gray-light-ryzr">
+							<div className="text-sm sm:text-base flex-shrink-0 text-gray-light-ryzr">
 								Deviations
 							</div>
 						</div>
@@ -277,17 +277,17 @@ function Index() {
 					</div>
 
 					{/* Card 2 */}
-					<div className="flex flex-col bg-[#18181B] rounded-xl p-6 shadow-md w-full h-[330px]">
+					<div className="flex flex-col bg-[#18181B] rounded-3xl px-2 py-4 md:px-2 md:p-5 lg:px-2 lg:p-6 shadow-md w-full h-[330px]">
 						<div className="flex items-center gap-4 p-4 pt-0">
 							<div className="flex items-center gap-3 flex-grow">
 								<div className="flex-shrink-0">
 									<CircleAlert className="h-6 w-6 text-violet-ryzr" />
 								</div>
-								<h2 className="text-lg font-semibold tracking-wide text-gray-light-ryzr">
+								<h2 className="text-lg lg:text-xl font-semibold tracking-wide text-gray-light-ryzr">
 									Frequent Deviations
 								</h2>
 							</div>
-							<div className="flex-shrink-0 text-gray-light-ryzr">
+							<div className="text-sm sm:text-base flex-shrink-0 text-gray-light-ryzr">
 								Occurences
 							</div>
 						</div>
