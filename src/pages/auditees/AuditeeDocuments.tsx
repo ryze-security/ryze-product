@@ -248,7 +248,7 @@ function AuditeeDocuments() {
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
-			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-6 sm:px-12 lg:px-16">
+			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
 				<PageHeader
 					heading={
 						<div className="flex items-center gap-2">
@@ -272,7 +272,7 @@ function AuditeeDocuments() {
 					</Button>
 				</PageHeader>
 			</section>
-			<section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-6 sm:px-12 lg:px-16">
+			<section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
 				<GenericDataTable
 					columns={columns}
 					data={files}

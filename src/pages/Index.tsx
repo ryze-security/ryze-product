@@ -10,19 +10,10 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { RoundSpinner } from "@/components/ui/spinner";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { frequentDeviationsDTO } from "@/models/collection/collectionDTOs";
-import { CompanyListDto } from "@/models/company/companyDTOs";
-import { CreditsDataDTO } from "@/models/credits/creditsDTOs";
 import { tenantDetailsDTO } from "@/models/tenant/TenantDTOs";
 import collectionService from "@/services/collectionServices";
-import companyService from "@/services/companyServices";
-import creditsService from "@/services/creditsServices";
 import tenantService from "@/services/tenantServices";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadCompanyData } from "@/store/slices/companySlice";
@@ -31,11 +22,7 @@ import {
 	CircleAlert,
 	Coins,
 	FileTextIcon,
-	icons,
 	PlusCircleIcon,
-	Search,
-	Table,
-	TriangleAlert,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
