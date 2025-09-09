@@ -701,7 +701,7 @@ function EvaluationDashboard() {
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
-			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-6 sm:px-12 lg:px-16">
+			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
 				<PageHeader
 					heading="Past reviews"
 					subtitle="Browse through previously completed reviews to track progress and revisit findings."
@@ -711,7 +711,7 @@ function EvaluationDashboard() {
 				/>
 			</section>
 
-			<section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-6 sm:px-12 lg:px-16">
+			<section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
 				<ProgressBarDataTable
 					columns={columns}
 					data={evaluations.evaluations}
@@ -733,12 +733,12 @@ function EvaluationDashboard() {
 						}
 					}}
 				>
-					<DialogContent className="overflow-y-auto max-h-[90vh] h-fit scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-800 max-w-2xl w-full">
-						<DialogHeader>
+					<DialogContent className="flex flex-col max-h-[90vh] h-fit scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-800 lg:max-w-2xl">
+						<DialogHeader className="flex-shrink-0 border-b pb-4 text-left">
 							<DialogTitle>
 								Download Reports: {reportCompany?.name}
 							</DialogTitle>
-							<DialogDescription>
+							<DialogDescription className="text-wrap">
 								Here you can download any report you generated
 								for this evaluation.
 							</DialogDescription>
@@ -746,7 +746,7 @@ function EvaluationDashboard() {
 						{!reportList ? (
 							<RoundSpinner />
 						) : (
-							<div className="w-full">
+							<div className="flex-1 overflow-y-auto mt-4">
 								<GenericDataTable
 									columns={reportColumns}
 									data={reportList}

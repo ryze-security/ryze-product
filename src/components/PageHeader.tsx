@@ -33,8 +33,8 @@ function PageHeader(props: Props) {
 	const navigate = useNavigate();
 
 	return (
-		<div className="max-w-7xl w-full flex justify-between px-4">
-			<div className="flex flex-col gap-2 w-8/12">
+		<div className="max-w-7xl w-full flex flex-col lg:flex-row lg:items-center md:justify-between gap-4 lg:px-4 mt-5 lg:mt-0">
+			<div className="flex flex-col gap-2 w-full lg:w-8/12">
 				{/* Left: Welcome message */}
 				<h1 className="text-4xl font-semibold text-white tracking-wide">
 					{heading}
@@ -53,7 +53,7 @@ function PageHeader(props: Props) {
 								variant === "add"
 									? "bg-sky-500 hover:bg-sky-600"
 									: "bg-zinc-700 hover:bg-zinc-800"
-							} rounded-2xl transition-colors text-white font-bold text-md`}
+							} rounded-2xl transition-colors text-white font-bold text-md w-fit`}
 							onClick={() => {
 								if (actionFn) {
 									actionFn();
@@ -73,7 +73,7 @@ function PageHeader(props: Props) {
 							<Button
 								variant="default"
 								disabled={isLoading}
-								className={`bg-zinc-700 hover:bg-zinc-800 rounded-2xl transition-colors text-white font-bold text-md`}
+								className={`bg-zinc-700 hover:bg-zinc-800 rounded-2xl transition-colors text-white font-bold text-md w-fit`}
 							>
 								{isLoading ? <RoundSpinner /> : buttonText}
 							</Button>

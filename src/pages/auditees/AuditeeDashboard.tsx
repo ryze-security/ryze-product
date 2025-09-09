@@ -58,7 +58,7 @@ function AuditeeDashboard() {
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
-			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-6 sm:px-12 lg:px-16">
+			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
 				<PageHeader
 					heading="Auditees"
 					subtitle="Entities that require security evaluations to ensure compliance and mitigate potential risks."
@@ -68,7 +68,7 @@ function AuditeeDashboard() {
 				/>
 			</section>
 
-			<section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-6 sm:px-12 lg:px-16">
+			<section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
 				<ProgressBarDataTable
 					columns={columns}
 					data={auditeeData}
