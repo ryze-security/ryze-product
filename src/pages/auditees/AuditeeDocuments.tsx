@@ -151,7 +151,7 @@ function AuditeeDocuments() {
 													file.file_id,
 													userData.user_id || "system" //TODO: REMOVE THIS AFTER CHECKING WITH BACKEND TEAM
 												);
-											if (response.status === "success") {
+											if (response) {
 												setRefreshTrigger(
 													(prev) => prev + 1
 												);

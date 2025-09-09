@@ -99,10 +99,10 @@ const NewEvaluation = () => {
 	}, [auditees]);
 
 	const frameworks = [
-		{ name: "NIST CSF", value: "nistcsf" },
-		{ name: "SOC 2", value: "soc2" },
-		{ name: "GDPR", value: "gdpr" },
-		{ name: "ISO 27701", value: "iso27701" },
+		{ name: "NIS2", value: "nis2" },
+		{ name: "DORA", value: "dora" },
+		{ name: "ISO 22301", value: "iso22301" },
+		{ name: "ISO 42001", value: "iso42001" },
 		{ name: "Internal", value: "internal" },
 	];
 
