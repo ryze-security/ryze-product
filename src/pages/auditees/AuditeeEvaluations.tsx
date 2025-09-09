@@ -497,7 +497,7 @@ function AuditeeEvaluations() {
 							{isAuditeeLoading ? <RoundSpinner /> : auditeeName}
 						</div>
 					}
-					subtitle="Browse through evaluations related to this auditee. You can add, view, and delete evaluations as needed. Also reports can be downloaded for each evaluation."
+					subtitle="Browse through evaluations related to this auditee. You can add, view, and delete evaluations as needed. Also, reports can be downloaded for each evaluation."
 					buttonText="Add"
 					variant="add"
 					isLoading={isLoading}

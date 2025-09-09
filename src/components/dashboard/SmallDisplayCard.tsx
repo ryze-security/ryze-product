@@ -7,6 +7,8 @@ import {
 	TooltipTrigger,
 } from "../ui/tooltip";
 import { RoundSpinner } from "../ui/spinner";
+import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
 	title: string;
@@ -14,10 +16,13 @@ interface Props {
 	value: number;
 	warning?: boolean;
 	loading?: boolean;
+	link?: string;
 }
 
 function SmallDisplayCard(props: Props) {
-	const { title, icon, value, warning = false, loading = false } = props;
+	const { title, icon, value, warning = false, loading = false, link } = props;
+
+	const navigate = useNavigate();
 
 	function formatNumberWithCommas(num: number | string): string {
 		if (num !== null && num !== undefined) {
@@ -31,16 +36,17 @@ function SmallDisplayCard(props: Props) {
 		<div
 			className={`
         bg-[#18181B] rounded-3xl flex flex-col w-full p-6 
-        justify-center gap-2
+        justify-center gap-2 group
         ${
 			warning && value === 0
 				? "border-2 border-red-ryzr"
 				: "border-2 border-transparent"
-		}
+		} ${link ? "cursor-pointer hover:shadow-lg" : ""}
     `}
+	onClick={() => link ? navigate(link) : null}
 		>
 			{/* Title: Smaller, uppercase, and muted for better hierarchy */}
-			<div className="flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-light-ryzr uppercase">
+			<div className={cn("flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-light-ryzr uppercase duration-200 transition-colors", link ? "group-hover:text-white" : "")}>
 				{icon}
 				<span>{title}</span>
 			</div>

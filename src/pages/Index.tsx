@@ -50,16 +50,19 @@ function Index() {
 			title: "Auditees registered",
 			icon: <Building className="text-violet-light-ryzr" />,
 			value: tenantDetails?.num_companies || 0,
+			link: "/auditee/dashboard",
 		},
 		{
 			title: "Reviews conducted",
 			icon: <FileTextIcon className="text-violet-light-ryzr" />,
 			value: tenantDetails?.num_evaluations || 0,
+			link: "/evaluation",
 		},
 		{
 			title: "Deviation recorded",
 			icon: <CircleAlert className="text-violet-light-ryzr" />,
 			value: tenantDetails?.num_deviations || 0,
+			link: "/framework/deviation",
 		},
 	];
 
@@ -187,6 +190,7 @@ function Index() {
 							value={view.value}
 							key={index}
 							loading={loadingTenantDetails}
+							link={view.link}
 						/>
 					))}
 					{

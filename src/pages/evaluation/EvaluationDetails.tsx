@@ -299,7 +299,7 @@ function EvaluationDetails() {
 								onClick={generateExcelReport}
 								disabled={isReportGenerating}
 							>
-								Report(.xlsx)
+								Gap analysis report(.xlsx)
 							</DropdownMenuItem>
 							<DropdownMenuItem className="text-gray-light-ryzr cursor-not-allowed">
 								<ComingSoonBorder

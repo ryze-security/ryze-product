@@ -138,8 +138,7 @@ const columns: ColumnDef<controlResponse>[] = [
 			const compliance: number = row.original.Response.Score;
 			return (
 				<MarkdownRenderer
-					// content={compliance == 100 ? null : missing_elements}
-					content={missing_elements}
+					content={compliance == 100 ? null : missing_elements}
 					truncateAt={30}
 					emptyState="No missing elements found"
 				/>
