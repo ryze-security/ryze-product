@@ -42,6 +42,30 @@ function AuditeeDocuments() {
 	const [auditeeName, setAuditeeName] = useState<string>("");
 	const navigate = useNavigate();
 	const isLoading = isFilesLoading || isAuditeeLoading || isUploading;
+	const SPECIAL_TENANT_ID = "7077beec-a9ef-44ef-a21b-83aab58872c9";
+
+	const baseFileAccept = {
+		"application/pdf": [".pdf"],
+	};
+
+	const specialFileAccept = {
+		"application/msword": [".doc"],
+		"application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+			[".docx"],
+		"text/plain": [".txt"],
+		"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+			".xlsx",
+		],
+		"application/vnd.ms-excel": [".xls"],
+		"text/csv": [".csv"],
+		"application/vnd.openxmlformats-officedocument.presentationml.presentation":
+			[".pptx"],
+	};
+
+	const acceptOption =
+		userData.tenant_id === SPECIAL_TENANT_ID
+			? { ...baseFileAccept, ...specialFileAccept }
+			: baseFileAccept;
 
 	// Handle file drops
 	const onDrop = async (acceptedFiles: File[]) => {
@@ -75,19 +99,7 @@ function AuditeeDocuments() {
 	};
 	const { getRootProps, getInputProps } = useDropzone({
 		onDrop,
-		accept: {
-			"application/pdf": [".pdf"],
-			"application/msword": [".doc"],
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-				[".docx"],
-			"text/plain": [".txt"],
-			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-				[".xlsx"],
-			"application/vnd.ms-excel": [".xls"],
-			"text/csv": [".csv"],
-			"application/vnd.openxmlformats-officedocument.presentationml.presentation":
-				[".pptx"],
-		},
+		accept: acceptOption,
 	});
 
 	const columns: ColumnDef<FilesUploadResponseDTO>[] = [

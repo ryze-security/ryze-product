@@ -39,6 +39,7 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 	const [open, setOpen] = useState(false);
 	const { toast } = useToast();
 	const userData = useAppSelector((state) => state.appUser);
+	const SPECIAL_TENANT_ID = "7077beec-a9ef-44ef-a21b-83aab58872c9";
 
 	const fetchCompanyFile = async () => {
 		setIsFilesLoading(true);
@@ -60,6 +61,29 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 		}
 	};
 
+	const baseFileAccept = {
+		"application/pdf": [".pdf"],
+	};
+
+	const specialFileAccept = {
+		"application/msword": [".doc"],
+		"application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+			[".docx"],
+		"text/plain": [".txt"],
+		"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+			".xlsx",
+		],
+		"application/vnd.ms-excel": [".xls"],
+		"text/csv": [".csv"],
+		"application/vnd.openxmlformats-officedocument.presentationml.presentation":
+			[".pptx"],
+	};
+
+	const acceptOption =
+		userData.tenant_id === SPECIAL_TENANT_ID
+			? { ...baseFileAccept, ...specialFileAccept }
+			: baseFileAccept;
+
 	useEffect(() => {
 		fetchCompanyFile();
 	}, []);
@@ -76,7 +100,7 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 					userData.tenant_id,
 					control._formValues.auditee.value,
 					file,
-					"SYSTEM"
+					userData.first_name + " " + userData.last_name
 				);
 				uploadedFiles.push(response);
 			} catch (error) {
@@ -125,19 +149,7 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 
 	const { getRootProps, getInputProps } = useDropzone({
 		onDrop,
-		accept: {
-			"application/pdf": [".pdf"],
-			"application/msword": [".doc"],
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-				[".docx"],
-			"text/plain": [".txt"],
-			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-				[".xlsx"],
-			"application/vnd.ms-excel": [".xls"],
-			"text/csv": [".csv"],
-			"application/vnd.openxmlformats-officedocument.presentationml.presentation":
-				[".pptx"],
-		},
+		accept: acceptOption,
 	});
 
 	const showDialog = () => {
@@ -193,8 +205,9 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 									Drag and drop files here, or click to browse
 								</p>
 								<p className="text-md opacity-45">
-									Support for PDF, DOCX, XLSX, XLS, CSV, PPTX,
-									DOC and TXT files
+									{userData.tenant_id === SPECIAL_TENANT_ID
+										? "Support for PDF, DOCX, XLSX, XLS, CSV, PPTX, DOC and TXT files"
+										: "Support for PDF files only"}
 								</p>
 							</div>
 							<Button
