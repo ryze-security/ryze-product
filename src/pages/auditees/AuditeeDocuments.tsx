@@ -320,8 +320,10 @@ function AuditeeDocuments() {
 										browse
 									</p>
 									<p className="text-md opacity-45">
-										Support for PDF, DOCX, XLSX, XLS, CSV,
-										PPTX, DOC and TXT files
+										{userData.tenant_id ===
+										SPECIAL_TENANT_ID
+											? "Support for PDF, DOCX, XLSX, XLS, CSV, PPTX, DOC and TXT files"
+											: "Support for PDF files only"}
 									</p>
 								</div>
 								<Button
