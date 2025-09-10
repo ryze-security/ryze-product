@@ -76,7 +76,7 @@ function AuditeeDocuments() {
 					userData.tenant_id,
 					auditeeId,
 					file,
-					userData.user_id || "SYSTEM"
+					userData.first_name + " " + userData.last_name,
 				);
 			} catch (error) {
 				toast({
