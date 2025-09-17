@@ -7,7 +7,7 @@ export function initDatadogRum() {
         clientToken: import.meta.env.VITE_DATADOG_CLIENT_TOKEN,
         site: "ap1.datadoghq.com",
         service: "ryzr",
-        env: import.meta.env.NODE_ENV,
+        env: import.meta.env.MODE,
         version: "1.0.0",
         sessionSampleRate: 100,
         sessionReplaySampleRate: 50,
