@@ -6,12 +6,15 @@ import { store } from "./store/storeIndex.ts";
 import { BrowserRouter, useNavigate } from "react-router-dom";
 import { ClerkProvider } from "@clerk/clerk-react";
 import AxiosInterceptor from "./components/AxiosInterceptor.tsx";
+import { initDatadogRum } from "./services/datadog.ts";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 if (!PUBLISHABLE_KEY) {
 	throw new Error("Missing Publishable Key");
 }
+
+initDatadogRum();
 
 function Root() {
 	return (
