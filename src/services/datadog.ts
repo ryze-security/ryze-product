@@ -3,11 +3,11 @@ import { reactPlugin } from "@datadog/browser-rum-react";
 
 export function initDatadogRum() {
     datadogRum.init({
-        applicationId: process.env.VITE_DATADOG_APPLICATION_ID,
-        clientToken: process.env.VITE_DATADOG_CLIENT_TOKEN,
+        applicationId: import.meta.env.VITE_DATADOG_APPLICATION_ID,
+        clientToken: import.meta.env.VITE_DATADOG_CLIENT_TOKEN,
         site: "ap1.datadoghq.com",
         service: "ryzr",
-        env: process.env.NODE_ENV,
+        env: import.meta.env.NODE_ENV,
         version: "1.0.0",
         sessionSampleRate: 100,
         sessionReplaySampleRate: 50,
