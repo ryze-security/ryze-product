@@ -5,7 +5,7 @@ export function initDatadogRum() {
     datadogRum.init({
         applicationId: import.meta.env.VITE_DATADOG_APPLICATION_ID,
         clientToken: import.meta.env.VITE_DATADOG_CLIENT_TOKEN,
-        site: "ap1.datadoghq.com",
+        site: import.meta.env.VITE_DATADOG_SITE,
         service: "ryzr",
         env: import.meta.env.MODE,
         version: "1.0.0",
@@ -18,5 +18,5 @@ export function initDatadogRum() {
         plugins: [reactPlugin()],
     });
 
-    datadogRum.startSessionReplayRecording(); // optional: remove if not needed
+    datadogRum.startSessionReplayRecording();
 }
