@@ -303,11 +303,10 @@ function MobileNavbar() {
 										<span>Notifications</span>
 									</span>
 									<ChevronDown
-										className={`w-4 h-4 transition-transform ${
-											notificationsVisible
-												? "rotate-180"
-												: ""
-										}`}
+										className={`w-4 h-4 transition-transform ${notificationsVisible
+											? "rotate-180"
+											: ""
+											}`}
 									/>
 								</Button>
 
@@ -368,7 +367,7 @@ function MobileNavbar() {
 																default:
 																	break;
 															}
-														} 
+														}
 														}
 													>
 														<div className="flex items-start">
@@ -402,6 +401,19 @@ function MobileNavbar() {
 																<p className="text-zinc-300 text-xs mt-1">
 																	{n.message}
 																</p>
+																{n.data?.completed_at && (
+																	<p className="text-zinc-500 text-[10px] mt-1">
+																		{(() => {
+																			const date = new Date(n.data.completed_at);
+																			const day = String(date.getDate()).padStart(2, "0");
+																			const month = date.toLocaleString("en-GB", { month: "short" });
+																			const year = date.getFullYear();
+																			const hours = String(date.getHours()).padStart(2, "0");
+																			const minutes = String(date.getMinutes()).padStart(2, "0");
+																			return `${day}-${month}-${year} ${hours}:${minutes}`;
+																		})()}
+																	</p>
+																)}
 															</div>
 														</div>
 													</div>
@@ -413,7 +425,7 @@ function MobileNavbar() {
 												)}
 												{!hasMore &&
 													notifications.length >
-														0 && (
+													0 && (
 														<p className="text-zinc-400 text-sm text-center py-4">
 															You're all caught
 															up!

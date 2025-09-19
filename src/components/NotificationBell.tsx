@@ -126,6 +126,19 @@ function NotificationBell() {
 										<p className="text-zinc-300 text-xs mt-1">
 											{n.message}
 										</p>
+										{n.data?.completed_at && (
+											<p className="text-zinc-500 text-[10px] mt-1">
+												{(() => {
+													const date = new Date(n.data.completed_at);
+													const day = String(date.getDate()).padStart(2, "0");
+													const month = date.toLocaleString("en-GB", { month: "short" });
+													const year = date.getFullYear();
+													const hours = String(date.getHours()).padStart(2, "0");
+													const minutes = String(date.getMinutes()).padStart(2, "0");
+													return `${day}-${month}-${year} ${hours}:${minutes}`;
+												})()}
+											</p>
+										)}
 									</div>
 								</div>
 							</div>
