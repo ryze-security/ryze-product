@@ -126,6 +126,18 @@ function NotificationBell() {
 										<p className="text-zinc-300 text-xs mt-1">
 											{n.message}
 										</p>
+										{n.data?.completed_at && (
+											<p className="text-zinc-500 text-[10px] mt-1">
+												{new Date(n.data.completed_at).toLocaleString(undefined, {
+													month: 'short',
+													day: 'numeric',
+													hour: '2-digit',
+													year: 'numeric',
+													minute: '2-digit',
+													hour12: true
+												})}
+											</p>
+										)}
 									</div>
 								</div>
 							</div>
