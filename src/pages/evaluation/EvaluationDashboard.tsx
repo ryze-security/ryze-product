@@ -20,7 +20,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Ellipsis, MoreHorizontal } from "lucide-react";
+import { Ellipsis, MoreHorizontal, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -144,7 +144,34 @@ function EvaluationDashboard() {
     const columns: ColumnDef<Evaluation>[] = [
         {
             accessorKey: "tg_company_display_name",
-            header: "Auditee Title",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (!column.getIsSorted()) {
+                                column.toggleSorting(false); // Ascending
+                            } else if (column.getIsSorted() === "asc") {
+                                column.toggleSorting(true); // Descending
+                            } else {
+                                column.clearSorting(); // Clear sorting
+                            }
+                        }}
+                        className="px-0 hover:bg-transparent hover:text-white"
+                    >
+                        Auditee Title
+                        {column.getIsSorted() === "asc" ? (
+                            <ArrowUp className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : column.getIsSorted() === "desc" ? (
+                            <ArrowDown className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : (
+                            <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+                        )}
+                    </Button>
+                );
+            },
+            sortingFn: "text",
         },
         {
             accessorKey: "collection_display_name",
@@ -202,7 +229,33 @@ function EvaluationDashboard() {
         },
         {
             accessorKey: "overall_score",
-            header: "Evaluation Score",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (!column.getIsSorted()) {
+                                column.toggleSorting(false); // Ascending
+                            } else if (column.getIsSorted() === "asc") {
+                                column.toggleSorting(true); // Descending
+                            } else {
+                                column.clearSorting(); // Clear sorting
+                            }
+                        }}
+                        className="px-0 hover:bg-transparent hover:text-white"
+                    >
+                        Evaluation Score
+                        {column.getIsSorted() === "asc" ? (
+                            <ArrowUp className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : column.getIsSorted() === "desc" ? (
+                            <ArrowDown className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : (
+                            <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+                        )}
+                    </Button>
+                );
+            },
             cell: ({ row }) => {
                 const score: number = row.getValue("overall_score");
                 const updatedScore =
@@ -306,7 +359,33 @@ function EvaluationDashboard() {
         },
         {
             accessorKey: "created_at",
-            header: "Conducted On",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (!column.getIsSorted()) {
+                                column.toggleSorting(false); // Ascending
+                            } else if (column.getIsSorted() === "asc") {
+                                column.toggleSorting(true); // Descending
+                            } else {
+                                column.clearSorting(); // Clear sorting
+                            }
+                        }}
+                        className="px-0 hover:bg-transparent hover:text-white"
+                    >
+                        Conducted On
+                        {column.getIsSorted() === "asc" ? (
+                            <ArrowUp className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : column.getIsSorted() === "desc" ? (
+                            <ArrowDown className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : (
+                            <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+                        )}
+                    </Button>
+                );
+            },
         },
         {
             accessorKey: "created_by",
