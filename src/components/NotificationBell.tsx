@@ -128,14 +128,15 @@ function NotificationBell() {
 										</p>
 										{n.data?.completed_at && (
 											<p className="text-zinc-500 text-[10px] mt-1">
-												{new Date(n.data.completed_at).toLocaleString(undefined, {
-													month: 'short',
-													day: 'numeric',
-													hour: '2-digit',
-													year: 'numeric',
-													minute: '2-digit',
-													hour12: true
-												})}
+												{(() => {
+													const date = new Date(n.data.completed_at);
+													const day = String(date.getDate()).padStart(2, "0");
+													const month = date.toLocaleString("en-GB", { month: "short" });
+													const year = date.getFullYear();
+													const hours = String(date.getHours()).padStart(2, "0");
+													const minutes = String(date.getMinutes()).padStart(2, "0");
+													return `${day}-${month}-${year} ${hours}:${minutes}`;
+												})()}
 											</p>
 										)}
 									</div>
