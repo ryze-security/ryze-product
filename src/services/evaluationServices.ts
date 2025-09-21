@@ -43,6 +43,18 @@ export class EvaluationService {
 			if (response.status !== 200) {
 				throw response;
 			}
+
+
+			//  --------------------
+			// todo: Remove this code once the backend returns `overall_score = 0` instead of `null` while processing_status is either running or failed.
+			response.data.evaluations.forEach((evaluation) => {
+				if (evaluation.overall_score === null) {
+					evaluation.overall_score = 0;
+				}
+			});
+			//  --------------------
+
+
 			return response.data; // Replace with response.data when using real API
 		} catch (error) {
 			const errorInfo = handleAxiosError(error);
