@@ -11,10 +11,11 @@ interface Props {
 	content: string;
 	truncateAt?: number;
 	emptyState?: React.ReactNode;
+	disableBoldText?: boolean;
 }
 
 function MarkdownRenderer(props: Props) {
-	const { content, truncateAt, emptyState = null } = props;
+	const { content, truncateAt, emptyState = null, disableBoldText } = props;
 
 	const [html, setHtml] = useState({ full: "", truncated: "" });
 	const [isLoading, setIsLoading] = useState(true);
@@ -28,14 +29,22 @@ function MarkdownRenderer(props: Props) {
 
 			setIsLoading(true);
 
+
+			// If disableBoldText is true, strip markdown bold syntax
+			const processedContent = disableBoldText
+				? content.replace(/\*\*(.*?)\*\*/g, "$1").replace(/__(.*?)__/g, "$1")
+				: content;
+
+			console.log(processedContent)
+
 			// Always generate the full HTML
-			const dirtyFull = await marked.parse(content);
+			const dirtyFull = await marked.parse(processedContent);
 			let cleanFull = DOMPurify.sanitize(dirtyFull);
 			let cleanTruncated = "";
 
 			// Generate truncated HTML only if truncation is enabled
 			if (truncateAt) {
-				const truncatedText = content
+				const truncatedText = processedContent
 					.split(" ")
 					.slice(0, truncateAt)
 					.join(" ");
@@ -48,7 +57,7 @@ function MarkdownRenderer(props: Props) {
 		};
 
 		processMarkdown();
-	}, [content, truncateAt]);
+	}, [content, truncateAt, disableBoldText]);
 
 	if (isLoading) {
 		return <span className="text-wrap w-20">Processing...</span>;
