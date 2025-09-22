@@ -141,6 +141,7 @@ const columns: ColumnDef<controlResponse>[] = [
 					content={compliance == 100 ? null : missing_elements}
 					truncateAt={30}
 					emptyState="No missing elements found"
+					disableBoldText={true}
 				/>
 			);
 		},
