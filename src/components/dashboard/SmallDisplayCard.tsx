@@ -17,10 +17,11 @@ interface Props {
 	warning?: boolean;
 	loading?: boolean;
 	link?: string;
+	onAction?: () => void;
 }
 
 function SmallDisplayCard(props: Props) {
-	const { title, icon, value, warning = false, loading = false, link } = props;
+	const { title, icon, value, warning = false, loading = false, link, onAction } = props;
 
 	const navigate = useNavigate();
 
@@ -41,12 +42,12 @@ function SmallDisplayCard(props: Props) {
 			warning && value === 0
 				? "border-2 border-red-ryzr"
 				: "border-2 border-transparent"
-		} ${link ? "cursor-pointer hover:shadow-lg" : ""}
+		} ${link || onAction ? "cursor-pointer hover:shadow-lg" : ""}
     `}
-	onClick={() => link ? navigate(link) : null}
+	onClick={() => link ? navigate(link) : onAction ? onAction() : null}
 		>
 			{/* Title: Smaller, uppercase, and muted for better hierarchy */}
-			<div className={cn("flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-light-ryzr uppercase duration-200 transition-colors", link ? "group-hover:text-white" : "")}>
+			<div className={cn("flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-light-ryzr uppercase duration-200 transition-colors", link || onAction ? "group-hover:text-white" : "")}>
 				{icon}
 				<span>{title}</span>
 			</div>
