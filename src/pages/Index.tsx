@@ -1,3 +1,4 @@
+import { AlertDialogBox } from "@/components/AlertDialogBox";
 import ComingSoonBorder from "@/components/ComingSoonBorder";
 import SmallDisplayCard from "@/components/dashboard/SmallDisplayCard";
 import TableRowWithNumber from "@/components/dashboard/TableRowWithNumber";
@@ -12,8 +13,10 @@ import {
 import { RoundSpinner } from "@/components/ui/spinner";
 import { useToast } from "@/hooks/use-toast";
 import { frequentDeviationsDTO } from "@/models/collection/collectionDTOs";
+import { requestCreditsBodyDTO } from "@/models/landing_page/contact_usDTOs";
 import { tenantDetailsDTO } from "@/models/tenant/TenantDTOs";
 import collectionService from "@/services/collectionServices";
+import customFormsService from "@/services/customFormsServices";
 import tenantService from "@/services/tenantServices";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadCompanyData } from "@/store/slices/companySlice";
@@ -44,6 +47,8 @@ function Index() {
 		{} as frequentDeviationsDTO
 	);
 	const [loadingDeviations, setLoadingDeviations] = useState<boolean>(true);
+
+	const [creditsAlert, setCreditsAlert] = useState<boolean>(false);
 
 	const views = [
 		{
@@ -133,6 +138,34 @@ function Index() {
 		}
 	}, [userData.tenant_id]);
 
+	//request credit form submit action
+	const creditsAction = () => {
+		try {
+			const response = customFormsService.customForm(
+				userData.user_id,
+				userData.tenant_id,
+				"request_credits",
+				{ email: userData.email as string } as requestCreditsBodyDTO
+			);
+			toast({
+				title: "Request submitted",
+				description:
+					"Your credits request has been submitted successfully. We'll get back to you soon!",
+				variant: "default",
+				className: "bg-green-ryzr",
+			});
+			navigate("/home");
+		} catch (error) {
+			toast({
+				title: "Error",
+				description:
+					"There was an error submitting your request. Please try again later.",
+				variant: "destructive",
+			});
+			navigate("/home");
+		}
+	};
+
 	return (
 		<div className="font-roboto text-white w-full min-h-screen p-6">
 			{/* Header */}
@@ -200,6 +233,7 @@ function Index() {
 							value={tenantDetails?.remaining_credits}
 							warning={true}
 							loading={loadingTenantDetails}
+							onAction={() => setCreditsAlert(true)}
 						/>
 					}
 				</div>
@@ -326,6 +360,14 @@ function Index() {
 						</div>
 					</div>
 				</div>
+				<AlertDialogBox
+					title="Request More Credits?"
+					subheading="Running low or planning for future evaluations? Simply send a request, and our team will get in touch to add more credits to your account."
+					actionLabel="Send Request"
+					open={creditsAlert}
+					onOpenChange={setCreditsAlert}
+					onAction={creditsAction}
+				/>
 			</section>
 		</div>
 	);
