@@ -160,7 +160,7 @@ function EvaluationDashboard() {
                         }}
                         className="px-0 hover:bg-transparent hover:text-white"
                     >
-                        Auditee Title
+                        Auditee
                         {column.getIsSorted() === "asc" ? (
                             <ArrowUp className="ml-2 h-4 w-4 text-violet-400" />
                         ) : column.getIsSorted() === "desc" ? (
@@ -187,7 +187,10 @@ function EvaluationDashboard() {
 
                 return (
                     <DropdownMenu>
-                        <DropdownMenuTrigger className="group p-1.5 -mx-1.5 rounded-md hover:bg-white/10 transition-colors text-base flex items-center gap-1.5">
+                        <DropdownMenuTrigger className="group p-1.5 -mx-1.5 rounded-md hover:bg-white/10 transition-colors text-base flex items-center gap-2">
+                            {column.getFilterValue() && (
+                                <span className="h-2 w-2 rounded-full bg-violet-ryzr" />
+                            )}
                             Framework
                             <Ellipsis className="h-4 w-4 opacity-70 group-hover:opacity-100 transition-opacity" />
                         </DropdownMenuTrigger>
@@ -214,10 +217,9 @@ function EvaluationDashboard() {
                                         e.stopPropagation();
                                         column.setFilterValue(controlName);
                                     }}
-                                    className={`text-white/90 focus:bg-zinc-700/50 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${
-                                        column.getFilterValue() === controlName &&
-                                        "bg-violet-600/80 text-white"
-                                    }`}
+                                    className={`text-white/90 focus:bg-zinc-700/50 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${column.getFilterValue() === controlName &&
+                                        "bg-violet-ryzr text-white"
+                                        }`}
                                 >
                                     {controlName}
                                 </DropdownMenuItem>
@@ -263,7 +265,7 @@ function EvaluationDashboard() {
                 return (
                     <div>
                         {row.original.processing_status === "in_progress" ||
-                        row.original.processing_status === "processing_missing_elements" ? (
+                            row.original.processing_status === "processing_missing_elements" ? (
                             <div className="flex justify-center max-w-28">
                                 <RoundSpinner />
                             </div>
@@ -296,6 +298,9 @@ function EvaluationDashboard() {
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger className="group p-1.5 -mx-1.5 rounded-md hover:bg-white/10 transition-colors text-base flex items-center gap-1.5">
+                            {column.getFilterValue() && (
+                                <span className={`h-2 w-2 rounded-full ${column.getFilterValue() === "in_progress" ? "bg-yellow-600" : column.getFilterValue() === "completed" ? "bg-green-ryzr" : column.getFilterValue() === "cancelled" ? "bg-red-ryzr" : "bg-red-ryzr"}`} />
+                            )}
                             Status
                             <Ellipsis className="h-4 w-4 opacity-70 group-hover:opacity-100 transition-opacity" />
                         </DropdownMenuTrigger>
@@ -322,11 +327,10 @@ function EvaluationDashboard() {
                                         e.stopPropagation();
                                         column.setFilterValue(status.value);
                                     }}
-                                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${
-                                        column.getFilterValue() === status.value
-                                            ? "bg-violet-600/80 text-white"
-                                            : "focus:text-white/90 focus:bg-zinc-700/50"
-                                    }`}
+                                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${column.getFilterValue() === status.value
+                                        ? "bg-violet-ryzr text-white"
+                                        : "focus:text-white/90 focus:bg-zinc-700/50"
+                                        }`}
                                 >
                                     <div className="flex items-center gap-2">
                                         <span
@@ -344,13 +348,12 @@ function EvaluationDashboard() {
                 const evals: string = row.getValue("processing_status");
                 return (
                     <span
-                        className={`px-2 py-1 rounded ${
-                            evals === "completed"
-                                ? "bg-green-ryzr"
-                                : evals === "failed" || evals === "cancelled"
+                        className={`px-2 py-1 rounded ${evals === "completed"
+                            ? "bg-green-ryzr"
+                            : evals === "failed" || evals === "cancelled"
                                 ? "bg-red-ryzr"
                                 : "bg-yellow-600"
-                        }`}
+                            }`}
                     >
                         {evals.charAt(0).toUpperCase() + evals.slice(1).replace("_", " ")}
                     </span>
@@ -628,8 +631,8 @@ function EvaluationDashboard() {
                                 evaluation.processing_status === "pending"
                                     ? 0
                                     : Math.round(
-                                          Number.parseFloat(evaluation.overall_score?.toFixed(2))
-                                      ),
+                                        Number.parseFloat(evaluation.overall_score?.toFixed(2))
+                                    ),
                             created_at: new Date(evaluation.created_at).toLocaleDateString(),
                             collection_created_at: new Date(
                                 evaluation.collection_created_at
