@@ -10,6 +10,7 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Menu } from "lucide-react";
+import { recordGetStartedClick } from "../../services/datadogManualTracking";
 
 interface Props {
 	items?: {
@@ -50,9 +51,8 @@ function Navbar(props: Props) {
 							<Button
 								key={index}
 								variant="link"
-								className={`text-white py-2 md:py-3 ${
-									item.disabled ? "cursor-not-allowed" : ""
-								}`}
+								className={`text-white py-2 md:py-3 ${item.disabled ? "cursor-not-allowed" : ""
+									}`}
 								disabled={item.disabled}
 								onClick={() => {
 									if (!item.disabled && item.href) {
@@ -69,7 +69,10 @@ function Navbar(props: Props) {
 				<Button
 					variant="default"
 					className="text-black hidden lg:flex font-bold rounded-full px-4 md:px-6 py-2 md:py-3 text-sm md:text-base"
-					onClick={() => navigate("/login")}
+					onClick={() => {
+						recordGetStartedClick();
+						navigate("/login");
+					}}
 				>
 					Get Started
 				</Button>
@@ -107,7 +110,10 @@ function Navbar(props: Props) {
 								<Button
 									variant="default"
 									className="text-black font-bold rounded-full px-4 md:px-6 py-2 md:py-3 text-sm md:text-base w-full"
-									onClick={() => navigate("/login")}
+									onClick={() => {
+										recordGetStartedClick();
+										navigate("/login");
+									}}
 								>
 									Get Started
 								</Button>
