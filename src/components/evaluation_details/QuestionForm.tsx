@@ -1,6 +1,7 @@
 import { questionResponse } from "@/models/evaluation/EvaluationDTOs";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../ui/button";
+import { recordQuestionUpdate } from "@/services/datadogManualTracking";
 import {
 	ArrowBigLeft,
 	ArrowBigRight,
@@ -189,13 +190,12 @@ function QuestionForm(props: Props) {
 									role="combobox"
 									aria-expanded={open}
 									disabled={!isObservationEditing}
-									className={`w-[200px] justify-between bg-gray-light-ryzr text-white ${
-										watch("score") === null
+									className={`w-[200px] justify-between bg-gray-light-ryzr text-white ${watch("score") === null
 											? "bg-zinc-700 hover:bg-zinc-700/75"
 											: watch("score")
-											? "bg-green-ryzr hover:bg-green-ryzr/75"
-											: "bg-red-ryzr hover:bg-red-ryzr/75"
-									} transition-opacity duration-200 disabled:opacity-100 font-semibold`}
+												? "bg-green-ryzr hover:bg-green-ryzr/75"
+												: "bg-red-ryzr hover:bg-red-ryzr/75"
+										} transition-opacity duration-200 disabled:opacity-100 font-semibold`}
 								>
 									{
 										complianceStatus.find(
@@ -231,12 +231,12 @@ function QuestionForm(props: Props) {
 														) => {
 															const finalValue =
 																currentValue ===
-																"true"
+																	"true"
 																	? true
 																	: currentValue ===
-																	  "false"
-																	? false
-																	: null;
+																		"false"
+																		? false
+																		: null;
 															setValue(
 																"score",
 																finalValue,
@@ -274,7 +274,10 @@ function QuestionForm(props: Props) {
 							open={isAlertOpen}
 							onOpenChange={setIsAlertOpen}
 							subheading="Are you sure you want to save the changes to this question? Confirming will permanently update the evaluation record."
-							onAction={handleSubmit(submitFn)}
+							onAction={handleSubmit((data) => {
+								submitFn(data);
+								recordQuestionUpdate(selectedQuestion.q_id, selectedQuestion.controlId);
+							})}
 							actionLabel="Confirm"
 							onCancel={() => {
 								reset(

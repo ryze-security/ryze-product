@@ -61,3 +61,15 @@ export const recordDemoFormSubmission = () => {
         page: window.location.pathname,
     });
 };
+
+
+// [Question Form]: Track when a question answer is updated
+export const recordQuestionUpdate = (questionId: string, controlId: string) => {
+    datadogRum.addAction("question_answer_updated", {
+        action: "update",
+        action_type: "question_update",
+        question_id: questionId,
+        control_id: controlId,
+        page: window.location.pathname,
+    });
+};
