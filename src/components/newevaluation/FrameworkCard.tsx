@@ -9,7 +9,7 @@ interface FrameworkCardProps {
 	fieldName: string;
 	error: boolean;
 	setFocus: (field: string) => void;
-	disabed?: boolean;
+	disabled?: boolean;
 	className?: string;
 	multiSelectAllowed?: boolean;
 }
@@ -21,7 +21,7 @@ export const FrameworkCard = ({
 	fieldName,
 	error,
 	setFocus,
-	disabed = false,
+	disabled = false,
 	className = "",
 	multiSelectAllowed = true,
 }: FrameworkCardProps) => {
@@ -41,18 +41,25 @@ export const FrameworkCard = ({
 	const toggleSelect = () => {
 		const newValue = isSelected
 			? field.value.filter(
-					(v: { name: string; value: string }) => v.value !== value
-			  )
+				(v: { name: string; value: string }) => v.value !== value
+			)
 			: [...(field.value || []), { name, value }];
 		field.onChange(newValue);
 	};
 
 	const handleCardClick = () => {
-		if (disabed) return;
-		if (!multiSelectAllowed && field.value?.length === 1 && !isSelected) {
-			return;
+		if (disabled) return;
+		
+		if (!multiSelectAllowed) {
+			if (isSelected) {
+				toggleSelect();
+			} else {
+				field.onChange([{ name, value }]);
+			}
+		} else {
+			toggleSelect();
 		}
-		toggleSelect();
+
 		if (error) {
 			setFocus(fieldName); // Focus on the field if there's an error
 		}
@@ -66,7 +73,7 @@ export const FrameworkCard = ({
 				isSelected
 					? "border-violet-ryzr text-violet-ryzr scale-105"
 					: "border-zinc-900 text-zinc-400 text-opacity-80",
-				disabed && "opacity-50 cursor-not-allowed",
+				disabled && "opacity-50 cursor-not-allowed",
 				className
 			)}
 		>

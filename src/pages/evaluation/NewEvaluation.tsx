@@ -611,8 +611,7 @@ const NewEvaluation = () => {
 									{/*Framework Selection */}
 									<div className="space-y-4 mt-10 w-full">
 										<label className="block text-lg">
-											What is the reference for the
-											framework?
+											What is the reference for the framework?
 										</label>
 										{status === "succeeded" ? (
 											<div className="grid grid-cols-6 justify-start gap-2 w-11/12">
@@ -651,7 +650,7 @@ const NewEvaluation = () => {
 													<ComingSoonBorder className="transition-transform duration-100 group hover:scale-105">
 														<FrameworkCard
 															key={f.value}
-															disabed={true}
+															disabled={true}
 															name={f.name}
 															value={f.value}
 															fieldName="selectedFrameworks"
