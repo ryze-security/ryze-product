@@ -37,10 +37,11 @@ import {
 	MoveRightIcon,
 	SearchIcon,
 } from "lucide-react";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import TabbedFeatures, { Tab } from "@/components/home/TabbedFeatures";
+import { recordGetStartedClick, recordDemoFormView, recordDemoFormInteraction, recordDemoFormSubmission } from "@/services/datadogManualTracking";
 
 type ContactUsInputs = {
 	name: string;
@@ -299,6 +300,15 @@ function Home() {
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const formBodyRef = useRef<HTMLDivElement>(null);
 
+	// Track form interactions
+	useEffect(() => {
+		if (formBodyRef.current) {
+			recordDemoFormView(formBodyRef.current);
+		}
+	}, []);
+	const handleFirstInteraction = useCallback(recordDemoFormInteraction(), []);
+
+
 	const scrollLeft = () => {
 		scrollRef.current?.scrollBy({ left: -550, behavior: "smooth" });
 	};
@@ -339,17 +349,16 @@ function Home() {
 
 	const onContactUsSubmit: SubmitHandler<ContactUsInputs> = async (data) => {
 		setIsContactSubmitting(true);
+		recordDemoFormSubmission();
 		const contactUsBody: contactUsBodyDTO = {
 			email: data.email,
-			details: `Name: ${data.name}, Company: ${
-				data.companyName || "N/A"
-			}`,
+			details: `Name: ${data.name}, Company: ${data.companyName || "N/A"}`
 		};
 		try {
 			const response = await customFormsService.contactUs(contactUsBody);
 			if (response) {
-				handleCelebrate();
-				toast({
+					handleCelebrate();
+					toast({
 					title: "Thank you for contacting us!",
 					description: "We will get back to you soon.",
 					className: "bg-green-ryzr text-white",
@@ -416,6 +425,7 @@ function Home() {
 						<FadeInSection delay={0.6}>
 							<Link to="/login">
 								<Button
+									onClick={() => recordGetStartedClick()}
 									className="font-roboto font-semibold 
 											text-[clamp(0.75rem,2.3vw,1rem)] 
 											rounded-full 
@@ -635,21 +645,20 @@ function Home() {
 								<div
 									className="flex flex-col gap-4 md:gap-8 text-black"
 									ref={formBodyRef}
+									onInput={handleFirstInteraction}
 								>
 									<div className="flex flex-col md:flex-row gap-4 md:justify-between">
 										<div className="flex flex-col gap-2 w-full md:w-[48%]">
 											<p className="md:text-lg text-base font-medium">
 												Name{" "}
 												<span className="text-rose-600">
-													*
 												</span>
 											</p>
 											<Input
-												className={`bg-[#EBEBEB] h-14 w-full rounded-3xl border-0 ${
-													errors.name
-														? "border-2 border-rose-500"
-														: ""
-												}`}
+												className={`bg-[#EBEBEB] h-14 w-full rounded-3xl border-0 ${errors.name
+													? "border-2 border-rose-500"
+													: ""
+													}`}
 												placeholder="Name"
 												{...register("name", {
 													required: true,
@@ -665,11 +674,10 @@ function Home() {
 												</span>
 											</p>
 											<Input
-												className={`bg-[#EBEBEB] h-14 w-full rounded-3xl border-0 ${
-													errors.email
-														? "border-2 border-rose-500"
-														: ""
-												}`}
+												className={`bg-[#EBEBEB] h-14 w-full rounded-3xl border-0 ${errors.email
+													? "border-2 border-rose-500"
+													: ""
+													}`}
 												placeholder="Email"
 												type="email"
 												{...register("email", {
@@ -707,6 +715,7 @@ function Home() {
 							</form>
 						</div>
 					</div>
+					
 				</section>
 			</FadeInSection>
 
