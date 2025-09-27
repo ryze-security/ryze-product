@@ -39,6 +39,7 @@ import { useAppSelector } from "@/store/hooks";
 import { AlertDialogBox } from "@/components/AlertDialogBox";
 import { GenericDataTable } from "@/components/GenericDataTable";
 import { Progress } from "@/components/ui/progress";
+import { createRichTextFromMarkdown } from "@/utils/markdownExcel";
 
 interface ReportList {
     sNo: number;
@@ -708,7 +709,6 @@ function EvaluationDashboard() {
                     vertical: "top",
                 };
             });
-
             const jsonData = dfd.toJSON(df) as Array<Record<string, any>>;
 
             //Adds and formats data rows
@@ -732,6 +732,10 @@ function EvaluationDashboard() {
                         vertical: "top",
                         wrapText: true,
                     };
+
+                    if (cell.value && cell.value.toString().includes('**')) {
+                        cell.value = { richText: createRichTextFromMarkdown(cell.value.toString()) };
+                    }
                 });
             });
 
