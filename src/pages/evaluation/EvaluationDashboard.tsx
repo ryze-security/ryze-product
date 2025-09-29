@@ -20,7 +20,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Ellipsis, MoreHorizontal, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import { Ellipsis, Filter, MoreHorizontal, ArrowUpDown, ArrowDown01, ArrowUp10, ArrowDownAZ, ArrowUpZA } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -163,9 +163,9 @@ function EvaluationDashboard() {
                     >
                         Auditee
                         {column.getIsSorted() === "asc" ? (
-                            <ArrowUp className="ml-2 h-4 w-4 text-violet-400" />
+                            <ArrowDownAZ className="ml-2 h-4 w-4 text-violet-400" />
                         ) : column.getIsSorted() === "desc" ? (
-                            <ArrowDown className="ml-2 h-4 w-4 text-violet-400" />
+                            <ArrowUpZA className="ml-2 h-4 w-4 text-violet-400" />
                         ) : (
                             <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
                         )}
@@ -186,48 +186,78 @@ function EvaluationDashboard() {
                     ),
                 ].filter(Boolean) as string[];
 
+                const currentFilters = (column.getFilterValue() as string[]) || [];
+                const isFilterActive = currentFilters.length > 0;
+
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger className="group p-1.5 -mx-1.5 rounded-md hover:bg-white/10 transition-colors text-base flex items-center gap-2">
-                            {column.getFilterValue() && (
-                                <span className="h-2 w-2 rounded-full bg-violet-ryzr" />
-                            )}
                             Framework
-                            <Ellipsis className="h-4 w-4 opacity-70 group-hover:opacity-100 transition-opacity" />
+                            <div className="relative">
+                                <Filter className={`h-4 w-4 opacity-70 group-hover:opacity-100 transition-opacity ${isFilterActive ? 'text-violet-ryzr' : ''}`} />
+                                {isFilterActive && (
+                                    <span className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center text-xs font-medium rounded-full bg-violet-ryzr text-white">
+                                        {currentFilters.length}
+                                    </span>
+                                )}
+                            </div>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="min-w-[200px] bg-zinc-800 border-zinc-700">
-                            <DropdownMenuLabel className="text-white/80 font-medium">
-                                Filter by Framework
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator className="bg-zinc-700" />
-                            <DropdownMenuItem
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    column.setFilterValue("");
-                                }}
-                                className="focus:text-white cursor-pointer"
-                            >
-                                <span className="px-3 py-1.5 rounded-md bg-zinc-700/50 text-sm font-medium w-full text-center transition-colors hover:bg-zinc-600/50">
-                                    Reset Filter
-                                </span>
-                            </DropdownMenuItem>
-                            {controlNames.map((controlName) => (
-                                <DropdownMenuItem
-                                    key={controlName}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        column.setFilterValue(controlName);
-                                    }}
-                                    className={`text-white/90 focus:bg-zinc-700/50 px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${column.getFilterValue() === controlName &&
-                                        "bg-violet-ryzr text-white"
-                                        }`}
-                                >
-                                    {controlName}
-                                </DropdownMenuItem>
-                            ))}
+                        <DropdownMenuContent className="min-w-[220px] bg-zinc-800 border-zinc-700 max-h-96 overflow-hidden flex flex-col">
+                            <div className="px-3 py-2 border-b border-zinc-700">
+                                <div className="flex justify-between items-center">
+                                    <DropdownMenuLabel className="text-white/80 font-medium p-0">
+                                        Filter by Framework
+                                    </DropdownMenuLabel>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            column.setFilterValue([]);
+                                        }}
+                                        className={`ml-3 h-6 text-xs text-violet-ryzr hover:text-white hover:bg-white/10 transition-opacity ${!isFilterActive ? 'opacity-0 pointer-events-none' : ''}`}
+                                    >
+                                        Clear all
+                                    </Button>
+                                </div>
+                            </div>
+                            <div className="overflow-y-auto max-h-[300px] p-1">
+                                {controlNames.map((controlName) => {
+                                    const isSelected = currentFilters.includes(controlName);
+                                    return (
+                                        <div
+                                            key={controlName}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                const newFilters = isSelected
+                                                    ? currentFilters.filter(f => f !== controlName)
+                                                    : [...currentFilters, controlName];
+                                                column.setFilterValue(newFilters.length ? newFilters : undefined);
+                                            }}
+                                            className="flex items-center px-3 py-2 text-sm rounded-md cursor-pointer hover:bg-white/10 text-white/90 group"
+                                        >
+                                            <div className={`h-4 w-4 rounded border ${isSelected ? 'bg-violet-ryzr border-violet-ryzr flex items-center justify-center' : 'border-zinc-600'} mr-3`}>
+                                                {isSelected && (
+                                                    <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                )}
+                                            </div>
+                                            <span className={isSelected ? 'text-white' : 'text-white/90'}>
+                                                {controlName}
+                                            </span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );
+            },
+            filterFn: (row, columnId, filterValue) => {
+                if (!filterValue || filterValue.length === 0) return true;
+                const value = row.getValue(columnId) as string;
+                return filterValue.includes(value);
             },
         },
         {
@@ -250,9 +280,9 @@ function EvaluationDashboard() {
                     >
                         Evaluation Score
                         {column.getIsSorted() === "asc" ? (
-                            <ArrowUp className="ml-2 h-4 w-4 text-violet-400" />
+                            <ArrowDown01 className="ml-2 h-4 w-4 text-violet-400" />
                         ) : column.getIsSorted() === "desc" ? (
-                            <ArrowDown className="ml-2 h-4 w-4 text-violet-400" />
+                            <ArrowUp10 className="ml-2 h-4 w-4 text-violet-400" />
                         ) : (
                             <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
                         )}
@@ -296,54 +326,79 @@ function EvaluationDashboard() {
                     { value: "failed", label: "Failed", color: "bg-red-ryzr" },
                 ];
 
+                const currentFilters = (column.getFilterValue() as string[]) || [];
+                const isFilterActive = currentFilters.length > 0;
+
                 return (
                     <DropdownMenu>
-                        <DropdownMenuTrigger className="group p-1.5 -mx-1.5 rounded-md hover:bg-white/10 transition-colors text-base flex items-center gap-1.5">
-                            {column.getFilterValue() && (
-                                <span className={`h-2 w-2 rounded-full ${column.getFilterValue() === "in_progress" ? "bg-yellow-600" : column.getFilterValue() === "completed" ? "bg-green-ryzr" : column.getFilterValue() === "cancelled" ? "bg-red-ryzr" : "bg-red-ryzr"}`} />
-                            )}
+                        <DropdownMenuTrigger className="group p-1.5 -mx-1.5 rounded-md hover:bg-white/10 transition-colors text-base flex items-center gap-2">
                             Status
-                            <Ellipsis className="h-4 w-4 opacity-70 group-hover:opacity-100 transition-opacity" />
+                            <div className="relative">
+                                <Filter className={`h-4 w-4 opacity-70 group-hover:opacity-100 transition-opacity ${isFilterActive ? 'text-violet-ryzr' : ''}`} />
+                                {isFilterActive && (
+                                    <span className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center text-xs font-medium rounded-full bg-violet-ryzr text-white">
+                                        {currentFilters.length}
+                                    </span>
+                                )}
+                            </div>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="min-w-[180px] bg-zinc-800 border-zinc-700">
-                            <DropdownMenuLabel className="text-white/80 font-medium">
-                                Filter by Status
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator className="bg-zinc-700" />
-                            <DropdownMenuItem
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    column.setFilterValue("");
-                                }}
-                                className="focus:text-white cursor-pointer"
-                            >
-                                <span className="px-3 py-1.5 rounded-md bg-zinc-700/50 text-sm font-medium w-full text-center transition-colors hover:bg-zinc-600/50">
-                                    Reset Filter
-                                </span>
-                            </DropdownMenuItem>
-                            {statusFilters.map((status) => (
-                                <DropdownMenuItem
-                                    key={status.value}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        column.setFilterValue(status.value);
-                                    }}
-                                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${column.getFilterValue() === status.value
-                                        ? "bg-violet-ryzr text-white"
-                                        : "focus:text-white/90 focus:bg-zinc-700/50"
-                                        }`}
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <span
-                                            className={`w-2.5 h-2.5 rounded-full ${status.color}`}
-                                        ></span>
-                                        <span>{status.label}</span>
-                                    </div>
-                                </DropdownMenuItem>
-                            ))}
+                        <DropdownMenuContent className="min-w-[220px] bg-zinc-800 border-zinc-700 max-h-96 overflow-hidden flex flex-col">
+                            <div className="px-3 py-2 border-b border-zinc-700">
+                                <div className="flex justify-between items-center">
+                                    <DropdownMenuLabel className="text-white/80 font-medium p-0">
+                                        Filter by Status
+                                    </DropdownMenuLabel>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            column.setFilterValue([]);
+                                        }}
+                                        className={`ml-3 h-6 text-xs text-violet-ryzr hover:text-white hover:bg-white/10 transition-opacity ${!isFilterActive ? 'opacity-0 pointer-events-none' : ''}`}
+                                    >
+                                        Clear all
+                                    </Button>
+                                </div>
+                            </div>
+                            <div className="overflow-y-auto max-h-[300px] p-1">
+                                {statusFilters.map((status) => {
+                                    const isSelected = currentFilters.includes(status.value);
+                                    return (
+                                        <div
+                                            key={status.value}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                const newFilters = isSelected
+                                                    ? currentFilters.filter(f => f !== status.value)
+                                                    : [...currentFilters, status.value];
+                                                column.setFilterValue(newFilters.length ? newFilters : undefined);
+                                            }}
+                                            className="flex items-center px-3 py-2 text-sm rounded-md cursor-pointer hover:bg-white/10 text-white/90 group"
+                                        >
+                                            <div className={`h-4 w-4 rounded border ${isSelected ? 'bg-violet-ryzr border-violet-ryzr flex items-center justify-center' : 'border-zinc-600'} mr-3`}>
+                                                {isSelected && (
+                                                    <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                )}
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className={`w-2 h-2 rounded-full ${status.color}`}></span>
+                                                <span className={isSelected ? 'text-white' : 'text-white/90'}>{status.label}</span>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );
+            },
+            filterFn: (row, columnId, filterValue) => {
+                if (!filterValue || filterValue.length === 0) return true;
+                const value = row.getValue(columnId) as string;
+                return filterValue.includes(value);
             },
             cell: ({ row }) => {
                 const evals: string = row.getValue("processing_status");
@@ -381,9 +436,9 @@ function EvaluationDashboard() {
                     >
                         Conducted On
                         {column.getIsSorted() === "asc" ? (
-                            <ArrowUp className="ml-2 h-4 w-4 text-violet-400" />
+                            <ArrowDown01 className="ml-2 h-4 w-4 text-violet-400" />
                         ) : column.getIsSorted() === "desc" ? (
-                            <ArrowDown className="ml-2 h-4 w-4 text-violet-400" />
+                            <ArrowUp10 className="ml-2 h-4 w-4 text-violet-400" />
                         ) : (
                             <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
                         )}
