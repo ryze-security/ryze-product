@@ -18,6 +18,7 @@ import {
 	SignupPage,
 	AuditeeDocuments,
 	AuditeeEvaluations,
+	AdminDashboard,
 } from "./pages/pageIndex.ts";
 import {
 	Layout,
@@ -44,6 +45,8 @@ const App = () => {
 					<Route element={<ProtectedRoute />}>
 						<Route element={<Layout />}>
 							<Route path="/home" element={<Index />} />
+							<Route path="/admin" element={<AdminDashboard />} />
+
 							<Route
 								path="/evaluation"
 								element={<EvaluationDashboard />}

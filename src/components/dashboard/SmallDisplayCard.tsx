@@ -14,6 +14,7 @@ interface Props {
 	title: string;
 	icon: React.ReactNode;
 	value: number;
+	suffix?: string;
 	warning?: boolean;
 	loading?: boolean;
 	link?: string;
@@ -21,7 +22,7 @@ interface Props {
 }
 
 function SmallDisplayCard(props: Props) {
-	const { title, icon, value, warning = false, loading = false, link, onAction } = props;
+	const { title, icon, value, suffix = "", warning = false, loading = false, link, onAction } = props;
 
 	const navigate = useNavigate();
 
@@ -58,7 +59,7 @@ function SmallDisplayCard(props: Props) {
 					<RoundSpinner />
 				) : (
 					<span className="text-5xl font-bold text-white">
-						{formatNumberWithCommas(value)}
+						{formatNumberWithCommas(value)}{suffix}
 					</span>
 				)}
 			</div>
