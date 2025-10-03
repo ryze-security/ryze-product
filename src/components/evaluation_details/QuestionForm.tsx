@@ -31,6 +31,8 @@ interface Props {
 	questionIndex: number;
 	submitFn: (data: any) => void;
 	isLoading?: boolean;
+	hasNextControl?: boolean;
+	onNextControl?: () => void;
 }
 
 const complianceStatus = [
@@ -40,7 +42,7 @@ const complianceStatus = [
 ];
 
 function QuestionForm(props: Props) {
-	const { questionData, questionIndex, submitFn, isLoading } = props;
+	const { questionData, questionIndex, submitFn, isLoading, hasNextControl, onNextControl } = props;
 
 	const [selectedQuestion, setSelectedQuestion] = useState<questionResponse>(
 		questionData[questionIndex]
@@ -155,6 +157,24 @@ function QuestionForm(props: Props) {
 				{ keepDirty: false }
 			);
 		}
+		if (index === questionData.length - 1 && hasNextControl) {
+			onNextControl();
+
+			const newIndex = 0;
+			setIndex(newIndex);
+			setSelectedQuestion(questionData[newIndex]);
+			// updateEvidence(newIndex);
+			setisObservationEditing(false);
+			reset(
+				{
+					observation:
+						questionData[newIndex]?.Response.Observation || "",
+					score: questionData[newIndex]?.Response.Score || false,
+					questionId: questionData[newIndex]?.q_id || "",
+				},
+				{ keepDirty: false }
+			);
+		}
 	};
 
 	return (
@@ -191,10 +211,10 @@ function QuestionForm(props: Props) {
 									aria-expanded={open}
 									disabled={!isObservationEditing}
 									className={`w-[200px] justify-between bg-gray-light-ryzr text-white ${watch("score") === null
-											? "bg-zinc-700 hover:bg-zinc-700/75"
-											: watch("score")
-												? "bg-green-ryzr hover:bg-green-ryzr/75"
-												: "bg-red-ryzr hover:bg-red-ryzr/75"
+										? "bg-zinc-700 hover:bg-zinc-700/75"
+										: watch("score")
+											? "bg-green-ryzr hover:bg-green-ryzr/75"
+											: "bg-red-ryzr hover:bg-red-ryzr/75"
 										} transition-opacity duration-200 disabled:opacity-100 font-semibold`}
 								>
 									{
@@ -409,10 +429,10 @@ function QuestionForm(props: Props) {
 						onClick={handleRightArrowClick}
 						className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
 						disabled={
-							index === questionData.length - 1 || isLoading
+							(index === questionData.length - 1 && !hasNextControl) || isLoading
 						}
 					>
-						<ChevronRight className="mr-2 h-4 w-4" /> Next
+						<ChevronRight className="mr-2 h-4 w-4" /> Next {index === questionData.length - 1 && hasNextControl ? 'Section' : 'Question'}
 					</Button>
 				)}
 			</div>
