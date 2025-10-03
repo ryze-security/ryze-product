@@ -31,8 +31,12 @@ interface Props {
 	questionIndex: number;
 	submitFn: (data: any) => void;
 	isLoading?: boolean;
-	hasNextControl?: boolean;
 	onNextControl?: () => void;
+	onPreviousControl?: () => void;
+	questionFormPagination?: {
+		hasPreviousControl: boolean | null;
+		hasNextControl: boolean | null;
+	};
 }
 
 const complianceStatus = [
@@ -42,7 +46,7 @@ const complianceStatus = [
 ];
 
 function QuestionForm(props: Props) {
-	const { questionData, questionIndex, submitFn, isLoading, hasNextControl, onNextControl } = props;
+	const { questionData, questionIndex, submitFn, isLoading, onNextControl, onPreviousControl, questionFormPagination } = props;
 
 	const [selectedQuestion, setSelectedQuestion] = useState<questionResponse>(
 		questionData[questionIndex]
@@ -51,6 +55,10 @@ function QuestionForm(props: Props) {
 	useMemo(() => {
 		setSelectedQuestion(questionData[questionIndex]);
 	}, [questionData, questionIndex]);
+
+	useEffect(() => {
+		console.log({questionData, questionIndex, submitFn, isLoading, onNextControl, onPreviousControl, questionFormPagination})
+	}, [questionData, questionIndex, submitFn, isLoading, onNextControl, onPreviousControl, questionFormPagination]);
 
 	// const [formattedEvidence, setFormattedEvidence] = useState<string[]>([]);
 
@@ -138,6 +146,22 @@ function QuestionForm(props: Props) {
 				{ keepDirty: false }
 			);
 		}
+		if (index === 0 && questionFormPagination?.hasPreviousControl) {
+			onPreviousControl();
+			const newIndex = questionData.length - 1;
+			setIndex(newIndex);
+			setSelectedQuestion(questionData[newIndex]);
+			setisObservationEditing(false);
+			reset(
+				{
+					observation:
+						questionData[newIndex]?.Response.Observation || "",
+					score: questionData[newIndex]?.Response.Score || false,
+					questionId: questionData[newIndex]?.q_id || "",
+				},
+				{ keepDirty: false }
+			);
+		}
 	};
 
 	const handleRightArrowClick = () => {
@@ -157,7 +181,7 @@ function QuestionForm(props: Props) {
 				{ keepDirty: false }
 			);
 		}
-		if (index === questionData.length - 1 && hasNextControl) {
+		if (index === questionData.length - 1 && questionFormPagination?.hasNextControl) {
 			onNextControl();
 
 			const newIndex = 0;
@@ -397,9 +421,9 @@ function QuestionForm(props: Props) {
 						variant="outline"
 						onClick={handleLeftArrowClick}
 						className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
-						disabled={index === 0 || isLoading}
+						disabled={(index === 0 && !questionFormPagination?.hasPreviousControl) || isLoading}
 					>
-						<ChevronLeft className="mr-2 h-4 w-4" /> Previous
+						<ChevronLeft className="mr-2 h-4 w-4" /> Previous {index === 0 && questionFormPagination?.hasPreviousControl ? 'Section' : 'Question'}
 					</Button>
 				)}
 
@@ -429,10 +453,10 @@ function QuestionForm(props: Props) {
 						onClick={handleRightArrowClick}
 						className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
 						disabled={
-							(index === questionData.length - 1 && !hasNextControl) || isLoading
+							(index === questionData.length - 1 && !questionFormPagination?.hasNextControl) || isLoading
 						}
 					>
-						<ChevronRight className="mr-2 h-4 w-4" /> Next {index === questionData.length - 1 && hasNextControl ? 'Section' : 'Question'}
+						<ChevronRight className="mr-2 h-4 w-4" /> Next {index === questionData.length - 1 && questionFormPagination?.hasNextControl ? 'Section' : 'Question'}
 					</Button>
 				)}
 			</div>

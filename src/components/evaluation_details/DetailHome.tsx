@@ -62,6 +62,11 @@ interface QuestionFormFields {
 	questionId: string;
 }
 
+interface QuestionFormPagination {
+	hasPreviousControl: boolean;
+	hasNextControl: boolean;
+}
+
 const columns: ColumnDef<controlResponse>[] = [
 	{
 		accessorKey: "serial",
@@ -266,35 +271,11 @@ const DetailHome = forwardRef((props: Props, ref) => {
 	}, [selectedRow]);
 
 
-	// State that tracks if another section exists or not.
-	const [hasNextControl, setHasNextControl] = useState<boolean>(false);
-
-	// Updates whenever selected row and controls change to check if there is a next control
-	useEffect(() => {
-		if (!selectedRow || !combinedControls.length) {
-			setHasNextControl(false);
-			return;
-		}
-
-		const currentIndex = combinedControls.findIndex(
-			control => control.controlId === selectedRow.controlId
-		);
-		setHasNextControl(currentIndex < combinedControls.length - 1);
-	}, [selectedRow, combinedControls]);
-
-	const goToNextControl = () => {
-		if (!selectedRow || !updatedControlResponseList.length) return;
-
-		const currentIndex = updatedControlResponseList.findIndex(
-			control => control.controlId === selectedRow.controlId
-		);
-
-		if (currentIndex < updatedControlResponseList.length - 1) {
-			setSelectedRow(updatedControlResponseList[currentIndex + 1]);
-			initialState.selectedControl = updatedControlResponseList[currentIndex + 1].controlId;
-		}
-	};
-
+	// State that tracks if another control section exists or not. Highly convenient for navigation in QuestionForm.
+	const [questionFormPagination, setQuestionFormPagination] = useState<QuestionFormPagination>({
+		hasPreviousControl: null,
+		hasNextControl: null,
+	});
 
 	const [controlSort, setControlSort] = useState<SortingState>([]);
 	const [controlFilter, setControlFilter] = useState<string>("");
@@ -482,6 +463,56 @@ const DetailHome = forwardRef((props: Props, ref) => {
 			setIsInitialSyncCompleted(true);
 		}
 	}, [updatedQuestions, initialState, selectedRow, isInitialSyncCompleted]);
+
+
+	// ----------- HANDLES PREVIOUS AND NEXT CONTROL LOGIC -----------
+
+	const goToPreviousControl = () => {
+		if (!selectedRow || !updatedControlResponseList.length) return;
+
+		const currentIndex = updatedControlResponseList.findIndex(
+			control => control.controlId === selectedRow.controlId
+		);
+
+		if (currentIndex > 0) {
+			setSelectedRow(updatedControlResponseList[currentIndex - 1]);
+			initialState.selectedControl = updatedControlResponseList[currentIndex - 1].controlId;
+		}
+	}
+
+	const goToNextControl = () => {
+		if (!selectedRow || !updatedControlResponseList.length) return;
+
+		const currentIndex = updatedControlResponseList.findIndex(
+			control => control.controlId === selectedRow.controlId
+		);
+
+		if (currentIndex < updatedControlResponseList.length - 1) {
+			setSelectedRow(updatedControlResponseList[currentIndex + 1]);
+			initialState.selectedControl = updatedControlResponseList[currentIndex + 1].controlId;
+		}
+	};
+
+
+	// Updates whenever selected row and controls change to check if there is a next control
+	useEffect(() => {
+		if (!selectedRow || !combinedControls.length) {
+			setQuestionFormPagination({
+				hasPreviousControl: null,
+				hasNextControl: null,
+			});
+			return;
+		}
+
+		const currentIndex = combinedControls.findIndex(
+			control => control.controlId === selectedRow.controlId
+		);
+		setQuestionFormPagination({
+			hasPreviousControl: currentIndex > 0,
+			hasNextControl: currentIndex < combinedControls.length - 1,
+		});
+	}, [selectedRow, combinedControls]);
+
 
 	const handleBack = () => {
 		const url = new URL(window.location.href);
@@ -707,8 +738,9 @@ const DetailHome = forwardRef((props: Props, ref) => {
 								)}
 								submitFn={onSubmit}
 								isLoading={isQuestionUpdating}
-								hasNextControl={hasNextControl}
 								onNextControl={goToNextControl}
+								onPreviousControl={goToPreviousControl}
+								questionFormPagination={questionFormPagination}
 							/>
 						)}
 					</FormProvider>
