@@ -477,6 +477,8 @@ const DetailHome = forwardRef((props: Props, ref) => {
 		if (currentIndex > 0) {
 			setSelectedRow(updatedControlResponseList[currentIndex - 1]);
 			initialState.selectedControl = updatedControlResponseList[currentIndex - 1].controlId;
+			const lastQuestionFromPreviousControl = updatedControlResponseList[currentIndex - 1].QuestionResponseList.length - 1;
+			setSelectedQuestion(updatedControlResponseList[currentIndex - 1].QuestionResponseList[lastQuestionFromPreviousControl]);
 		}
 	}
 
@@ -490,9 +492,10 @@ const DetailHome = forwardRef((props: Props, ref) => {
 		if (currentIndex < updatedControlResponseList.length - 1) {
 			setSelectedRow(updatedControlResponseList[currentIndex + 1]);
 			initialState.selectedControl = updatedControlResponseList[currentIndex + 1].controlId;
+			setSelectedQuestion(updatedControlResponseList[currentIndex + 1].QuestionResponseList[0]);
+
 		}
 	};
-
 
 	// Updates whenever selected row and controls change to check if there is a next control
 	useEffect(() => {

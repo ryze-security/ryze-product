@@ -56,10 +56,6 @@ function QuestionForm(props: Props) {
 		setSelectedQuestion(questionData[questionIndex]);
 	}, [questionData, questionIndex]);
 
-	useEffect(() => {
-		console.log({questionData, questionIndex, submitFn, isLoading, onNextControl, onPreviousControl, questionFormPagination})
-	}, [questionData, questionIndex, submitFn, isLoading, onNextControl, onPreviousControl, questionFormPagination]);
-
 	// const [formattedEvidence, setFormattedEvidence] = useState<string[]>([]);
 
 	const [index, setIndex] = useState<number>(questionIndex);
@@ -130,8 +126,9 @@ function QuestionForm(props: Props) {
 	// };
 
 	const handleLeftArrowClick = () => {
+		let newIndex = 0;
 		if (index > 0) {
-			const newIndex = index - 1;
+			newIndex = index - 1;
 			setIndex(newIndex);
 			setSelectedQuestion(questionData[newIndex]);
 			setisObservationEditing(false);
@@ -148,25 +145,13 @@ function QuestionForm(props: Props) {
 		}
 		if (index === 0 && questionFormPagination?.hasPreviousControl) {
 			onPreviousControl();
-			const newIndex = questionData.length - 1;
-			setIndex(newIndex);
-			setSelectedQuestion(questionData[newIndex]);
-			setisObservationEditing(false);
-			reset(
-				{
-					observation:
-						questionData[newIndex]?.Response.Observation || "",
-					score: questionData[newIndex]?.Response.Score || false,
-					questionId: questionData[newIndex]?.q_id || "",
-				},
-				{ keepDirty: false }
-			);
 		}
 	};
 
 	const handleRightArrowClick = () => {
+		let newIndex = 0;
 		if (index < questionData.length - 1) {
-			const newIndex = index + 1;
+			newIndex = index + 1;
 			setIndex(newIndex);
 			setSelectedQuestion(questionData[newIndex]);
 			// updateEvidence(newIndex);
@@ -183,23 +168,37 @@ function QuestionForm(props: Props) {
 		}
 		if (index === questionData.length - 1 && questionFormPagination?.hasNextControl) {
 			onNextControl();
-
-			const newIndex = 0;
-			setIndex(newIndex);
-			setSelectedQuestion(questionData[newIndex]);
-			// updateEvidence(newIndex);
-			setisObservationEditing(false);
-			reset(
-				{
-					observation:
-						questionData[newIndex]?.Response.Observation || "",
-					score: questionData[newIndex]?.Response.Score || false,
-					questionId: questionData[newIndex]?.q_id || "",
-				},
-				{ keepDirty: false }
-			);
 		}
 	};
+
+	// This effect is used to update the URL when the index or question data changes
+	useEffect(() => {
+		const url = new URL(window.location.href);
+		const currentQuestion = questionData[index];
+
+		if (!currentQuestion) return;
+
+		if (currentQuestion.q_id) {
+			url.searchParams.set("question", currentQuestion.q_id);
+		} else {
+			url.searchParams.delete("question");
+		}
+
+		if (currentQuestion.controlId) {
+			url.searchParams.set("controlId", currentQuestion.controlId);
+		} else {
+			url.searchParams.delete("controlId");
+		}
+
+		history.pushState(
+			{
+				selectedControl: currentQuestion.controlId,
+				selectedQuestion: currentQuestion,
+			},
+			"",
+			url
+		);
+	}, [index, questionData]); // Run when index or questionData changes
 
 	return (
 		<div className="w-full px-4">
@@ -420,7 +419,8 @@ function QuestionForm(props: Props) {
 					<Button
 						variant="outline"
 						onClick={handleLeftArrowClick}
-						className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
+						className={`w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm
+							${index === 0 && questionFormPagination?.hasPreviousControl ? 'bg-violet-light-ryzr hover:bg-violet-ryzr' : 'bg-[#4A4A4A] hover:bg-[#4A4A4A]/75'}`}
 						disabled={(index === 0 && !questionFormPagination?.hasPreviousControl) || isLoading}
 					>
 						<ChevronLeft className="mr-2 h-4 w-4" /> Previous {index === 0 && questionFormPagination?.hasPreviousControl ? 'Section' : 'Question'}
@@ -451,7 +451,8 @@ function QuestionForm(props: Props) {
 					<Button
 						variant="outline"
 						onClick={handleRightArrowClick}
-						className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
+						className={`w-[49%] text-white text-lg py-6 rounded-sm 
+							${index === questionData.length - 1 && questionFormPagination?.hasNextControl ? 'bg-violet-light-ryzr hover:bg-violet-ryzr' : 'bg-[#4A4A4A] hover:bg-[#4A4A4A]/75'}`}
 						disabled={
 							(index === questionData.length - 1 && !questionFormPagination?.hasNextControl) || isLoading
 						}
