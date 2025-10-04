@@ -35,8 +35,6 @@ function MarkdownRenderer(props: Props) {
 				? content.replace(/\*\*(.*?)\*\*/g, "$1").replace(/__(.*?)__/g, "$1")
 				: content;
 
-			console.log(processedContent)
-
 			// Always generate the full HTML
 			const dirtyFull = await marked.parse(processedContent);
 			let cleanFull = DOMPurify.sanitize(dirtyFull);

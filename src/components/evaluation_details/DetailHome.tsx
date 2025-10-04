@@ -62,6 +62,11 @@ interface QuestionFormFields {
 	questionId: string;
 }
 
+interface QuestionFormPagination {
+	hasPreviousControl: boolean;
+	hasNextControl: boolean;
+}
+
 const columns: ColumnDef<controlResponse>[] = [
 	{
 		accessorKey: "serial",
@@ -259,11 +264,18 @@ const DetailHome = forwardRef((props: Props, ref) => {
 						question.Response.Score === "true"
 							? true
 							: question.Response.Score === "false"
-							? false
-							: null,
+								? false
+								: null,
 				},
 			}));
 	}, [selectedRow]);
+
+
+	// State that tracks if another control section exists or not. Highly convenient for navigation in QuestionForm.
+	const [questionFormPagination, setQuestionFormPagination] = useState<QuestionFormPagination>({
+		hasPreviousControl: null,
+		hasNextControl: null,
+	});
 
 	const [controlSort, setControlSort] = useState<SortingState>([]);
 	const [controlFilter, setControlFilter] = useState<string>("");
@@ -314,7 +326,6 @@ const DetailHome = forwardRef((props: Props, ref) => {
 				newCombinedControls.push(control);
 			}
 		}
-
 		setCombinedControls(newCombinedControls);
 	}, [domainDataMap]);
 
@@ -453,6 +464,59 @@ const DetailHome = forwardRef((props: Props, ref) => {
 		}
 	}, [updatedQuestions, initialState, selectedRow, isInitialSyncCompleted]);
 
+
+	// ----------- HANDLES PREVIOUS AND NEXT CONTROL LOGIC -----------
+
+	const goToPreviousControl = () => {
+		if (!selectedRow || !updatedControlResponseList.length) return;
+
+		const currentIndex = updatedControlResponseList.findIndex(
+			control => control.controlId === selectedRow.controlId
+		);
+
+		if (currentIndex > 0) {
+			setSelectedRow(updatedControlResponseList[currentIndex - 1]);
+			initialState.selectedControl = updatedControlResponseList[currentIndex - 1].controlId;
+			const lastQuestionFromPreviousControl = updatedControlResponseList[currentIndex - 1].QuestionResponseList.length - 1;
+			setSelectedQuestion(updatedControlResponseList[currentIndex - 1].QuestionResponseList[lastQuestionFromPreviousControl]);
+		}
+	}
+
+	const goToNextControl = () => {
+		if (!selectedRow || !updatedControlResponseList.length) return;
+
+		const currentIndex = updatedControlResponseList.findIndex(
+			control => control.controlId === selectedRow.controlId
+		);
+
+		if (currentIndex < updatedControlResponseList.length - 1) {
+			setSelectedRow(updatedControlResponseList[currentIndex + 1]);
+			initialState.selectedControl = updatedControlResponseList[currentIndex + 1].controlId;
+			setSelectedQuestion(updatedControlResponseList[currentIndex + 1].QuestionResponseList[0]);
+
+		}
+	};
+
+	// Updates whenever selected row and controls change to check if there is a next control
+	useEffect(() => {
+		if (!selectedRow || !combinedControls.length) {
+			setQuestionFormPagination({
+				hasPreviousControl: null,
+				hasNextControl: null,
+			});
+			return;
+		}
+
+		const currentIndex = combinedControls.findIndex(
+			control => control.controlId === selectedRow.controlId
+		);
+		setQuestionFormPagination({
+			hasPreviousControl: currentIndex > 0,
+			hasNextControl: currentIndex < combinedControls.length - 1,
+		});
+	}, [selectedRow, combinedControls]);
+
+
 	const handleBack = () => {
 		const url = new URL(window.location.href);
 		if (selectedQuestion) {
@@ -536,10 +600,9 @@ const DetailHome = forwardRef((props: Props, ref) => {
 									<HoverCardTrigger className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
 										{evalMetadata?.file_names[0]}{" "}
 										{evalMetadata?.file_names.length > 2
-											? `and ${
-													evalMetadata?.file_names
-														.length - 1
-											  } more`
+											? `and ${evalMetadata?.file_names
+												.length - 1
+											} more`
 											: ""}
 									</HoverCardTrigger>
 									<HoverCardContent className="w-fit">
@@ -583,9 +646,8 @@ const DetailHome = forwardRef((props: Props, ref) => {
 
 			{/* Full Data Data table */}
 			<section
-				className={`flex flex-col items-center w-full bg-black text-white ${
-					selectedRow ? "" : "mt-8 pt-4"
-				}`}
+				className={`flex flex-col items-center w-full bg-black text-white ${selectedRow ? "" : "mt-8 pt-4"
+					}`}
 			>
 				<div className="w-full mb-8 px-4">
 					{selectedRow && (
@@ -594,7 +656,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 							<div className="flex gap-2">
 								<div className="mb-4">
 									{selectedQuestion &&
-									methods.formState.isDirty ? (
+										methods.formState.isDirty ? (
 										<AlertDialogBox
 											trigger={
 												<Button
@@ -674,9 +736,14 @@ const DetailHome = forwardRef((props: Props, ref) => {
 								questionData={updatedQuestions}
 								questionIndex={updatedQuestions.indexOf(
 									selectedQuestion
+								) === -1 ? 0 : updatedQuestions.indexOf(
+									selectedQuestion
 								)}
 								submitFn={onSubmit}
 								isLoading={isQuestionUpdating}
+								onNextControl={goToNextControl}
+								onPreviousControl={goToPreviousControl}
+								questionFormPagination={questionFormPagination}
 							/>
 						)}
 					</FormProvider>
@@ -782,22 +849,21 @@ const InfoCard = ({
 	const dataInInteger = parseInt(data);
 
 	const formatHeading = (text: string) => {
-        const firstSpaceIndex = text.indexOf(' ');
-        if (firstSpaceIndex === -1) {
-            return text;
-        }
-        return text.substring(0, firstSpaceIndex) + '\n' + text.substring(firstSpaceIndex + 1);
-    };
+		const firstSpaceIndex = text.indexOf(' ');
+		if (firstSpaceIndex === -1) {
+			return text;
+		}
+		return text.substring(0, firstSpaceIndex) + '\n' + text.substring(firstSpaceIndex + 1);
+	};
 
 	return (
 		<Card
-			className={`${
-				dataInInteger >= 75
-					? "bg-[#71AE57]/30"
-					: dataInInteger >= 50 && dataInInteger < 75
+			className={`${dataInInteger >= 75
+				? "bg-[#71AE57]/30"
+				: dataInInteger >= 50 && dataInInteger < 75
 					? "bg-[#FFB266]/30"
 					: "bg-[#FF6666]/30"
-			} rounded-2xl max-h-52 max-w-60 min-h-48 min-w-72 cursor-pointer`}
+				} rounded-2xl max-h-52 max-w-60 min-h-48 min-w-72 cursor-pointer`}
 			onClick={() => {
 				stepChangefn?.(itemId);
 			}}
@@ -809,13 +875,12 @@ const InfoCard = ({
 					</p>
 				</div>
 				<div
-					className={`text-[48px] ${
-						dataInInteger >= 75
-							? "text-[#71AE57]"
-							: dataInInteger >= 50 && dataInInteger < 75
+					className={`text-[48px] ${dataInInteger >= 75
+						? "text-[#71AE57]"
+						: dataInInteger >= 50 && dataInInteger < 75
 							? "text-[#FFB266]"
 							: "text-[#FF6666]"
-					} mt-auto font-semibold`}
+						} mt-auto font-semibold`}
 				>
 					{data}
 				</div>

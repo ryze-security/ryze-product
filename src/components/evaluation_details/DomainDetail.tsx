@@ -46,6 +46,12 @@ interface QuestionFormFields {
 	questionId: string;
 }
 
+interface QuestionFormPagination {
+	hasPreviousControl: boolean;
+	hasNextControl: boolean;
+}
+
+
 const columns: ColumnDef<controlResponse>[] = [
 	{
 		accessorKey: "serial",
@@ -211,13 +217,20 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 						question.Response.Score === "true"
 							? true
 							: question.Response.Score === "false"
-							? false
-							: null,
+								? false
+								: null,
 				},
 			}));
 	}, [selectedRow]);
 	const [selectedQuestion, setSelectedQuestion] =
 		useState<questionResponse>(null);
+
+	// State that tracks if another control section exists or not. Highly convenient for navigation in QuestionForm.
+	const [questionFormPagination, setQuestionFormPagination] = useState<QuestionFormPagination>({
+		hasPreviousControl: null,
+		hasNextControl: null,
+	});
+
 
 	const [controlSort, setControlSort] = useState<SortingState>([]);
 	const [controlFilter, setControlFilter] = useState<string>("");
@@ -323,6 +336,61 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 		};
 	}, []);
 
+
+		// ----------- HANDLES PREVIOUS AND NEXT CONTROL LOGIC -----------
+
+		const goToPreviousControl = () => {
+			if (!selectedRow || !updatedData.ControlResponseList.length) return;
+	
+			const currentIndex = updatedData.ControlResponseList.findIndex(
+				control => control.controlId === selectedRow.controlId
+			);
+	
+			if (currentIndex > 0) {
+				setSelectedRow(updatedData.ControlResponseList[currentIndex - 1]);
+				// initialState.selectedControl = updatedData.ControlResponseList[currentIndex - 1].controlId;
+				const lastQuestionFromPreviousControl = updatedData.ControlResponseList[currentIndex - 1].QuestionResponseList.length - 1;
+				setSelectedQuestion(updatedData.ControlResponseList[currentIndex - 1].QuestionResponseList[lastQuestionFromPreviousControl]);
+			}
+		}
+	
+		const goToNextControl = () => {
+			if (!selectedRow || !updatedData.ControlResponseList.length) return;
+	
+			const currentIndex = updatedData.ControlResponseList.findIndex(
+				control => control.controlId === selectedRow.controlId
+			);
+	
+			if (currentIndex < updatedData.ControlResponseList.length - 1) {
+				setSelectedRow(updatedData.ControlResponseList[currentIndex + 1]);
+				// initialState.selectedControl = updatedData.ControlResponseList[currentIndex + 1].controlId;
+				setSelectedQuestion(updatedData.ControlResponseList[currentIndex + 1].QuestionResponseList[0]);
+	
+			}
+		};
+	
+		// Updates whenever selected row and controls change to check if there is a next control
+		useEffect(() => {
+			if (!selectedRow || !updatedData.ControlResponseList.length) {
+				setQuestionFormPagination({
+					hasPreviousControl: null,
+					hasNextControl: null,
+				});
+				return;
+			}
+	
+			const currentIndex = updatedData.ControlResponseList.findIndex(
+				control => control.controlId === selectedRow.controlId
+			);
+			setQuestionFormPagination({
+				hasPreviousControl: currentIndex > 0,
+				hasNextControl: currentIndex < updatedData.ControlResponseList.length - 1,
+			});
+		}, [selectedRow, updatedData.ControlResponseList]);
+	
+	
+
+
 	const handleBack = () => {
 		const url = new URL(window.location.href);
 		if (selectedQuestion) {
@@ -377,7 +445,7 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 						<div className="flex gap-2">
 							<div className="mb-4">
 								{selectedQuestion &&
-								methods.formState.isDirty ? (
+									methods.formState.isDirty ? (
 									<AlertDialogBox
 										trigger={
 											<Button
@@ -474,6 +542,9 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 								)}
 								submitFn={onSubmit}
 								isLoading={isQuestionUpdating}
+								onPreviousControl={goToPreviousControl}
+								onNextControl={goToNextControl}
+								questionFormPagination={questionFormPagination}
 							/>
 						)}
 					</FormProvider>
