@@ -10,7 +10,7 @@ export const createRichTextFromMarkdown = (text) => {
     }
 
     // This regex splits the string by the ** markers, keeping the bolded part.
-    const parts = text.split(/\*\*(.*?)\*\*/g);
+    const parts = text.split(/\*(.*?)\*/g);
 
     // The base font style for all parts of the cell
 
