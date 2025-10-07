@@ -6,20 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import UsersDashboard from "./UsersDashboard";
+import TenantsDashboard from "./TenantsDashboard";
 
-// Mock data for Users
-const mockUsers = [
-    { id: 1, name: "John Doe", email: "john@example.com", role: "Admin", status: "Active" },
-    { id: 2, name: "Jane Smith", email: "jane@example.com", role: "User", status: "Active" },
-    { id: 3, name: "Bob Johnson", email: "bob@example.com", role: "User", status: "Inactive" },
-];
-
-// Mock data for Tenants
-const mockTenants = [
-    { id: 1, name: "Acme Corp", plan: "Enterprise", users: 45, status: "Active" },
-    { id: 2, name: "Tech Solutions", plan: "Professional", users: 15, status: "Active" },
-    { id: 3, name: "Startup Inc", plan: "Starter", users: 5, status: "Trial" },
-];
 
 // Mock data for Credits
 const mockCredits = [
@@ -47,43 +35,13 @@ const AdminDashboard: React.FC = () => {
 
     const renderTabContent = () => {
         switch (activeTab) {
-            case 0: // Users
+            case 0:
                 return (
-                    <UsersDashboard/>
+                    <UsersDashboard />
                 );
-            case 1: // Tenants
+            case 1:
                 return (
-                    <Card className="border-zinc-800">
-                        <CardHeader>
-                            <CardTitle className="text-white">Tenant Management</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="hover:bg-transparent">
-                                        <TableHead className="text-white">Tenant Name</TableHead>
-                                        <TableHead className="text-white">Plan</TableHead>
-                                        <TableHead className="text-white">Users</TableHead>
-                                        <TableHead className="text-right text-white">Status</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {mockTenants.map((tenant) => (
-                                        <TableRow key={tenant.id} className="border-zinc-800 hover:bg-zinc-900/50">
-                                            <TableCell className="font-medium text-white">{tenant.name}</TableCell>
-                                            <TableCell className="text-zinc-400">{tenant.plan}</TableCell>
-                                            <TableCell>{tenant.users}</TableCell>
-                                            <TableCell className="text-right">
-                                                <Badge variant={tenant.status === 'Active' ? 'success' : 'default'}>
-                                                    {tenant.status}
-                                                </Badge>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
+                    <TenantsDashboard />
                 );
             case 2: // Credits Required
                 return (
@@ -140,10 +98,10 @@ const AdminDashboard: React.FC = () => {
                                             <TableCell className="text-zinc-400">{form.subject}</TableCell>
                                             <TableCell className="text-zinc-400">{form.date}</TableCell>
                                             <TableCell className="text-right">
-                                                <Badge 
+                                                <Badge
                                                     variant={
-                                                        form.status === 'New' ? 'default' : 
-                                                        form.status === 'In Progress' ? 'secondary' : 'success'
+                                                        form.status === 'New' ? 'default' :
+                                                            form.status === 'In Progress' ? 'secondary' : 'success'
                                                     }
                                                 >
                                                     {form.status}

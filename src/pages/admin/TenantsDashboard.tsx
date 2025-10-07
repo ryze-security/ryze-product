@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import usersService from '@/services/usersService';
+import tenantService from '@/services/tenantServices';
 import { RoundSpinner } from '@/components/ui/spinner';
-import { UserListDTO, UserDTO } from '@/models/users/UsersListDTO';
+import { tenantDetailsDTO } from '@/models/tenant/TenantDTOs';
 import {
     ColumnDef,
     flexRender,
@@ -25,9 +25,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ArrowUpDown, ArrowDownAZ, ArrowUpZA } from 'lucide-react';
 
-const UsersDashboard = () => {
-    const [loadingUsers, setLoadingUsers] = useState(true);
-    const [users, setUsers] = useState<UserDTO[]>([]);
+const TenantsDashboard = () => {
+    const [loadingTenants, setLoadingTenants] = useState(true);
+    const [tenants, setTenants] = useState<tenantDetailsDTO[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [sorting, setSorting] = useState<SortingState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -37,43 +37,41 @@ const UsersDashboard = () => {
     });
 
     useEffect(() => {
-        const fetchUsersList = async () => {
+        const fetchTenantsList = async () => {
             try {
-                setLoadingUsers(true);
-                const response = await usersService.getUsersList();
-                setUsers(response.users || []);
+                setLoadingTenants(true);
+                const response = await tenantService.getTenantsList();
+                setTenants(response || []);
                 setError(null);
             } catch (error: any) {
-                console.error('Error fetching users:', error);
-                setError(error.message || 'Failed to load users');
+                setError(error.message || 'Failed to load tenants');
             } finally {
-                setLoadingUsers(false);
+                setLoadingTenants(false);
             }
         };
-
-        fetchUsersList();
+        fetchTenantsList();
     }, []);
 
-    const columns = useMemo<ColumnDef<UserDTO>[]>(
+    const columns = useMemo<ColumnDef<tenantDetailsDTO>[]>(
         () => [
             {
-                accessorKey: 'first_name',
+                accessorKey: 'tenant_display_name',
                 header: ({ column }) => (
                     <Button
                         variant="ghost"
                         onClick={(e) => {
                             e.stopPropagation();
                             if (!column.getIsSorted()) {
-                                column.toggleSorting(false); // Ascending
+                                column.toggleSorting(false);
                             } else if (column.getIsSorted() === "asc") {
-                                column.toggleSorting(true); // Descending
+                                column.toggleSorting(true);
                             } else {
-                                column.clearSorting(); // Clear sorting
+                                column.clearSorting();
                             }
                         }}
                         className="px-0 hover:bg-transparent hover:text-white"
                     >
-                        Name
+                        Tenant Name
                         {column.getIsSorted() === "asc" ? (
                             <ArrowDownAZ className="ml-2 h-4 w-4 text-violet-400" />
                         ) : column.getIsSorted() === "desc" ? (
@@ -85,50 +83,36 @@ const UsersDashboard = () => {
                 ),
                 cell: ({ row }) => (
                     <div className="flex items-center gap-2">
-                        <span>{row.original.first_name} {row.original.last_name}</span>
-                    </div>
-                ),
-            },
-            {
-                accessorKey: 'email',
-                header: ({ column }) => (
-                    <Button
-                        variant="ghost"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (!column.getIsSorted()) {
-                                column.toggleSorting(false); // Ascending
-                            } else if (column.getIsSorted() === "asc") {
-                                column.toggleSorting(true); // Descending
-                            } else {
-                                column.clearSorting(); // Clear sorting
-                            }
-                        }}
-                        className="px-0 hover:bg-transparent hover:text-white"
-                    >
-                        Email
-                        {column.getIsSorted() === "asc" ? (
-                            <ArrowDownAZ className="ml-2 h-4 w-4 text-violet-400" />
-                        ) : column.getIsSorted() === "desc" ? (
-                            <ArrowUpZA className="ml-2 h-4 w-4 text-violet-400" />
-                        ) : (
-                            <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
-                        )}
-                    </Button>
-                ),
-                cell: ({ row }) => (
-                    <div className="flex items-center gap-2 text-zinc-400">
-                        <span>{row.original.email}</span>
+                        <span className="font-medium">{row.original.tenant_display_name}</span>
                     </div>
                 ),
             },
             {
                 accessorKey: 'tenant_id',
-                header: 'Tenant',
+                header: 'Tenant ID',
                 cell: ({ row }) => (
-                    <div className="flex items-center gap-2">
-                        <span>{row.original.tenant_id}</span>
+                    <div className="text-zinc-400">
+                        {row.original.tenant_id}
                     </div>
+                ),
+            },
+            {
+                accessorKey: 'num_companies',
+                header: 'Companies',
+                cell: ({ row }) => row.original.num_companies,
+            },
+            {
+                accessorKey: 'total_credits',
+                header: 'Total Credits',
+                cell: ({ row }) => row.original.total_credits.toLocaleString(),
+            },
+            {
+                accessorKey: 'remaining_credits',
+                header: 'Remaining Credits',
+                cell: ({ row }) => (
+                    <span className={row.original.remaining_credits < (row.original.total_credits * 0.2) ? 'text-red-400' : ''}>
+                        {row.original.remaining_credits.toLocaleString()}
+                    </span>
                 ),
             },
         ],
@@ -136,7 +120,7 @@ const UsersDashboard = () => {
     );
 
     const table = useReactTable({
-        data: users,
+        data: tenants,
         columns,
         state: {
             sorting,
@@ -151,32 +135,12 @@ const UsersDashboard = () => {
         getFilteredRowModel: getFilteredRowModel(),
         onGlobalFilterChange: setGlobalFilter,
         globalFilterFn: (row, columnId, filterValue) => {
-            const value = row.original[columnId as keyof UserDTO];
+            const value = row.original[columnId as keyof tenantDetailsDTO];
             return String(value).toLowerCase().includes(filterValue.toLowerCase());
         },
     });
 
-    const [loadingTable, setLoadingTable] = useState(true);
-
-    useEffect(() => {
-        const fetchUsersList = async () => {
-            try {
-                setLoadingTable(true);
-                const response = await usersService.getUsersList();
-                setUsers(response.users || []);
-                setError(null);
-            } catch (error: any) {
-                console.error('Error fetching users:', error);
-                setError(error.message || 'Failed to load users');
-            } finally {
-                setLoadingTable(false);
-            }
-        };
-
-        fetchUsersList();
-    }, []);
-
-    if (loadingUsers) {
+    if (loadingTenants) {
         return (
             <div className="flex items-center justify-center">
                 <RoundSpinner />
@@ -197,7 +161,7 @@ const UsersDashboard = () => {
     return (
         <div className="space-y-4 lg:px-4 max-w-7xl w-full">
             <Input
-                placeholder="Search..."
+                placeholder="Search tenants..."
                 value={globalFilter}
                 onChange={(e) => setGlobalFilter(e.target.value)}
                 className="max-w-sm text-xl"
@@ -232,7 +196,7 @@ const UsersDashboard = () => {
                             </TableRow>
                         ))}
                     </TableHeader>
-                    <TableBody className="">
+                    <TableBody>
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
                                 <TableRow
@@ -255,13 +219,7 @@ const UsersDashboard = () => {
                                     colSpan={columns.length}
                                     className="text-center"
                                 >
-                                    {loadingTable ? (
-                                        <div className="flex items-center justify-center">
-                                            <div className="h-8 w-8 border-4 border-zinc-400 border-t-transparent rounded-full animate-spin"></div>
-                                        </div>
-                                    ) : (
-                                        "No results found."
-                                    )}
+                                    No results found.
                                 </TableCell>
                             </TableRow>
                         )}
@@ -303,4 +261,4 @@ const UsersDashboard = () => {
     );
 };
 
-export default UsersDashboard;
+export default TenantsDashboard;
