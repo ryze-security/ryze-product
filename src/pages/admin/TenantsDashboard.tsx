@@ -81,23 +81,13 @@ const TenantsDashboard = () => {
                         )}
                     </Button>
                 ),
-                cell: ({ row }) => (
-                    <div className="flex items-center gap-2">
-                        <span className="font-medium">{row.original.tenant_display_name}</span>
-                    </div>
-                ),
             },
             {
                 accessorKey: 'tenant_id',
                 header: 'Tenant ID',
-                cell: ({ row }) => (
-                    <div className="text-zinc-400">
-                        {row.original.tenant_id}
-                    </div>
-                ),
             },
             {
-                accessorKey: 'num_companies',
+                accessorKey: 'created_on',
                 header: ({ column }) => (
                     <Button
                         variant="ghost"
@@ -113,17 +103,29 @@ const TenantsDashboard = () => {
                         }}
                         className="px-0 hover:bg-transparent hover:text-white"
                     >
-                        Companies
+                        Created On
                         {column.getIsSorted() === "asc" ? (
-                            <ArrowDown01 className="ml-2 h-4 w-4 text-violet-400" />
+                            <ArrowDownAZ className="ml-2 h-4 w-4 text-violet-400" />
                         ) : column.getIsSorted() === "desc" ? (
-                            <ArrowUp10 className="ml-2 h-4 w-4 text-violet-400" />
+                            <ArrowUpZA className="ml-2 h-4 w-4 text-violet-400" />
                         ) : (
                             <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
                         )}
                     </Button>
                 ),
-                cell: ({ row }) => row.original.num_companies,
+                cell: ({ row }) => (
+                    <span>
+                        {(() => {
+                            const date = new Date(row.original.created_on);
+                            const day = String(date.getDate()).padStart(2, "0");
+                            const month = date.toLocaleString("en-GB", { month: "short" });
+                            const year = date.getFullYear();
+                            const hours = String(date.getHours()).padStart(2, "0");
+                            const minutes = String(date.getMinutes()).padStart(2, "0");
+                            return `${day}-${month}-${year} ${hours}:${minutes}`;
+                        })()}
+                    </span>
+                ),
             },
             {
                 accessorKey: 'total_credits',
@@ -151,8 +153,7 @@ const TenantsDashboard = () => {
                             <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
                         )}
                     </Button>
-                ),
-                cell: ({ row }) => row.original.total_credits.toLocaleString(),
+                )
             },
             {
                 accessorKey: 'remaining_credits',
@@ -181,10 +182,61 @@ const TenantsDashboard = () => {
                         )}
                     </Button>
                 ),
-                cell: ({ row }) => (
-                    <span className={row.original.remaining_credits < (row.original.total_credits * 0.2) ? 'text-red-400' : ''}>
-                        {row.original.remaining_credits.toLocaleString()}
-                    </span>
+            },
+            {
+                accessorKey: 'num_documents',
+                header: ({ column }) => (
+                    <Button
+                        variant="ghost"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (!column.getIsSorted()) {
+                                column.toggleSorting(false);
+                            } else if (column.getIsSorted() === "asc") {
+                                column.toggleSorting(true);
+                            } else {
+                                column.clearSorting();
+                            }
+                        }}
+                        className="px-0 hover:bg-transparent hover:text-white"
+                    >
+                        Documents
+                        {column.getIsSorted() === "asc" ? (
+                            <ArrowDown01 className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : column.getIsSorted() === "desc" ? (
+                            <ArrowUp10 className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : (
+                            <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+                        )}
+                    </Button>
+                ),
+            },
+            {
+                accessorKey: 'num_evaluations',
+                header: ({ column }) => (
+                    <Button
+                        variant="ghost"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (!column.getIsSorted()) {
+                                column.toggleSorting(false);
+                            } else if (column.getIsSorted() === "asc") {
+                                column.toggleSorting(true);
+                            } else {
+                                column.clearSorting();
+                            }
+                        }}
+                        className="px-0 hover:bg-transparent hover:text-white"
+                    >
+                        Evaluations
+                        {column.getIsSorted() === "asc" ? (
+                            <ArrowDown01 className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : column.getIsSorted() === "desc" ? (
+                            <ArrowUp10 className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : (
+                            <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+                        )}
+                    </Button>
                 ),
             },
         ],
