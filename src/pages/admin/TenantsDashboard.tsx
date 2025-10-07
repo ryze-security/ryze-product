@@ -81,6 +81,9 @@ const TenantsDashboard = () => {
                         )}
                     </Button>
                 ),
+                cell: ({ row }) => (<span className='flex items-center gap-2'>{row.original.tenant_display_name}</span>
+                )
+                ,
             },
             {
                 accessorKey: 'tenant_id',
@@ -114,7 +117,7 @@ const TenantsDashboard = () => {
                     </Button>
                 ),
                 cell: ({ row }) => (
-                    <span>
+                    <span className='flex items-center justify-center gap-2'>
                         {(() => {
                             const date = new Date(row.original.created_on);
                             const day = String(date.getDate()).padStart(2, "0");
@@ -153,7 +156,8 @@ const TenantsDashboard = () => {
                             <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
                         )}
                     </Button>
-                )
+                ),
+                cell: ({ row }) => (<span className='flex justify-center items-center gap-2'>{row.original.total_credits}</span>)
             },
             {
                 accessorKey: 'remaining_credits',
@@ -182,6 +186,7 @@ const TenantsDashboard = () => {
                         )}
                     </Button>
                 ),
+                cell: ({ row }) => (<span className='flex justify-center items-center gap-2'>{row.original.remaining_credits}</span>)
             },
             {
                 accessorKey: 'num_documents',
@@ -210,6 +215,7 @@ const TenantsDashboard = () => {
                         )}
                     </Button>
                 ),
+                cell: ({ row }) => (<span className='flex justify-center items-center gap-2'>{row.original.num_documents}</span>)
             },
             {
                 accessorKey: 'num_evaluations',
@@ -238,6 +244,7 @@ const TenantsDashboard = () => {
                         )}
                     </Button>
                 ),
+                cell: ({ row }) => (<span className='flex justify-center items-center gap-2'>{row.original.num_evaluations}</span>)
             },
         ],
         []

@@ -30,7 +30,7 @@ const AdminDashboard: React.FC = () => {
         { id: 0, label: "Users", iconName: "Users" },
         { id: 1, label: "Tenants", iconName: "Tenants" },
         { id: 2, label: "Credits Required", iconName: "Credits" },
-        { id: 3, label: "Contact Us Forms", iconName: "Contact" },
+        { id: 3, label: "Contact Us Forms", iconName: "reports" },
     ];
 
     const renderTabContent = () => {

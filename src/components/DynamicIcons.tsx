@@ -1,11 +1,14 @@
 import {
+	Building2,
 	BuildingIcon,
 	ClipboardListIcon,
+	Coins,
 	DatabaseIcon,
 	FileTextIcon,
 	FileUserIcon,
 	HomeIcon,
 	IdCardIcon,
+	Users,
 } from "lucide-react";
 
 export const iconMap: Record<string, React.ElementType> = {
@@ -15,7 +18,10 @@ export const iconMap: Record<string, React.ElementType> = {
 	physical: IdCardIcon,
 	technological: DatabaseIcon,
 	reports: FileTextIcon,
-    pii: IdCardIcon
+    pii: IdCardIcon,
+	user: Users,
+	tenants: Building2,
+	credits: Coins,
 };
 
 interface DynamicIconsProps {
@@ -33,6 +39,9 @@ const getIconsByName = (name: string) : React.ElementType => {
     if(lowerCaseName.includes("technological")) return iconMap["technological"];
     if(lowerCaseName.includes("pii")) return iconMap["pii"];
     if(lowerCaseName.includes("reports")) return iconMap["reports"];
+    if(lowerCaseName.includes("users")) return iconMap["user"];
+    if(lowerCaseName.includes("tenants")) return iconMap["tenants"];
+    if(lowerCaseName.includes("credits")) return iconMap["credits"];
 
     return ClipboardListIcon; // default icon
 }
