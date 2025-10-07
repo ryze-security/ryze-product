@@ -4,7 +4,7 @@ import { tenantDetailsDTO } from "@/models/tenant/TenantDTOs";
 
 export class TenantService {
     async getTenantDetails(tenant_id: string): Promise<tenantDetailsDTO | any> {
-        try{
+        try {
             const response = await axiosInstance.get<tenantDetailsDTO>(`/api/v1/tenants/${tenant_id}`, {
                 headers: {
                     "Content-Type": "application/json",
