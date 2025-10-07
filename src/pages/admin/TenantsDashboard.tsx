@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { ArrowUpDown, ArrowDownAZ, ArrowUpZA } from 'lucide-react';
+import { ArrowUpDown, ArrowDownAZ, ArrowUpZA, ArrowDown01, ArrowUp10 } from 'lucide-react';
 
 const TenantsDashboard = () => {
     const [loadingTenants, setLoadingTenants] = useState(true);
@@ -98,17 +98,89 @@ const TenantsDashboard = () => {
             },
             {
                 accessorKey: 'num_companies',
-                header: 'Companies',
+                header: ({ column }) => (
+                    <Button
+                        variant="ghost"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (!column.getIsSorted()) {
+                                column.toggleSorting(false);
+                            } else if (column.getIsSorted() === "asc") {
+                                column.toggleSorting(true);
+                            } else {
+                                column.clearSorting();
+                            }
+                        }}
+                        className="px-0 hover:bg-transparent hover:text-white"
+                    >
+                        Companies
+                        {column.getIsSorted() === "asc" ? (
+                            <ArrowDown01 className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : column.getIsSorted() === "desc" ? (
+                            <ArrowUp10 className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : (
+                            <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+                        )}
+                    </Button>
+                ),
                 cell: ({ row }) => row.original.num_companies,
             },
             {
                 accessorKey: 'total_credits',
-                header: 'Total Credits',
+                header: ({ column }) => (
+                    <Button
+                        variant="ghost"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (!column.getIsSorted()) {
+                                column.toggleSorting(false);
+                            } else if (column.getIsSorted() === "asc") {
+                                column.toggleSorting(true);
+                            } else {
+                                column.clearSorting();
+                            }
+                        }}
+                        className="px-0 hover:bg-transparent hover:text-white"
+                    >
+                        Total Credits
+                        {column.getIsSorted() === "asc" ? (
+                            <ArrowDown01 className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : column.getIsSorted() === "desc" ? (
+                            <ArrowUp10 className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : (
+                            <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+                        )}
+                    </Button>
+                ),
                 cell: ({ row }) => row.original.total_credits.toLocaleString(),
             },
             {
                 accessorKey: 'remaining_credits',
-                header: 'Remaining Credits',
+                header: ({ column }) => (
+                    <Button
+                        variant="ghost"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (!column.getIsSorted()) {
+                                column.toggleSorting(false);
+                            } else if (column.getIsSorted() === "asc") {
+                                column.toggleSorting(true);
+                            } else {
+                                column.clearSorting();
+                            }
+                        }}
+                        className="px-0 hover:bg-transparent hover:text-white"
+                    >
+                        Remaining Credits
+                        {column.getIsSorted() === "asc" ? (
+                            <ArrowDown01 className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : column.getIsSorted() === "desc" ? (
+                            <ArrowUp10 className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : (
+                            <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+                        )}
+                    </Button>
+                ),
                 cell: ({ row }) => (
                     <span className={row.original.remaining_credits < (row.original.total_credits * 0.2) ? 'text-red-400' : ''}>
                         {row.original.remaining_credits.toLocaleString()}
