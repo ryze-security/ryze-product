@@ -6,6 +6,7 @@ import TenantsDashboard from "./TenantsDashboard";
 import { DynamicIcons } from "@/components/DynamicIcons";
 import { useState } from "react";
 import CreditsRequested from "./CreditsOrFrameWorkRequested";
+import TenantDetails from "./TenantDetails";
 
 const AdminDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState(0);
@@ -33,7 +34,7 @@ const AdminDashboard: React.FC = () => {
                 );
             case 3:
                 return (
-                    <div>Contact us form</div>
+                    <TenantDetails />
                 );
             default:
                 return null;
