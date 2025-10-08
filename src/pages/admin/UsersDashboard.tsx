@@ -36,24 +36,6 @@ const UsersDashboard = () => {
         pageSize: 10,
     });
 
-    useEffect(() => {
-        const fetchUsersList = async () => {
-            try {
-                setLoadingUsers(true);
-                const response = await usersService.getUsersList();
-                setUsers(response.users || []);
-                setError(null);
-            } catch (error: any) {
-                console.error('Error fetching users:', error);
-                setError(error.message || 'Failed to load users');
-            } finally {
-                setLoadingUsers(false);
-            }
-        };
-
-        fetchUsersList();
-    }, []);
-
     const columns = useMemo<ColumnDef<UserDTO>[]>(
         () => [
             {
@@ -117,7 +99,7 @@ const UsersDashboard = () => {
                     </Button>
                 ),
                 cell: ({ row }) => (
-                    <div className="flex items-center gap-2 text-zinc-400">
+                    <div className="flex items-center gap-2">
                         <span>{row.original.email}</span>
                     </div>
                 ),
@@ -156,12 +138,10 @@ const UsersDashboard = () => {
         },
     });
 
-    const [loadingTable, setLoadingTable] = useState(true);
-
     useEffect(() => {
         const fetchUsersList = async () => {
             try {
-                setLoadingTable(true);
+                setLoadingUsers(true);
                 const response = await usersService.getUsersList();
                 setUsers(response.users || []);
                 setError(null);
@@ -169,7 +149,7 @@ const UsersDashboard = () => {
                 console.error('Error fetching users:', error);
                 setError(error.message || 'Failed to load users');
             } finally {
-                setLoadingTable(false);
+                setLoadingUsers(false);
             }
         };
 
@@ -255,7 +235,7 @@ const UsersDashboard = () => {
                                     colSpan={columns.length}
                                     className="text-center"
                                 >
-                                    {loadingTable ? (
+                                    {loadingUsers ? (
                                         <div className="flex items-center justify-center">
                                             <div className="h-8 w-8 border-4 border-zinc-400 border-t-transparent rounded-full animate-spin"></div>
                                         </div>
