@@ -102,8 +102,10 @@ function EvaluationDetails() {
 
 			for (const domain of data.data.EvaluationResponse
 				.DomainResponseList) {
-				map[domain.domainId] = domain;
-			}
+				map[domain.domainId] = {...domain,
+					Description: domain.Description.split(" controls")[0]
+				};
+			}			
 			setDomainDataMap(map);
 		}
 
