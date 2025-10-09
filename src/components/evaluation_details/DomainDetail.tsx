@@ -391,6 +391,7 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 	
 
 
+
 	const handleBack = () => {
 		const url = new URL(window.location.href);
 		if (selectedQuestion) {
@@ -517,7 +518,7 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 							%.
 						</div>
 						<div className="text-5xl font-semibold text-zinc-400 opacity-85 tracking-wide">
-							{`Alignment with ${domainData.Description.toLowerCase()}.`}
+							{`Alignment with ${domainData.Description === 'PII controllers controls' ? 'PII controllers controls' : domainData.Description.toLowerCase()}.`}
 						</div>
 					</div>
 				)}

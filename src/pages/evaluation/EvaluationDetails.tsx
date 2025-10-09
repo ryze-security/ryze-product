@@ -292,7 +292,7 @@ function EvaluationDetails() {
 						<DropdownMenuTrigger
 							className={` bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold px-4 py-2 flex items-center gap-2`}
 						>
-							Generate <ArrowDown className="w-4 h-4" />
+							Export <ArrowDown className="w-4 h-4" />
 						</DropdownMenuTrigger>
 						<DropdownMenuContent className="gap-1 flex flex-col">
 							<DropdownMenuItem
