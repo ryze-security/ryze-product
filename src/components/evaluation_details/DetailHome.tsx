@@ -37,6 +37,12 @@ import { AlertDialogBox } from "../AlertDialogBox";
 import MarkdownRenderer from "./MarkdownRenderer";
 import ProgressCircle from "./ProgressCircle";
 import { Progress } from "@/components/ui/progress";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Props {
 	overallScore: string;
@@ -870,9 +876,18 @@ const InfoCard = ({
 		>
 			<CardContent className="p-6 flex flex-col justify-between h-full">
 				<div className="flex-grow text-3xl text-white opacity-85 font-bold leading-snug">
-					<p className="line-clamp-2 whitespace-pre-wrap">
-						{formatHeading(heading)}
-					</p>
+					<TooltipProvider>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<p className="line-clamp-2 whitespace-pre-wrap">
+									{formatHeading(heading)}
+								</p>
+							</TooltipTrigger>
+							<TooltipContent className="max-w-md">
+								<p className="whitespace-pre-wrap">{heading}</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
 				</div>
 				<div
 					className={`text-[48px] ${dataInInteger >= 75
