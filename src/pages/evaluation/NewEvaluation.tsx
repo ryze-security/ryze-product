@@ -772,7 +772,7 @@ const NewEvaluation = () => {
 												)}
 											</button>
 										}
-										subheading="Are you sure you want to proceed?"
+										subheading="This evaluation may take up to 15-20 minutes to complete. You will be notified via the notification once it's done. Would you like to proceed?"
 										actionLabel="Confirm"
 										onAction={onRunClick}
 									/>
