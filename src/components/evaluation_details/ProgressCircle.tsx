@@ -5,9 +5,14 @@ interface Props {
 	label?: string;
 	size?: number;
 	strokeWidth?: number;
-	progressColor?: string;
 	trackColor?: string;
 }
+
+const getProgressColor = (progress: number) => {
+  if (progress >= 75) return "#71AE57";
+  if (progress >= 50) return "#FFB266";
+  return "#FF6666";
+};
 
 function ProgressCircle(props: Props) {
 	const {
@@ -15,9 +20,10 @@ function ProgressCircle(props: Props) {
 		label = "Compliance",
 		size = 192,
 		strokeWidth = 12,
-		progressColor = "#b05bef",
 		trackColor = "#404040",
 	} = props;
+
+  const progressColor = getProgressColor(progress);
 
 	// Ensure progress is within the 0-100 range
 	const clampedProgress = Math.max(0, Math.min(100, progress));
@@ -56,13 +62,12 @@ function ProgressCircle(props: Props) {
 					strokeLinecap="round"
 					strokeDasharray={circumference}
 					strokeDashoffset={offset}
-					style={{ transition: "stroke-dashoffset 0.35s" }}
 				/>
 			</svg>
 
 			{/* Text in the center */}
 			<div className="absolute inset-0 flex flex-col items-center justify-center">
-				<span className="text-3xl font-bold text-violet-ryzr">{`${Math.round(
+				<span className="text-3xl font-bold" style={{ color: progressColor }}>{`${Math.round(
 					clampedProgress
 				)}%`}</span>
 				<span className="text-base text-gray-300">{label}</span>

@@ -423,7 +423,8 @@ function QuestionForm(props: Props) {
 							${index === 0 && questionFormPagination?.hasPreviousControl ? 'bg-violet-light-ryzr hover:bg-violet-ryzr' : 'bg-[#4A4A4A] hover:bg-[#4A4A4A]/75'}`}
 						disabled={(index === 0 && !questionFormPagination?.hasPreviousControl) || isLoading}
 					>
-						<ChevronLeft className="mr-2 h-4 w-4" /> Previous {index === 0 && questionFormPagination?.hasPreviousControl ? 'Section' : 'Question'}
+						<ChevronLeft className="mr-2 h-4 w-4" />
+						Previous {index === 0 && questionFormPagination?.hasPreviousControl ? 'Control' : 'Question'}
 					</Button>
 				)}
 
@@ -457,7 +458,8 @@ function QuestionForm(props: Props) {
 							(index === questionData.length - 1 && !questionFormPagination?.hasNextControl) || isLoading
 						}
 					>
-						<ChevronRight className="mr-2 h-4 w-4" /> Next {index === questionData.length - 1 && questionFormPagination?.hasNextControl ? 'Section' : 'Question'}
+						Next {index === questionData.length - 1 && questionFormPagination?.hasNextControl ? 'Control' : 'Question'}
+						<ChevronRight className="mr-2 h-4 w-4" />
 					</Button>
 				)}
 			</div>
