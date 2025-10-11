@@ -25,6 +25,7 @@ import {
 	ProtectedRoute,
 	PublicRoute,
 } from "./components/layout/layoutIndex.ts";
+import TenantDetails from "./pages/admin/TenantDetails.tsx";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => {
 						<Route element={<Layout />}>
 							<Route path="/home" element={<Index />} />
 							<Route path="/catchmeifyoucan-demo-admin-route" element={<AdminDashboard />} />
+							<Route path="/catchmeifyoucan-demo-admin-route/tenant/:tenantId" element={<TenantDetails />} />
 
 							<Route
 								path="/evaluation"

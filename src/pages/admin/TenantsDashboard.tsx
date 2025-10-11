@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import tenantService from '@/services/tenantServices';
 import { RoundSpinner } from '@/components/ui/spinner';
 import { tenantDetailsDTO } from '@/models/tenant/TenantDTOs';
@@ -23,7 +24,7 @@ import {
 } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { ArrowUpDown, ArrowDownAZ, ArrowUpZA, ArrowDown01, ArrowUp10 } from 'lucide-react';
+import { ArrowUpDown, ArrowDownAZ, ArrowUpZA, ArrowDown01, ArrowUp10, MoveLeft } from 'lucide-react';
 
 const TenantsDashboard = () => {
     const [loadingTenants, setLoadingTenants] = useState(true);
@@ -35,6 +36,8 @@ const TenantsDashboard = () => {
         pageIndex: 0,
         pageSize: 10,
     });
+    const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         const fetchTenantsList = async () => {
@@ -290,7 +293,7 @@ const TenantsDashboard = () => {
     }
 
     return (
-        <div className="space-y-4 lg:px-4 max-w-7xl w-full">
+        <div className="space-y-4 lg:px-4">
             <Input
                 placeholder="Search tenants..."
                 value={globalFilter}
@@ -332,8 +335,13 @@ const TenantsDashboard = () => {
                             table.getRowModel().rows.map((row) => (
                                 <TableRow
                                     key={row.id}
+                                    data-state={row.getIsSelected() && "selected"}
                                     className="cursor-pointer hover:bg-zinc-800"
-                                >
+                                    onClick={() => navigate(`${location.pathname}/tenant/${row.original.tenant_id}`, {
+                                        state: {
+                                            previousPath: location.pathname,
+                                        },
+                                    })}>
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
                                             {flexRender(

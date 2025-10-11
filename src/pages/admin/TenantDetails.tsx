@@ -1,3 +1,5 @@
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ProgressBarDataTable } from '@/components/ProgressBarDataTable'
 import PageHeader from "@/components/PageHeader";
 import {
@@ -10,7 +12,6 @@ import evaluationService, {
     EvaluationStatusService,
 } from "@/services/evaluationServices";
 import { ColumnDef } from "@tanstack/react-table";
-import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -18,33 +19,20 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Ellipsis, Filter, MoreHorizontal, ArrowUpDown, ArrowDown01, ArrowUp10, ArrowDownAZ, ArrowUpZA } from "lucide-react";
+import { Ellipsis, Filter, MoreHorizontal, ArrowUpDown, ArrowDown01, ArrowUp10, ArrowDownAZ, ArrowUpZA, MoveLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import { reportResultDTO } from "@/models/reports/ExcelDTOs";
 import reportsService from "@/services/reportsServices";
 import { RoundSpinner } from "@/components/ui/spinner";
-import * as dfd from "danfojs";
-import * as ExcelJS from "exceljs";
-import * as FileSaver from "file-saver";
-import { useAppSelector } from "@/store/hooks";
 import { AlertDialogBox } from "@/components/AlertDialogBox";
-import { GenericDataTable } from "@/components/GenericDataTable";
 import { Progress } from "@/components/ui/progress";
-import { createRichTextFromMarkdown } from "@/utils/markdownExcel";
 import { useToast } from '@/hooks/use-toast';
-
+import { useParams } from "react-router-dom";
 
 const TenantDetails = () => {
     const [reportList, setReportList] = React.useState<ReportList[]>([]);
     const { toast } = useToast();
-    const [userData, setUserData] = useState({ tenant_id: 'a524871b-d838-4ab1-9b20-20ace066d33a' })
+    const location = useLocation();
+    const navigate = useNavigate();
     const [refreshTrigger, setRefreshTrigger] = React.useState<number>(0);
     const activePollers = useRef(new Map<string, AdaptivePolling>());
     const statusService = useRef(new EvaluationStatusService());
@@ -52,10 +40,10 @@ const TenantDetails = () => {
         evaluations: [],
         total_count: 0,
     });
+
     const [isEvalLoading, setIsEvalLoading] = React.useState<boolean>(false);
-    const [isReportGenerating, setIsReportGenerating] = React.useState<boolean>(false);
 
-
+    const { tenantId: tenant_id } = useParams();
 
     //method to update status of evaluations in state
     const handleStatusUpdate = useCallback((newStatus: evaluationStatusDTO) => {
@@ -99,7 +87,7 @@ const TenantDetails = () => {
 
                 const fetchStatus = () =>
                     currentStatusService.getStatus(
-                        userData.tenant_id,
+                        tenant_id,
                         ev.tg_company_id,
                         ev.eval_id
                     );
@@ -126,7 +114,7 @@ const TenantDetails = () => {
                 pollers.delete(evalId);
             }
         });
-    }, [evaluations.evaluations, userData.tenant_id, handleStatusUpdate]);
+    }, [evaluations.evaluations, tenant_id, handleStatusUpdate]);
 
     //cleanup pollers on unmount
     useEffect(() => {
@@ -467,7 +455,7 @@ const TenantDetails = () => {
                                 try {
                                     setReportListLoading(true);
                                     const response = await reportsService.getReportList(
-                                        userData.tenant_id,
+                                        tenant_id,
                                         evaluation.tg_company_id,
                                         evaluation.eval_id
                                     );
@@ -534,7 +522,7 @@ const TenantDetails = () => {
                 const performDelete = async () => {
                     try {
                         const response = await evaluationService.evaluationService.deleteEvaluation(
-                            userData.tenant_id,
+                            tenant_id,
                             evaluation.tg_company_id,
                             evaluation.eval_id
                         );
@@ -557,7 +545,7 @@ const TenantDetails = () => {
                 const cancelEvaluation = async () => {
                     try {
                         const response = await evaluationService.evaluationService.cancelEvaluation(
-                            userData.tenant_id,
+                            tenant_id,
                             evaluation.tg_company_id,
                             evaluation.eval_id
                         );
@@ -641,7 +629,7 @@ const TenantDetails = () => {
             setIsEvalLoading(true);
             try {
                 const response = await evaluationService.evaluationService.getEvaluations(
-                    userData.tenant_id
+                    tenant_id
                 );
                 if (response.total_count !== 0) {
                     response.evaluations = response.evaluations.map((evaluation: Evaluation) => {
@@ -676,50 +664,34 @@ const TenantDetails = () => {
         }
 
         fetchEvaluations();
-    }, [refreshTrigger, userData.tenant_id]);
+    }, [refreshTrigger]);
 
 
     return (
-        <>
-            <PageHeader
-                heading="Tenant Details"
-                subtitle="This is what to be shown whenever user click a row from Users tab or Tenants tab."
-            />
+        <div className="min-h-screen font-roboto bg-black text-white p-6">
+            <section className='flex flex-col w-full bg-black text-white pb-0 pt-10 px-3 sm:px-6 md:px-4 lg:px-16 gap-6'>
 
-            {/* TODO:[REMOVE IT LATER] */}
-            <div className="w-full bg-neutral-900 border border-neutral-800 rounded-lg p-5 mt-6 flex items-center shadow-md">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 w-full">
-                    <div className="space-y-1">
-                        <h3 className="text-sm font-semibold text-gray-200">Development Mode</h3>
-                        <p className="text-xs text-gray-400">
-                            The tenant ID is currently hard-coded for development purposes. You can change it below.
-                        </p>
-                    </div>
+                <PageHeader
+                    heading="Tenant Details"
+                    subtitle="This is what to be shown whenever user click a row from Users tab or Tenants tab."
+                    isClickable={false}
+                />
 
-                    <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
-                        <label
-                            htmlFor="tenant-id"
-                            className="block text-sm font-medium text-gray-300"
-                        >
-                            Tenant ID
-                        </label>
-                        <input
-                            id="tenant-id"
-                            type="text"
-                            value={userData.tenant_id}
-                            onChange={(e) =>
-                                setUserData((prev) => ({ ...prev, tenant_id: e.target.value }))
-                            }
-                            className="flex-1 min-w-0 px-3 py-1.5 text-sm bg-neutral-800 border border-neutral-700 rounded-md shadow-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-colors"
-                            placeholder="Enter tenant ID"
-                        />
-                    </div>
-                </div>
-            </div>
+                <Button
+                    onClick={() => navigate(location.state?.previousPath)}
+                    disabled={tenant_id === null}
+                    className="rounded-full bg-zinc-700 hover:bg-zinc-800 transition-colors text-white p-2 w-20"
+                >
+                    <MoveLeft
+                        style={{
+                            width: "28px",
+                            height: "28px",
+                        }}
+                    />
+                </Button>
+            </section>
 
-
-
-            <section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
+            <section className="flex items-center w-full bg-black text-white mt-8 px-3 sm:px-6 md:px-4 lg:px-16">
 
                 <ProgressBarDataTable
                     columns={columns}
@@ -732,7 +704,7 @@ const TenantDetails = () => {
 
                 />
             </section>
-        </>
+        </div>
     )
 }
 

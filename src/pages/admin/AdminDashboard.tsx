@@ -6,7 +6,6 @@ import TenantsDashboard from "./TenantsDashboard";
 import { DynamicIcons } from "@/components/DynamicIcons";
 import { useState } from "react";
 import CreditsRequested from "./CreditsOrFrameWorkRequested";
-import TenantDetails from "./TenantDetails";
 
 const AdminDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState(0);
@@ -15,7 +14,6 @@ const AdminDashboard: React.FC = () => {
         { id: 0, label: "Users", iconName: "Users" },
         { id: 1, label: "Tenants", iconName: "Tenants" },
         { id: 2, label: "Credits Required", iconName: "Credits" },
-        { id: 3, label: "Contact Us Forms", iconName: "reports" },
     ];
 
     const renderTabContent = () => {
@@ -31,10 +29,6 @@ const AdminDashboard: React.FC = () => {
             case 2:
                 return (
                     <CreditsRequested />
-                );
-            case 3:
-                return (
-                    <TenantDetails />
                 );
             default:
                 return null;
