@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import usersService from '@/services/usersService';
 import { RoundSpinner } from '@/components/ui/spinner';
 import { UserListDTO, UserDTO } from '@/models/users/UsersListDTO';
@@ -35,7 +36,8 @@ const UsersDashboard = () => {
         pageIndex: 0,
         pageSize: 10,
     });
-
+    const navigate = useNavigate();
+    const location = useLocation();
     const columns = useMemo<ColumnDef<UserDTO>[]>(
         () => [
             {
@@ -218,6 +220,11 @@ const UsersDashboard = () => {
                                 <TableRow
                                     key={row.id}
                                     className="cursor-pointer hover:bg-zinc-800"
+                                    onClick={() => navigate(`${location.pathname}/tenant/${row.original.tenant_id}`, {
+                                        state: {
+                                            previousPath: location.pathname,
+                                        },
+                                    })}
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
