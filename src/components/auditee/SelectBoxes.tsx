@@ -106,7 +106,7 @@ const MultiSelectBox: React.FC<MultiSelectBoxProps> = ({
 	}, [defaultValue, setValue, name]);
 
 	return (
-		<div className="space-y-2">
+		<div className="space-y-4">
 			{label && <label className="text-lg font-roboto">{label}</label>}
 			<Controller
 				name={name}
