@@ -277,7 +277,7 @@ function EvaluationDetails() {
 	};
 
 	return (
-		<div className="min-h-screen font-roboto bg-black text-white p-6">
+		<div className="min-h-screen font-roboto bg-black text-white p-4 sm:p-6">
 			<section className="flex flex-row items-center justify-between gap-8 w-full bg-black text-white pt-16 px-3 px-0 lg:px-16">
 				{/* Eval Details name etc */}
 				<div className=" flex-1 min-w-0">
