@@ -280,7 +280,7 @@ function EvaluationDetails() {
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
 			<section className="flex flex-row items-center justify-between gap-8 w-full bg-black text-white pt-16 px-3 px-0 lg:px-16">
 				{/* Eval Details name etc */}
-				<div className="hidden md:block flex-1 min-w-0">
+				<div className=" flex-1 min-w-0">
 					<NavHeader
 						data={dynamicSteps.map((step) => ({
 							...step,
@@ -290,7 +290,7 @@ function EvaluationDetails() {
 						currentStep={currentStep}
 					/>
 				</div>
-				<div className="flex-1 min-w-0 md:hidden">
+				{/* <div className="flex-1 min-w-0 md:hidden">
 					<DropdownMenu>
 						<DropdownMenuTrigger
 							className="bg-black border border-white hover:bg-zinc-700 rounded-full transition-colors text-white font-medium px-4 py-3 flex items-center gap-2 w-full justify-center text-sm md:text-base"
@@ -317,7 +317,7 @@ function EvaluationDetails() {
 							))}
 						</DropdownMenuContent>
 					</DropdownMenu>
-				</div>
+				</div> */}
 
 				<div className="flex-shrink-0">
 					<DropdownMenu>
@@ -355,7 +355,7 @@ function EvaluationDetails() {
 				</div>
 			</section>
 
-			<section className="flex items-center w-full bg-black text-white mt-2 sm:pt-10 px-0 lg:px-16">
+			<section className="flex items-center w-full bg-black text-white mt-2 pt-5 sm:pt-10 px-0 lg:px-16">
 				{isLoading ? (
 					<RoundSpinner />
 				) : (

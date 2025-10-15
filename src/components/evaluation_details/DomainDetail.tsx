@@ -511,7 +511,7 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 					</div>
 				) : (
 					<div className="flex flex-col sm:flex-row max-w-fit gap-2">
-						<div className="text-3xl sm:text-4xl md:text-5xl font-semibold text-violet-ryzr tracking-wide">
+						<div className="text-5xl font-semibold text-violet-ryzr tracking-wide">
 							{Math.round(
 								domainData.Response.Score * 100
 							).toString()}
