@@ -567,13 +567,13 @@ const DetailHome = forwardRef((props: Props, ref) => {
 	}));
 
 	return (
-		<div className="max-w-7xl w-full px-4">
+		<div className="max-w-7xl w-full spx-4">
 			{/* Header */}
 			{!selectedRow && (
 				<>
 					{/* Eval stats */}
-					<div className="flex w-full justify-between mb-5">
-						<div className="flex w-full justify-between">
+					<div className="flex w-full justify-between mt-5 sm:mt-0 mb-5">
+						<div className="flex flex-col flex-wrap sm:flex-row w-full gap-x-6 gap-y-2 xl:justify-between">
 							{/* <div className="flex justify-start gap-4 mb-6">
 								<h3 className="text-lg font-semibold my-auto text-zinc-600">
 									Review.
@@ -582,7 +582,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 									Title
 								</div>
 							</div> */}
-							<div className="flex justify-start gap-4 mb-6 w-fit">
+							<div className="flex justify-start gap-4 mb-6">
 								<h3 className="text-lg font-semibold my-auto text-zinc-600">
 									Auditee.
 								</h3>
@@ -627,16 +627,16 @@ const DetailHome = forwardRef((props: Props, ref) => {
 							</div>
 						</div>
 					</div>
-					<div className="flex max-w-fit gap-2">
-						<div className="text-[50px] font-semibold text-violet-ryzr tracking-wide">
+					<div className="flex flex-col sm:flex-row max-w-fit gap-2">
+						<div className="text-5xl font-semibold text-violet-ryzr tracking-wide">
 							{overallScore}%.
 						</div>
-						<div className="text-[50px] font-semibold text-zinc-400 opacity-85 tracking-wide">
+						<div className="text-3xl md:text-5xl font-semibold text-zinc-400 opacity-85 tracking-wide">
 							Overall compliance score.
 						</div>
 					</div>
 					{/* Evaluation Cards */}
-					<div className="flex flex-wrap gap-4 w-fit mt-10">
+					<div className="flex flex-wrap gap-4 w-fit mt-5 sm:mt-10">
 						{cardData.map((item, index) => (
 							<InfoCard
 								key={item.id}
@@ -701,23 +701,47 @@ const DetailHome = forwardRef((props: Props, ref) => {
 							</div>
 
 							<div className="flex justify-between">
-								<div className="flex max-w-[85%] flex-col w-full h-fit gap-5">
-									<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
-										{selectedRow.serial}
+								<div className="flex sm:max-w-[85%] flex-col w-full h-fit gap-5">
+									<div className="flex justify-between text-3xl sm:text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
+										<span className="text-end">{selectedRow.serial}</span>
+
+										<div className="flex flex-1 justify-end sm:hidden gap-3">
+											<div className="relative flex-1 max-w-[180px]">
+												<div className="flex justify-between text-xs text-zinc-400 pb-1">
+													<span>Compliance</span>
+													<span>{Math.round(selectedRow.Response.Score)}%</span>
+												</div>
+												<div className="w-full h-2.5 bg-zinc-800 rounded-full overflow-hidden">
+													<div
+														className="h-full rounded-full transition-all duration-500 ease-out"
+														style={{
+															width: `${selectedRow.Response.Score}%`,
+															backgroundColor: selectedRow.Response.Score >= 75
+																? '#71AE57'
+																: selectedRow.Response.Score >= 50
+																	? '#FFB266'
+																	: '#FF6666'
+														}}
+													></div>
+												</div>
+											</div>
+										</div>
 									</div>
+
 									<div className="flex flex-col gap-2">
-										<div className="text-4xl font-semibold text-white tracking-wide">
+										<div className="text-2xl sm:text-4xl font-semibold text-white tracking-wide">
 											{selectedRow.Description}
 										</div>
 										<div>
-											<p className="text-base w-full text-gray-light-ryzr">
+											<p className="text-sm sm:text-base w-full text-gray-light-ryzr">
 												{
 													selectedRow.control_description
 												}
 											</p>
 										</div>
 									</div>
-									<div className="w-[27%] bg-gradient-to-r rounded-md py-1 px-2 from-gray-light-ryzr/50 to-transparent ">
+
+									<div className="sm:w-[27%] bg-gradient-to-r rounded-md py-1 px-2 from-gray-light-ryzr/50 to-transparent ">
 										{
 											selectedRow.QuestionResponseList
 												.length
@@ -726,11 +750,13 @@ const DetailHome = forwardRef((props: Props, ref) => {
 									</div>
 								</div>
 
-								<ProgressCircle
-									progress={selectedRow.Response.Score}
-									size={152}
-									strokeWidth={12}
-								/>
+								<div className="hidden sm:block">
+									<ProgressCircle
+										progress={selectedRow.Response.Score}
+										size={152}
+										strokeWidth={12}
+									/>
+								</div>
 							</div>
 						</div>
 					)}
@@ -869,7 +895,7 @@ const InfoCard = ({
 				: dataInInteger >= 50 && dataInInteger < 75
 					? "bg-[#FFB266]/30"
 					: "bg-[#FF6666]/30"
-				} rounded-2xl max-h-52 max-w-60 min-h-48 min-w-72 cursor-pointer`}
+				} rounded-2xl max-h-52 min-h-48 w-full sm:max-w-60 sm:min-w-72 cursor-pointer`}
 			onClick={() => {
 				stepChangefn?.(itemId);
 			}}

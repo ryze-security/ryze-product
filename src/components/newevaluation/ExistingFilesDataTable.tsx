@@ -155,7 +155,7 @@ export function FilesDataTable<TData>({
 				});
 
 				return (
-					<div className="space-y-4 rounded-md p-2 shadow-sm bg-black font-roboto">
+					<div className="relative space-y-4 rounded-md pt-5 pb-2 shadow-sm bg-black font-roboto">
 						<div className="flex justify-between">
 							<Input
 								placeholder={`Filter by File Name`}
@@ -247,15 +247,7 @@ export function FilesDataTable<TData>({
 								</tbody>
 							</table>
 						</ScrollArea>
-						<div className="flex items-center gap-2">
-							<Button
-								variant="outline"
-								size="sm"
-								type="button"
-								onClick={toggleAll}
-							>
-								{isAllSelected ? "Clear All" : "Select All"}
-							</Button>
+						<div className="absolute right-4 -bottom-4 flex items-center justify-end gap-2">
 							<span className="text-sm text-muted-foreground">
 								Selected: {getSelectedCount()}
 							</span>

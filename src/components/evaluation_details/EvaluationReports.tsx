@@ -226,9 +226,9 @@ function EvaluationReports(props: Props) {
 
 	return (
 		<div className="max-w-7xl w-full">
-			<div className="w-full px-4">
+			<div className="w-full px-4 mt-5">
 				<div className="grid gap-2">
-					<div className="text-5xl font-semibold text-zinc-400/85 tracking-wide">
+					<div className="text-3xl md:text-5xl font-semibold text-zinc-400/85 tracking-wide">
 						Generated reports
 					</div>
 					<div className="text-lg text-zinc-400/75">

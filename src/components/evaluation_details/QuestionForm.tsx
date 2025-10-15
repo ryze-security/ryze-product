@@ -214,8 +214,8 @@ function QuestionForm(props: Props) {
 					))}
 				</div> */}
 				{/* Question Name and compliance button*/}
-				<div className="flex w-full border-b-black border-b-2 p-6">
-					<div className="flex flex-col justify-center w-8/12">
+				<div className="flex flex-col sm:flex-row gap-y-2 w-full border-b-black border-b-2 p-6">
+					<div className="flex flex-col justify-center sm:w-8/12">
 						<span className="text-sm font-bold text-[#AAAAAA] tracking-wide uppercase mb-1">
 							Question
 						</span>
@@ -225,7 +225,7 @@ function QuestionForm(props: Props) {
 						</div>
 					</div>
 					{/* Compliance status and toggle button */}
-					<div className="flex gap-3 justify-end w-4/12 items-center">
+					<div className="flex gap-3 justify-end w-full sm:w-4/12 items-center">
 						<Popover open={open} onOpenChange={setOpen}>
 							<PopoverTrigger asChild>
 								<Button
@@ -355,8 +355,8 @@ function QuestionForm(props: Props) {
 						</Button>
 					</div>
 				</div>
-				<div className="flex w-full">
-					<div className="p-6 w-1/2 border-r border-black flex flex-col gap-2">
+				<div className="flex sm:flex-row flex-col w-full">
+					<div className="p-6 w-full sm:w-1/2 border-b sm:border-b-0 sm:border-r border-black flex flex-col gap-2">
 						<span className="text-sm font-bold text-[#AAAAAA] tracking-wide uppercase">
 							Observation
 						</span>
@@ -385,7 +385,7 @@ function QuestionForm(props: Props) {
 						</div>
 					</div>
 					{/* Evidence */}
-					<div className="flex flex-col p-6 w-1/2 gap-2">
+					<div className="flex flex-col p-6 w-full sm:w-1/2 gap-2">
 						<span className="text-sm font-bold text-[#AAAAAA] tracking-wide uppercase">
 							Evidence
 						</span>
@@ -404,10 +404,10 @@ function QuestionForm(props: Props) {
 						trigger={
 							<Button
 								variant="outline"
-								className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
+								className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white sm:text-lg py-6 rounded-sm"
 								disabled={index === 0 || isLoading}
 							>
-								<ChevronLeft className="mr-2 h-4 w-4" />{" "}
+								<ChevronLeft className="ml-2 h-4 w-4" />{" "}
 								Previous
 							</Button>
 						}
@@ -419,11 +419,11 @@ function QuestionForm(props: Props) {
 					<Button
 						variant="outline"
 						onClick={handleLeftArrowClick}
-						className={`w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm
+						className={`w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white sm:text-lg py-6 rounded-sm
 							${index === 0 && questionFormPagination?.hasPreviousControl ? 'bg-violet-light-ryzr hover:bg-violet-ryzr' : 'bg-[#4A4A4A] hover:bg-[#4A4A4A]/75'}`}
 						disabled={(index === 0 && !questionFormPagination?.hasPreviousControl) || isLoading}
 					>
-						<ChevronLeft className="mr-2 h-4 w-4" />
+						<ChevronLeft className="ml-2 h-4 w-4" />
 						Previous {index === 0 && questionFormPagination?.hasPreviousControl ? 'Control' : 'Question'}
 					</Button>
 				)}
@@ -435,7 +435,7 @@ function QuestionForm(props: Props) {
 						trigger={
 							<Button
 								variant="outline"
-								className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white text-lg py-6 rounded-sm"
+								className="w-[49%] bg-[#4A4A4A] hover:bg-[#4A4A4A]/75 text-white sm:text-lg py-6 rounded-sm"
 								disabled={
 									index === questionData.length - 1 ||
 									isLoading
@@ -452,7 +452,7 @@ function QuestionForm(props: Props) {
 					<Button
 						variant="outline"
 						onClick={handleRightArrowClick}
-						className={`w-[49%] text-white text-lg py-6 rounded-sm 
+						className={`w-[49%] text-white sm:text-lg py-6 rounded-sm 
 							${index === questionData.length - 1 && questionFormPagination?.hasNextControl ? 'bg-violet-light-ryzr hover:bg-violet-ryzr' : 'bg-[#4A4A4A] hover:bg-[#4A4A4A]/75'}`}
 						disabled={
 							(index === questionData.length - 1 && !questionFormPagination?.hasNextControl) || isLoading
