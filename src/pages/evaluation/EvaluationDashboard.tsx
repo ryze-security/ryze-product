@@ -791,7 +791,7 @@ function EvaluationDashboard() {
                         wrapText: true,
                     };
 
-                    if (cell.value && cell.value.toString().includes('**')) {
+                    if (cell.value && cell.value.toString().includes('*')) {
                         cell.value = { richText: createRichTextFromMarkdown(cell.value.toString()) };
                     }
                 });
