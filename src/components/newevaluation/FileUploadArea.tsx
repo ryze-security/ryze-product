@@ -164,8 +164,8 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 		<div className="flex gap-8 justify-evenly font-roboto">
 			{/* Existing Files Datatable */}
 			<div className="w-full max-h-fit p-4 rounded-lg scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
-				<div className="w-full flex justify-center items-center gap-2">
-					<p className="text-lg font-semibold text-center">
+				<div className="w-full flex justify-start items-center gap-4">
+					<p className="text-lg font-semibold">
 						Choose your files for evaluation
 					</p>
 				</div>

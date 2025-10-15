@@ -572,8 +572,8 @@ const DetailHome = forwardRef((props: Props, ref) => {
 			{!selectedRow && (
 				<>
 					{/* Eval stats */}
-					<div className="flex w-full justify-between mb-5">
-						<div className="flex w-full justify-between">
+					<div className="flex w-full justify-between mt-5 sm:mt-0 mb-5">
+						<div className="flex flex-col flex-wrap sm:flex-row w-full gap-x-6 gap-y-2 xl:justify-between">
 							{/* <div className="flex justify-start gap-4 mb-6">
 								<h3 className="text-lg font-semibold my-auto text-zinc-600">
 									Review.
@@ -582,7 +582,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 									Title
 								</div>
 							</div> */}
-							<div className="flex justify-start gap-4 mb-6 w-fit">
+							<div className="flex justify-start gap-4 mb-6">
 								<h3 className="text-lg font-semibold my-auto text-zinc-600">
 									Auditee.
 								</h3>
@@ -627,16 +627,16 @@ const DetailHome = forwardRef((props: Props, ref) => {
 							</div>
 						</div>
 					</div>
-					<div className="flex max-w-fit gap-2">
-						<div className="text-[50px] font-semibold text-violet-ryzr tracking-wide">
+					<div className="flex flex-col sm:flex-row max-w-fit gap-2">
+						<div className="text-3xl sm:text-4xl md:text-5xl font-semibold text-violet-ryzr tracking-wide">
 							{overallScore}%.
 						</div>
-						<div className="text-[50px] font-semibold text-zinc-400 opacity-85 tracking-wide">
+						<div className="text-3xl md:text-5xl font-semibold text-zinc-400 opacity-85 tracking-wide">
 							Overall compliance score.
 						</div>
 					</div>
 					{/* Evaluation Cards */}
-					<div className="flex flex-wrap gap-4 w-fit mt-10">
+					<div className="flex flex-wrap gap-4 w-fit mt-5 sm:mt-10">
 						{cardData.map((item, index) => (
 							<InfoCard
 								key={item.id}
@@ -869,7 +869,7 @@ const InfoCard = ({
 				: dataInInteger >= 50 && dataInInteger < 75
 					? "bg-[#FFB266]/30"
 					: "bg-[#FF6666]/30"
-				} rounded-2xl max-h-52 max-w-60 min-h-48 min-w-72 cursor-pointer`}
+				} rounded-2xl max-h-52 min-h-48 w-full sm:max-w-60 sm:min-w-72 cursor-pointer`}
 			onClick={() => {
 				stepChangefn?.(itemId);
 			}}

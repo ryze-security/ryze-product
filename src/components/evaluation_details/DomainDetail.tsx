@@ -438,7 +438,7 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 	return (
 		<div className="max-w-7xl w-full">
 			{/* Header section */}
-			<div className="w-full px-4">
+			<div className="w-full px-4 mt-5">
 				{/* Heading */}
 				{selectedRow ? (
 					<div className="flex flex-col gap-2">
@@ -510,14 +510,14 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 						</div>
 					</div>
 				) : (
-					<div className="flex max-w-fit gap-2">
-						<div className="text-5xl font-semibold text-violet-ryzr tracking-wide">
+					<div className="flex flex-col sm:flex-row max-w-fit gap-2">
+						<div className="text-3xl sm:text-4xl md:text-5xl font-semibold text-violet-ryzr tracking-wide">
 							{Math.round(
 								domainData.Response.Score * 100
 							).toString()}
 							%.
 						</div>
-						<div className="text-5xl font-semibold text-zinc-400 opacity-85 tracking-wide">
+						<div className="text-3xl md:text-5xl font-semibold text-zinc-400 opacity-85 tracking-wide">
 							{`Alignment with ${domainData.Description.toLowerCase().includes('pii')
 								? domainData.Description.replace(/pii/gi, 'PII')
 								: domainData.Description.toLowerCase()}.`}
