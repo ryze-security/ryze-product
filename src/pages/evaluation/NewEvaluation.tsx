@@ -429,42 +429,78 @@ const NewEvaluation = () => {
 			</section>
 
 			{/* Progress Bar Section */}
-			<section className="flex justify-center items-center  w-full bg-black text-white pt-5 lg:pt-10 px-6 sm:px-12 lg:px-16">
+			<section className="flex justify-center items-center w-full bg-black text-white pt-5 lg:pt-10 px-6 sm:px-12 lg:px-16">
 				<div className="max-w-7xl w-full">
 					<div className="flex items-center">
 						{steps.map((step, index) => {
 							const isCurrent = index === currentStep;
 
 							return (
-								<div
-									className="min-w-[33%] sm:min-w-[25%] md:min-w-[20%] xl:min-w-[15%] flex items-center"
-									key={step.id}
-								>
+								<>
+									{/* larger devices */}
 									<div
-										className="flex-1 flex flex-col items-center cursor-pointer text-center"
-										onClick={() => goToStep(index)}
+										className="hidden min-w-[25%] md:min-w-[20%] xl:min-w-[15%] sm:flex items-center"
+										key={step.id}
 									>
 										<div
-											className={`relative w-[96%] h-8 transition-colors mx-0 mb-4 pl-4
+											className="flex-1 flex flex-col items-center cursor-pointer text-center"
+											onClick={() => goToStep(index)}
+										>
+											<div
+												className={`relative w-[96%] h-8 transition-colors mx-0 mb-4 pl-4
 											${isCurrent ? "bg-violet-ryzr" : "bg-zinc-700"}
 											hover:opacity-90 rounded-full overflow-visible`}
-										>
-											<span className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
-												{step.label}
-											</span>
+											>
+												<span className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
+													{step.label}
+												</span>
+											</div>
 										</div>
+										{index < steps.length - 1 && (
+											<div className="w-6 h-px border-t-2 border-dashed border-zinc-400 mb-4" />
+										)}
 									</div>
-									{index < steps.length - 1 && (
-										<div className="w-6 h-px border-t-2 border-dashed border-zinc-400 mb-4" />
-									)}
-								</div>
+
+									{/* smaller devices */}
+									<div
+										className="flex flex-1 sm:hidden items-center"
+										key={step.id}
+									>
+										<div
+											className="relative flex flex-col items-center cursor-pointer text-center"
+											onClick={() => goToStep(index)}
+										>
+											<div
+												className={`relative w-8 h-8 transition-colors mx-0 mb-5 pl-4
+											${isCurrent ? "bg-violet-ryzr" : currentStep > index ? "bg-violet-ryzr" : "bg-zinc-700"}
+											hover:opacity-90 rounded-full overflow-visible`}
+											>
+												<span className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
+													{currentStep > index ? <Check className="w-4 h-4 text-white" /> : index + 1}
+												</span>
+
+											</div>
+
+											<span className="absolute -bottom-1 text-xs">{step.label}</span>
+										</div>
+
+										{index < steps.length - 1 && (
+											<div
+												className={`w-full h-1 rounded-full mb-6 transition-colors ${index < currentStep
+													? "bg-violet-ryzr"
+													: "bg-zinc-400"
+													}`}
+											/>
+										)}
+									</div>
+								</>
 							);
 						})}
 					</div>
 				</div>
 			</section>
 
-			<section className="flex justify-center items-center w-full bg-black text-white pt-3 px-6 sm:px-12 lg:px-16">
+			<section className="flex justify-center items-center w-full bg-black text-white pt-5 lg:pt-10 px-6 sm:px-12 lg:px-16">
 				<div className="max-w-7xl w-full">
 					<FormProvider {...methods}>
 						<form className="flex flex-col w-full">
@@ -735,7 +771,7 @@ const NewEvaluation = () => {
 							)}
 
 							{/* Footer Navigation Buttons */}
-							<div className="flex justify-start gap-4">
+							<div className="flex justify-start gap-4 mt-4 sm:mt-0">
 								{currentStep !== 0 && (
 									<button
 										type="button"
