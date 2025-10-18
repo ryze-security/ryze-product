@@ -6,6 +6,14 @@ import React, {
 } from "react";
 import { Card, CardContent } from "../ui/card";
 import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog"
+import {
 	controlResponse,
 	domainResponse,
 	evaluationMetadata,
@@ -567,13 +575,13 @@ const DetailHome = forwardRef((props: Props, ref) => {
 	}));
 
 	return (
-		<div className="max-w-7xl w-full spx-4">
+		<div className="max-w-7xl w-full px-4">
 			{/* Header */}
 			{!selectedRow && (
 				<>
 					{/* Eval stats */}
 					<div className="flex w-full justify-between mt-5 sm:mt-0 mb-5">
-						<div className="flex flex-col flex-wrap sm:flex-row w-full gap-x-6 gap-y-2 xl:justify-between">
+						<div className="flex-1 flex flex-col flex-wrap sm:flex-row w-full gap-x-6 gap-y-4 sm:gap-y-2 xl:justify-between">
 							{/* <div className="flex justify-start gap-4 mb-6">
 								<h3 className="text-lg font-semibold my-auto text-zinc-600">
 									Review.
@@ -582,7 +590,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 									Title
 								</div>
 							</div> */}
-							<div className="flex justify-start gap-4 mb-6">
+							<div className="text-nowrap flex-1 flex flex-col sm:flex-row bg-zinc-300 sm:bg-transparent rounded-sm p-3 justify-start gap-4">
 								<h3 className="text-lg font-semibold my-auto text-zinc-600">
 									Auditee.
 								</h3>
@@ -590,7 +598,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 									{evalMetadata?.company_display_name}
 								</div>
 							</div>
-							<div className="flex justify-start gap-4 mb-6">
+							<div className="text-nowrap flex-1 flex flex-col sm:flex-row bg-zinc-300 sm:bg-transparent rounded-sm p-3 justify-start gap-4">
 								<h3 className="text-lg font-semibold my-auto text-zinc-600">
 									Control reference.
 								</h3>
@@ -598,32 +606,65 @@ const DetailHome = forwardRef((props: Props, ref) => {
 									{evalMetadata?.collection_display_name}
 								</div>
 							</div>
-							<div className="flex justify-start gap-4 mb-6">
+							<div className="text-nowrap flex-1 flex flex-col sm:flex-row bg-zinc-300 sm:bg-transparent rounded-sm p-3 justify-start gap-4">
 								<h3 className="text-lg font-semibold my-auto text-zinc-600">
 									Documents uploaded.
 								</h3>
-								<HoverCard>
-									<HoverCardTrigger className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
-										{evalMetadata?.file_names[0]}{" "}
-										{evalMetadata?.file_names.length > 2
-											? `and ${evalMetadata?.file_names
-												.length - 1
-											} more`
-											: ""}
-									</HoverCardTrigger>
-									<HoverCardContent className="w-fit">
-										{evalMetadata?.file_names.map(
-											(file, index) => (
-												<div key={index}>
-													<div className="text-sm text-white/80 w-fit">
-														{file}
+
+								{/* for large device */}
+								<div className="hidden sm:flex">
+									<HoverCard>
+										<HoverCardTrigger className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
+											{evalMetadata?.file_names[0]}{" "}
+											{evalMetadata?.file_names.length > 2
+												? `+${evalMetadata?.file_names
+													.length - 1
+												} more`
+												: ""}
+										</HoverCardTrigger>
+										<HoverCardContent className="w-fit">
+											{evalMetadata?.file_names.map(
+												(file, index) => (
+													<div key={index}>
+														<div className="text-sm text-white/80 w-fit">
+															{file}
+														</div>
+														<Separator className="my-2" />
 													</div>
-													<Separator className="my-2" />
+												)
+											)}
+										</HoverCardContent>
+									</HoverCard>
+								</div>
+
+								{/* for small device */}
+								<div className="flex sm:hidden">
+									<Dialog>
+										<DialogTrigger asChild>
+											<Button variant="outline" className="bg-zinc-800 min-w-28 w-full h-fit my-auto text-center p-1 px-5 rounded-sm text-white hover:bg-zinc-700">
+												{evalMetadata?.file_names[0]}{" "}
+												{evalMetadata?.file_names.length > 1 && `+${evalMetadata.file_names.length - 1} more`}
+											</Button>
+										</DialogTrigger>
+										<DialogContent className="rounded-sm w-[95%] bg-zinc-900 border-zinc-800 text-white">
+											<DialogHeader className="px-6 pt-6">
+												<DialogTitle className="text-xl text-white">Related Files</DialogTitle>
+												<DialogDescription className="text-zinc-300">
+													{evalMetadata?.file_names.length} document(s) uploaded.
+												</DialogDescription>
+											</DialogHeader>
+											<div className="px-6 pb-6">
+												<div className="border border-zinc-700 rounded-lg divide-y divide-zinc-700 max-h-[60vh] overflow-y-auto">
+													{evalMetadata?.file_names.map((file, index) => (
+														<div key={index} className="p-4 hover:bg-zinc-800/50 transition-colors">
+															<p className="text-sm text-zinc-200 break-words">{file}</p>
+														</div>
+													))}
 												</div>
-											)
-										)}
-									</HoverCardContent>
-								</HoverCard>
+											</div>
+										</DialogContent>
+									</Dialog>
+								</div>
 							</div>
 						</div>
 					</div>
