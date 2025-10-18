@@ -278,7 +278,7 @@ function EvaluationDetails() {
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-4 sm:p-6">
-			<section className="flex flex-row items-center justify-between gap-8 w-full bg-black text-white pt-16 px-3 px-0 lg:px-16">
+			<section className="flex flex-col sm:flex-row sm:items-center justify-between sm:gap-8 w-full bg-black text-white pt-20 px-4 lg:px-16">
 				{/* Eval Details name etc */}
 				<div className=" flex-1 min-w-0">
 					<NavHeader
@@ -355,7 +355,7 @@ function EvaluationDetails() {
 				</div>
 			</section>
 
-			<section className="flex items-center w-full bg-black text-white mt-2 pt-5 sm:pt-10 px-0 lg:px-16">
+			<section className="flex items-center w-full bg-black text-white mt-2 sm:pt-10 px-0 lg:px-16">
 				{isLoading ? (
 					<RoundSpinner />
 				) : (
