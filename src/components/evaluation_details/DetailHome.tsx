@@ -590,31 +590,31 @@ const DetailHome = forwardRef((props: Props, ref) => {
 									Title
 								</div>
 							</div> */}
-							<div className="text-nowrap flex-1 flex flex-col sm:flex-row bg-zinc-300 sm:bg-transparent rounded-sm p-3 justify-start gap-4">
-								<h3 className="text-lg font-semibold my-auto text-zinc-600">
+							<div className="text-nowrap flex-1 flex flex-col sm:flex-row bg-zinc-800 sm:bg-transparent rounded-sm p-3 justify-start gap-4">
+								<h3 className="text-lg font-semibold my-auto text-zinc-300">
 									Auditee.
 								</h3>
-								<div className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
+								<div className="bg-zinc-700 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
 									{evalMetadata?.company_display_name}
 								</div>
 							</div>
-							<div className="text-nowrap flex-1 flex flex-col sm:flex-row bg-zinc-300 sm:bg-transparent rounded-sm p-3 justify-start gap-4">
-								<h3 className="text-lg font-semibold my-auto text-zinc-600">
+							<div className="text-nowrap flex-1 flex flex-col sm:flex-row bg-zinc-800 sm:bg-transparent rounded-sm p-3 justify-start gap-4">
+								<h3 className="text-lg font-semibold my-auto text-zinc-300">
 									Control reference.
 								</h3>
-								<div className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
+								<div className="bg-zinc-700 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
 									{evalMetadata?.collection_display_name}
 								</div>
 							</div>
-							<div className="text-nowrap flex-1 flex flex-col sm:flex-row bg-zinc-300 sm:bg-transparent rounded-sm p-3 justify-start gap-4">
-								<h3 className="text-lg font-semibold my-auto text-zinc-600">
+							<div className="text-nowrap flex-1 flex flex-col sm:flex-row bg-zinc-800 sm:bg-transparent rounded-sm p-3 justify-start gap-4">
+								<h3 className="text-lg font-semibold my-auto text-zinc-300">
 									Documents uploaded.
 								</h3>
 
 								{/* for large device */}
 								<div className="hidden sm:flex">
 									<HoverCard>
-										<HoverCardTrigger className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
+										<HoverCardTrigger className="bg-zinc-700 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
 											{evalMetadata?.file_names[0]}{" "}
 											{evalMetadata?.file_names.length > 2
 												? `+${evalMetadata?.file_names
@@ -641,7 +641,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 								<div className="flex sm:hidden">
 									<Dialog>
 										<DialogTrigger asChild>
-											<Button variant="outline" className="bg-zinc-800 min-w-28 w-full h-fit my-auto text-center p-1 px-5 rounded-sm text-white hover:bg-zinc-700">
+											<Button variant="outline" className="bg-zinc-700 min-w-28 w-full h-fit my-auto text-center p-1 px-5 rounded-sm text-white hover:bg-zinc-700">
 												{evalMetadata?.file_names[0]}{" "}
 												{evalMetadata?.file_names.length > 1 && `+${evalMetadata.file_names.length - 1} more`}
 											</Button>
