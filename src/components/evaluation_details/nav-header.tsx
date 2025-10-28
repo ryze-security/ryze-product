@@ -2,12 +2,6 @@
 
 import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { useIsMobile } from "@/utils/useIsMobile";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@/components/ui/tooltip"
 
 interface NavHeaderProps {
 	data: {
@@ -26,8 +20,6 @@ function NavHeader(props: NavHeaderProps) {
 		width: 0,
 		opacity: 0,
 	});
-	const isSmallerThanSM = useIsMobile(640);
-	const isSmallerThanLG = useIsMobile(1024);
 
 	return (
 		<div className="relative w-full group">
@@ -47,22 +39,8 @@ function NavHeader(props: NavHeaderProps) {
 							isActive={currentStep === item.id}
 						>
 							<div className="flex items-center gap-2 whitespace-nowrap">
-								{isSmallerThanSM ? (
-									<Tooltip>
-										<TooltipTrigger>{item.icon}</TooltipTrigger>
-										<TooltipContent>{item.label}</TooltipContent>
-									</Tooltip>
-								) : isSmallerThanLG ? (
-									<>
-										{item.icon}
-										{currentStep === item.id && <span>{item.label}</span>}
-									</>
-								) : (
-									<>
-										{item.icon}
-										<span>{item.label}</span>
-									</>
-								)}
+								{item.icon}
+								<span>{item.label}</span>
 							</div>
 						</Tab>
 					))}
@@ -104,10 +82,11 @@ const Tab = ({
 			onClick={() => {
 				stepChangefn?.(itemId);
 			}}
-			className={`relative z-10 block cursor-pointer px-3 py-1.5 text-xs text-white md:px-5 md:py-3 md:text-base ${isActive
-				? "bg-zinc-700 opacity-100 rounded-full"
-				: "opacity-70 hover:opacity-100"
-				}  transition-opacity duration-100`}
+			className={`relative z-10 block cursor-pointer px-3 py-1.5 text-xs text-white md:px-5 md:py-3 md:text-base ${
+				isActive
+					? "bg-zinc-700 opacity-100 rounded-full"
+					: "opacity-70 hover:opacity-100"
+			}  transition-opacity duration-100`}
 		>
 			{children}
 		</li>
@@ -118,7 +97,7 @@ const Cursor = ({ position }: { position: any }) => {
 	return (
 		<motion.li
 			animate={position}
-			className="absolute z-0 h-10 rounded-full bg-zinc-700 md:h-12"
+			className="absolute z-0 h-7 rounded-full bg-zinc-700 md:h-12"
 		/>
 	);
 };
