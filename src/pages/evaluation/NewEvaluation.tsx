@@ -239,7 +239,7 @@ const NewEvaluation = () => {
 			const evaluationData: createEvaluationDTO = {
 				tenant_id: userData.tenant_id,
 				company_id: data.auditee.value,
-				collection_id: framework.value, 
+				collection_id: framework.value,
 				created_by: userData.first_name + " " + userData.last_name,
 				model_used: "azure-gpt04-mini",
 				document_list: [...data.documents.map((doc) => doc.file_id)],
@@ -429,43 +429,79 @@ const NewEvaluation = () => {
 			</section>
 
 			{/* Progress Bar Section */}
-			<section className="flex justify-center items-center max-w-[55%] w-full bg-black text-white pt-10 px-6 sm:px-12 lg:px-16">
-				<div className="max-w-7xl w-full px-2">
-					<div className="flex items-center w-full">
+			<section className="flex justify-center items-center w-full bg-black text-white pt-5 lg:pt-10 px-6 sm:px-12 lg:px-16">
+				<div className="max-w-7xl w-full">
+					<div className="flex items-center">
 						{steps.map((step, index) => {
 							const isCurrent = index === currentStep;
 
 							return (
-								<div
-									className="w-full flex items-center"
-									key={step.id}
-								>
+								<>
+									{/* larger devices */}
 									<div
-										className="flex-1 flex flex-col items-center cursor-pointer text-center"
-										onClick={() => goToStep(index)}
+										className="hidden min-w-[25%] md:min-w-[20%] xl:min-w-[15%] sm:flex items-center"
+										key={step.id}
 									>
 										<div
-											className={`relative w-[96%] h-8 transition-colors mx-0 mb-4 pl-4
+											className="flex-1 flex flex-col items-center cursor-pointer text-center"
+											onClick={() => goToStep(index)}
+										>
+											<div
+												className={`relative w-[96%] h-8 transition-colors mx-0 mb-4 pl-4
 											${isCurrent ? "bg-violet-ryzr" : "bg-zinc-700"}
 											hover:opacity-90 rounded-full overflow-visible`}
-										>
-											<span className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
-												{step.label}
-											</span>
+											>
+												<span className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
+													{step.label}
+												</span>
+											</div>
 										</div>
+										{index < steps.length - 1 && (
+											<div className="w-6 h-px border-t-2 border-dashed border-zinc-400 mb-4" />
+										)}
 									</div>
-									{index < steps.length - 1 && (
-										<div className="w-6 h-px border-t-2 border-dashed border-zinc-400 mb-4" />
-									)}
-								</div>
+
+									{/* smaller devices */}
+									<div
+										className="flex flex-1 sm:hidden items-center"
+										key={step.id}
+									>
+										<div
+											className="relative flex flex-col items-center cursor-pointer text-center"
+											onClick={() => goToStep(index)}
+										>
+											<div
+												className={`relative w-8 h-8 transition-colors mx-0 mb-5 pl-4
+											${isCurrent ? "bg-violet-ryzr" : currentStep > index ? "bg-violet-ryzr" : "bg-zinc-700"}
+											hover:opacity-90 rounded-full overflow-visible`}
+											>
+												<span className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
+													{currentStep > index ? <Check className="w-4 h-4 text-white" /> : index + 1}
+												</span>
+
+											</div>
+
+											<span className="absolute -bottom-1 text-xs">{step.label}</span>
+										</div>
+
+										{index < steps.length - 1 && (
+											<div
+												className={`w-full h-1 rounded-full mb-6 transition-colors ${index < currentStep
+													? "bg-violet-ryzr"
+													: "bg-zinc-400"
+													}`}
+											/>
+										)}
+									</div>
+								</>
 							);
 						})}
 					</div>
 				</div>
 			</section>
 
-			<section className="flex justify-center items-center w-full bg-black text-white pt-3 px-6 sm:px-12 lg:px-16">
-				<div className="max-w-7xl w-full mt-8 px-4">
+			<section className="flex justify-center items-center w-full bg-black text-white pt-5 lg:pt-10 px-6 sm:px-12 lg:px-16">
+				<div className="max-w-7xl w-full">
 					<FormProvider {...methods}>
 						<form className="flex flex-col w-full">
 							{/* Step Content */}
@@ -513,24 +549,24 @@ const NewEvaluation = () => {
 																		openCombo
 																	}
 																	className={cn(
-																		"w-[400px] justify-between",
+																		"w-[200px] sm:w-[400px] justify-between",
 																		fieldState.invalid &&
-																			"border-red-500"
+																		"border-red-500"
 																	)}
 																	id="auditee-select"
 																>
 																	{field.value
 																		.value
 																		? auditeeOptions.find(
-																				(
-																					opt
-																				) =>
-																					opt.value ===
-																					field
-																						.value
-																						.value
-																		  )
-																				?.label
+																			(
+																				opt
+																			) =>
+																				opt.value ===
+																				field
+																					.value
+																					.value
+																		)
+																			?.label
 																		: "Choose an auditee..."}
 																	<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 																</Button>
@@ -614,7 +650,7 @@ const NewEvaluation = () => {
 											What is the reference for the framework?
 										</label>
 										{status === "succeeded" ? (
-											<div className="grid grid-cols-6 justify-start gap-2 w-11/12">
+											<div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 justify-start gap-2 md:w-11/12">
 												{collection.collections.map(
 													(f) => (
 														<div className="p-1">
@@ -735,7 +771,7 @@ const NewEvaluation = () => {
 							)}
 
 							{/* Footer Navigation Buttons */}
-							<div className="flex justify-start mt-8 gap-4">
+							<div className="flex justify-start gap-4 mt-4 sm:mt-0">
 								{currentStep !== 0 && (
 									<button
 										type="button"
@@ -816,10 +852,10 @@ const NewEvaluation = () => {
 										/>
 										{frameworkForm.formState.errors
 											.framework && (
-											<p className="text-sm text-rose-700">
-												Framework name is required
-											</p>
-										)}
+												<p className="text-sm text-rose-700">
+													Framework name is required
+												</p>
+											)}
 									</div>
 									<div className="grid gap-3">
 										<Label htmlFor="details">

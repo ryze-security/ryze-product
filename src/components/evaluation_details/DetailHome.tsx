@@ -6,6 +6,14 @@ import React, {
 } from "react";
 import { Card, CardContent } from "../ui/card";
 import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog"
+import {
 	controlResponse,
 	domainResponse,
 	evaluationMetadata,
@@ -572,8 +580,8 @@ const DetailHome = forwardRef((props: Props, ref) => {
 			{!selectedRow && (
 				<>
 					{/* Eval stats */}
-					<div className="flex w-full justify-between mb-5">
-						<div className="flex w-full justify-between">
+					<div className="flex w-full justify-between mt-5 sm:mt-0 mb-5">
+						<div className="flex-1 flex flex-col flex-wrap sm:flex-row w-full gap-x-6 gap-y-4 sm:gap-y-2 xl:justify-between">
 							{/* <div className="flex justify-start gap-4 mb-6">
 								<h3 className="text-lg font-semibold my-auto text-zinc-600">
 									Review.
@@ -582,61 +590,94 @@ const DetailHome = forwardRef((props: Props, ref) => {
 									Title
 								</div>
 							</div> */}
-							<div className="flex justify-start gap-4 mb-6 w-fit">
-								<h3 className="text-lg font-semibold my-auto text-zinc-600">
+							<div className="text-nowrap flex-1 flex flex-col sm:flex-row bg-zinc-800 sm:bg-transparent rounded-sm p-3 justify-start gap-4">
+								<h3 className="text-lg font-semibold my-auto text-zinc-300">
 									Auditee.
 								</h3>
-								<div className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
+								<div className="bg-zinc-700 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
 									{evalMetadata?.company_display_name}
 								</div>
 							</div>
-							<div className="flex justify-start gap-4 mb-6">
-								<h3 className="text-lg font-semibold my-auto text-zinc-600">
+							<div className="text-nowrap flex-1 flex flex-col sm:flex-row bg-zinc-800 sm:bg-transparent rounded-sm p-3 justify-start gap-4">
+								<h3 className="text-lg font-semibold my-auto text-zinc-300">
 									Control reference.
 								</h3>
-								<div className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
+								<div className="bg-zinc-700 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
 									{evalMetadata?.collection_display_name}
 								</div>
 							</div>
-							<div className="flex justify-start gap-4 mb-6">
-								<h3 className="text-lg font-semibold my-auto text-zinc-600">
+							<div className="text-nowrap flex-1 flex flex-col sm:flex-row bg-zinc-800 sm:bg-transparent rounded-sm p-3 justify-start gap-4">
+								<h3 className="text-lg font-semibold my-auto text-zinc-300">
 									Documents uploaded.
 								</h3>
-								<HoverCard>
-									<HoverCardTrigger className="bg-zinc-800 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
-										{evalMetadata?.file_names[0]}{" "}
-										{evalMetadata?.file_names.length > 2
-											? `and ${evalMetadata?.file_names
-												.length - 1
-											} more`
-											: ""}
-									</HoverCardTrigger>
-									<HoverCardContent className="w-fit">
-										{evalMetadata?.file_names.map(
-											(file, index) => (
-												<div key={index}>
-													<div className="text-sm text-white/80 w-fit">
-														{file}
+
+								{/* for large device */}
+								<div className="hidden sm:flex">
+									<HoverCard>
+										<HoverCardTrigger className="bg-zinc-700 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
+											{evalMetadata?.file_names[0]}{" "}
+											{evalMetadata?.file_names.length > 2
+												? `+${evalMetadata?.file_names
+													.length - 1
+												} more`
+												: ""}
+										</HoverCardTrigger>
+										<HoverCardContent className="w-fit">
+											{evalMetadata?.file_names.map(
+												(file, index) => (
+													<div key={index}>
+														<div className="text-sm text-white/80 w-fit">
+															{file}
+														</div>
+														<Separator className="my-2" />
 													</div>
-													<Separator className="my-2" />
+												)
+											)}
+										</HoverCardContent>
+									</HoverCard>
+								</div>
+
+								{/* for small device */}
+								<div className="flex sm:hidden">
+									<Dialog>
+										<DialogTrigger asChild>
+											<Button variant="outline" className="bg-zinc-700 min-w-28 w-full h-fit my-auto text-center p-1 px-5 rounded-sm text-white hover:bg-zinc-700">
+												{evalMetadata?.file_names[0]}{" "}
+												{evalMetadata?.file_names.length > 1 && `+${evalMetadata.file_names.length - 1} more`}
+											</Button>
+										</DialogTrigger>
+										<DialogContent className="rounded-sm w-[95%] bg-zinc-900 border-zinc-800 text-white">
+											<DialogHeader className="px-6 pt-6">
+												<DialogTitle className="text-xl text-white">Related Files</DialogTitle>
+												<DialogDescription className="text-zinc-300">
+													{evalMetadata?.file_names.length} document(s) uploaded.
+												</DialogDescription>
+											</DialogHeader>
+											<div className="px-6 pb-6">
+												<div className="border border-zinc-700 rounded-lg divide-y divide-zinc-700 max-h-[60vh] overflow-y-auto">
+													{evalMetadata?.file_names.map((file, index) => (
+														<div key={index} className="p-4 hover:bg-zinc-800/50 transition-colors">
+															<p className="text-sm text-zinc-200 break-words">{file}</p>
+														</div>
+													))}
 												</div>
-											)
-										)}
-									</HoverCardContent>
-								</HoverCard>
+											</div>
+										</DialogContent>
+									</Dialog>
+								</div>
 							</div>
 						</div>
 					</div>
-					<div className="flex max-w-fit gap-2">
-						<div className="text-[50px] font-semibold text-violet-ryzr tracking-wide">
+					<div className="flex flex-col sm:flex-row max-w-fit gap-2">
+						<div className="text-5xl font-semibold text-violet-ryzr tracking-wide">
 							{overallScore}%.
 						</div>
-						<div className="text-[50px] font-semibold text-zinc-400 opacity-85 tracking-wide">
+						<div className="text-3xl md:text-5xl font-semibold text-zinc-400 opacity-85 tracking-wide">
 							Overall compliance score.
 						</div>
 					</div>
 					{/* Evaluation Cards */}
-					<div className="flex flex-wrap gap-4 w-fit mt-10">
+					<div className="flex flex-wrap gap-4 w-fit mt-5 sm:mt-10">
 						{cardData.map((item, index) => (
 							<InfoCard
 								key={item.id}
@@ -701,23 +742,47 @@ const DetailHome = forwardRef((props: Props, ref) => {
 							</div>
 
 							<div className="flex justify-between">
-								<div className="flex max-w-[85%] flex-col w-full h-fit gap-5">
-									<div className="text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
-										{selectedRow.serial}
+								<div className="flex sm:max-w-[85%] flex-col w-full h-fit gap-5">
+									<div className="flex justify-between text-3xl sm:text-4xl font-semibold text-zinc-400 opacity-85 tracking-wide">
+										<span className="text-end">{selectedRow.serial}</span>
+
+										<div className="flex flex-1 justify-end sm:hidden gap-3">
+											<div className="relative flex-1 max-w-[180px]">
+												<div className="flex justify-between text-xs text-zinc-400 pb-1">
+													<span>Compliance</span>
+													<span>{Math.round(selectedRow.Response.Score)}%</span>
+												</div>
+												<div className="w-full h-2.5 bg-zinc-800 rounded-full overflow-hidden">
+													<div
+														className="h-full rounded-full transition-all duration-500 ease-out"
+														style={{
+															width: `${selectedRow.Response.Score}%`,
+															backgroundColor: selectedRow.Response.Score >= 75
+																? '#71AE57'
+																: selectedRow.Response.Score >= 50
+																	? '#FFB266'
+																	: '#FF6666'
+														}}
+													></div>
+												</div>
+											</div>
+										</div>
 									</div>
+
 									<div className="flex flex-col gap-2">
-										<div className="text-4xl font-semibold text-white tracking-wide">
+										<div className="text-2xl sm:text-4xl font-semibold text-white tracking-wide">
 											{selectedRow.Description}
 										</div>
 										<div>
-											<p className="text-base w-full text-gray-light-ryzr">
+											<p className="text-sm sm:text-base w-full text-gray-light-ryzr">
 												{
 													selectedRow.control_description
 												}
 											</p>
 										</div>
 									</div>
-									<div className="w-[27%] bg-gradient-to-r rounded-md py-1 px-2 from-gray-light-ryzr/50 to-transparent ">
+
+									<div className="sm:w-[27%] bg-gradient-to-r rounded-md py-1 px-2 from-gray-light-ryzr/50 to-transparent ">
 										{
 											selectedRow.QuestionResponseList
 												.length
@@ -726,11 +791,13 @@ const DetailHome = forwardRef((props: Props, ref) => {
 									</div>
 								</div>
 
-								<ProgressCircle
-									progress={selectedRow.Response.Score}
-									size={152}
-									strokeWidth={12}
-								/>
+								<div className="hidden sm:block">
+									<ProgressCircle
+										progress={selectedRow.Response.Score}
+										size={152}
+										strokeWidth={12}
+									/>
+								</div>
 							</div>
 						</div>
 					)}
@@ -869,7 +936,7 @@ const InfoCard = ({
 				: dataInInteger >= 50 && dataInInteger < 75
 					? "bg-[#FFB266]/30"
 					: "bg-[#FF6666]/30"
-				} rounded-2xl max-h-52 max-w-60 min-h-48 min-w-72 cursor-pointer`}
+				} rounded-2xl max-h-52 min-h-48 w-full sm:max-w-60 sm:min-w-72 cursor-pointer`}
 			onClick={() => {
 				stepChangefn?.(itemId);
 			}}

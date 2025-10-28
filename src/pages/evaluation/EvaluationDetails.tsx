@@ -102,10 +102,11 @@ function EvaluationDetails() {
 
 			for (const domain of data.data.EvaluationResponse
 				.DomainResponseList) {
-				map[domain.domainId] = {...domain,
+				map[domain.domainId] = {
+					...domain,
 					Description: domain.Description.split(" controls")[0]
 				};
-			}			
+			}
 			setDomainDataMap(map);
 		}
 
@@ -276,10 +277,10 @@ function EvaluationDetails() {
 	};
 
 	return (
-		<div className="min-h-screen font-roboto bg-black text-white p-6">
-			<section className="flex justify-between gap-8 items-center w-full bg-black text-white pt-10 px-6 sm:px-12 lg:px-16">
+		<div className="min-h-screen font-roboto bg-black text-white p-4 sm:p-6">
+			<section className="flex flex-col sm:flex-row sm:items-center justify-between sm:gap-8 w-full bg-black text-white pt-20 px-4 lg:px-16">
 				{/* Eval Details name etc */}
-				<div className="flex-1 min-w-0">
+				<div className=" flex-1 min-w-0">
 					<NavHeader
 						data={dynamicSteps.map((step) => ({
 							...step,
@@ -289,6 +290,35 @@ function EvaluationDetails() {
 						currentStep={currentStep}
 					/>
 				</div>
+				{/* <div className="flex-1 min-w-0 md:hidden">
+					<DropdownMenu>
+						<DropdownMenuTrigger
+							className="bg-black border border-white hover:bg-zinc-700 rounded-full transition-colors text-white font-medium px-4 py-3 flex items-center gap-2 w-full justify-center text-sm md:text-base"
+						>
+							<DynamicIcons name={dynamicSteps[currentStep].iconName} className="w-4 h-4" />
+							{currentStep < dynamicSteps.length ? dynamicSteps[currentStep].label : 'Menu'}
+							<ArrowDown className="w-4 h-4" />
+						</DropdownMenuTrigger>
+						<DropdownMenuContent className="gap-1 flex flex-col bg-black border border-white rounded-lg p-1">
+							{dynamicSteps.map((step) => (
+								<DropdownMenuItem
+									key={step.id}
+									onClick={() => goToStep(step.id)}
+									className={`cursor-pointer rounded-md px-3 py-2 text-sm md:text-base ${currentStep === step.id
+										? 'bg-zinc-700 text-white'
+										: 'text-white hover:bg-zinc-800'
+										}`}
+								>
+									<div className="flex items-center gap-2 w-full">
+										<DynamicIcons name={step.iconName} className="w-4 h-4" />
+										{step.label}
+									</div>
+								</DropdownMenuItem>
+							))}
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</div> */}
+
 				<div className="flex-shrink-0">
 					<DropdownMenu>
 						<DropdownMenuTrigger
@@ -325,7 +355,7 @@ function EvaluationDetails() {
 				</div>
 			</section>
 
-			<section className="flex items-center w-full bg-black text-white mt-2 pt-10 px-6 sm:px-12 lg:px-16">
+			<section className="flex items-center w-full bg-black text-white mt-2 sm:pt-10 px-0 lg:px-16">
 				{isLoading ? (
 					<RoundSpinner />
 				) : (
