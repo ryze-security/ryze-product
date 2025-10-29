@@ -438,7 +438,7 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 	return (
 		<div className="max-w-7xl w-full">
 			{/* Header section */}
-			<div className="w-full px-4 mt-5">
+			<div className="w-full px-4 mt-0">
 				{/* Heading */}
 				{selectedRow ? (
 					<div className="flex flex-col gap-2">
@@ -534,19 +534,20 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 						</div>
 					</div>
 				) : (
-					<div className="flex flex-col sm:flex-row max-w-fit gap-2">
-						<div className="text-5xl font-semibold text-violet-ryzr tracking-wide">
-							{Math.round(
-								domainData.Response.Score * 100
-							).toString()}
-							%.
+					<>
+						<div className={`rounded-2xl flex flex-col bg-gradient-to-b to-[#020506] p-6 pb-12
+							${Math.round(domainData.Response.Score * 100) >= 75 ? 'from-[#71AE57]' : Math.round(domainData.Response.Score * 100) >= 50 ? 'from-[#FFB266]' : 'from-[#FF6666]'}
+							`}>
+							<div className="font-bold flex flex-col max-w-fit gap-2">
+								<span className="text-6xl">
+									{Math.round(domainData.Response.Score * 100).toString()}%.
+								</span>
+								<span className="text-4xl font-extralight">
+									Overall compliance score.
+								</span>
+							</div>
 						</div>
-						<div className="text-3xl md:text-5xl font-semibold text-zinc-400 opacity-85 tracking-wide">
-							{`Alignment with ${domainData.Description.toLowerCase().includes('pii')
-								? domainData.Description.replace(/pii/gi, 'PII')
-								: domainData.Description.toLowerCase()}.`}
-						</div>
-					</div>
+					</>
 				)}
 
 				{/* Export button */}
