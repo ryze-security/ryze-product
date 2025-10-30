@@ -170,7 +170,7 @@ const columns: ColumnDef<controlResponse>[] = [
 const questionColumns: ColumnDef<questionResponse>[] = [
 	{
 		accessorKey: "SNo",
-		header: "SNo",
+		header: "Q.No.",
 	},
 	{
 		accessorKey: "question",
@@ -639,16 +639,15 @@ const DetailHome = forwardRef((props: Props, ref) => {
 
 			{/* Full Data Data table */}
 			<section
-				className={`flex flex-col items-center w-full bg-black text-white ${selectedRow ? "" : "mt-8 pt-4"
-					}`}
+				className={`flex flex-col items-center w-full bg-black text-white`}
 			>
-				<div className={`flex flex-col p-6 rounded-2xl bg-gradient-to-b to-[#1A1A1A] ${selectedRow
+				<div className={`w-full mb-4 pb-8 flex flex-col p-6 rounded-2xl bg-gradient-to-b to-[#020506] ${selectedRow
 					? selectedRow.Response?.Score >= 75
 						? 'from-[#71AE57]'
 						: selectedRow.Response?.Score >= 50
 							? 'from-[#FFB266]'
 							: 'from-[#DA3D49]'
-					: ''}`}>
+					: 'mb-0'}`}>
 
 					{selectedRow && (
 						<div className="flex flex-col gap-2">
