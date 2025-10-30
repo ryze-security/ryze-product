@@ -20,7 +20,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Ellipsis, Filter, MoreHorizontal, ArrowUpDown, ArrowDown01, ArrowUp10, ArrowDownAZ, ArrowUpZA } from "lucide-react";
+import { Ellipsis, Filter, MoreHorizontal, ArrowUpDown, ArrowDown01, ArrowUp10, ArrowDownAZ, ArrowUpZA, PlusCircleIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -40,6 +40,7 @@ import { AlertDialogBox } from "@/components/AlertDialogBox";
 import { GenericDataTable } from "@/components/GenericDataTable";
 import { Progress } from "@/components/ui/progress";
 import { createRichTextFromMarkdown } from "@/utils/markdownExcel";
+import { useNavigate } from "react-router-dom";
 
 interface ReportList {
     sNo: number;
@@ -53,6 +54,7 @@ interface ReportList {
 }
 
 function EvaluationDashboard() {
+    const navigate = useNavigate();
     const [reportList, setReportList] = React.useState<ReportList[]>([]);
     const { toast } = useToast();
     const userData = useAppSelector((state) => state.appUser);
@@ -836,29 +838,39 @@ function EvaluationDashboard() {
     };
 
     return (
-        <div className="min-h-screen font-roboto bg-black text-white p-6">
-            <section className="flex items-center w-full bg-black text-white pb-0 pt-16 lg:pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
-                <div className="max-w-7xl rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-6 pb-10">
-                    <PageHeader
-                        heading="Past reviews"
-                        subtitle="Browse through previously completed reviews to track progress and revisit findings."
-                        buttonText="Add"
-                        variant="add"
-                        buttonUrl="/new-evaluation"
-                    />
+        <div className="flex flex-col min-h-screen font-roboto bg-black text-white p-6">
+            <section className="flex w-full bg-black text-white pb-0 pt-16 lg:pt-10 px-3 sm:px-6 md:px-4 lg:px-16 ">
+                <div className="max-w-7xl flex flex-col sm:flex-row justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10 ">
+                    <div className="flex flex-col space-y-4 p-6 ">
+                        <h1 className="text-6xl font-bold">Past reviews</h1>
+                        <h3>Browse through previously completed reviews to track progress and revisit findings.</h3>
+                    </div>
+
+                    <Button
+                        variant="default"
+                        className={`bg-white m-6 mt-0 sm:mt-6 hover:bg-gray-200 rounded-full transition-colors text-black font-extrabold text-md w-fit px-6 py-2`}
+                        onClick={() => {
+                            navigate("/new-evaluation");
+                        }}
+                    >
+                        <PlusCircleIcon strokeWidth={3} />
+                        New
+                    </Button>
                 </div>
             </section>
 
-            <section className="flex items-center w-full bg-black text-white pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
-                <ProgressBarDataTable
-                    columns={columns}
-                    data={evaluations.evaluations}
-                    filterKey="tg_company_display_name"
-                    rowIdKey={["tg_company_id", "eval_id"]}
-                    rowLinkPrefix="/evaluation/"
-                    isLoading={isEvalLoading}
-                    isRowDisabled={(row) => row.processing_status !== "completed"}
-                />
+            <section className="flex items-center w-full bg-black text-white  pt-10 px-3 sm:px-6 md:px-4  lg:px-16">
+                <div className=" w-full">
+                    <ProgressBarDataTable
+                        columns={columns}
+                        data={evaluations.evaluations}
+                        filterKey="tg_company_display_name"
+                        rowIdKey={["tg_company_id", "eval_id"]}
+                        rowLinkPrefix="/evaluation/"
+                        isLoading={isEvalLoading}
+                        isRowDisabled={(row) => row.processing_status !== "completed"}
+                    />
+                </div>
                 <Dialog
                     open={reportDialogOpen}
                     onOpenChange={(isOpen) => {
