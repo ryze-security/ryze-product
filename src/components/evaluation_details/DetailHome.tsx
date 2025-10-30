@@ -585,7 +585,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 					${Number(overallScore) >= 75 ? 'from-[#71AE57]' : Number(overallScore) >= 50 ? 'from-[#FFB266]' : 'from-[#DA3D49]'}
 					`}>
 						<div className="p-6 pb-0 flex space-y-6 flex-col">
-							{/* Controls referenece Name */}
+							{/* Controls reference Name */}
 							<div className="bg-zinc-700 min-w-28 w-fit h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
 								{evalMetadata?.collection_display_name}
 							</div>
@@ -595,17 +595,50 @@ const DetailHome = forwardRef((props: Props, ref) => {
 								{evalMetadata?.company_display_name}
 							</div>
 
-							<div className="flex gap-x-4 text-lg items-center">
+							<div className="flex gap-x-4 text-lg items-center text-nowrap">
 								<span>
 									Documents Uploaded.
 								</span>
 
-								<div className="flex gap-x-2">
-									{evalMetadata?.file_names.map((file, index) => (
-										<div key={index} className="bg-zinc-700 min-w-28 h-fit my-auto text-center p-1 px-5 rounded-sm text-white">
-											{file}
-										</div>
-									))}
+								<div className="flex flex-wrap items-center justify-center gap-2">
+									<div className="min-w-28 h-fit my-auto text-center rounded-sm text-white flex flex-wrap gap-2 justify-center">
+										{evalMetadata?.file_names?.slice(0, 2).map((file, i) => (
+											<div
+												key={i}
+												className="bg-zinc-700 px-2 py-1 rounded text-sm text-white/90"
+											>
+												{file}
+											</div>
+										))}
+									</div>
+
+									{evalMetadata?.file_names?.length > 2 && (
+										<HoverCard>
+											{/* Trigger showing up to 2 docs as boxes */}
+											<HoverCardTrigger className="min-w-28 h-fit my-auto text-center rounded-sm text-white flex">
+												{/* Show +X more if additional files exist */}
+												{evalMetadata?.file_names?.length > 2 && (
+													<div className="bg-zinc-700 px-2 py-1 rounded text-sm text-white/80">
+														+{evalMetadata.file_names.length - 2} more
+													</div>
+												)}
+											</HoverCardTrigger>
+
+											{/* Hover card content */}
+											<HoverCardContent className="w-fit bg-transparent/50 backdrop-blur-sm">
+												<div className="flex flex-col gap-2">
+													{evalMetadata?.file_names?.slice(2).map((file, index) => (
+														<div
+															key={index}
+															className="bg-zinc-700 px-2 py-1 rounded text-sm text-white/80"
+														>
+															{file}
+														</div>
+													))}
+												</div>
+											</HoverCardContent>
+										</HoverCard>
+									)}
 								</div>
 							</div>
 

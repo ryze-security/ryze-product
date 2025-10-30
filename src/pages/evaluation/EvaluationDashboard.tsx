@@ -837,17 +837,19 @@ function EvaluationDashboard() {
 
     return (
         <div className="min-h-screen font-roboto bg-black text-white p-6">
-            <section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
-                <PageHeader
-                    heading="Past reviews"
-                    subtitle="Browse through previously completed reviews to track progress and revisit findings."
-                    buttonText="Add"
-                    variant="add"
-                    buttonUrl="/new-evaluation"
-                />
+            <section className="flex items-center w-full bg-black text-white pb-0 pt-16 lg:pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
+                <div className="max-w-7xl rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-6 pb-10">
+                    <PageHeader
+                        heading="Past reviews"
+                        subtitle="Browse through previously completed reviews to track progress and revisit findings."
+                        buttonText="Add"
+                        variant="add"
+                        buttonUrl="/new-evaluation"
+                    />
+                </div>
             </section>
 
-            <section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
+            <section className="flex items-center w-full bg-black text-white pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
                 <ProgressBarDataTable
                     columns={columns}
                     data={evaluations.evaluations}
