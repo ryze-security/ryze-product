@@ -7,6 +7,7 @@ import type {
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 10000
+const DEFAULT_TOAST_DURATION = 8000 // 8 seconds
 
 type ToasterToast = ToastProps & {
   id: string
@@ -153,6 +154,7 @@ function toast({ ...props }: Toast) {
     type: "ADD_TOAST",
     toast: {
       ...props,
+      duration: props.duration ?? DEFAULT_TOAST_DURATION,
       id,
       open: true,
       onOpenChange: (open) => {

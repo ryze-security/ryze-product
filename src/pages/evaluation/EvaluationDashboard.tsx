@@ -20,7 +20,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Ellipsis, Filter, MoreHorizontal, ArrowUpDown, ArrowDown01, ArrowUp10, ArrowDownAZ, ArrowUpZA, PlusCircleIcon } from "lucide-react";
+import { Ellipsis, Filter, MoreHorizontal, ArrowUpDown, ArrowDown01, ArrowUp10, ArrowDownAZ, ArrowUpZA, PlusCircleIcon, Search, SearchIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -41,6 +41,7 @@ import { GenericDataTable } from "@/components/GenericDataTable";
 import { Progress } from "@/components/ui/progress";
 import { createRichTextFromMarkdown } from "@/utils/markdownExcel";
 import { useNavigate } from "react-router-dom";
+import { Input } from "@/components/ui/input";
 
 interface ReportList {
     sNo: number;
@@ -65,6 +66,7 @@ function EvaluationDashboard() {
         evaluations: [],
         total_count: 0,
     });
+    const [filter, setFilter] = React.useState("");
 
     //method to update status of evaluations in state
     const handleStatusUpdate = useCallback((newStatus: evaluationStatusDTO) => {
@@ -844,6 +846,19 @@ function EvaluationDashboard() {
                     <div className="flex flex-col space-y-4 p-6 ">
                         <h1 className="text-6xl font-bold">Past reviews</h1>
                         <h3>Browse through previously completed reviews to track progress and revisit findings.</h3>
+
+                        {/* search input */}
+                        <div className="relative pt-4">
+                            <Input
+                                placeholder={"Search past reviews..."}
+                                value={filter}
+                                onChange={(e) => setFilter(e.target.value)}
+                                className="max-w-sm text-xl bg-white pl-10 text-black selection:text-black"
+                            />
+                            <SearchIcon className="absolute left-3 top-9 transform -translate-y-1/2 text-gray-500 size-5" />
+                        </div>
+
+
                     </div>
 
                     <Button
@@ -863,6 +878,9 @@ function EvaluationDashboard() {
                 <div className=" w-full">
                     <ProgressBarDataTable
                         columns={columns}
+                        externalFilter={filter}
+                        setExternalFilter={setFilter}
+                        externalSearch={true}
                         data={evaluations.evaluations}
                         filterKey="tg_company_display_name"
                         rowIdKey={["tg_company_id", "eval_id"]}

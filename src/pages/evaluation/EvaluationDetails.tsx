@@ -104,7 +104,7 @@ function EvaluationDetails() {
 				.DomainResponseList) {
 				map[domain.domainId] = {
 					...domain,
-					Description: domain.Description.split(" controls")[0]
+					Description: domain.Description
 				};
 			}
 			setDomainDataMap(map);
@@ -252,7 +252,7 @@ function EvaluationDetails() {
 						setReportID(response.report_id);
 						toast({
 							title: `Report Generation Started`,
-							description: `Your report will be generated in an few minutes. You will be notified once it's ready.`,
+							description: "Your report will be generated in a few minutes. You will be notified once it's ready. The generated reports can be found under the 'Reports' tab.",
 							variant: "default",
 							className: "bg-green-ryzr",
 						});
@@ -284,6 +284,7 @@ function EvaluationDetails() {
 					<NavHeader
 						data={dynamicSteps.map((step) => ({
 							...step,
+							label: `${step.label.split(" controls")[0]}`,
 							icon: <DynamicIcons name={step.iconName} />,
 						}))}
 						stepChangefn={goToStep}
