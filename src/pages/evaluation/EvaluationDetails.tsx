@@ -278,9 +278,9 @@ function EvaluationDetails() {
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-4 sm:p-6">
-			<section className="flex flex-col sm:flex-row sm:items-center justify-between sm:gap-8 w-full bg-black text-white pt-20 px-4 lg:px-16">
+			<section className="flex flex-col sm:flex-row sm:items-center justify-between sm:gap-8 w-full bg-black text-white pt-20 px-4 lg:px-20">
 				{/* Eval Details name etc */}
-				<div className=" flex-1 min-w-0">
+				<div className="w-full max-w-7xl flex-1 min-w-0">
 					<NavHeader
 						data={dynamicSteps.map((step) => ({
 							...step,
@@ -319,7 +319,7 @@ function EvaluationDetails() {
 					</DropdownMenu>
 				</div> */}
 
-				<div className="flex-shrink-0">
+				<div className="flex-shrink-0 2xl:mr-16 ">
 					<DropdownMenu>
 						<DropdownMenuTrigger
 							className={` bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold px-4 py-2 flex items-center gap-2`}

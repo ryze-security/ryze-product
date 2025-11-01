@@ -133,12 +133,12 @@ export function ProgressBarDataTable<TData, TValue>({
 	};
 
 	return (
-		<div className="space-y-4 lg:px-4 max-w-7xl w-full">
+		<div className="space-y-4 ldg:px-4 max-w-7xl w-full">
 			<Input
 				placeholder="Search..."
 				value={filter}
 				onChange={(e) => setFilter(e.target.value)}
-				className="max-w-sm text-xl"
+				className="max-w-sm text-xl bg-[#242424]"
 			/>
 			<div className="rounded-md border">
 				<Table className="rounded-md bg-zinc-900">
@@ -151,7 +151,7 @@ export function ProgressBarDataTable<TData, TValue>({
 								{headerGroup.headers.map((header, index) => (
 									<TableHead
 										key={header.id}
-										className={`text-white text-base
+										className={`text-white text-base bg-[#1a1a1a]
 											${
 												index === 0
 													? "rounded-tl-md"
@@ -190,7 +190,7 @@ export function ProgressBarDataTable<TData, TValue>({
 										className={
 											isDisabled
 												? "opacity-50 cursor-not-allowed" // Disabled styles
-												: "cursor-pointer hover:bg-zinc-800" // Enabled styles
+												: "cursor-pointer bg-[#1a1a1a] hover:bg-zinc-800" // Enabled styles
 										}
 									>
 										{row.getVisibleCells().map((cell) => (

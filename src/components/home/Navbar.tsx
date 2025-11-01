@@ -96,8 +96,10 @@ function Navbar(props: Props) {
 										key={index}
 										disabled={item.disabled}
 										onClick={() => {
-											if (!item.disabled) {
+											if (!item.disabled && item.href) {
 												navigate(item.href);
+											} else if (!item.disabled && item.target) {
+												handleScrollTo(item.target);
 											}
 										}}
 										className="cursor-pointer"

@@ -581,8 +581,13 @@ const DetailHome = forwardRef((props: Props, ref) => {
 				<>
 					{/* Eval stats */}
 					{/* Eval stats */}
-					<div className={`flex flex-col  rounded-2xl bg-gradient-to-b to-[#1A1A1A] 
-					${Number(overallScore) >= 75 ? 'from-[#71AE57]' : Number(overallScore) >= 50 ? 'from-[#FFB266]' : 'from-[#DA3D49]'}
+					<div className={`flex flex-col rounded-2xl bg-gradient-to-b to-[#1A1A1A] 
+					${Number(overallScore) >= 75
+							? 'from-[#71AE57]'
+							: Number(overallScore) >= 50
+								? 'from-[#FFB266]'
+								: 'from-[#DA3D49]'
+						}
 					`}>
 						<div className="p-6 pb-0 flex space-y-6 flex-col">
 							{/* Controls reference Name */}
@@ -591,24 +596,25 @@ const DetailHome = forwardRef((props: Props, ref) => {
 							</div>
 
 
-							<div className="text-7xl font-extrabold mb-6 ">
+							<div className="text-5xl sm:text-7xl font-bold mb-6 ">
 								{evalMetadata?.company_display_name}
 							</div>
 
-							<div className="flex gap-x-4 text-lg items-center text-nowrap">
+							<div className="flex flex-col space-y-2 sm:flex-row gap-x-4 text-base sm:items-center text-nowrap">
 								<span>
 									Documents Uploaded.
 								</span>
 
-								<div className="flex flex-wrap items-center justify-center gap-2">
+								<div className="flex flex-wrap gap-2 text-base">
 									<div className="min-w-28 h-fit my-auto text-center rounded-sm text-white flex flex-wrap gap-2 justify-center">
 										{evalMetadata?.file_names?.slice(0, 2).map((file, i) => (
 											<div
 												key={i}
-												className="bg-zinc-700 px-2 py-1 rounded text-sm text-white/90"
+												className="bg-zinc-700 px-2 py-1 rounded text-white/90 truncate max-w-[300px]"
 											>
 												{file}
 											</div>
+
 										))}
 									</div>
 
@@ -618,7 +624,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 											<HoverCardTrigger className="min-w-28 h-fit my-auto text-center rounded-sm text-white flex">
 												{/* Show +X more if additional files exist */}
 												{evalMetadata?.file_names?.length > 2 && (
-													<div className="bg-zinc-700 px-2 py-1 rounded text-sm text-white/80">
+													<div className="bg-zinc-700 px-2 py-1 rounded text-white/80">
 														+{evalMetadata.file_names.length - 2} more
 													</div>
 												)}
@@ -630,7 +636,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 													{evalMetadata?.file_names?.slice(2).map((file, index) => (
 														<div
 															key={index}
-															className="bg-zinc-700 px-2 py-1 rounded text-sm text-white/80"
+															className="bg-zinc-700 px-2 py-1 rounded text-white/80"
 														>
 															{file}
 														</div>
@@ -642,18 +648,14 @@ const DetailHome = forwardRef((props: Props, ref) => {
 								</div>
 							</div>
 
-							<div className="font-bold text-4xl flex flex-col sm:flex-row max-w-fit gap-2">
-								<span>
-									{overallScore}%.
-								</span>
-								<span>
-									Overall compliance score.
-								</span>
+							<div className="pb-4 sm:pb-0 font-bold text-4xl flex flex-col sm:flex-row max-w-fit gap-2">
+								{overallScore}%.
+								Overall compliance score.
 							</div>
 						</div>
 
 						{/* Evaluation Cards */}
-						<div className="flex flex-wrap gap-4 w-full p-4 sm:mt-6 bg-[#1A1A1A]/75  rounded-b-2xl">
+						<div className="flex overflow-x-auto space-x-4 w-full p-4 sm:mt-6 bg-[#1A1A1A]/75 rounded-b-2xl scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
 							{cardData.map((item, index) => (
 								<InfoCard
 									key={item.id}
@@ -664,7 +666,6 @@ const DetailHome = forwardRef((props: Props, ref) => {
 								/>
 							))}
 						</div>
-
 					</div>
 
 				</>
@@ -674,13 +675,13 @@ const DetailHome = forwardRef((props: Props, ref) => {
 			<section
 				className={`flex flex-col items-center w-full bg-black text-white`}
 			>
-				<div className={`w-full mb-4 pb-8 flex flex-col p-6 rounded-2xl bg-gradient-to-b to-[#020506] ${selectedRow
+				<div className={`w-full mb-0 pb-0 flex flex-col p-6 rounded-2xl bg-gradient-to-b to-[#020506] ${selectedRow
 					? selectedRow.Response?.Score >= 75
 						? 'from-[#71AE57]'
 						: selectedRow.Response?.Score >= 50
 							? 'from-[#FFB266]'
 							: 'from-[#DA3D49]'
-					: 'mb-0'}`}>
+					: ''} ${selectedRow ? 'mb-4 pb-8' : 'mb-0 pb-0'}`}>
 
 					{selectedRow && (
 						<div className="flex flex-col gap-2">
@@ -728,12 +729,12 @@ const DetailHome = forwardRef((props: Props, ref) => {
 
 							<div className="flex justify-between">
 								<div className="flex sm:max-w-[85%] flex-col w-full h-fit gap-5">
-									<div className="flex justify-between text-5xl font-extralight  tracking-wide">
+									<div className="flex justify-between text-5xl font-light  tracking-wide">
 										<span className="text-end">{selectedRow.serial}</span>
 									</div>
 
 									<div className="flex flex-col gap-4">
-										<div className="text-2xl sm:text-4xl font-extralight text-white tracking-wide">
+										<div className="text-2xl sm:text-4xl font-light text-white tracking-wide">
 											{selectedRow.Description}
 										</div>
 										<div>
@@ -742,7 +743,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 											</p>
 										</div>
 
-										<div className="flex text-5xl pb-4">
+										<div className="flex text-5xl font-medium pb-4">
 											<span>{Math.round(selectedRow.Response.Score)}%.</span>
 											<span>Compliance.</span>
 										</div>
@@ -761,6 +762,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 						</div>
 					)}
 				</div>
+
 				{selectedQuestion ? (
 					<FormProvider {...methods}>
 						{updatedQuestions && updatedQuestions.length > 0 && (
@@ -895,7 +897,7 @@ const InfoCard = ({
 				: dataInInteger >= 50 && dataInInteger < 75
 					? "bg-[#FFB266]/30"
 					: "bg-[#FF6666]/30"
-				} rounded-2xl max-h-52 min-h-48 w-full sm:max-w-60 sm:min-w-72 cursor-pointer`}
+				} rounded-2xl w-full max-w-60 min-w-72 cursor-pointer`}
 			onClick={() => {
 				stepChangefn?.(itemId);
 			}}
