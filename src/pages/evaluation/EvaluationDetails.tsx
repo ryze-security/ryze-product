@@ -104,7 +104,7 @@ function EvaluationDetails() {
 				.DomainResponseList) {
 				map[domain.domainId] = {
 					...domain,
-					Description: domain.Description.split(" controls")[0]
+					Description: domain.Description
 				};
 			}
 			setDomainDataMap(map);
@@ -284,6 +284,7 @@ function EvaluationDetails() {
 					<NavHeader
 						data={dynamicSteps.map((step) => ({
 							...step,
+							label: `${step.label.split(" controls")[0]}`,
 							icon: <DynamicIcons name={step.iconName} />,
 						}))}
 						stepChangefn={goToStep}
