@@ -535,7 +535,7 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 							<span className="text-6xl font-semibold">
 								{Math.round(domainData.Response.Score * 100).toString()}%.
 							</span>
-							<span className="text-4xl font-light">
+							<span className="text-4xl font-thin">
 								Alignment with organizational controls.
 							</span>
 						</div>
