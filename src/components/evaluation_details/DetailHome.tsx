@@ -596,7 +596,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 							</div>
 
 
-							<div className="text-6xl font-bold mb-6 ">
+							<div className="text-5xl sm:text-7xl font-bold mb-6 ">
 								{evalMetadata?.company_display_name}
 							</div>
 
@@ -729,12 +729,12 @@ const DetailHome = forwardRef((props: Props, ref) => {
 
 							<div className="flex justify-between">
 								<div className="flex sm:max-w-[85%] flex-col w-full h-fit gap-5">
-									<div className="flex justify-between text-5xl font-extralight  tracking-wide">
+									<div className="flex justify-between text-5xl font-light  tracking-wide">
 										<span className="text-end">{selectedRow.serial}</span>
 									</div>
 
 									<div className="flex flex-col gap-4">
-										<div className="text-2xl sm:text-4xl font-extralight text-white tracking-wide">
+										<div className="text-2xl sm:text-4xl font-light text-white tracking-wide">
 											{selectedRow.Description}
 										</div>
 										<div>
@@ -743,7 +743,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 											</p>
 										</div>
 
-										<div className="flex text-5xl pb-4">
+										<div className="flex text-5xl font-medium pb-4">
 											<span>{Math.round(selectedRow.Response.Score)}%.</span>
 											<span>Compliance.</span>
 										</div>
