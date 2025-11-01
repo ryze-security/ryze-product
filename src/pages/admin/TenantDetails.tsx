@@ -126,7 +126,6 @@ const TenantDetails = () => {
 
 
 
-
     const columns: ColumnDef<Evaluation>[] = [
         {
             accessorKey: "tg_company_display_name",
@@ -698,7 +697,7 @@ const TenantDetails = () => {
                     data={evaluations.evaluations}
                     filterKey="tg_company_display_name"
                     rowIdKey={["tg_company_id", "eval_id"]}
-                    rowLinkPrefix="/evaluation/"
+                    rowLinkPrefix={`${location.pathname}/`}
                     isLoading={isEvalLoading}
                     isRowDisabled={(row) => row.processing_status !== "completed"}
 

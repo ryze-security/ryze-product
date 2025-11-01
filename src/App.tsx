@@ -48,6 +48,7 @@ const App = () => {
 							<Route path="/home" element={<Index />} />
 							<Route path="/catchmeifyoucan-demo-admin-route" element={<AdminDashboard />} />
 							<Route path="/catchmeifyoucan-demo-admin-route/tenant/:tenantId" element={<TenantDetails />} />
+							<Route path="/catchmeifyoucan-demo-admin-route/tenant/:tenantId/:companyId/:evaluationId" element={<EvaluationDetails />} />
 
 							<Route
 								path="/evaluation"
