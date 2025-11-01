@@ -531,12 +531,12 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 					</div>
 				) : (
 					<>
-						<div className="font-bold flex flex-col max-w-fit gap-2">
-							<span className="text-6xl">
+						<div className="flex flex-col max-w-fit gap-2">
+							<span className="text-6xl font-semibold">
 								{Math.round(domainData.Response.Score * 100).toString()}%.
 							</span>
-							<span className="text-4xl font-extralight">
-								Overall compliance score.
+							<span className="text-4xl font-light">
+								Alignment with organizational controls.
 							</span>
 						</div>
 					</>
