@@ -42,6 +42,7 @@ interface DataTableProps<TData, TValue> {
 	setExternalSorting?: (value: SortingState) => void;
 	externalPagination?: PaginationState;
 	setExternalPagination?: (value: PaginationState) => void;
+	externalSearch?: boolean;
 }
 
 export function ProgressBarDataTable<TData, TValue>({
@@ -56,6 +57,7 @@ export function ProgressBarDataTable<TData, TValue>({
 	externalFilter,
 	setExternalFilter,
 	externalSorting,
+	externalSearch,
 	setExternalSorting,
 	externalPagination,
 	setExternalPagination,
@@ -67,7 +69,7 @@ export function ProgressBarDataTable<TData, TValue>({
 	const isExternalPagination =
 		externalPagination !== undefined && setExternalPagination !== undefined;
 
-	const [internaPagination, setInternalPagination] =
+	const [internalPagination, setInternalPagination] =
 		React.useState<PaginationState>({
 			pageIndex: 0,
 			pageSize: 10,
@@ -81,7 +83,7 @@ export function ProgressBarDataTable<TData, TValue>({
 	const sorting = isExternalSorting ? externalSorting : internalSorting;
 	const pagination = isExternalPagination
 		? externalPagination
-		: internaPagination;
+		: internalPagination;
 
 	const setFilter = isExternalFilter ? setExternalFilter! : setInternalFilter;
 	const setSorting = isExternalSorting
@@ -134,12 +136,15 @@ export function ProgressBarDataTable<TData, TValue>({
 
 	return (
 		<div className="space-y-4 ldg:px-4 max-w-7xl w-full">
-			<Input
-				placeholder="Search..."
-				value={filter}
-				onChange={(e) => setFilter(e.target.value)}
-				className="max-w-sm text-xl bg-[#242424]"
-			/>
+			{/* Show search only if external filter is not provided - (externalSearch means search input is handled from parent) */}
+			{isExternalFilter && externalSearch ? null :
+				<Input
+					placeholder="Search..."
+					value={filter}
+					onChange={(e) => setFilter(e.target.value)}
+					className="max-w-sm text-xl bg-[#242424]"
+				/>
+			}
 			<div className="rounded-md border">
 				<Table className="rounded-md bg-zinc-900">
 					<TableHeader>
@@ -152,13 +157,12 @@ export function ProgressBarDataTable<TData, TValue>({
 									<TableHead
 										key={header.id}
 										className={`text-white text-base bg-[#1a1a1a]
-											${
-												index === 0
-													? "rounded-tl-md"
-													: index ===
-													  headerGroup.headers
-															.length -
-															1
+											${index === 0
+												? "rounded-tl-md"
+												: index ===
+													headerGroup.headers
+														.length -
+													1
 													? "rounded-tr-md"
 													: ""
 											}
@@ -196,13 +200,12 @@ export function ProgressBarDataTable<TData, TValue>({
 										{row.getVisibleCells().map((cell) => (
 											<TableCell key={cell.id}>
 												{typeof cell.getValue() ===
-												"boolean" ? (
+													"boolean" ? (
 													<div
-														className={`flex items-center justify-center text-center whitespace-nowrap min-w-fit max-w-40 py-2 px-5 rounded-full text-white ${
-															cell.getValue()
-																? "bg-green-ryzr"
-																: "bg-red-ryzr"
-														}`}
+														className={`flex items-center justify-center text-center whitespace-nowrap min-w-fit max-w-40 py-2 px-5 rounded-full text-white ${cell.getValue()
+															? "bg-green-ryzr"
+															: "bg-red-ryzr"
+															}`}
 													>
 														<div className="truncate">
 															{cell.getValue()
