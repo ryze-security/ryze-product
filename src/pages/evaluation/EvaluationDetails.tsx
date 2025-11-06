@@ -21,8 +21,10 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadEvaluationData } from "@/store/slices/evaluationSlice";
 import {
 	ArrowDown,
+	CornerUpRight,
 } from "lucide-react";
 import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Button } from "react-day-picker";
 import { useNavigate, useParams } from "react-router-dom";
 
 const Home = React.lazy(
@@ -68,13 +70,7 @@ function EvaluationDetails() {
 			})
 		);
 
-		const reportStep = {
-			id: domainSteps.length + 1,
-			label: "Reports",
-			iconName: "Reports",
-		};
-
-		return [homeStep, ...domainSteps, reportStep];
+		return [homeStep, ...domainSteps];
 	}, [domainDataMap]);
 
 	const goToStep = (stepId: number) => {
@@ -291,41 +287,23 @@ function EvaluationDetails() {
 						currentStep={currentStep}
 					/>
 				</div>
-				{/* <div className="flex-1 min-w-0 md:hidden">
-					<DropdownMenu>
-						<DropdownMenuTrigger
-							className="bg-black border border-white hover:bg-zinc-700 rounded-full transition-colors text-white font-medium px-4 py-3 flex items-center gap-2 w-full justify-center text-sm md:text-base"
-						>
-							<DynamicIcons name={dynamicSteps[currentStep].iconName} className="w-4 h-4" />
-							{currentStep < dynamicSteps.length ? dynamicSteps[currentStep].label : 'Menu'}
-							<ArrowDown className="w-4 h-4" />
-						</DropdownMenuTrigger>
-						<DropdownMenuContent className="gap-1 flex flex-col bg-black border border-white rounded-lg p-1">
-							{dynamicSteps.map((step) => (
-								<DropdownMenuItem
-									key={step.id}
-									onClick={() => goToStep(step.id)}
-									className={`cursor-pointer rounded-md px-3 py-2 text-sm md:text-base ${currentStep === step.id
-										? 'bg-zinc-700 text-white'
-										: 'text-white hover:bg-zinc-800'
-										}`}
-								>
-									<div className="flex items-center gap-2 w-full">
-										<DynamicIcons name={step.iconName} className="w-4 h-4" />
-										{step.label}
-									</div>
-								</DropdownMenuItem>
-							))}
-						</DropdownMenuContent>
-					</DropdownMenu>
-				</div> */}
 
-				<div className="flex-shrink-0 2xl:mr-16 ">
+				<button className="flex gap-x-0.5 flex-shrink-0 2xl:mr-16 ">
+
+					<button
+						onClick={() => goToStep(dynamicSteps.length)}
+						className="px-4 py-2 bg-sky-500 hover:bg-sky-600 rounded-l-2xl  transition-colors text-white font-bold"
+					>
+						Reports
+					</button>
+
+
 					<DropdownMenu>
 						<DropdownMenuTrigger
-							className={` bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold px-4 py-2 flex items-center gap-2`}
+							title="Reports options"
+							className={`p-2 bg-sky-500 hover:bg-sky-600 rounded-r-2xl transition-colors text-white font-bold`}
 						>
-							Export <ArrowDown className="w-4 h-4" />
+							<CornerUpRight size={20} />
 						</DropdownMenuTrigger>
 						<DropdownMenuContent className="gap-1 flex flex-col">
 							<DropdownMenuItem
@@ -353,7 +331,7 @@ function EvaluationDetails() {
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
-				</div>
+				</button>
 			</section>
 
 			<section className="flex items-center w-full bg-black text-white mt-2 sm:pt-10 px-0 lg:px-16">
@@ -397,7 +375,7 @@ function EvaluationDetails() {
 										)
 								)}
 
-								{currentStep === dynamicSteps.length - 1 && (
+								{currentStep === dynamicSteps.length && (
 									<ReportsTable
 										tenantId={data.data.TenantId}
 										companyId={data.data.CompanyId}
