@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { RoundSpinner } from "./ui/spinner";
 import { Progress } from "./ui/progress";
 import { cn } from "@/lib/utils";
+import { Download } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -82,7 +83,7 @@ export function GenericDataTable<TData, TValue>({
 	});
 
 	const handleRowClick = (row: TData) => {
-		if(disabledRow) return;
+		if (disabledRow) return;
 		if (rowIdKey && rowLinkPrefix !== "#") {
 			const ids = rowIdKey
 				.map((key) => row[key])
@@ -117,15 +118,9 @@ export function GenericDataTable<TData, TValue>({
 									<TableHead
 										key={header.id}
 										className={`text-white text-base
-											${
-												index === 0
-													? "rounded-tl-md"
-													: index ===
-													  headerGroup.headers
-															.length -
-															1
-													? "rounded-tr-md"
-													: ""
+											${index === 0
+												? "rounded-tl-md"
+												: ""
 											}
 										`}
 									>
@@ -135,6 +130,9 @@ export function GenericDataTable<TData, TValue>({
 										)}
 									</TableHead>
 								))}
+								<TableHead className="w-10 rounded-tr-md">
+									<span className="sr-only">Actions</span>
+								</TableHead>
 							</TableRow>
 						))}
 					</TableHeader>
@@ -143,15 +141,12 @@ export function GenericDataTable<TData, TValue>({
 							table.getRowModel().rows.map((row) => (
 								<TableRow
 									key={row.id}
-									onClick={() => handleRowClick(row.original)}
-									className={cn("hover:bg-zinc-800 transition text-white/70", disabledRow && "cursor-not-allowed hover:bg-zinc-900",
-										clickableRow && !disabledRow && "cursor-pointer"
-									)}
+									className={cn("hover:bg-zinc-800 transition text-white/70", disabledRow && "cursor-not-allowed hover:bg-zinc-900")}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>
 											{typeof cell.getValue() ===
-											"string" ? (
+												"string" ? (
 												// Truncate long text to 50 words
 												<div className="text-wrap">
 													{(cell.getValue() as string)
@@ -172,6 +167,18 @@ export function GenericDataTable<TData, TValue>({
 											)}
 										</TableCell>
 									))}
+									<TableCell className="w-10">
+										<button
+											onClick={(e) => {
+												e.stopPropagation();
+												handleRowClick(row.original);
+											}}
+											className="text-sky-400 hover:text-sky-300 transition-colors"
+											title="Download"
+										>
+											<Download size={18} />
+										</button>
+									</TableCell>
 								</TableRow>
 							))
 						) : (
@@ -222,6 +229,6 @@ export function GenericDataTable<TData, TValue>({
 					</div>
 				)}
 			</div>
-		</div>
+		</div >
 	);
 }
