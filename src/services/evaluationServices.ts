@@ -5,6 +5,7 @@ import {
 	deleteEvaluationResponseDTO,
 	evaluationStatusDTO,
 	evalutaionDetailDTO,
+	getControlsResponseDTO,
 	listEvaluationsDTO,
 	startEvaluationResponseDTO,
 	updateQuestionResponseDTO,
@@ -64,6 +65,25 @@ export class EvaluationService {
 			throw errorInfo;
 		}
 	}
+
+	async getControls(tenant_id: string, collection_id: string) {
+		try {
+			const response = await axiosInstance.get<getControlsResponseDTO>(
+				`/api/v1/tenants/${tenant_id}/collections/${collection_id}/controls`
+			);
+			if (response.status !== 200) {
+				throw response;
+			}
+			return response.data;
+		} catch (error) {
+			const errorInfo = handleAxiosError(error);
+			console.error("Error fetching controls:", errorInfo.message);
+
+			//rethrowing for conditional rendering
+			throw errorInfo;
+		}
+	}
+
 
 	async createEvaluation(
 		evaluation: createEvaluationDTO

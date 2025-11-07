@@ -11,6 +11,16 @@ export interface createEvaluationResponseDTO {
 	eval_id: string;
 }
 
+export interface Control {
+	control_id: string;
+	control_display_name: string
+}
+export interface getControlsResponseDTO {
+	collection_id: string;
+	controls: Control[],
+	total_count: number
+}
+
 export interface startEvaluationResponseDTO {
 	message: string;
 }
