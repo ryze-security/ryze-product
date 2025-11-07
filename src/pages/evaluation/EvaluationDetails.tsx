@@ -288,22 +288,33 @@ function EvaluationDetails() {
 					/>
 				</div>
 
-				<button className="flex gap-x-0.5 flex-shrink-0 2xl:mr-16 ">
+				<div className="flex gap-x-0.5 flex-shrink-0 2xl:mr-16 ">
 
 					<button
 						onClick={() => goToStep(dynamicSteps.length)}
-						className="px-4 py-2 bg-sky-500 hover:bg-sky-600 rounded-l-2xl  transition-colors text-white font-bold"
+						className={`z-10 relative px-4 py-2 bg-black hover:bg-gray-950 border rounded-l-2xl  transition-colors text-white font-bold
+							${dynamicSteps.length === currentStep ? "border-white" : "border-gray-200"}`}
 					>
 						Reports
+
+						{dynamicSteps.length === currentStep &&
+							<div className="absolute inset-1 bg-zinc-700/30 z-0 rounded-l-full"></div>
+						}
 					</button>
 
 
 					<DropdownMenu>
 						<DropdownMenuTrigger
 							title="Reports options"
-							className={`p-2 bg-sky-500 hover:bg-sky-600 rounded-r-2xl transition-colors text-white font-bold`}
+							className={`p-2 bg-black hover:bg-gray-950 border border-white rounded-r-2xl transition-colors text-white font-bold`}
 						>
-							<CornerUpRight size={20} />
+							{/* <CornerUpRight size={20} /> */}
+							<svg fill="#fff" width="20px" height="20px" viewBox="0 0 24 24" id="a81f7db7-ecb4-4173-a705-7ea8ba7dfa59" data-name="Livello 1" xmlns="http://www.w3.org/2000/svg">
+								<g id="a9a64287-4609-4f10-9c12-f9a9de2c7e18" data-name="share">
+									<path d="M13.52,7.17V2.91a0.63,0.63,0,0,1,1-.51l9.22,7.46a0.61,0.61,0,0,1,0,1L14.5,18.34a0.63,0.63,0,0,1-1-.51V13.88c-5.76,0-10.65,2.57-12.44,7a11.29,11.29,0,0,1-.16-1.82C0.91,12.5,6.55,7.17,13.52,7.17Z" />
+								</g>
+
+							</svg>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent className="gap-1 flex flex-col">
 							<DropdownMenuItem
@@ -331,7 +342,7 @@ function EvaluationDetails() {
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
-				</button>
+				</div>
 			</section>
 
 			<section className="flex items-center w-full bg-black text-white mt-2 sm:pt-10 px-0 lg:px-16">
