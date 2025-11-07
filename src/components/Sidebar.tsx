@@ -361,7 +361,7 @@ function MobileNavbar() {
 																	break;
 																case "report_generation_completed":
 																	navigate(
-																		`/evaluation/${n.data.company_id}/${n.data.eval_id}`
+																		`/evaluation/${n.data.company_id}/${n.data.eval_id}?tab=reports`
 																	);
 																	break;
 																default:
