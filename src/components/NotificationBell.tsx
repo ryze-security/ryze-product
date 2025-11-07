@@ -129,7 +129,7 @@ function NotificationBell() {
 										{n.data?.completed_at && (
 											<p className="text-zinc-500 text-[10px] mt-1">
 												{(() => {
-													const date = new Date(n.data.completed_at);
+													const date = new Date(n.data.completed_at + 'Z');
 													const day = String(date.getDate()).padStart(2, "0");
 													const month = date.toLocaleString("en-GB", { month: "short" });
 													const year = date.getFullYear();
