@@ -5,12 +5,12 @@ export const createRichTextFromMarkdown = (text) => {
         color: { argb: "FF000000" },
     };
     
-    if (typeof text !== 'string' || !text.includes('*')) {
+    if (typeof text !== 'string' || !text.includes('**')) {
         return [{ text: text, font: baseFont }];  // Return as a simple text object if no markdown
     }
 
     // This regex splits the string by the ** markers, keeping the bolded part.
-    const parts = text.split(/\*(.*?)\*/g);
+    const parts = text.split(/\*\*(.*?)\*\*/g);
     
 
     return parts.map((part, index) => {
