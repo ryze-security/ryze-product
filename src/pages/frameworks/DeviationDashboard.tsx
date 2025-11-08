@@ -1,7 +1,8 @@
 import { GenericDataTable } from "@/components/GenericDataTable";
-import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { SearchIcon, PlusCircleIcon } from "lucide-react";
 import {
 	frequentDeviation,
 	frequentDeviationsDTO,
@@ -117,15 +118,27 @@ function DeviationDashboard() {
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
-			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
-				<PageHeader
-					heading="Frequent deviations"
-					subtitle="Detect the most frequent or recurring deviations to address underlying risks or process inefficiencies."
-					isClickable={false}
-				/>
+			<section className="flex w-full bg-black text-white pb-0 pt-16 lg:pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
+				<div className="max-w-7xl flex flex-col sm:flex-row justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10">
+					<div className="flex flex-col space-y-4 p-6">
+						<h1 className="text-6xl font-bold">Frequent deviations</h1>
+						<h3>Detect the most frequent or recurring deviations to address underlying risks or process inefficiencies.</h3>
+
+						{/* search input */}
+						{/* <div className="relative pt-4">
+							<Input
+								placeholder={"Search deviations..."}
+								// value={filter}
+								// onChange={(e) => setFilter(e.target.value)}
+								className="max-w-sm text-xl bg-white pl-10 text-black selection:text-black"
+							/>
+							<SearchIcon className="absolute left-3 top-9 transform -translate-y-1/2 text-gray-500 size-5" />
+						</div> */}
+					</div>
+				</div>
 			</section>
 
-			<section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
+			<section className="flex items-center w-full bg-black text-white mt-8 px-3 sm:px-6 md:px-4 lg:px-16">
 				<GenericDataTable
 					columns={columns}
 					data={deviations}

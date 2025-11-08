@@ -124,15 +124,16 @@ function VulnerableAuditeeDashboard() {
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
-			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
-				<PageHeader
-					heading="Vulnerable auditees"
-					subtitle="Identify auditees with the highest number of deviations across all assessments."
-					isClickable={false}
-				/>
+			<section className="flex w-full bg-black text-white pb-0 pt-16 lg:pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
+				<div className="max-w-7xl flex flex-col sm:flex-row justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10">
+					<div className="flex flex-col space-y-4 p-6">
+						<h1 className="text-6xl font-bold">Vulnerable auditees</h1>
+						<h3>Identify auditees with the highest number of deviations across all assessments.</h3>
+					</div>
+				</div>
 			</section>
 
-			<section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
+			<section className="flex items-center w-full bg-black text-white mt-8 px-3 sm:px-6 md:px-4 lg:px-16">
 				<GenericDataTable
 					columns={columns}
 					data={updatedCompanyData}
