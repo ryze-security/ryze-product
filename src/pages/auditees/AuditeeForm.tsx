@@ -147,7 +147,7 @@ function AuditeeForm() {
 			tenant_id: userData.tenant_id,
 			company_name: data.auditeeName,
 			company_type: data.auditeeData[0],
-			created_by: userData.first_name + " "+ userData.last_name,
+			created_by: userData.first_name + " " + userData.last_name,
 			data_type: data.auditeeData,
 			service_type: data.auditeeService,
 		};
@@ -192,9 +192,8 @@ function AuditeeForm() {
 		} catch (error) {
 			toast({
 				title: `Error ${isEditMode ? "updating" : "creating"} auditee`,
-				description: `A fatal error occured while ${
-					isEditMode ? "updating" : "creating"
-				} auditee. Please try again later!`,
+				description: `A fatal error occured while ${isEditMode ? "updating" : "creating"
+					} auditee. Please try again later!`,
 				variant: "destructive",
 			});
 		} finally {
@@ -237,8 +236,8 @@ function AuditeeForm() {
 					</div>
 				) : (
 					// Editable heading
-					<div className="max-w-7xl w-full flex justify-between px-4">
-						<div className="flex gap-2">
+					<div className="max-w-7xl flex justify-between px-4 rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 !pb-12">
+						<div className="flex gap-6">
 							<span
 								ref={spanRef}
 								className="invisible absolute whitespace-pre text-4xl font-semibold tracking-wide w-fit"
@@ -266,11 +265,11 @@ function AuditeeForm() {
 							<Button
 								variant="outline"
 								onClick={handleEditClick}
-								className="border-none bg-black"
+								className="border-none rounded-full bg-white hover:bg-gray-200"
 							>
 								{isHeadingEditing ? (
 									<Lock
-										className="text-violet-ryzr/80 hover:text-violet-ryzr"
+										className="text-black/80 hover:text-black"
 										style={{
 											width: "28px",
 											height: "28px",
@@ -278,7 +277,7 @@ function AuditeeForm() {
 									/>
 								) : (
 									<Edit
-										className="text-violet-ryzr/80 hover:text-violet-ryzr"
+										className="text-black/80 hover:text-black"
 										style={{
 											width: "28px",
 											height: "28px",
@@ -291,7 +290,7 @@ function AuditeeForm() {
 				)}
 			</section>
 
-			<section className="flex justify-between items-center w-full bg-black text-white pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
+			<section className="flex justify-between items-center w-full bg-black text-white px-3 sm:px-6 md:px-4 lg:px-16">
 				<div className="max-w-7xl w-full p-0 sm:p-6 pb-10 mt-1">
 					<FormProvider {...methods}>
 						<form className="flex flex-col w-full">
@@ -311,7 +310,7 @@ function AuditeeForm() {
 											"bg-zinc-900",
 											methods.formState.errors
 												.auditeeName &&
-												"border-rose-500 focus-visible:ring-rose-500"
+											"border-rose-500 focus-visible:ring-rose-500"
 										)}
 										{...methods.register("auditeeName", {
 											required:
@@ -378,7 +377,7 @@ function AuditeeForm() {
 								/>
 							</div>
 							{/* Submit Button */}
-							<div className="absolute bottom-0 w-fit bg-black px-0 p-6 flex justify-start gap-2">
+							<div className="mt-4 w-fit bg-black px-0 p-6 flex justify-start gap-2">
 								<AlertDialogBox
 									trigger={
 										<Button
@@ -393,10 +392,9 @@ function AuditeeForm() {
 											{isLoading || isFetchingData ? (
 												<RoundSpinner />
 											) : (
-												`${
-													isEditMode
-														? "Update"
-														: "Create"
+												`${isEditMode
+													? "Update"
+													: "Create"
 												}`
 											)}
 										</Button>
