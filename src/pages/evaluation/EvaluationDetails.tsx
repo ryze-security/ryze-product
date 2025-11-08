@@ -40,7 +40,7 @@ const ReportsTable = React.lazy(
 );
 
 function EvaluationDetails() {
-	const { companyId, evaluationId } = useParams();
+	const { tenantId, companyId, evaluationId } = useParams(); // tenantId is passed from the URL (when accessing the component from /admin page)
 	const [searchParams] = useSearchParams();
 	const defaultTab = searchParams.get("tab") || "home";
 	const dispatch = useAppDispatch();
@@ -133,7 +133,7 @@ function EvaluationDetails() {
 				) {
 					await dispatch(
 						loadEvaluationData({
-							tenant_id: userData.tenant_id,
+							tenant_id: tenantId || userData.tenant_id, // tenantId is passed from the URL (when accessing the component from /admin page)
 							companyId: companyId ?? "",
 							evaluationId: evaluationId ?? "",
 						})
@@ -211,7 +211,7 @@ function EvaluationDetails() {
 
 			await dispatch(
 				loadEvaluationData({
-					tenant_id: userData.tenant_id,
+					tenant_id: tenantId || userData.tenant_id,
 					companyId: companyId ?? "",
 					evaluationId: evaluationId ?? "",
 				})
@@ -249,7 +249,7 @@ function EvaluationDetails() {
 			company_id: data.data.CompanyId,
 			evaluation_id: data.data.EvaluationId,
 			report_type: "Observations",
-			created_by: `${userData.first_name} ${userData.last_name}`,
+			created_by: tenantId ? data.data.UserId : `${userData.first_name} ${userData.last_name}`,
 		};
 
 		try {
