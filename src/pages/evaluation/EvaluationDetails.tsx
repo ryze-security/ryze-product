@@ -26,6 +26,7 @@ import {
 import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "react-day-picker";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Home = React.lazy(
 	() => import("@/components/evaluation_details/DetailHome")
@@ -309,60 +310,80 @@ function EvaluationDetails() {
 					/>
 				</div>
 
-				<div className="flex gap-x-0.5 flex-shrink-0 2xl:mr-16 ">
-
-					<button
-						onClick={() => goToStep(dynamicSteps.length)}
-						className={`z-10 relative px-4 py-2 bg-black hover:bg-gray-950 border rounded-l-2xl  transition-colors text-white font-bold
-							${dynamicSteps.length === currentStep ? "border-white" : "border-gray-200"}`}
-					>
-						Reports
-
-						{dynamicSteps.length === currentStep &&
-							<div className="absolute inset-1 bg-zinc-700/30 z-0 rounded-l-full"></div>
-						}
-					</button>
-
-
-					<DropdownMenu>
-						<DropdownMenuTrigger
-							title="Reports options"
-							className={`p-2 bg-black hover:bg-gray-950 border border-white rounded-r-2xl transition-colors text-white font-bold`}
+				<div className="relative group flex-shrink-0 2xl:mr-16">
+					<div className="flex items-center gap-0">
+						<button
+							onClick={() => goToStep(dynamicSteps.length)}
+							className={`relative z-10 flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 md:px-6 md:py-3 md:text-base ${dynamicSteps.length === currentStep
+								? 'bg-zinc-700 opacity-100'
+								: 'opacity-70 hover:opacity-100'
+								} rounded-full border border-white/50 hover:border-white`}
 						>
-							{/* <CornerUpRight size={20} /> */}
-							<svg fill="#fff" width="20px" height="20px" viewBox="0 0 24 24" id="a81f7db7-ecb4-4173-a705-7ea8ba7dfa59" data-name="Livello 1" xmlns="http://www.w3.org/2000/svg">
-								<g id="a9a64287-4609-4f10-9c12-f9a9de2c7e18" data-name="share">
-									<path d="M13.52,7.17V2.91a0.63,0.63,0,0,1,1-.51l9.22,7.46a0.61,0.61,0,0,1,0,1L14.5,18.34a0.63,0.63,0,0,1-1-.51V13.88c-5.76,0-10.65,2.57-12.44,7a11.29,11.29,0,0,1-.16-1.82C0.91,12.5,6.55,7.17,13.52,7.17Z" />
-								</g>
-
-							</svg>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent className="gap-1 flex flex-col">
-							<DropdownMenuItem
-								onClick={generateExcelReport}
-								disabled={isReportGenerating}
-							>
-								Gap analysis report(.xlsx)
-							</DropdownMenuItem>
-							<DropdownMenuItem className="text-gray-light-ryzr cursor-not-allowed">
-								<ComingSoonBorder
-									variant="inline"
-									className="w-full"
+							<span>Reports</span>
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<button
+										className="flex items-center justify-center"
+										onClick={(e) => e.stopPropagation()}
+									>
+										<svg
+											className="w-4 h-4"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+											xmlns="http://www.w3.org/2000/svg"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth={2}
+												d="M19 9l-7 7-7-7"
+											/>
+										</svg>
+									</button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent
+									className="gap-1 flex flex-col border border-white/20 bg-black"
+									align="end"
+									onClick={(e) => e.stopPropagation()}
 								>
-									Exec. summary(.pptx)
-								</ComingSoonBorder>
-							</DropdownMenuItem>
-
-							<DropdownMenuItem className="text-gray-light-ryzr cursor-not-allowed">
-								<ComingSoonBorder
-									variant="inline"
-									className="w-full"
-								>
-									Policy statements(.docx)
-								</ComingSoonBorder>
-							</DropdownMenuItem>
-						</DropdownMenuContent>
-					</DropdownMenu>
+									<DropdownMenuItem
+										onClick={(e) => {
+											e.stopPropagation();
+											generateExcelReport();
+										}}
+										disabled={isReportGenerating}
+										className="cursor-pointer hover:bg-zinc-800 focus:bg-zinc-800"
+									>
+										Gap analysis report(.xlsx)
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										className="text-gray-light-ryzr cursor-not-allowed"
+										onClick={(e) => e.stopPropagation()}
+									>
+										<ComingSoonBorder variant="inline" className="w-full">
+											Exec. summary(.pptx)
+										</ComingSoonBorder>
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										className="text-gray-light-ryzr cursor-not-allowed"
+										onClick={(e) => e.stopPropagation()}
+									>
+										<ComingSoonBorder variant="inline" className="w-full">
+											Policy statements(.docx)
+										</ComingSoonBorder>
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+						</button>
+					</div>
+					{dynamicSteps.length === currentStep && (
+						<motion.div
+							className="absolute inset-0 z-0 rounded-full bg-zinc-700/30"
+							layoutId="activeTab"
+							transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+						/>
+					)}
 				</div>
 			</section>
 
