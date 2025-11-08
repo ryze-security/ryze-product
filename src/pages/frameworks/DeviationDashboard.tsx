@@ -16,6 +16,7 @@ import React, { useEffect, useState } from "react";
 function DeviationDashboard() {
 	const userData = useAppSelector((state) => state.appUser);
 	const { toast } = useToast();
+	const [filter, setFilter] = React.useState("");
 	const [deviations, setDeviations] = useState<frequentDeviation[]>(
 		[] as frequentDeviation[]
 	);
@@ -125,15 +126,15 @@ function DeviationDashboard() {
 						<h3>Detect the most frequent or recurring deviations to address underlying risks or process inefficiencies.</h3>
 
 						{/* search input */}
-						{/* <div className="relative pt-4">
+						<div className="relative pt-4">
 							<Input
 								placeholder={"Search deviations..."}
-								// value={filter}
-								// onChange={(e) => setFilter(e.target.value)}
+								value={filter}
+								onChange={(e) => setFilter(e.target.value)}
 								className="max-w-sm text-xl bg-white pl-10 text-black selection:text-black"
 							/>
 							<SearchIcon className="absolute left-3 top-9 transform -translate-y-1/2 text-gray-500 size-5" />
-						</div> */}
+						</div>
 					</div>
 				</div>
 			</section>
@@ -145,6 +146,9 @@ function DeviationDashboard() {
 					filterKey={"control_display_name"}
 					isLoading={isDeviationsLoading}
 					clickableRow={false}
+					externalFilter={filter}
+					setExternalFilter={setFilter}
+					externalSearch={true}
 				/>
 			</section>
 		</div>
