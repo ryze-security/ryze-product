@@ -66,7 +66,7 @@ export class EvaluationService {
 		}
 	}
 
-	async getControls(tenant_id: string, collection_id: string) {
+	async getControls(tenant_id: string, collection_id: string): Promise<getControlsResponseDTO | any> {
 		try {
 			const response = await axiosInstance.get<getControlsResponseDTO>(
 				`/api/v1/tenants/${tenant_id}/collections/${collection_id}/controls`

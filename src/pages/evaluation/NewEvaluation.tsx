@@ -53,10 +53,11 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadCollections } from "@/store/slices/collectionSlice";
 import { loadCompanyData } from "@/store/slices/companySlice";
 import { ColumnDef } from "@tanstack/react-table";
-import { Check, ChevronsUpDown, PlusCircleIcon } from "lucide-react";
+import { Check, ChevronsUpDown, PlusCircleIcon, SearchIcon } from "lucide-react";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import ControlsSelection from "./ControlsSelection";
 
 interface AuditeeOption {
 	value: string;
@@ -198,8 +199,12 @@ const NewEvaluation = () => {
 				return { isValid, stepId: 0, validationPerformed: ["auditee", "selectedFrameworks"], fallbackMessage: "Please select an auditee and at least one framework." }
 			},
 			2: async () => {
-				const isValid = await methods.trigger("controls")
-				return { isValid, stepId: 1, validationPerformed: ["controls"], fallbackMessage: "Please select at least one control." }
+				let isValid = await methods.trigger("controls")
+				const controlsLength = await methods.getValues("controls").length;
+				if (controlsLength === 0) {
+					isValid = false;
+				}
+				return { isValid, stepId: 1, validationPerformed: ["controls"], fallbackMessage: "Please review the selected controls." }
 			},
 			3: async () => {
 				let isValid = await methods.trigger("documents")
@@ -756,7 +761,32 @@ const NewEvaluation = () => {
 
 							{currentStep === 1 && (
 								<div className="space-y-4 w-full min-h-[calc(100vh-410px)]">
-									CONTROLS LOGIC COMES HERE
+									<Controller
+										name="controls"
+										control={methods.control}
+										rules={{
+											validate: (
+												val: string[]
+											) => {
+												// return true
+												console.log(methods.getValues("controls"))
+												if (val.length === 0) {
+													return "Please select at least one control.";
+												}
+
+												return true;
+											},
+										}}
+										render={({ field }) => (
+											<>
+												<ControlsSelection
+													selectedFramework={methods.getValues("selectedFrameworks")}
+													formControl={methods.control}
+													name="controls"
+												/>
+											</>
+										)}
+									/>
 								</div>
 							)}
 
