@@ -177,17 +177,22 @@ function EvaluationDetails() {
 
 	//effect to set current step based on URL tab parameter
 	useEffect(() => {
-        if (dynamicSteps.length > 0) { // Ensure steps are calculated
-            
-            const matchedStep = dynamicSteps.find(step => 
-                step.label.toLowerCase() === defaultTab.toLowerCase()
-            );
+		if (dynamicSteps.length > 0) { // Ensure steps are calculated
 
-            if (matchedStep) {
-                setCurrentStep(matchedStep.id);
-            }
-        }
-    }, [dynamicSteps, defaultTab]);
+			const matchedStep = dynamicSteps.find(step =>
+				step.label.toLowerCase() === defaultTab.toLowerCase()
+			);
+
+			if (matchedStep) {
+				setCurrentStep(matchedStep.id);
+			} else {
+				// check if defaultTab is reports
+				if (defaultTab === "reports") {
+					setCurrentStep(dynamicSteps.length);
+				}
+			}
+		}
+	}, [dynamicSteps, defaultTab]);
 
 	const updateQuestion = async (
 		observation: string,
