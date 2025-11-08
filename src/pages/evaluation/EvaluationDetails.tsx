@@ -21,8 +21,10 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadEvaluationData } from "@/store/slices/evaluationSlice";
 import {
 	ArrowDown,
+	CornerUpRight,
 } from "lucide-react";
 import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Button } from "react-day-picker";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 const Home = React.lazy(
@@ -70,13 +72,7 @@ function EvaluationDetails() {
 			})
 		);
 
-		const reportStep = {
-			id: domainSteps.length + 1,
-			label: "Reports",
-			iconName: "Reports",
-		};
-
-		return [homeStep, ...domainSteps, reportStep];
+		return [homeStep, ...domainSteps];
 	}, [domainDataMap]);
 
 	const goToStep = (stepId: number) => {
@@ -181,17 +177,22 @@ function EvaluationDetails() {
 
 	//effect to set current step based on URL tab parameter
 	useEffect(() => {
-        if (dynamicSteps.length > 0) { // Ensure steps are calculated
-            
-            const matchedStep = dynamicSteps.find(step => 
-                step.label.toLowerCase() === defaultTab.toLowerCase()
-            );
+		if (dynamicSteps.length > 0) { // Ensure steps are calculated
 
-            if (matchedStep) {
-                setCurrentStep(matchedStep.id);
-            }
-        }
-    }, [dynamicSteps, defaultTab]);
+			const matchedStep = dynamicSteps.find(step =>
+				step.label.toLowerCase() === defaultTab.toLowerCase()
+			);
+
+			if (matchedStep) {
+				setCurrentStep(matchedStep.id);
+			} else {
+				// check if defaultTab is reports
+				if (defaultTab === "reports") {
+					setCurrentStep(dynamicSteps.length);
+				}
+			}
+		}
+	}, [dynamicSteps, defaultTab]);
 
 	const updateQuestion = async (
 		observation: string,
@@ -307,41 +308,34 @@ function EvaluationDetails() {
 						currentStep={currentStep}
 					/>
 				</div>
-				{/* <div className="flex-1 min-w-0 md:hidden">
-					<DropdownMenu>
-						<DropdownMenuTrigger
-							className="bg-black border border-white hover:bg-zinc-700 rounded-full transition-colors text-white font-medium px-4 py-3 flex items-center gap-2 w-full justify-center text-sm md:text-base"
-						>
-							<DynamicIcons name={dynamicSteps[currentStep].iconName} className="w-4 h-4" />
-							{currentStep < dynamicSteps.length ? dynamicSteps[currentStep].label : 'Menu'}
-							<ArrowDown className="w-4 h-4" />
-						</DropdownMenuTrigger>
-						<DropdownMenuContent className="gap-1 flex flex-col bg-black border border-white rounded-lg p-1">
-							{dynamicSteps.map((step) => (
-								<DropdownMenuItem
-									key={step.id}
-									onClick={() => goToStep(step.id)}
-									className={`cursor-pointer rounded-md px-3 py-2 text-sm md:text-base ${currentStep === step.id
-										? 'bg-zinc-700 text-white'
-										: 'text-white hover:bg-zinc-800'
-										}`}
-								>
-									<div className="flex items-center gap-2 w-full">
-										<DynamicIcons name={step.iconName} className="w-4 h-4" />
-										{step.label}
-									</div>
-								</DropdownMenuItem>
-							))}
-						</DropdownMenuContent>
-					</DropdownMenu>
-				</div> */}
 
-				<div className="flex-shrink-0 2xl:mr-16 ">
+				<div className="flex gap-x-0.5 flex-shrink-0 2xl:mr-16 ">
+
+					<button
+						onClick={() => goToStep(dynamicSteps.length)}
+						className={`z-10 relative px-4 py-2 bg-black hover:bg-gray-950 border rounded-l-2xl  transition-colors text-white font-bold
+							${dynamicSteps.length === currentStep ? "border-white" : "border-gray-200"}`}
+					>
+						Reports
+
+						{dynamicSteps.length === currentStep &&
+							<div className="absolute inset-1 bg-zinc-700/30 z-0 rounded-l-full"></div>
+						}
+					</button>
+
+
 					<DropdownMenu>
 						<DropdownMenuTrigger
-							className={` bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold px-4 py-2 flex items-center gap-2`}
+							title="Reports options"
+							className={`p-2 bg-black hover:bg-gray-950 border border-white rounded-r-2xl transition-colors text-white font-bold`}
 						>
-							Export <ArrowDown className="w-4 h-4" />
+							{/* <CornerUpRight size={20} /> */}
+							<svg fill="#fff" width="20px" height="20px" viewBox="0 0 24 24" id="a81f7db7-ecb4-4173-a705-7ea8ba7dfa59" data-name="Livello 1" xmlns="http://www.w3.org/2000/svg">
+								<g id="a9a64287-4609-4f10-9c12-f9a9de2c7e18" data-name="share">
+									<path d="M13.52,7.17V2.91a0.63,0.63,0,0,1,1-.51l9.22,7.46a0.61,0.61,0,0,1,0,1L14.5,18.34a0.63,0.63,0,0,1-1-.51V13.88c-5.76,0-10.65,2.57-12.44,7a11.29,11.29,0,0,1-.16-1.82C0.91,12.5,6.55,7.17,13.52,7.17Z" />
+								</g>
+
+							</svg>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent className="gap-1 flex flex-col">
 							<DropdownMenuItem
@@ -413,7 +407,7 @@ function EvaluationDetails() {
 										)
 								)}
 
-								{currentStep === dynamicSteps.length - 1 && (
+								{currentStep === dynamicSteps.length && (
 									<ReportsTable
 										tenantId={data.data.TenantId}
 										companyId={data.data.CompanyId}

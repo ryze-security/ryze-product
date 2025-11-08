@@ -743,7 +743,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 											</p>
 										</div>
 
-										<div className="flex text-5xl font-medium pb-4">
+										<div className="flex text-4xl font-bold pb-4">
 											<span>{Math.round(selectedRow.Response.Score)}%.</span>
 											<span>Compliance.</span>
 										</div>

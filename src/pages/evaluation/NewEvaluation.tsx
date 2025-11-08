@@ -53,10 +53,11 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadCollections } from "@/store/slices/collectionSlice";
 import { loadCompanyData } from "@/store/slices/companySlice";
 import { ColumnDef } from "@tanstack/react-table";
-import { Check, ChevronsUpDown, PlusCircleIcon } from "lucide-react";
+import { Check, ChevronsUpDown, PlusCircle, PlusCircleIcon, SearchIcon } from "lucide-react";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import ControlsSelection from "./ControlsSelection";
 
 interface AuditeeOption {
 	value: string;
@@ -71,33 +72,39 @@ const columns: ColumnDef<FilesUploadResponseDTO>[] = [
 ];
 
 const NewEvaluation = () => {
-	const steps = [
-		{ id: 0, label: "Framework" },
-		{ id: 1, label: "Documents" },
-		{ id: 2, label: "Evaluation" },
-	];
-
-	const auditees = useAppSelector(
-		(state) => state.company.data
-	) as CompanyListDto[];
-
+	const { toast } = useToast();
+	const userData = useAppSelector((state) => state.appUser);
 	const { collection, status, error } = useAppSelector(
 		(state) => state.collections
 	);
-
-	const userData = useAppSelector((state) => state.appUser);
-
+	const auditees = useAppSelector(
+		(state) => state.company.data
+	) as CompanyListDto[];
 	const dispatch = useAppDispatch();
-
 	const navigate = useNavigate();
+	const methods = useForm({
+		defaultValues: {
+			auditee: {} as AuditeeOption,
+			controls: [],
+			selectedFrameworks: [],
+			documents: [] as FilesUploadResponseDTO[],
+		},
+	});
+	const watchedAuditeeName = methods.watch("auditee");
 
-	const auditeeOptions = useMemo(() => {
-		return auditees.map((auditee) => ({
-			value: auditee.tg_company_id,
-			label: auditee.tg_company_display_name,
-		}));
-	}, [auditees]);
+	const frameworkForm = useForm({
+		defaultValues: {
+			framework: "",
+			details: "",
+		},
+	});
 
+	const steps = [
+		{ id: 0, label: "Framework" },
+		{ id: 1, label: "Controls" },
+		{ id: 2, label: "Documents" },
+		{ id: 3, label: "Evaluation" },
+	];
 	const frameworks = [
 		{ name: "NIS2", value: "nis2" },
 		{ name: "DORA", value: "dora" },
@@ -106,13 +113,24 @@ const NewEvaluation = () => {
 		{ name: "Internal", value: "internal" },
 	];
 
+	const auditeeOptions = useMemo(() => {
+		return auditees.map((auditee) => ({
+			value: auditee.tg_company_id,
+			label: auditee.tg_company_display_name,
+		}));
+	}, [auditees]);
+
+
+
 	const [currentStep, setCurrentStep] = useState(0);
 	const [openCombo, setOpenCombo] = useState(false);
 	const [isSubmitLoading, setIsSubmitLoading] = useState(false);
-
 	const [openDialog, setOpenDialog] = useState(false);
-
 	const [creditsAlert, setCreditsAlert] = useState(false);
+	const [frameworkFormSubmitLoading, setFrameworkFormSubmitLoading] = useState(false);
+
+	const [controlsFilter, setControlsFilter] = useState("");
+	const [isControlsLoading, setIsControlsLoading] = useState<boolean>(false);
 
 	const goNext = async (e: React.MouseEvent) => {
 		e.preventDefault();
@@ -135,6 +153,18 @@ const NewEvaluation = () => {
 		}
 
 		if (currentStep === 1) {
+			const result = await methods.trigger("controls");
+			if (!result) {
+				toast({
+					title: "Error",
+					description: methods.formState.errors.controls?.message,
+					variant: "destructive",
+				});
+				return;
+			}
+		}
+
+		if (currentStep === 2) {
 			const result = await methods.trigger("documents");
 			if (!result) {
 				toast({
@@ -155,81 +185,70 @@ const NewEvaluation = () => {
 
 	const goToStep = async (stepId: number) => {
 		if (isSubmitLoading) return;
-		if (currentStep === 0 && stepId > 1) {
-			const result = await methods.trigger([
-				"auditee",
-				"selectedFrameworks",
-			]);
-			const documentLength = methods.getValues("documents").length;
-			if (documentLength === 0) {
-				methods.setError("documents", {
-					type: "manual",
-					message: "Please select at least one document.",
-				});
-			}
-			if (!result || documentLength === 0) {
-				toast({
-					title: "Error",
-					description:
-						methods.formState.errors.auditee?.message ||
-						methods.formState.errors.selectedFrameworks?.message ||
-						methods.formState.errors.documents?.message,
-					variant: "destructive",
-				});
-				return;
-			}
-		} else if (currentStep === 0 && stepId > 0) {
-			const result = await methods.trigger([
-				"auditee",
-				"selectedFrameworks",
-			]);
-			if (!result) {
-				toast({
-					title: "Error",
-					description:
-						methods.formState.errors.auditee?.message ||
-						methods.formState.errors.selectedFrameworks?.message,
-					variant: "destructive",
-				});
-				return;
+		// Navigation Logic:
+		// - If user is navigating to a previous step, allow it without validation
+		// - If moving forward, validate all steps up to the target step
+		//   For example, moving to step 2 requires validation of step 1 first
+		// - If any validation fails:
+		//   1. Show error toast with specific validation message
+		//   2. Move user to the step where validation failed
+		//   3. Stop further navigation
+		const stepValidations = {
+			1: async () => {
+				const isValid = await methods.trigger([
+					"auditee",
+					"selectedFrameworks"
+				])
+				return { isValid, stepId: 0, validationPerformed: ["auditee", "selectedFrameworks"], fallbackMessage: "Please select an auditee and at least one framework." }
+			},
+			2: async () => {
+				let isValid = await methods.trigger("controls")
+				const controlsLength = await methods.getValues("controls").length;
+				if (controlsLength === 0) {
+					isValid = false;
+				}
+				return { isValid, stepId: 1, validationPerformed: ["controls"], fallbackMessage: "Please review the selected controls." }
+			},
+			3: async () => {
+				let isValid = await methods.trigger("documents")
+				const documentLength = await methods.getValues("documents").length;
+				if (documentLength === 0) {
+					isValid = false;
+				}
+				return { isValid, stepId: 2, validationPerformed: ["documents"], fallbackMessage: "Please select at least one file." }
 			}
 		}
 
-		if (currentStep === 1 && stepId > 1) {
-			const result = await methods.trigger("documents");
-			if (!result) {
+		// User can freely visit previous steps
+		if (stepId <= currentStep) {
+			setCurrentStep(stepId);
+			return;
+		}
+
+		// Validate each step up to the target step
+		// If any validation fails, the function will return early
+		// and the user will be moved to the step that failed validation
+		for (let i = 0; i < stepId; i++) {
+			const isValid = await stepValidations[i + 1]();
+			if (!isValid.isValid) {
 				toast({
 					title: "Error",
-					description: methods.formState.errors.documents?.message,
+					description: methods.formState.errors[isValid.validationPerformed[0]]?.message
+						|| methods.formState.errors[isValid.validationPerformed[1]]?.message
+						|| isValid.fallbackMessage,
 					variant: "destructive",
 				});
+				setCurrentStep(isValid.stepId);
 				return;
 			}
 		}
 		setCurrentStep(stepId);
 	};
 
-	const methods = useForm({
-		defaultValues: {
-			auditee: {} as AuditeeOption,
-			selectedFrameworks: [],
-			documents: [] as FilesUploadResponseDTO[],
-		},
-	});
-
-	const frameworkForm = useForm({
-		defaultValues: {
-			framework: "",
-			details: "",
-		},
-	});
-
-	const watchedAuditeeName = methods.watch("auditee");
-
-	const { toast } = useToast();
 
 	const submit = async (data: {
 		auditee: AuditeeOption;
+		controls: string[];
 		selectedFrameworks: { name: string; value: string }[];
 		documents: FilesUploadResponseDTO[];
 	}) => {
@@ -243,6 +262,7 @@ const NewEvaluation = () => {
 				created_by: userData.first_name + " " + userData.last_name,
 				model_used: "azure-gpt04-mini",
 				document_list: [...data.documents.map((doc) => doc.file_id)],
+				selected_controls: data.controls,
 			};
 			evaluationDatas.push(evaluationData);
 		});
@@ -293,8 +313,8 @@ const NewEvaluation = () => {
 	const onRunClick = async () => {
 		const documentLength = methods.getValues("documents").length;
 		const frameworkLength = methods.getValues("selectedFrameworks").length;
-		const isValid = documentLength > 0 && frameworkLength > 0;
-
+		const controlsLength = methods.getValues("controls").length;
+		const isValid = documentLength > 0 && frameworkLength > 0 && controlsLength > 0;
 		if (isValid) {
 			methods.handleSubmit(submit, onError)();
 		} else {
@@ -312,6 +332,7 @@ const NewEvaluation = () => {
 		if (watchedAuditeeName?.value) {
 			methods.setValue("documents", []);
 			methods.setValue("selectedFrameworks", []);
+			methods.setValue("controls", []);
 		}
 	}, [watchedAuditeeName]);
 
@@ -350,8 +371,7 @@ const NewEvaluation = () => {
 		}
 	}, [userData.tenant_id, currentStep]);
 
-	const [frameworkFormSubmitLoading, setFrameworkFormSubmitLoading] =
-		useState(false);
+
 
 	//request framework form submit action
 	const frameworkFormSubmit = (data: any) => {
@@ -416,92 +436,128 @@ const NewEvaluation = () => {
 	};
 
 	return (
-		<div className="min-h-screen font-roboto bg-black text-white p-6">
+		<div className="min-h-screen font-roboto bg-black text-white p-3 pt-10 sm:p-6">
 			{isSubmitLoading && <LoadingOverlay />}
-			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-6 sm:px-12 lg:px-16">
-				<PageHeader
-					heading="Start a new evaluation"
-					subtitle="Review documentation gaps against leading security standards and frameworks"
-					buttonText="Cancel"
-					buttonUrl="/evaluation"
-					isLoading={isSubmitLoading}
-				/>
-			</section>
+			<section className="flex justify-center items-center w-full text-white pb-0 pt-10  px-3 sm:px-12 lg:px-16">
+				<div className="max-w-7xl flex flex-col sm:flex-row justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10 ">
+					<div className="flex-1 w-full flex flex-col space-y-4 p-6 ">
+						<h1 className="text-4xl font-bold">Start a new evaluation</h1>
+						<h3 className="text-base font-thin">Review documentation gaps against leading security standards and frameworks</h3>
 
-			{/* Progress Bar Section */}
-			<section className="flex justify-center items-center w-full bg-black text-white pt-5 lg:pt-10 px-6 sm:px-12 lg:px-16">
-				<div className="max-w-7xl w-full">
-					<div className="flex items-center">
-						{steps.map((step, index) => {
-							const isCurrent = index === currentStep;
+						{/* Progress Bar Section */}
+						<section className="flex-1 w-full flex flex-col space-y-4 p-0 !mt-8 ">
+							<div className="flex items-center">
+								{steps.map((step, index) => {
+									const isCurrent = index === currentStep;
 
-							return (
-								<>
-									{/* larger devices */}
-									<div
-										className="hidden min-w-[25%] md:min-w-[20%] xl:min-w-[15%] sm:flex items-center"
-										key={step.id}
-									>
-										<div
-											className="flex-1 flex flex-col items-center cursor-pointer text-center"
-											onClick={() => goToStep(index)}
-										>
+									return (
+										<>
+											{/* larger devices */}
 											<div
-												className={`relative w-[96%] h-8 transition-colors mx-0 mb-4 pl-4
+												className="hidden min-w-[25%] md:min-w-[20%] xl:min-w-[15%] sm:flex items-center"
+												key={step.id}
+											>
+												<div
+													className="flex-1 flex flex-col items-center cursor-pointer text-center"
+													onClick={() => goToStep(index)}
+												>
+													<div
+														className={`relative w-[96%] h-8 transition-colors mx-0 mb-4 pl-4
 											${isCurrent ? "bg-violet-ryzr" : "bg-zinc-700"}
 											hover:opacity-90 rounded-full overflow-visible`}
-											>
-												<span className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
-													{step.label}
-												</span>
+													>
+														<span className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
+															{step.label}
+														</span>
+													</div>
+												</div>
+												{index < steps.length - 1 && (
+													<div className="w-6 h-px border-t-2 border-dashed border-zinc-400 mb-4" />
+												)}
 											</div>
-										</div>
-										{index < steps.length - 1 && (
-											<div className="w-6 h-px border-t-2 border-dashed border-zinc-400 mb-4" />
-										)}
-									</div>
 
-									{/* smaller devices */}
-									<div
-										className="flex flex-1 sm:hidden items-center"
-										key={step.id}
-									>
-										<div
-											className="relative flex flex-col items-center cursor-pointer text-center"
-											onClick={() => goToStep(index)}
-										>
+											{/* smaller devices */}
 											<div
-												className={`relative w-8 h-8 transition-colors mx-0 mb-5 pl-4
+												className="flex flex-1 sm:hidden items-center"
+												key={step.id}
+											>
+												<div
+													className="relative flex flex-col items-center cursor-pointer text-center"
+													onClick={() => goToStep(index)}
+												>
+													<div
+														className={`relative w-8 h-8 transition-colors mx-0 mb-5 pl-4
 											${isCurrent ? "bg-violet-ryzr" : currentStep > index ? "bg-violet-ryzr" : "bg-zinc-700"}
 											hover:opacity-90 rounded-full overflow-visible`}
-											>
-												<span className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
-													{currentStep > index ? <Check className="w-4 h-4 text-white" /> : index + 1}
-												</span>
+													>
+														<span className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
+															{currentStep > index ? <Check className="w-4 h-4 text-white" /> : index + 1}
+														</span>
 
+													</div>
+
+													<span className="absolute -bottom-1 text-xs">{step.label}</span>
+												</div>
+
+												{index < steps.length - 1 && (
+													<div
+														className={`w-full h-1 rounded-full mb-6 transition-colors ${index < currentStep
+															? "bg-violet-ryzr"
+															: "bg-zinc-400"
+															}`}
+													/>
+												)}
 											</div>
+										</>
+									);
+								})}
+							</div>
 
-											<span className="absolute -bottom-1 text-xs">{step.label}</span>
-										</div>
-
-										{index < steps.length - 1 && (
-											<div
-												className={`w-full h-1 rounded-full mb-6 transition-colors ${index < currentStep
-													? "bg-violet-ryzr"
-													: "bg-zinc-400"
-													}`}
-											/>
-										)}
+							{currentStep === 1 &&
+								<div className="grid grid-cols-2 space-x-5 max-w-3xl items-center">
+									<div className="relative ">
+										<Input
+											placeholder="Search controls..."
+											value={controlsFilter}
+											onChange={(e) => setControlsFilter(e.target.value)}
+											className="max-w-sm text-xl bg-white pl-10 text-black selection:text-black"
+											disabled={isControlsLoading}
+										/>
+										<SearchIcon className="absolute left-3 top-2.5 transform text-gray-500 size-5" />
 									</div>
-								</>
-							);
-						})}
+									<Button
+										className="bg-neutral-800 hover:bg-neutral-700 text-white w-fit">
+										<PlusCircle />
+										<span>Statement of Applicability</span>
+									</Button>
+								</div>
+							}
+						</section>
+
 					</div>
+
+					<Button
+						variant="default"
+						className={`bg-neutral-800 hover:bg-neutral-700 m-6 mt-0 sm:mt-6 rounded-full transition-colors text-white font-extrabold text-md w-fit px-6 py-2`}
+						onClick={() => {
+							navigate("/evaluation");
+						}}
+					>
+						Cancel
+					</Button>
+
+					{/* <PageHeader
+						heading="Start a new evaluation"
+						subtitle="Review documentation gaps against leading security standards and frameworks"
+						buttonText="Cancel"
+						buttonUrl="/evaluation"
+						isLoading={isSubmitLoading}
+					/> */}
 				</div>
 			</section>
 
-			<section className="flex justify-center items-center w-full bg-black text-white pt-5 lg:pt-10 px-6 sm:px-12 lg:px-16">
-				<div className="max-w-7xl w-full">
+			<section className="flex justify-center items-center w-full bg-black text-white pt-5 lg:pt-10 px-3 sm:px-12 lg:px-16">
+				<div className="px-3 sm:px-6 max-w-7xl w-full">
 					<FormProvider {...methods}>
 						<form className="flex flex-col w-full">
 							{/* Step Content */}
@@ -724,7 +780,41 @@ const NewEvaluation = () => {
 									</div>
 								</div>
 							)}
+
+
 							{currentStep === 1 && (
+								<div className="space-y-4 w-full min-h-[calc(100vh-410px)]">
+									<Controller
+										name="controls"
+										control={methods.control}
+										rules={{
+											validate: (
+												val: string[]
+											) => {
+												if (val.length === 0) {
+													return "Please select at least one control.";
+												}
+
+												return true;
+											},
+										}}
+										render={({ field }) => (
+											<>
+												<ControlsSelection
+													selectedFramework={methods.getValues("selectedFrameworks")}
+													formControl={methods.control}
+													name="controls"
+													isControlsLoading={isControlsLoading}
+													controlsFilter={controlsFilter}
+													setIsControlsLoading={setIsControlsLoading}
+												/>
+											</>
+										)}
+									/>
+								</div>
+							)}
+
+							{currentStep === 2 && (
 								<div className="space-y-4 w-full min-h-[calc(100vh-410px)]">
 									<Controller
 										name="documents"
@@ -764,7 +854,7 @@ const NewEvaluation = () => {
 									/>
 								</div>
 							)}
-							{currentStep === 2 && (
+							{currentStep === 3 && (
 								<div className="space-y-4 w-full min-h-[calc(100vh-410px)]">
 									<SummaryStep goToStep={setCurrentStep} />
 								</div>
@@ -808,7 +898,7 @@ const NewEvaluation = () => {
 												)}
 											</button>
 										}
-										subheading="This evaluation may take up to 15 minutes to complete. You will be notified via the notification once it's done. Would you like to proceed?"
+										subheading="This evaluation may take up to 15 minutes to complete. You will receive a notification once it's done. Would you like to proceed?"
 										actionLabel="Confirm"
 										onAction={onRunClick}
 									/>

@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { RoundSpinner } from "./ui/spinner";
 import { Progress } from "./ui/progress";
 import { cn } from "@/lib/utils";
+import { Download } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -82,7 +83,7 @@ export function GenericDataTable<TData, TValue>({
 	});
 
 	const handleRowClick = (row: TData) => {
-		if(disabledRow) return;
+		if (disabledRow) return;
 		if (rowIdKey && rowLinkPrefix !== "#") {
 			const ids = rowIdKey
 				.map((key) => row[key])
@@ -103,31 +104,25 @@ export function GenericDataTable<TData, TValue>({
 				placeholder="Search..."
 				value={filter}
 				onChange={(e) => setFilter(e.target.value)}
-				className="max-w-sm text-xl"
+				className="max-w-sm text-xl bg-[#242424] text-white border-zinc-700 focus-visible:ring-zinc-700"
 			/>
-			<div className="rounded-md border">
+			<div className="rounded-md">
 				<Table className="rounded-md bg-zinc-900">
 					<TableHeader>
 						{table.getHeaderGroups().map((headerGroup) => (
 							<TableRow
 								key={headerGroup.id}
-								className="bg-[#404040] hover:bg-[#404040] transition-opacity"
+								className="bg-[#1a1a1a] hover:bg-[#1a1a1a] transition-opacity"
 							>
 								{headerGroup.headers.map((header, index) => (
 									<TableHead
 										key={header.id}
-										className={`text-white text-base
-											${
-												index === 0
-													? "rounded-tl-md"
-													: index ===
-													  headerGroup.headers
-															.length -
-															1
-													? "rounded-tr-md"
-													: ""
-											}
-										`}
+										className={`text-white text-base bg-[#1a1a1a]
+					${index === 0
+						? "rounded-tl-md"
+						: ""
+					}
+					${index === headerGroup.headers.length - 1 ? "rounded-tr-md" : ""}`}
 									>
 										{flexRender(
 											header.column.columnDef.header,
@@ -135,6 +130,9 @@ export function GenericDataTable<TData, TValue>({
 										)}
 									</TableHead>
 								))}
+								<TableHead className="w-10 rounded-tr-md">
+									<span className="sr-only">Actions</span>
+								</TableHead>
 							</TableRow>
 						))}
 					</TableHeader>
@@ -143,15 +141,12 @@ export function GenericDataTable<TData, TValue>({
 							table.getRowModel().rows.map((row) => (
 								<TableRow
 									key={row.id}
-									onClick={() => handleRowClick(row.original)}
-									className={cn("hover:bg-zinc-800 transition text-white/70", disabledRow && "cursor-not-allowed hover:bg-zinc-900",
-										clickableRow && !disabledRow && "cursor-pointer"
-									)}
+									className={cn("hover:bg-zinc-800/50 transition text-white/80", disabledRow && "cursor-not-allowed hover:bg-zinc-900")}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>
 											{typeof cell.getValue() ===
-											"string" ? (
+												"string" ? (
 												// Truncate long text to 50 words
 												<div className="text-wrap">
 													{(cell.getValue() as string)
@@ -172,6 +167,18 @@ export function GenericDataTable<TData, TValue>({
 											)}
 										</TableCell>
 									))}
+									<TableCell className="w-10">
+										<button
+											onClick={(e) => {
+												e.stopPropagation();
+												handleRowClick(row.original);
+											}}
+											className="text-violet-light-ryzr transition-colors"
+											title="Download"
+										>
+											<Download size={18} />
+										</button>
+									</TableCell>
 								</TableRow>
 							))
 						) : (
@@ -185,7 +192,7 @@ export function GenericDataTable<TData, TValue>({
 											<RoundSpinner />
 										</div>
 									) : (
-										"No results found."
+										<div className="text-zinc-400 py-4">No results found.</div>
 									)}
 								</TableCell>
 							</TableRow>
@@ -212,7 +219,7 @@ export function GenericDataTable<TData, TValue>({
 						)}
 						<Button
 							variant="default"
-							className="bg-sky-500 hover:bg-sky-600 text-white"
+							className="bg-zinc-700 hover:bg-zinc-600 text-white border-zinc-600"
 							size="sm"
 							onClick={() => table.nextPage()}
 							disabled={!table.getCanNextPage()}
@@ -222,6 +229,6 @@ export function GenericDataTable<TData, TValue>({
 					</div>
 				)}
 			</div>
-		</div>
+		</div >
 	);
 }

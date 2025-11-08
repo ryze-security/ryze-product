@@ -233,20 +233,15 @@ function EvaluationReports(props: Props) {
 
 	return (
 		<div className="max-w-7xl w-full">
-			<div className="w-full px-4 mt-5">
-				<div className="grid gap-2">
-					<div className="text-3xl md:text-5xl font-semibold text-zinc-400/85 tracking-wide">
-						Generated reports
-					</div>
-					<div className="text-lg text-zinc-400/75">
-						Your reports will appear in this section once they are
-						generated.
-					</div>
+			<div className="flex flex-col sm:flex-row justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10">
+				<div className="flex flex-col space-y-4 p-3">
+					<h1 className="text-4xl sm:text-6xl font-bold text-white">Generated Reports</h1>
+					<h3 className="text-white/90">Browse through generated reports to track progress and review findings.</h3>
 				</div>
 			</div>
 			<section
 				className={cn(
-					"flex items-center w-full bg-black text-white mt-8 pt-4",
+					"flex items-center w-full bg-black text-white pt-4",
 					className
 				)}
 			>
