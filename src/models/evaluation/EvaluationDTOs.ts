@@ -5,6 +5,7 @@ export interface createEvaluationDTO {
 	created_by: string;
 	model_used: string;
 	document_list: string[];
+	selected_controls?: string[];
 }
 
 export interface createEvaluationResponseDTO {

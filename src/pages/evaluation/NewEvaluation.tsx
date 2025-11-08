@@ -248,7 +248,7 @@ const NewEvaluation = () => {
 
 	const submit = async (data: {
 		auditee: AuditeeOption;
-		controls: { name: string; value: string }[];
+		controls: string[];
 		selectedFrameworks: { name: string; value: string }[];
 		documents: FilesUploadResponseDTO[];
 	}) => {
@@ -262,6 +262,7 @@ const NewEvaluation = () => {
 				created_by: userData.first_name + " " + userData.last_name,
 				model_used: "azure-gpt04-mini",
 				document_list: [...data.documents.map((doc) => doc.file_id)],
+				selected_controls: data.controls,
 			};
 			evaluationDatas.push(evaluationData);
 		});
@@ -314,7 +315,6 @@ const NewEvaluation = () => {
 		const frameworkLength = methods.getValues("selectedFrameworks").length;
 		const controlsLength = methods.getValues("controls").length;
 		const isValid = documentLength > 0 && frameworkLength > 0 && controlsLength > 0;
-
 		if (isValid) {
 			methods.handleSubmit(submit, onError)();
 		} else {
@@ -791,8 +791,6 @@ const NewEvaluation = () => {
 											validate: (
 												val: string[]
 											) => {
-												// return true
-												console.log(methods.getValues("controls"))
 												if (val.length === 0) {
 													return "Please select at least one control.";
 												}
