@@ -525,11 +525,11 @@ const NewEvaluation = () => {
 										/>
 										<SearchIcon className="absolute left-3 top-2.5 transform text-gray-500 size-5" />
 									</div>
-									<Button
+									{/* <Button
 										className="bg-neutral-800 hover:bg-neutral-700 text-white w-fit">
 										<PlusCircle />
 										<span>Statement of Applicability</span>
-									</Button>
+									</Button> */}
 								</div>
 							}
 						</section>
