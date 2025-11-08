@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "react-day-picker";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 const Home = React.lazy(
 	() => import("@/components/evaluation_details/DetailHome")
@@ -41,6 +41,8 @@ const ReportsTable = React.lazy(
 
 function EvaluationDetails() {
 	const { companyId, evaluationId } = useParams();
+	const [searchParams] = useSearchParams();
+	const defaultTab = searchParams.get("tab") || "home";
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 	const { toast } = useToast();
@@ -172,6 +174,20 @@ function EvaluationDetails() {
 			navigate(-1);
 		}
 	}, [data, isLoading, navigate, toast]);
+
+	//effect to set current step based on URL tab parameter
+	useEffect(() => {
+        if (dynamicSteps.length > 0) { // Ensure steps are calculated
+            
+            const matchedStep = dynamicSteps.find(step => 
+                step.label.toLowerCase() === defaultTab.toLowerCase()
+            );
+
+            if (matchedStep) {
+                setCurrentStep(matchedStep.id);
+            }
+        }
+    }, [dynamicSteps, defaultTab]);
 
 	const updateQuestion = async (
 		observation: string,

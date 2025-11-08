@@ -3,11 +3,6 @@ import PageHeader from "@/components/PageHeader";
 import { ProgressBarDataTable } from "@/components/ProgressBarDataTable";
 import { Button } from "@/components/ui/button";
 import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
 	Dialog,
 	DialogContent,
 	DialogDescription,
@@ -19,7 +14,6 @@ import {
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuLabel,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { RoundSpinner } from "@/components/ui/spinner";
@@ -42,13 +36,26 @@ import evaluationService, {
 import reportsService from "@/services/reportsServices";
 import { useAppSelector } from "@/store/hooks";
 import { ColumnDef } from "@tanstack/react-table";
-import { ChevronsUpDownIcon, Ellipsis, MoreHorizontalIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import * as dfd from "danfojs";
 import * as ExcelJS from "exceljs";
 import * as FileSaver from "file-saver";
 import { Progress } from "@/components/ui/progress";
+import { GenericDataTable } from "@/components/GenericDataTable";
+import { ArrowDown01, ArrowDownAZ, ArrowUp10, ArrowUpDown, ArrowUpZA, Filter, MoreHorizontal } from "lucide-react";
+import { createRichTextFromMarkdown } from "@/utils/markdownExcel";
+
+interface ReportList {
+    sNo: number;
+    reportName: string;
+    report_id: string;
+    eval_id: string;
+    report_type: string;
+    processing_status: string;
+    created_at: string;
+    created_by: string;
+}
 
 function AuditeeEvaluations() {
 	const userData = useAppSelector((state) => state.appUser);
@@ -63,10 +70,8 @@ function AuditeeEvaluations() {
 		total_count: 0,
 	});
 	const [isEvalLoading, setIsEvalLoading] = useState<boolean>(false);
-	const [reportList, setReportList] = useState<reportResultListDTO>(null);
+	const [reportList, setReportList] = useState<ReportList[]>(null);
 	const [isReportListLoading, setIsReportListLoading] =
-		useState<boolean>(false);
-	const [isDeletingEvaluation, setIsDeletingEvaluation] =
 		useState<boolean>(false);
 	const [isAuditeeLoading, setIsAuditeeLoading] = useState<boolean>(true);
 	const [isReportGenerating, setIsReportGenerating] =
@@ -172,15 +177,193 @@ function AuditeeEvaluations() {
 	const columns: ColumnDef<Evaluation>[] = [
 		{
 			accessorKey: "tg_company_display_name",
-			header: "Auditee Title",
+			header: ({ column }) => {
+				return (
+					<Button
+						variant="ghost"
+						onClick={(e) => {
+							e.stopPropagation();
+							if (!column.getIsSorted()) {
+								column.toggleSorting(false); // Ascending
+							} else if (column.getIsSorted() === "asc") {
+								column.toggleSorting(true); // Descending
+							} else {
+								column.clearSorting(); // Clear sorting
+							}
+						}}
+						className="px-0 hover:bg-transparent hover:text-white"
+					>
+						Auditee
+						{column.getIsSorted() === "asc" ? (
+							<ArrowDownAZ className="ml-2 h-4 w-4 text-violet-400" />
+						) : column.getIsSorted() === "desc" ? (
+							<ArrowUpZA className="ml-2 h-4 w-4 text-violet-400" />
+						) : (
+							<ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+						)}
+					</Button>
+				);
+			},
+			sortingFn: "text",
 		},
 		{
 			accessorKey: "collection_display_name",
-			header: "Controls",
+			header: ({ column }) => {
+				// Get unique control names for filter options
+				const controlNames = [
+					...new Set(
+						evaluations?.evaluations.map(
+							(evalItem) => evalItem.collection_display_name
+						) || []
+					),
+				].filter(Boolean) as string[];
+
+				const currentFilters =
+					(column.getFilterValue() as string[]) || [];
+				const isFilterActive = currentFilters.length > 0;
+
+				return (
+					<DropdownMenu>
+						<DropdownMenuTrigger className="group p-1.5 -mx-1.5 rounded-md hover:bg-white/10 transition-colors text-base flex items-center gap-2">
+							Framework
+							<div className="relative">
+								<Filter
+									className={`h-4 w-4 opacity-70 group-hover:opacity-100 transition-opacity ${
+										isFilterActive ? "text-violet-ryzr" : ""
+									}`}
+								/>
+								{isFilterActive && (
+									<span className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center text-xs font-medium rounded-full bg-violet-ryzr text-white">
+										{currentFilters.length}
+									</span>
+								)}
+							</div>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent className="min-w-[220px] bg-zinc-800 border-zinc-700 max-h-96 overflow-hidden flex flex-col">
+							<div className="px-3 py-2 border-b border-zinc-700">
+								<div className="flex justify-between items-center">
+									<DropdownMenuLabel className="text-white/80 font-medium p-0">
+										Filter by Framework
+									</DropdownMenuLabel>
+									<Button
+										variant="ghost"
+										size="sm"
+										onClick={(e) => {
+											e.stopPropagation();
+											column.setFilterValue([]);
+										}}
+										className={`ml-3 h-6 text-xs text-violet-ryzr hover:text-white hover:bg-white/10 transition-opacity ${
+											!isFilterActive
+												? "opacity-0 pointer-events-none"
+												: ""
+										}`}
+									>
+										Clear all
+									</Button>
+								</div>
+							</div>
+							<div className="overflow-y-auto max-h-[300px] p-1">
+								{controlNames.map((controlName) => {
+									const isSelected =
+										currentFilters.includes(controlName);
+									return (
+										<div
+											key={controlName}
+											onClick={(e) => {
+												e.stopPropagation();
+												const newFilters = isSelected
+													? currentFilters.filter(
+															(f) =>
+																f !==
+																controlName
+													  )
+													: [
+															...currentFilters,
+															controlName,
+													  ];
+												column.setFilterValue(
+													newFilters.length
+														? newFilters
+														: undefined
+												);
+											}}
+											className="flex items-center px-3 py-2 text-sm rounded-md cursor-pointer hover:bg-white/10 text-white/90 group"
+										>
+											<div
+												className={`h-4 w-4 rounded border ${
+													isSelected
+														? "bg-violet-ryzr border-violet-ryzr flex items-center justify-center"
+														: "border-zinc-600"
+												} mr-3`}
+											>
+												{isSelected && (
+													<svg
+														className="h-3 w-3 text-white"
+														fill="none"
+														viewBox="0 0 24 24"
+														stroke="currentColor"
+													>
+														<path
+															strokeLinecap="round"
+															strokeLinejoin="round"
+															strokeWidth={2}
+															d="M5 13l4 4L19 7"
+														/>
+													</svg>
+												)}
+											</div>
+											<span
+												className={
+													isSelected
+														? "text-white"
+														: "text-white/90"
+												}
+											>
+												{controlName}
+											</span>
+										</div>
+									);
+								})}
+							</div>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				);
+			},
+			filterFn: (row, columnId, filterValue) => {
+				if (!filterValue || filterValue.length === 0) return true;
+				const value = row.getValue(columnId) as string;
+				return filterValue.includes(value);
+			},
 		},
 		{
 			accessorKey: "overall_score",
-			header: "Evaluation Score",
+			header: ({ column }) => {
+				return (
+					<Button
+						variant="ghost"
+						onClick={(e) => {
+							e.stopPropagation();
+							if (!column.getIsSorted()) {
+								column.toggleSorting(false); // Ascending
+							} else if (column.getIsSorted() === "asc") {
+								column.toggleSorting(true); // Descending
+							} else {
+								column.clearSorting(); // Clear sorting
+							}
+						}}
+						className="px-0 hover:bg-transparent hover:text-white"
+					>
+						Evaluation Score
+						{column.getIsSorted() === "asc" ? (
+							<ArrowDown01 className="ml-2 h-4 w-4 text-violet-400" />
+						) : column.getIsSorted() === "desc" ? (
+							<ArrowUp10 className="ml-2 h-4 w-4 text-violet-400" />
+						) : (
+							<ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+						)}
+					</Button>
+				);
+			},
 			cell: ({ row }) => {
 				const score: number = row.getValue("overall_score");
 				const updatedScore =
@@ -214,49 +397,146 @@ function AuditeeEvaluations() {
 		{
 			accessorKey: "processing_status",
 			header: ({ column }) => {
+				const statusFilters = [
+					{
+						value: "in_progress",
+						label: "In Progress",
+						color: "bg-yellow-600",
+					},
+					{
+						value: "completed",
+						label: "Completed",
+						color: "bg-green-ryzr",
+					},
+					{
+						value: "cancelled",
+						label: "Cancelled",
+						color: "bg-red-ryzr",
+					},
+					{ value: "failed", label: "Failed", color: "bg-red-ryzr" },
+				];
+
+				const currentFilters =
+					(column.getFilterValue() as string[]) || [];
+				const isFilterActive = currentFilters.length > 0;
+
 				return (
 					<DropdownMenu>
-						<DropdownMenuTrigger className="p-0 hover:bg-transparent hover:text-white/70 text-base flex justify-between items-center gap-2">
+						<DropdownMenuTrigger className="group p-1.5 -mx-1.5 rounded-md hover:bg-white/10 transition-colors text-base flex items-center gap-2">
 							Status
-							<Ellipsis className="h-4 w-4" />
+							<div className="relative">
+								<Filter
+									className={`h-4 w-4 opacity-70 group-hover:opacity-100 transition-opacity ${
+										isFilterActive ? "text-violet-ryzr" : ""
+									}`}
+								/>
+								{isFilterActive && (
+									<span className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center text-xs font-medium rounded-full bg-violet-ryzr text-white">
+										{currentFilters.length}
+									</span>
+								)}
+							</div>
 						</DropdownMenuTrigger>
-						<DropdownMenuContent>
-							<DropdownMenuLabel>
-								Filter by status
-							</DropdownMenuLabel>
-							<DropdownMenuSeparator />
-							<DropdownMenuItem
-								onClick={() => column.setFilterValue("pending")}
-							>
-								<span
-									className={`px-2 py-1 rounded bg-yellow-600`}
-								>
-									Pending
-								</span>
-							</DropdownMenuItem>
-							<DropdownMenuItem
-								onClick={() =>
-									column.setFilterValue("completed")
-								}
-							>
-								<span
-									className={`px-2 py-1 rounded bg-green-ryzr`}
-								>
-									Completed
-								</span>
-							</DropdownMenuItem>
-							<DropdownMenuItem
-								onClick={() => column.setFilterValue("failed")}
-							>
-								<span
-									className={`px-2 py-1 rounded bg-red-ryzr`}
-								>
-									Failed
-								</span>
-							</DropdownMenuItem>
+						<DropdownMenuContent className="min-w-[220px] bg-zinc-800 border-zinc-700 max-h-96 overflow-hidden flex flex-col">
+							<div className="px-3 py-2 border-b border-zinc-700">
+								<div className="flex justify-between items-center">
+									<DropdownMenuLabel className="text-white/80 font-medium p-0">
+										Filter by Status
+									</DropdownMenuLabel>
+									<Button
+										variant="ghost"
+										size="sm"
+										onClick={(e) => {
+											e.stopPropagation();
+											column.setFilterValue([]);
+										}}
+										className={`ml-3 h-6 text-xs text-violet-ryzr hover:text-white hover:bg-white/10 transition-opacity ${
+											!isFilterActive
+												? "opacity-0 pointer-events-none"
+												: ""
+										}`}
+									>
+										Clear all
+									</Button>
+								</div>
+							</div>
+							<div className="overflow-y-auto max-h-[300px] p-1">
+								{statusFilters.map((status) => {
+									const isSelected = currentFilters.includes(
+										status.value
+									);
+									return (
+										<div
+											key={status.value}
+											onClick={(e) => {
+												e.stopPropagation();
+												const newFilters = isSelected
+													? currentFilters.filter(
+															(f) =>
+																f !==
+																status.value
+													  )
+													: [
+															...currentFilters,
+															status.value,
+													  ];
+												column.setFilterValue(
+													newFilters.length
+														? newFilters
+														: undefined
+												);
+											}}
+											className="flex items-center px-3 py-2 text-sm rounded-md cursor-pointer hover:bg-white/10 text-white/90 group"
+										>
+											<div
+												className={`h-4 w-4 rounded border ${
+													isSelected
+														? "bg-violet-ryzr border-violet-ryzr flex items-center justify-center"
+														: "border-zinc-600"
+												} mr-3`}
+											>
+												{isSelected && (
+													<svg
+														className="h-3 w-3 text-white"
+														fill="none"
+														viewBox="0 0 24 24"
+														stroke="currentColor"
+													>
+														<path
+															strokeLinecap="round"
+															strokeLinejoin="round"
+															strokeWidth={2}
+															d="M5 13l4 4L19 7"
+														/>
+													</svg>
+												)}
+											</div>
+											<div className="flex items-center gap-2">
+												<span
+													className={`w-2 h-2 rounded-full ${status.color}`}
+												></span>
+												<span
+													className={
+														isSelected
+															? "text-white"
+															: "text-white/90"
+													}
+												>
+													{status.label}
+												</span>
+											</div>
+										</div>
+									);
+								})}
+							</div>
 						</DropdownMenuContent>
 					</DropdownMenu>
 				);
+			},
+			filterFn: (row, columnId, filterValue) => {
+				if (!filterValue || filterValue.length === 0) return true;
+				const value = row.getValue(columnId) as string;
+				return filterValue.includes(value);
 			},
 			cell: ({ row }) => {
 				const evals: string = row.getValue("processing_status");
@@ -265,29 +545,189 @@ function AuditeeEvaluations() {
 						className={`px-2 py-1 rounded ${
 							evals === "completed"
 								? "bg-green-ryzr"
-								: evals === "failed"
+								: evals === "failed" || evals === "cancelled"
 								? "bg-red-ryzr"
 								: "bg-yellow-600"
 						}`}
 					>
-						{evals.charAt(0).toUpperCase() + evals.slice(1)}
+						{evals.charAt(0).toUpperCase() +
+							evals.slice(1).replace("_", " ")}
 					</span>
 				);
 			},
 		},
 		{
 			accessorKey: "created_at",
-			header: "Conducted On",
+			header: ({ column }) => {
+				return (
+					<Button
+						variant="ghost"
+						onClick={(e) => {
+							e.stopPropagation();
+							if (!column.getIsSorted()) {
+								column.toggleSorting(false); // Ascending
+							} else if (column.getIsSorted() === "asc") {
+								column.toggleSorting(true); // Descending
+							} else {
+								column.clearSorting(); // Clear sorting
+							}
+						}}
+						className="px-0 hover:bg-transparent hover:text-white"
+					>
+						Conducted On
+						{column.getIsSorted() === "asc" ? (
+							<ArrowDown01 className="ml-2 h-4 w-4 text-violet-400" />
+						) : column.getIsSorted() === "desc" ? (
+							<ArrowUp10 className="ml-2 h-4 w-4 text-violet-400" />
+						) : (
+							<ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+						)}
+					</Button>
+				);
+			},
 		},
 		{
 			accessorKey: "created_by",
 			header: "Created By",
 		},
 		{
+			id: "reportNumber",
+			header: () => {
+				return <div className="text-center">Reports Generated</div>;
+			},
+			cell: ({ row }) => {
+				const evaluation = row.original;
+				return (
+					<div className="flex justify-center">
+						<Button
+							variant="outline"
+							className="p-4 hover:scale-105 hover:bg-violet-light-ryzr/70 duration-200 transition-all "
+							disabled={evaluation.num_reports === 0}
+							onSelect={(e) => e.preventDefault()}
+							onClick={async (e) => {
+								e.stopPropagation();
+								setReportDialogOpen(true);
+								try {
+									setIsReportListLoading(true);
+									const response : reportResultListDTO =
+										await reportsService.getReportList(
+											userData.tenant_id,
+											evaluation.tg_company_id,
+											evaluation.eval_id
+										);
+									if (response.total_count === 0) {
+										toast({
+											title: "No reports found",
+											description:
+												"No reports have been generated for this evaluation.",
+											variant: "default",
+										});
+										setReportDialogOpen(false);
+									} else {
+										const updatedData = [
+											...response.reports,
+										]
+											.map((item, index) => {
+												return {
+													...item,
+													sNo: index + 1,
+													created_at: new Date(
+														item.created_at
+													).toLocaleDateString(),
+													reportName: `Report_${
+														index + 1
+													}`,
+													report_type:
+														item.report_type ===
+														"Observations"
+															? "Gap Analysis Report"
+															: item.report_type,
+												};
+											})
+											.sort((a, b) =>
+												b.created_at.localeCompare(
+													a.created_at
+												)
+											);
+										setReportList(updatedData);
+									}
+								} catch (error) {
+									toast({
+										title: "Error",
+										description: `Failed to fetch reports. Please try again later!`,
+										variant: "destructive",
+									});
+								} finally {
+									setIsReportListLoading(false);
+								}
+							}}
+						>
+							{evaluation.num_reports}
+						</Button>
+					</div>
+				);
+			},
+		},
+		{
 			id: "actions",
 			enableHiding: false,
 			cell: ({ row }) => {
 				const evaluation = row.original;
+				const isInProgress =
+					evaluation.processing_status === "in_progress" ||
+					evaluation.processing_status === "pending" ||
+					evaluation.processing_status ===
+						"processing_missing_elements";
+
+				const performDelete = async () => {
+					try {
+						const response =
+							await evaluationService.evaluationService.deleteEvaluation(
+								userData.tenant_id,
+								evaluation.tg_company_id,
+								evaluation.eval_id
+							);
+						if (response.status === "success") {
+							setRefreshTrigger((prev) => prev + 1);
+							toast({
+								title: "Report Deleted!",
+								description:
+									"The report has been deleted successfully",
+							});
+						}
+					} catch (error) {
+						toast({
+							title: "Error",
+							description: `An error occurred while deleting the evaluation. Please try again later!`,
+							variant: "destructive",
+						});
+					}
+				};
+
+				const cancelEvaluation = async () => {
+					try {
+						const response =
+							await evaluationService.evaluationService.cancelEvaluation(
+								userData.tenant_id,
+								evaluation.tg_company_id,
+								evaluation.eval_id
+							);
+						if (response) {
+							setRefreshTrigger((prev) => prev + 1);
+							toast({
+								title: "Evaluation Cancelled!",
+								description:
+									"The evaluation has been cancelled successfully",
+							});
+						}
+					} catch {
+						toast({
+							title: "Error",
+							description: `An error occurred while cancelling this evaluation. Please try again later!`,
+							variant: "destructive",
+						});
+					}
+				};
 				return (
 					<DropdownMenu>
 						<DropdownMenuTrigger
@@ -296,7 +736,7 @@ function AuditeeEvaluations() {
 						>
 							<Button variant="ghost" className="h-8 w-8 p-0">
 								<span className="sr-only">Open menu</span>
-								<MoreHorizontalIcon />
+								<MoreHorizontal />
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent
@@ -304,97 +744,70 @@ function AuditeeEvaluations() {
 							onClick={(e) => e.stopPropagation()} // Prevent row click
 						>
 							<DropdownMenuLabel>Actions</DropdownMenuLabel>
-							<DropdownMenuItem
-								onSelect={(e) => e.preventDefault()}
-								disabled={isReportListLoading}
-								onClick={async (e) => {
-									e.stopPropagation();
-									setReportDialogOpen(true);
-									try {
-										setIsReportListLoading(true);
-										const response =
-											await reportsService.getReportList(
-												userData.tenant_id,
-												evaluation.tg_company_id,
-												evaluation.eval_id
-											);
-										if (response.total_count === 0) {
-											toast({
-												title: "No reports found",
-												description:
-													"No reports have been generated for this evaluation.",
-												variant: "default",
-											});
-											setReportDialogOpen(false);
-										} else {
-											setReportList(response);
-										}
-									} catch (error) {
-										toast({
-											title: "Error",
-											description: `Failed to fetch reports. Please try again later!`,
-											variant: "destructive",
-										});
-									} finally {
-										setIsReportListLoading(false);
+							{isInProgress ? (
+								<AlertDialogBox
+									trigger={
+										<DropdownMenuItem
+											onSelect={(e) => e.preventDefault()}
+											onClick={(e) => e.stopPropagation()}
+											className="text-yellow-600 focus:text-white focus:bg-yellow-700 hover:bg-yellow-700"
+										>
+											Cancel Evaluation
+										</DropdownMenuItem>
 									}
-								}}
-							>
-								Download Report
-							</DropdownMenuItem>
-							<AlertDialogBox
-								trigger={
-									<DropdownMenuItem
-										onSelect={(e) => e.preventDefault()}
-										onClick={(e) => e.stopPropagation()}
-										disabled={isDeletingEvaluation}
-										className="text-rose-600 focus:text-white focus:bg-rose-600"
-									>
-										Delete Evaluation
-									</DropdownMenuItem>
-								}
-								title="Are You Sure?"
-								subheading={`Are you sure you want to delete this evaluation? This action cannot be undone.`}
-								actionLabel="Delete"
-								onAction={() => {
-									const performDelete = async () => {
-										try {
-											setIsDeletingEvaluation(true);
-											const response =
-												await evaluationService.evaluationService.deleteEvaluation(
-													userData.tenant_id,
-													evaluation.tg_company_id,
-													evaluation.eval_id
-												);
-											if (response.status === "success") {
-												setRefreshTrigger(
-													(prev) => prev + 1
-												);
-												toast({
-													title: "Report Deleted!",
-													description:
-														"The report has been deleted successfully",
-													variant: "destructive",
-												});
-											}
-										} catch (error) {
-											toast({
-												title: "Error",
-												description: `An error occurred while deleting the evaluation. Please try again later!`,
-												variant: "destructive",
-											});
-										} finally {
-											setIsDeletingEvaluation(false);
-										}
-									};
-
-									performDelete();
-								}}
-							/>
+									title="Cancel Evaluation?"
+									subheading="This action will stop the current evaluation process and cannot be restarted again. Are you sure you want to continue?"
+									actionLabel="Confirm"
+									onAction={cancelEvaluation}
+									confirmButtonClassName="bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-600"
+								/>
+							) : (
+								<AlertDialogBox
+									trigger={
+										<DropdownMenuItem
+											onSelect={(e) => e.preventDefault()}
+											onClick={(e) => e.stopPropagation()}
+											className="text-rose-600 focus:text-white focus:bg-rose-600"
+										>
+											Delete Evaluation
+										</DropdownMenuItem>
+									}
+									title="Are You Sure?"
+									subheading={`Are you sure you want to delete this evaluation? This action cannot be undone.`}
+									actionLabel="Delete"
+									onAction={() => {
+										performDelete();
+									}}
+									confirmButtonClassName="bg-rose-600 hover:bg-rose-700 focus:ring-rose-600"
+								/>
+							)}
 						</DropdownMenuContent>
 					</DropdownMenu>
 				);
 			},
+		},
+	];
+
+	const reportColumns: ColumnDef<ReportList>[] = [
+		{
+			accessorKey: "sNo",
+			header: "S.No",
+		},
+		{
+			accessorKey: "reportName",
+			header: "Report Name",
+		},
+		{
+			accessorKey: "report_type",
+			header: "Report Type",
+		},
+		{
+			accessorKey: "created_at",
+			header: "Created At",
+		},
+		{
+			accessorKey: "created_by",
+			header: "Created By",
 		},
 	];
 
@@ -487,6 +900,124 @@ function AuditeeEvaluations() {
 			.join(" ");
 	};
 
+	const handleReportDownload = async (reportId: string) => {
+		try {
+			setIsReportGenerating(true);
+			const response: reportResultDTO =
+				await reportsService.getExcelReportResult(
+					userData.tenant_id,
+					auditeeId,
+					reportId
+				);
+			const df = new dfd.DataFrame(
+				response.results.sort((a, b) =>
+					a.control_id.localeCompare(b.control_id, undefined, {
+						numeric: true,
+					})
+				)
+			);
+
+			const workbook = new ExcelJS.Workbook();
+			workbook.creator = "Ryzr";
+			workbook.created = new Date();
+			const worksheet = workbook.addWorksheet("Evaluation Report");
+
+			const headerRow = worksheet.addRow(df.columns);
+			headerRow.eachCell((cell, index) => {
+				cell.value = formatHeaderCells(cell.value.toString());
+				cell.font = {
+					bold: true,
+					color: {
+						argb: "FFFFFFFF",
+					},
+					size: 12,
+					name: "SF Pro Display Regular",
+				};
+				cell.fill = {
+					type: "pattern",
+					pattern: "solid",
+					fgColor: {
+						argb: "FFB05AEF",
+					},
+				};
+				cell.alignment = {
+					vertical: "top",
+				};
+			});
+			const jsonData = dfd.toJSON(df) as Array<Record<string, any>>;
+
+			//Adds and formats data rows
+			jsonData.forEach((record) => {
+				const row = worksheet.addRow(Object.values(record));
+
+				row.eachCell((cell, index) => {
+					if (index === 1) {
+						const originalValue = cell.value
+							? cell.value.toString()
+							: "";
+
+						cell.value = originalValue.slice(2);
+					}
+					cell.font = {
+						size: 12,
+						name: "SF Pro Display Regular",
+						color: {
+							argb: "FF000000",
+						},
+					};
+					cell.alignment = {
+						vertical: "top",
+						wrapText: true,
+					};
+
+					if (cell.value && cell.value.toString().includes("*")) {
+						cell.value = {
+							richText: createRichTextFromMarkdown(
+								cell.value.toString()
+							),
+						};
+					}
+				});
+			});
+
+			worksheet.columns.forEach((columns, index) => {
+				if (index <= 2) {
+					columns.width = 25;
+				} else {
+					columns.width = 50;
+				}
+				columns.border = {
+					top: {
+						style: "thin",
+					},
+					bottom: {
+						style: "thin",
+					},
+					left: {
+						style: "thin",
+					},
+					right: {
+						style: "thin",
+					},
+				};
+			});
+
+			const buffer = await workbook.xlsx.writeBuffer();
+			const blob = new Blob([buffer], {
+				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			});
+			FileSaver.saveAs(blob, auditeeName + " report.xlsx");
+		} catch {
+			toast({
+				title: "Error",
+				description: `Failed to download report. Please try again later!`,
+				variant: "destructive",
+			});
+		} finally {
+			setIsReportGenerating(false);
+		}
+	};
+
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
 			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
@@ -513,15 +1044,21 @@ function AuditeeEvaluations() {
 					</Button>
 				</PageHeader>
 			</section>
-			<section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
-				<ProgressBarDataTable
-					columns={columns}
-					data={evaluations.evaluations}
-					filterKey="tg_company_display_name"
-					rowIdKey={["tg_company_id", "eval_id"]}
-					rowLinkPrefix="/evaluation/"
-					isLoading={isEvalLoading}
-				/>
+			<section className="flex items-center w-full bg-black text-white  pt-10 px-3 sm:px-6 md:px-4  lg:px-16">
+				<div className=" w-full">
+					<ProgressBarDataTable
+						columns={columns}
+						externalSearch={true}
+						data={evaluations.evaluations}
+						filterKey="tg_company_display_name"
+						rowIdKey={["tg_company_id", "eval_id"]}
+						rowLinkPrefix="/evaluation/"
+						isLoading={isEvalLoading}
+						isRowDisabled={(row) =>
+							row.processing_status !== "completed"
+						}
+					/>
+				</div>
 				<Dialog
 					open={reportDialogOpen}
 					onOpenChange={(isOpen) => {
@@ -531,236 +1068,32 @@ function AuditeeEvaluations() {
 						}
 					}}
 				>
-					<DialogContent className="overflow-y-auto max-h-[90vh] h-fit scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-800">
-						<DialogHeader>
-							<DialogTitle>Download Reports</DialogTitle>
-							<DialogDescription>
+					<DialogContent className="flex flex-col max-h-[90vh] h-fit scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-800 lg:max-w-2xl">
+						<DialogHeader className="flex-shrink-0 border-b pb-4 text-left">
+							<DialogTitle>
+								Download Reports: {auditeeName}
+							</DialogTitle>
+							<DialogDescription className="text-wrap">
 								Here you can download any report you generated
 								for this evaluation.
 							</DialogDescription>
 						</DialogHeader>
-						{isReportListLoading || !reportList ? (
+						{!reportList ? (
 							<RoundSpinner />
 						) : (
-							<Collapsible className="flex w-[350px] flex-col gap-2">
-								<div className="flex items-center justify-between gap-4 px-4">
-									<h4 className="text-sm font-semibold">
-										This evaluation has{" "}
-										{reportList?.total_count} reports.
-									</h4>
-									<CollapsibleTrigger asChild>
-										<Button
-											variant="ghost"
-											size="icon"
-											className="size-8"
-										>
-											<ChevronsUpDownIcon />
-											<span className="sr-only">
-												Toggle
-											</span>
-										</Button>
-									</CollapsibleTrigger>
-								</div>
-								{/* Represents the first button which is always shown in the collapsible tab */}
-								<Button
-									variant="ghost"
-									className="rounded-md border w-fit justify-start px-4 py-2 font-mono text-sm"
-									disabled={isReportGenerating}
-									onClick={async (e) => {
-										try {
-											setIsReportGenerating(true);
-											const response: reportResultDTO =
-												await reportsService.getExcelReportResult(
-													userData.tenant_id,
-													auditeeId,
-													reportList.reports[0]
-														.report_id
-												);
-											if (response) {
-												const df = new dfd.DataFrame(
-													response.results
-												);
-
-												const workbook =
-													new ExcelJS.Workbook();
-												workbook.creator = "Ryzr";
-												workbook.created = new Date();
-												const worksheet =
-													workbook.addWorksheet(
-														"Evaluation Report"
-													);
-
-												//Formats and adds headers
-												const headerRow =
-													worksheet.addRow(
-														df.columns
-													);
-												headerRow.eachCell(
-													(cell, index) => {
-														cell.value =
-															formatHeaderCells(
-																cell.value.toString()
-															);
-														cell.font = {
-															bold: true,
-															color: {
-																argb: "FFFFFFFF",
-															},
-															size: 12,
-															name: "SF Pro Display Regular",
-														};
-														cell.fill = {
-															type: "pattern",
-															pattern: "solid",
-															fgColor: {
-																argb: "FFB05AEF",
-															},
-														};
-														cell.alignment = {
-															vertical: "top",
-														};
-													}
-												);
-
-												const jsonData = dfd.toJSON(
-													df
-												) as Array<Record<string, any>>;
-
-												//Adds and formats data rows
-												jsonData.forEach((record) => {
-													const row =
-														worksheet.addRow(
-															Object.values(
-																record
-															)
-														);
-
-													row.eachCell(
-														(cell, index) => {
-															cell.font = {
-																size: 12,
-																name: "SF Pro Display Regular",
-																color: {
-																	argb: "FF000000",
-																},
-															};
-															cell.alignment = {
-																vertical: "top",
-																wrapText: true,
-															};
-														}
-													);
-												});
-
-												worksheet.columns.forEach(
-													(columns) => {
-														columns.width = 20;
-														columns.border = {
-															top: {
-																style: "thin",
-															},
-															bottom: {
-																style: "thin",
-															},
-															left: {
-																style: "thin",
-															},
-															right: {
-																style: "thin",
-															},
-														};
-													}
-												);
-
-												const buffer =
-													await workbook.xlsx.writeBuffer();
-												const blob = new Blob(
-													[buffer],
-													{
-														type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-													}
-												);
-												FileSaver.saveAs(
-													blob,
-													"report.xlsx"
-												);
-											}
-										} catch (error) {
-											toast({
-												title: "Error",
-												description: `Failed to download report. Please try again later!`,
-												variant: "destructive",
-											});
-										} finally {
-											setIsReportGenerating(false);
-										}
-									}}
-								>
-									{`${
-										reportList?.reports[0].report_id
-									}  ${new Date(
-										reportList?.reports[0].created_at
-									).toLocaleDateString()} ${new Date(
-										reportList?.reports[0].created_at
-									).toLocaleTimeString()}`}
-								</Button>
-								<CollapsibleContent className="flex flex-col gap-2">
-									{reportList.reports
-										.slice(1)
-										.map((report, index) => (
-											<Button
-												variant="ghost"
-												key={index}
-												className="rounded-md border justify-start px-4 py-2 font-mono text-sm w-fit"
-												disabled={isReportGenerating}
-												onClick={async (e) => {
-													try {
-														setIsReportGenerating(
-															true
-														);
-														const response: reportResultDTO =
-															await reportsService.getExcelReportResult(
-																userData.tenant_id,
-																auditeeId,
-																report.report_id
-															);
-														if (response) {
-															const df =
-																new dfd.DataFrame(
-																	response.results
-																);
-
-															dfd.toExcel(df, {
-																fileName:
-																	"report.xlsx",
-																sheetName:
-																	"Evaluation Report",
-															});
-														}
-													} catch (error) {
-														toast({
-															title: "Error",
-															description: `Failed to download report. Please try again later!`,
-															variant:
-																"destructive",
-														});
-													} finally {
-														setIsReportGenerating(
-															false
-														);
-													}
-												}}
-											>
-												{`${
-													report.report_id
-												} ${new Date(
-													report.created_at
-												).toLocaleDateString()} 
-												${new Date(report.created_at).toLocaleTimeString()}`}
-											</Button>
-										))}
-								</CollapsibleContent>
-							</Collapsible>
+							<div className="flex-1 overflow-y-auto mt-4">
+								<GenericDataTable
+									columns={reportColumns}
+									data={reportList}
+									isLoading={isReportListLoading}
+									filterKey="reportName"
+									onRowClick={(row) =>
+										handleReportDownload(row.report_id)
+									}
+									disabledRow={isReportGenerating}
+									pageSize={5}
+								/>
+							</div>
 						)}
 					</DialogContent>
 				</Dialog>
