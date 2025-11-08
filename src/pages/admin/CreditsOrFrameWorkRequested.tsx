@@ -67,6 +67,11 @@ const RequestedForms = ({ requestedType }: { requestedType: 'request_credits' | 
     const columns = useMemo<ColumnDef<CustomFormSubmissionDTO>[]>(
         () => [
             {
+                accessorKey: 'first_name',
+                header: 'Name',
+                cell: ({ row }) => <span className='flex gap-2'>{row.original.first_name} {row.original.last_name}</span>,
+            },
+            {
                 accessorKey: 'blob',
                 header: ({ column }) => (
                     <Button

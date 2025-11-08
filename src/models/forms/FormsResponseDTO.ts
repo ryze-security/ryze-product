@@ -5,6 +5,8 @@ export interface CustomFormSubmissionDTO {
     form_type: "request_framework" | "request_credits";
     blob: string;
     created_at: string;
+    first_name:string;
+    last_name:string;
 }
 
 export interface CustomFormListResponseDTO {
