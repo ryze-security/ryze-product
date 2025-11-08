@@ -226,17 +226,15 @@ function AuditeeForm() {
 
 	return (
 		<div className="relative min-h-screen font-roboto bg-black text-white p-6">
-			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-6 sm:px-12 lg:px-16">
+			<section className="flex w-full bg-black text-white pb-0 pt-16 lg:pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
 				{!isEditMode ? (
 					// Non-editable heading
-					<PageHeader
-						heading="Create a new auditee"
-						subtitle="Add a new auditee to conduct security assessment"
-						buttonText="Cancel"
-						buttonUrl="/auditee/dashboard"
-						isLoading={isLoading}
-						isClickable={false}
-					/>
+					<div className="max-w-7xl flex flex-col sm:flex-row justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10">
+						<div className="flex flex-col space-y-4 p-6">
+							<h1 className="text-6xl font-bold">Create a new auditee</h1>
+							<h3>Add a new auditee to conduct security assessment</h3>
+						</div>
+					</div>
 				) : (
 					// Editable heading
 					<div className="max-w-7xl w-full flex justify-between px-4">
@@ -293,8 +291,8 @@ function AuditeeForm() {
 				)}
 			</section>
 
-			<section className="flex justify-center items-center w-full bg-black text-white pt-10 px-6 sm:px-12 lg:px-16">
-				<div className="max-w-7xl w-full mt-1 px-4">
+			<section className="flex justify-between items-center w-full bg-black text-white pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
+				<div className="max-w-7xl w-full p-0 sm:p-6 pb-10 mt-1">
 					<FormProvider {...methods}>
 						<form className="flex flex-col w-full">
 							{/* Auditee Name Input Field */}
