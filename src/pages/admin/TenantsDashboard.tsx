@@ -88,10 +88,10 @@ const TenantsDashboard = () => {
                 )
                 ,
             },
-            {
-                accessorKey: 'tenant_id',
-                header: 'Tenant ID',
-            },
+            // {
+            //     accessorKey: 'tenant_id',
+            //     header: 'Tenant ID',
+            // },
             {
                 accessorKey: 'created_on',
                 header: ({ column }) => (

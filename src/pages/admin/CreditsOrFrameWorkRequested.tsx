@@ -150,16 +150,6 @@ const RequestedForms = ({ requestedType }: { requestedType: 'request_credits' | 
                 header: 'Submission ID',
                 cell: ({ row }) => <span className='flex gap-2'>{row.original.submission_id}</span>,
             },
-            {
-                accessorKey: 'user_id',
-                header: 'User ID',
-                cell: ({ row }) => <span className='flex gap-2'>{row.original.user_id}</span>,
-            },
-            {
-                accessorKey: 'tenant_id',
-                header: 'Tenant ID',
-                cell: ({ row }) => <span className='flex gap-2'>{row.original.tenant_id}</span>,
-            },
         ],
         []
     )
