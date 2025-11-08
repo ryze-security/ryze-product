@@ -211,7 +211,7 @@ const ControlsSelection = ({ formControl, name, selectedFramework, isControlsLoa
                                                             aria-label={`Select ${control.control_display_name}`}
                                                         />
                                                     </TableCell>
-                                                    <TableCell className="font-medium">{control.control_id}</TableCell>
+                                                    <TableCell className="font-medium">{control.control_id.slice(2)}</TableCell>
                                                     <TableCell>{control.control_display_name}</TableCell>
                                                 </TableRow>
                                             ))
@@ -283,7 +283,7 @@ const ControlsSelection = ({ formControl, name, selectedFramework, isControlsLoa
                                                             aria-label={`Select ${control.control_display_name}`}
                                                         />
                                                     </TableCell>
-                                                    <TableCell className="font-medium">{control.control_id}</TableCell>
+                                                    <TableCell className="font-medium">{control.control_id.slice(2)}</TableCell>
                                                     <TableCell>{control.control_display_name}</TableCell>
                                                 </TableRow>
                                             ))}
