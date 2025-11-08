@@ -194,7 +194,7 @@ const RequestedForms = ({ requestedType }: { requestedType: 'request_credits' | 
     }
 
     return (
-        <div className="space-y-4 lg:px-4 max-w-7xl w-full">
+        <div className="space-y-4 max-w-7xl w-full">
             <Input
                 placeholder="Search..."
                 value={globalFilter}
@@ -307,7 +307,7 @@ const RequestedForms = ({ requestedType }: { requestedType: 'request_credits' | 
 
 const CreditsAndFrameWorkRequested = () => {
     return (
-        <div className="space-y-4 p-4">
+        <div className="space-y-4 max-w-7xl">
             <h1 className="text-2xl font-bold">Credits And Framework Requests</h1>
 
             <Tabs defaultValue="credits" className="w-full">

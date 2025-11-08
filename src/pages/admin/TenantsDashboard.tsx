@@ -293,7 +293,7 @@ const TenantsDashboard = () => {
     }
 
     return (
-        <div className="space-y-4 lg:px-4">
+        <div className="space-y-4 max-w-7xl">
             <Input
                 placeholder="Search tenants..."
                 value={globalFilter}

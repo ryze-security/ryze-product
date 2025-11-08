@@ -37,12 +37,13 @@ const AdminDashboard: React.FC = () => {
 
     return (
         <div className="min-h-screen font-roboto bg-black text-white p-6">
-            <section className='flex flex-col w-full bg-black text-white pb-0 pt-10 px-3 sm:px-6 md:px-4 lg:px-16 gap-6'>
-                <PageHeader
-                    heading="Admin Dashboard"
-                    subtitle="Overview of your organization's metrics"
-                    isClickable={false}
-                />
+            <section className="flex flex-col w-full bg-black text-white pb-0 pt-16 lg:pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
+                <div className="max-w-7xl flex flex-col sm:flex-row justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10">
+                    <div className="flex flex-col space-y-4 p-6">
+                        <h1 className="text-6xl font-bold">Admin Dashboard</h1>
+                        <h3>Overview of your organization's metrics and user management</h3>
+                    </div>
+                </div>
 
                 <div className="w-full">
                     <NavHeader

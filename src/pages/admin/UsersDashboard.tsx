@@ -177,7 +177,7 @@ const UsersDashboard = () => {
     }
 
     return (
-        <div className="space-y-4 lg:px-4 max-w-7xl w-full">
+        <div className="space-y-4 max-w-7xl w-full">
             <Input
                 placeholder="Search..."
                 value={globalFilter}
