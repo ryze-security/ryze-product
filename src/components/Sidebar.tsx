@@ -346,7 +346,7 @@ function MobileNavbar() {
 														className={cn(
 															"p-2 rounded-md transition-colors cursor-pointer",
 															!n.read
-																? "bg-sky-900/30 hover:bg-sky-900/50"
+																? "bg-neutral-800/30 hover:bg-neutral-800/50"
 																: "hover:bg-zinc-700/50"
 														)}
 														onClick={() => {

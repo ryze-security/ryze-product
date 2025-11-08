@@ -385,7 +385,7 @@ function AuditeeForm() {
 									trigger={
 										<Button
 											type="button"
-											className="bg-sky-500 hover:bg-sky-600 rounded-2xl transition-colors text-white font-bold text-md"
+											className="bg-neutral-800 hover:bg-neutral-700 rounded-2xl transition-colors text-white font-bold text-md"
 											disabled={
 												isLoading ||
 												isFetchingData ||

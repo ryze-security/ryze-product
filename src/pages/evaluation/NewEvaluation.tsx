@@ -879,7 +879,7 @@ const NewEvaluation = () => {
 										type="button"
 										onClick={goNext}
 										disabled={isSubmitLoading}
-										className="px-4 py-2 bg-sky-600 text-white font-bold rounded-full hover:bg-sky-700 disabled:opacity-30"
+										className="px-4 py-2 bg-neutral-800 text-white font-bold rounded-full hover:bg-neutral-700 disabled:opacity-30"
 									>
 										Next
 									</button>
@@ -889,7 +889,7 @@ const NewEvaluation = () => {
 											<button
 												type="button"
 												disabled={isSubmitLoading}
-												className="px-4 py-2 bg-sky-600 text-white font-bold rounded-full hover:bg-sky-700 disabled:opacity-30"
+												className="px-4 py-2 bg-neutral-800 text-white font-bold rounded-full hover:bg-neutral-700 disabled:opacity-30"
 											>
 												{isSubmitLoading ? (
 													<RoundSpinner />
@@ -980,7 +980,7 @@ const NewEvaluation = () => {
 									</DialogClose>
 									{/* TODO: integrate submit action and hookup the hook-form for the same  */}
 									<Button
-										className="bg-sky-500 hover:bg-sky-600 transition-colors 
+										className="bg-neutral-800 hover:bg-neutral-700 transition-colors 
 							duration-200 text-white"
 										type="submit"
 										disabled={frameworkFormSubmitLoading}

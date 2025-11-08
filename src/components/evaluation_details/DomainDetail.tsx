@@ -545,7 +545,7 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 				{/* Export button */}
 				{/* <Button
 					variant="default"
-					className={`rounded-2xl bg-sky-500 hover:bg-sky-600 transition-colors text-white font-bold text-md`}
+					className={`rounded-2xl bg-neutral-800 hover:bg-neutral-700 transition-colors text-white font-bold text-md`}
 				>
 					{isLoading ? <RoundSpinner /> : buttonText}
 					Export

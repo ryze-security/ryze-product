@@ -51,7 +51,7 @@ function PageHeader(props: Props) {
 							disabled={isLoading}
 							className={` ${
 								variant === "add"
-									? "bg-sky-500 hover:bg-sky-600"
+									? "bg-neutral-800 hover:bg-neutral-700"
 									: "bg-zinc-700 hover:bg-zinc-800"
 							} rounded-2xl transition-colors text-white font-bold text-md w-fit`}
 							onClick={() => {
