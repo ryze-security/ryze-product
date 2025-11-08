@@ -557,7 +557,7 @@ const NewEvaluation = () => {
 			</section>
 
 			<section className="flex justify-center items-center w-full bg-black text-white pt-5 lg:pt-10 px-3 sm:px-12 lg:px-16">
-				<div className="px-3 sm:px-6 max-w-7xl w-full">
+				<div className=" max-w-7xl w-full">
 					<FormProvider {...methods}>
 						<form className="flex flex-col w-full">
 							{/* Step Content */}
@@ -861,7 +861,7 @@ const NewEvaluation = () => {
 							)}
 
 							{/* Footer Navigation Buttons */}
-							<div className="flex justify-start gap-4 mt-4 sm:mt-0">
+							<div className="flex justify-start gap-4 mt-4">
 								{currentStep !== 0 && (
 									<button
 										type="button"
