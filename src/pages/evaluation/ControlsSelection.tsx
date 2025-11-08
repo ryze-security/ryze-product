@@ -19,6 +19,9 @@ interface ControlsSelectionProps {
     formControl: any;
     name: string;
     selectedFramework: any[];
+    isControlsLoading: boolean;
+    setIsControlsLoading: (isLoading: boolean) => void;
+    controlsFilter: string;
 }
 
 // const columns: ColumnDef<ControlItem>[] = [
@@ -58,18 +61,16 @@ interface ControlsSelectionProps {
 
 
 
-const ControlsSelection = ({ formControl, name, selectedFramework }: ControlsSelectionProps) => {
+const ControlsSelection = ({ formControl, name, selectedFramework, isControlsLoading, setIsControlsLoading, controlsFilter }: ControlsSelectionProps) => {
     const userData = useAppSelector((state) => state.appUser);
     const { field: { value, onChange } } = useController({ name, control: formControl });
 
-    const [filter, setFilter] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
     const [controls, setControls] = useState<ControlItem[]>([]); // store all the controls
     const [selectedControls, setSelectedControls] = useState<ControlItem[]>([]) // store all the selected controls, default all controls are selected.
 
     // apply filter on main controls list when user is searching...
     const filteredControls = controls.filter(controlItem =>
-        controlItem.control_display_name.toLowerCase().includes(filter.toLowerCase())
+        controlItem.control_display_name.toLowerCase().includes(controlsFilter.toLowerCase())
     );
 
     // Natural sort comparison function for control IDs
@@ -101,7 +102,7 @@ const ControlsSelection = ({ formControl, name, selectedFramework }: ControlsSel
     const fetchControls = async () => {
         if (!selectedFramework[0]?.value) return;
 
-        setIsLoading(true);
+        setIsControlsLoading(true);
         try {
             const response: getControlsResponseDTO = await evaluationServices.evaluationService.getControls(
                 userData.tenant_id,
@@ -129,7 +130,7 @@ const ControlsSelection = ({ formControl, name, selectedFramework }: ControlsSel
                 variant: "destructive",
             });
         } finally {
-            setIsLoading(false);
+            setIsControlsLoading(false);
         }
     };
 
@@ -144,15 +145,15 @@ const ControlsSelection = ({ formControl, name, selectedFramework }: ControlsSel
     }, [selectedControls])
 
     return (
-        <div className="space-y-6">
-            <div className="grid grid-cols-2 space-x-5 max-w-3xl items-center">
-                <div className="flex-1 relative ">
+        <>
+            {/* <div className="grid grid-cols-2 space-x-5 max-w-3xl items-center">
+                <div className="relative ">
                     <Input
                         placeholder="Search controls..."
-                        value={filter}
+                        value={controlsFilter}
                         onChange={(e) => setFilter(e.target.value)}
                         className="max-w-sm text-xl bg-white pl-10 text-black selection:text-black"
-                        disabled={isLoading}
+                        disabled={isControlsLoading}
                     />
                     <SearchIcon className="absolute left-3 top-2.5 transform text-gray-500 size-5" />
                 </div>
@@ -161,16 +162,16 @@ const ControlsSelection = ({ formControl, name, selectedFramework }: ControlsSel
                     <PlusCircle />
                     <span>Statement of Applicability</span>
                 </Button>
-            </div>
+            </div> */}
 
-            {isLoading ? (
+            {isControlsLoading ? (
                 <>
                     <RoundSpinner />
                 </>
             ) : (
-                <div className="flex w-full">
+                <div className="flex flex-col lg:flex-row gap-y-12 w-full">
                     {/* Table on the left, this will show all the selected and unselected controls (also it will show filtered controls) */}
-                    <div className="w-1/2 pr-2">
+                    <div className="lg:w-1/2 w-full pr-2">
                         <div className="rounded-md border">
                             <ScrollArea className="h-[500px] w-full">
                                 <Table>
@@ -189,8 +190,8 @@ const ControlsSelection = ({ formControl, name, selectedFramework }: ControlsSel
                                                     aria-label="Select all"
                                                 />
                                             </TableHead>
-                                            <TableHead>Control ID</TableHead>
-                                            <TableHead>Control Title</TableHead>
+                                            <TableHead className="w-24">Control ID</TableHead>
+                                            <TableHead className="w-full text-start">Control Title</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -216,7 +217,7 @@ const ControlsSelection = ({ formControl, name, selectedFramework }: ControlsSel
                                             ))
                                         ) : (
                                             <TableRow>
-                                                <TableCell colSpan={3} className="h-24 text-center">
+                                                <TableCell colSpan={3} className="h-[450px] text-center">
                                                     No controls found
                                                 </TableCell>
                                             </TableRow>
@@ -228,7 +229,7 @@ const ControlsSelection = ({ formControl, name, selectedFramework }: ControlsSel
                     </div>
 
                     {/* Table on the right, shows only unselected controls */}
-                    <div className="w-1/2 pl-2 relative">
+                    <div className="lg:w-1/2 w-full pl-2 relative">
 
                         <h3 className="absolute -top-8 right-2 text-base">
                             Deselected controls
@@ -247,7 +248,7 @@ const ControlsSelection = ({ formControl, name, selectedFramework }: ControlsSel
                                                         // Get all currently visible unselected controls
                                                         const visibleUnselected = controls.filter(control =>
                                                             !selectedControls.some(selected => selected.control_id === control.control_id) &&
-                                                            control.control_display_name.toLowerCase().includes(filter.toLowerCase())
+                                                            control.control_display_name.toLowerCase().includes(controlsFilter.toLowerCase())
                                                         );
                                                         // Add them to selected controls
                                                         setSelectedControls(prev => [...prev, ...visibleUnselected]);
@@ -255,8 +256,8 @@ const ControlsSelection = ({ formControl, name, selectedFramework }: ControlsSel
                                                     aria-label="Select all visible controls"
                                                 />
                                             </TableHead>
-                                            <TableHead>Control ID</TableHead>
-                                            <TableHead>Control Title</TableHead>
+                                            <TableHead className="w-24">Control ID</TableHead>
+                                            <TableHead className="w-full text-start">Control Title</TableHead>
 
                                             <span className="text-sm text-muted-foreground absolute right-3 top-1/4">
                                                 {controls.filter(control =>
@@ -269,7 +270,7 @@ const ControlsSelection = ({ formControl, name, selectedFramework }: ControlsSel
                                         {controls
                                             .filter(control =>
                                                 !selectedControls.some(selected => selected.control_id === control.control_id) &&
-                                                control.control_display_name.toLowerCase().includes(filter.toLowerCase())
+                                                control.control_display_name.toLowerCase().includes(controlsFilter.toLowerCase())
                                             )
                                             .map((control) => (
                                                 <TableRow key={`deselected-${control.control_id}`}>
@@ -288,11 +289,11 @@ const ControlsSelection = ({ formControl, name, selectedFramework }: ControlsSel
                                             ))}
                                         {controls.every(control =>
                                             selectedControls.some(selected => selected.control_id === control.control_id) ||
-                                            !control.control_display_name.toLowerCase().includes(filter.toLowerCase())
+                                            !control.control_display_name.toLowerCase().includes(controlsFilter.toLowerCase())
                                         ) && (
                                                 <TableRow>
-                                                    <TableCell colSpan={3} className="h-24 text-center">
-                                                        {controls.length === 0 ? 'No controls available' : 'All controls are selected'}
+                                                    <TableCell colSpan={3} className="h-[450px] text-center">
+                                                        {controls.length === 0 ? 'No controls available' : 'Controls you deselect will show up here'}
                                                     </TableCell>
                                                 </TableRow>
                                             )}
@@ -303,7 +304,7 @@ const ControlsSelection = ({ formControl, name, selectedFramework }: ControlsSel
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 };
 

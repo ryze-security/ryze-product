@@ -53,7 +53,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadCollections } from "@/store/slices/collectionSlice";
 import { loadCompanyData } from "@/store/slices/companySlice";
 import { ColumnDef } from "@tanstack/react-table";
-import { Check, ChevronsUpDown, PlusCircleIcon, SearchIcon } from "lucide-react";
+import { Check, ChevronsUpDown, PlusCircle, PlusCircleIcon, SearchIcon } from "lucide-react";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -128,6 +128,9 @@ const NewEvaluation = () => {
 	const [openDialog, setOpenDialog] = useState(false);
 	const [creditsAlert, setCreditsAlert] = useState(false);
 	const [frameworkFormSubmitLoading, setFrameworkFormSubmitLoading] = useState(false);
+
+	const [controlsFilter, setControlsFilter] = useState("");
+	const [isControlsLoading, setIsControlsLoading] = useState<boolean>(false);
 
 	const goNext = async (e: React.MouseEvent) => {
 		e.preventDefault();
@@ -509,13 +512,33 @@ const NewEvaluation = () => {
 									);
 								})}
 							</div>
+
+							{currentStep === 1 &&
+								<div className="grid grid-cols-2 space-x-5 max-w-3xl items-center">
+									<div className="relative ">
+										<Input
+											placeholder="Search controls..."
+											value={controlsFilter}
+											onChange={(e) => setControlsFilter(e.target.value)}
+											className="max-w-sm text-xl bg-white pl-10 text-black selection:text-black"
+											disabled={isControlsLoading}
+										/>
+										<SearchIcon className="absolute left-3 top-2.5 transform text-gray-500 size-5" />
+									</div>
+									<Button
+										className="bg-neutral-800 hover:bg-neutral-700 text-white w-fit">
+										<PlusCircle />
+										<span>Statement of Applicability</span>
+									</Button>
+								</div>
+							}
 						</section>
 
 					</div>
 
 					<Button
 						variant="default"
-						className={`bg-[#2A2A2A] m-6 mt-0 sm:mt-6 hover:bg-gray-200 rounded-full transition-colors text-white font-extrabold text-md w-fit px-6 py-2`}
+						className={`bg-neutral-800 hover:bg-neutral-700 m-6 mt-0 sm:mt-6 rounded-full transition-colors text-white font-extrabold text-md w-fit px-6 py-2`}
 						onClick={() => {
 							navigate("/evaluation");
 						}}
@@ -783,6 +806,9 @@ const NewEvaluation = () => {
 													selectedFramework={methods.getValues("selectedFrameworks")}
 													formControl={methods.control}
 													name="controls"
+													isControlsLoading={isControlsLoading}
+													controlsFilter={controlsFilter}
+													setIsControlsLoading={setIsControlsLoading}
 												/>
 											</>
 										)}
