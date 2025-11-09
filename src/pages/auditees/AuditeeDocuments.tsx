@@ -263,8 +263,10 @@ function AuditeeDocuments() {
 			<section className="flex w-full bg-black text-white pb-0 pt-16 lg:pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
 				<div className="max-w-7xl flex flex-col sm:flex-row items-start justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10">
 					<div className="flex flex-col space-y-4 p-6">
+						<div className={`w-fit transition-colors mx-0 px-4 bg-white text-black rounded-full overflow-visible`}>
+							Manage Files
+						</div>
 						<h1 className="text-6xl font-bold">
-							Manage Files:{" "}
 							{isAuditeeLoading ? <RoundSpinner /> : auditeeName}
 						</h1>
 						<div>
@@ -273,14 +275,6 @@ function AuditeeDocuments() {
 					</div>
 
 					<div className="flex items-center gap-4 m-6 mt-0 sm:mt-6">
-						<Button
-							variant="default"
-							disabled={isLoading}
-							className="bg-white hover:bg-gray-200 rounded-full text-black font-extrabold text-md px-6 py-2"
-							onClick={() => navigate("/auditee/edit/" + auditeeId)}
-						>
-							{isLoading ? <RoundSpinner /> : "Back"}
-						</Button>
 						<Button
 							variant="default"
 							className="bg-white hover:bg-gray-200 rounded-full text-black font-extrabold text-md px-6 py-2"
