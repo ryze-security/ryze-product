@@ -5,7 +5,7 @@ import { FileUploadArea } from "@/components/newevaluation/FileUploadArea";
 import { FrameworkCard } from "@/components/newevaluation/FrameworkCard";
 import { SummaryStep } from "@/components/newevaluation/SummaryStep";
 import PageHeader from "@/components/PageHeader";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
 	Command,
 	CommandEmpty,
@@ -537,27 +537,19 @@ const NewEvaluation = () => {
 					</div>
 
 					<Button
-						variant="default"
-						className={`bg-neutral-800 hover:bg-neutral-700 m-6 mt-0 sm:mt-6 rounded-full transition-colors text-white font-extrabold text-md w-fit px-6 py-2`}
+						variant="primary"
+						className={`m-6 mt-0 sm:mt-6 rounded-full transition-colors font-extrabold text-md w-fit px-6 py-2`}
 						onClick={() => {
 							navigate("/evaluation");
 						}}
 					>
 						Cancel
 					</Button>
-
-					{/* <PageHeader
-						heading="Start a new evaluation"
-						subtitle="Review documentation gaps against leading security standards and frameworks"
-						buttonText="Cancel"
-						buttonUrl="/evaluation"
-						isLoading={isSubmitLoading}
-					/> */}
 				</div>
 			</section>
 
 			<section className="flex justify-center items-center w-full bg-black text-white pt-5 lg:pt-10 px-3 sm:px-12 lg:px-16">
-				<div className=" max-w-7xl w-full">
+				<div className=" max-w-7xl w-full px-2">
 					<FormProvider {...methods}>
 						<form className="flex flex-col w-full">
 							{/* Step Content */}
@@ -687,15 +679,20 @@ const NewEvaluation = () => {
 												trigger={
 													<Button
 														type="button"
-														variant="secondary"
+														variant="default"
 													>
-														<PlusCircleIcon /> Add
+														<PlusCircleIcon strokeWidth={3} /> Add
 													</Button>
 												}
 												title="Alert!"
 												subheading="You are leaving this page, any unsaved changes will be lost. Are you sure you want to proceed?"
 												actionLabel="Confirm"
 												actionHref={"/auditee/new"}
+												confirmButtonClassName={cn(
+													buttonVariants({
+														variant: "primary",
+													})
+												)}
 											/>
 										</div>
 									</div>

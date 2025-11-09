@@ -251,8 +251,7 @@ export function GenericDataTable<TData, TValue>({
 							</Button>
 						)}
 						<Button
-							variant="default"
-							className="bg-zinc-700 hover:bg-zinc-600 text-white border-zinc-600"
+							variant="primary"
 							size="sm"
 							onClick={() => table.nextPage()}
 							disabled={!table.getCanNextPage()}

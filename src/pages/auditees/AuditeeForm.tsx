@@ -379,7 +379,8 @@ function AuditeeForm() {
 									trigger={
 										<Button
 											type="button"
-											className="bg-neutral-800 hover:bg-neutral-700 rounded-2xl transition-colors text-white font-bold text-md"
+											variant="primary"
+											className="rounded-2xl transition-colors font-bold text-md"
 											disabled={
 												isLoading ||
 												isFetchingData ||
