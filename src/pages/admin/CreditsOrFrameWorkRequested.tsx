@@ -67,6 +67,11 @@ const RequestedForms = ({ requestedType }: { requestedType: 'request_credits' | 
     const columns = useMemo<ColumnDef<CustomFormSubmissionDTO>[]>(
         () => [
             {
+                accessorKey: 'first_name',
+                header: 'Name',
+                cell: ({ row }) => <span className='flex gap-2'>{row.original.first_name} {row.original.last_name}</span>,
+            },
+            {
                 accessorKey: 'blob',
                 header: ({ column }) => (
                     <Button
@@ -145,16 +150,6 @@ const RequestedForms = ({ requestedType }: { requestedType: 'request_credits' | 
                 header: 'Submission ID',
                 cell: ({ row }) => <span className='flex gap-2'>{row.original.submission_id}</span>,
             },
-            {
-                accessorKey: 'user_id',
-                header: 'User ID',
-                cell: ({ row }) => <span className='flex gap-2'>{row.original.user_id}</span>,
-            },
-            {
-                accessorKey: 'tenant_id',
-                header: 'Tenant ID',
-                cell: ({ row }) => <span className='flex gap-2'>{row.original.tenant_id}</span>,
-            },
         ],
         []
     )
@@ -199,7 +194,7 @@ const RequestedForms = ({ requestedType }: { requestedType: 'request_credits' | 
     }
 
     return (
-        <div className="space-y-4 lg:px-4 max-w-7xl w-full">
+        <div className="space-y-4 max-w-7xl w-full">
             <Input
                 placeholder="Search..."
                 value={globalFilter}
@@ -295,7 +290,7 @@ const RequestedForms = ({ requestedType }: { requestedType: 'request_credits' | 
                         )}
                         <Button
                             variant="default"
-                            className="bg-sky-500 hover:bg-sky-600 text-white"
+                            className="bg-neutral-800 hover:bg-neutral-700 text-white"
                             size="sm"
                             onClick={() => creditsRequestTable.nextPage()}
                             disabled={!creditsRequestTable.getCanNextPage()}
@@ -312,7 +307,7 @@ const RequestedForms = ({ requestedType }: { requestedType: 'request_credits' | 
 
 const CreditsAndFrameWorkRequested = () => {
     return (
-        <div className="space-y-4 p-4">
+        <div className="space-y-4 max-w-7xl">
             <h1 className="text-2xl font-bold">Credits And Framework Requests</h1>
 
             <Tabs defaultValue="credits" className="w-full">

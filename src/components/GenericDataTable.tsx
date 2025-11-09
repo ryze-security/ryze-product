@@ -8,6 +8,7 @@ import {
 	getPaginationRowModel,
 	getFilteredRowModel,
 	useReactTable,
+	PaginationState,
 } from "@tanstack/react-table";
 import {
 	Table,
@@ -36,6 +37,15 @@ interface DataTableProps<TData, TValue> {
 	disabledRow?: boolean;
 	pageSize?: number;
 	clickableRow?: boolean;
+
+	// External control props
+	externalFilter?: string;
+	setExternalFilter?: (value: string) => void;
+	externalSorting?: SortingState;
+	setExternalSorting?: (value: SortingState) => void;
+	externalPagination?: PaginationState;
+	setExternalPagination?: (value: PaginationState) => void;
+	externalSearch?: boolean;
 }
 
 export function GenericDataTable<TData, TValue>({
@@ -49,14 +59,33 @@ export function GenericDataTable<TData, TValue>({
 	disabledRow = false,
 	pageSize = 10,
 	clickableRow = true,
+
+	// External control props
+	externalFilter,
+	setExternalFilter,
+	externalSorting,
+	setExternalSorting,
+	externalPagination,
+	setExternalPagination,
+	externalSearch = false,
 }: DataTableProps<TData, TValue>) {
-	const [filter, setFilter] = React.useState("");
-	const [sorting, setSorting] = React.useState<SortingState>([]);
+	const [internalFilter, setInternalFilter] = React.useState("");
+	const [internalSorting, setInternalSorting] = React.useState<SortingState>([]);
 	const navigate = useNavigate();
-	const [pagination, setPagination] = React.useState({
+	const [internalPagination, setInternalPagination] = React.useState({
 		pageIndex: 0,
 		pageSize: pageSize,
-	})
+	});
+
+	// Use external state if provided, otherwise use internal state
+	const filter = externalSearch ? externalFilter || "" : internalFilter;
+	const setFilter = externalSearch && setExternalFilter ? setExternalFilter : setInternalFilter;
+
+	const sorting = externalSorting !== undefined ? externalSorting : internalSorting;
+	const setSorting = setExternalSorting || setInternalSorting;
+
+	const pagination = externalPagination !== undefined ? externalPagination : internalPagination;
+	const setPagination = setExternalPagination || setInternalPagination;
 
 	const table = useReactTable({
 		data,
@@ -99,13 +128,15 @@ export function GenericDataTable<TData, TValue>({
 	};
 
 	return (
-		<div className="space-y-4 lg:px-4 max-w-7xl w-full">
-			<Input
-				placeholder="Search..."
-				value={filter}
-				onChange={(e) => setFilter(e.target.value)}
-				className="max-w-sm text-xl bg-[#242424] text-white border-zinc-700 focus-visible:ring-zinc-700"
-			/>
+		<div className="space-y-4 max-w-7xl w-full">
+			{!externalSearch && (
+				<Input
+					placeholder="Search..."
+					value={filter}
+					onChange={(e) => setFilter(e.target.value)}
+					className="max-w-sm text-xl bg-[#242424] text-white border-zinc-700 focus-visible:ring-zinc-700"
+				/>
+			)}
 			<div className="rounded-md">
 				<Table className="rounded-md bg-zinc-900">
 					<TableHeader>

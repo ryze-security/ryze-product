@@ -88,10 +88,10 @@ const TenantsDashboard = () => {
                 )
                 ,
             },
-            {
-                accessorKey: 'tenant_id',
-                header: 'Tenant ID',
-            },
+            // {
+            //     accessorKey: 'tenant_id',
+            //     header: 'Tenant ID',
+            // },
             {
                 accessorKey: 'created_on',
                 header: ({ column }) => (
@@ -293,7 +293,7 @@ const TenantsDashboard = () => {
     }
 
     return (
-        <div className="space-y-4 lg:px-4">
+        <div className="space-y-4 max-w-7xl">
             <Input
                 placeholder="Search tenants..."
                 value={globalFilter}
@@ -386,7 +386,7 @@ const TenantsDashboard = () => {
                         )}
                         <Button
                             variant="default"
-                            className="bg-sky-500 hover:bg-sky-600 text-white"
+                            className="bg-neutral-800 hover:bg-neutral-700 text-white"
                             size="sm"
                             onClick={() => table.nextPage()}
                             disabled={!table.getCanNextPage()}

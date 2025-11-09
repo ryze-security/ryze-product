@@ -186,7 +186,7 @@ function Index() {
 						<DropdownMenuTrigger asChild>
 							<Button
 								variant="default"
-								className="bg-sky-500 rounded-2xl hover:bg-sky-600 text-white font-bold text-md px-4 py-2 flex items-center gap-2 w-fit text-sm md:text-base"
+								className="bg-neutral-800 rounded-2xl hover:bg-neutral-700 text-white font-bold text-md px-4 py-2 flex items-center gap-2 w-fit text-sm md:text-base"
 							>
 								<PlusCircleIcon />
 								New

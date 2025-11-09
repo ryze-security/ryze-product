@@ -177,7 +177,7 @@ const UsersDashboard = () => {
     }
 
     return (
-        <div className="space-y-4 lg:px-4 max-w-7xl w-full">
+        <div className="space-y-4 max-w-7xl w-full">
             <Input
                 placeholder="Search..."
                 value={globalFilter}
@@ -276,7 +276,7 @@ const UsersDashboard = () => {
                         )}
                         <Button
                             variant="default"
-                            className="bg-sky-500 hover:bg-sky-600 text-white"
+                            className="bg-neutral-800 hover:bg-neutral-700 text-white"
                             size="sm"
                             onClick={() => table.nextPage()}
                             disabled={!table.getCanNextPage()}

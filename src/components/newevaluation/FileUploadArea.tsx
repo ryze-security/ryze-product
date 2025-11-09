@@ -163,7 +163,7 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 	return (
 		<div className="flex gap-8 justify-evenly font-roboto">
 			{/* Existing Files Datatable */}
-			<div className="w-full max-h-fit px-4 rounded-lg scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
+			<div className="w-full max-h-fit px-1 rounded-lg scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
 				<div className="w-full flex justify-start items-center gap-4">
 					<p className="text-lg font-semibold">
 						Choose your files for evaluation
@@ -190,11 +190,10 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 					<DialogDescription>
 						<div
 							{...getRootProps()}
-							className={`border-dashed flex flex-col gap-10 justify-center border-2 p-6 text-center rounded-lg mb-4 w-full min-h-fit ${
-								isLoading
+							className={`border-dashed flex flex-col gap-10 justify-center border-2 p-6 text-center rounded-lg mb-4 w-full min-h-fit ${isLoading
 									? "pointer-events-none opacity-50"
 									: ""
-							}`}
+								}`}
 						>
 							<input {...getInputProps()} disabled={isLoading} />
 							<div className="mx-auto bg-gray-500 rounded-full p-2 opacity-80">
