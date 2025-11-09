@@ -251,6 +251,7 @@ function EvaluationReports(props: Props) {
 					isLoading={isReportListLoading}
 					filterKey="reportName"
 					onRowClick={(row) => handleReportDownload(row.report_id)}
+					downloadButton={true}
 					disabledRow={isReportDownloading}
 				/>
 			</section>

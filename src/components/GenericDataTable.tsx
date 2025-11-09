@@ -37,6 +37,7 @@ interface DataTableProps<TData, TValue> {
 	disabledRow?: boolean;
 	pageSize?: number;
 	clickableRow?: boolean;
+	downloadButton?: boolean;
 
 	// External control props
 	externalFilter?: string;
@@ -59,6 +60,7 @@ export function GenericDataTable<TData, TValue>({
 	disabledRow = false,
 	pageSize = 10,
 	clickableRow = true,
+	downloadButton = false,
 
 	// External control props
 	externalFilter,
@@ -149,21 +151,19 @@ export function GenericDataTable<TData, TValue>({
 									<TableHead
 										key={header.id}
 										className={`text-white text-base bg-[#1a1a1a]
-					${index === 0
-						? "rounded-tl-md"
-						: ""
-					}
-					${index === headerGroup.headers.length - 1 ? "rounded-tr-md" : ""}`}
-									>
+													${index === 0 ? "rounded-tl-md" : ""}
+													${index === headerGroup.headers.length - 1 ? "rounded-tr-md" : ""}`}>
 										{flexRender(
 											header.column.columnDef.header,
 											header.getContext()
 										)}
 									</TableHead>
 								))}
-								<TableHead className="w-10 rounded-tr-md">
-									<span className="sr-only">Actions</span>
-								</TableHead>
+								{downloadButton && (
+									<TableHead className="w-10 rounded-tr-md">
+										<span className="sr-only">Actions</span>
+									</TableHead>
+								)}
 							</TableRow>
 						))}
 					</TableHeader>
@@ -198,18 +198,20 @@ export function GenericDataTable<TData, TValue>({
 											)}
 										</TableCell>
 									))}
-									<TableCell className="w-10">
-										<button
-											onClick={(e) => {
-												e.stopPropagation();
-												handleRowClick(row.original);
-											}}
-											className="text-violet-light-ryzr transition-colors"
-											title="Download"
-										>
-											<Download size={18} />
-										</button>
-									</TableCell>
+									{downloadButton && (
+										<TableCell className="w-10">
+											<button
+												onClick={(e) => {
+													e.stopPropagation();
+													handleRowClick(row.original);
+												}}
+												className="text-violet-light-ryzr transition-colors"
+												title="Download"
+											>
+												<Download size={18} />
+											</button>
+										</TableCell>
+									)}
 								</TableRow>
 							))
 						) : (
