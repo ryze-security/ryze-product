@@ -581,7 +581,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 				<>
 					{/* Eval stats */}
 					{/* Eval stats */}
-					<div className={`flex flex-col rounded-2xl bg-gradient-to-b to-[#1A1A1A] 
+					<div className={`flex flex-col pb-12 rounded-t-2xl bg-gradient-to-b to-black 
 					${Number(overallScore) >= 75
 							? 'from-[#71AE57]'
 							: Number(overallScore) >= 50
@@ -600,7 +600,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 								{evalMetadata?.company_display_name}
 							</div>
 
-							<div className="flex flex-col space-y-2 sm:flex-row gap-x-4 text-base sm:items-baseline text-nowrap">
+							<div className="flex flex-col !mt-4 sm:flex-row gap-x-4 text-base sm:items-baseline text-nowrap">
 								<span>
 									Documents uploaded.
 								</span>
@@ -653,19 +653,19 @@ const DetailHome = forwardRef((props: Props, ref) => {
 								Overall compliance score.
 							</div>
 						</div>
+					</div>
 
-						{/* Evaluation Cards */}
-						<div className="flex overflow-x-auto space-x-4 w-full p-4 sm:mt-6 bg-[#1A1A1A]/75 rounded-b-2xl scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
-							{cardData.map((item, index) => (
-								<InfoCard
-									key={item.id}
-									heading={item.heading}
-									data={item.data}
-									stepChangefn={stepChangefn}
-									itemId={index + 1}
-								/>
-							))}
-						</div>
+					{/* Evaluation Cards */}
+					<div className="flex overflow-x-auto space-x-4 w-full p-4 sm:mt-2 rounded-b-2xl scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
+						{cardData.map((item, index) => (
+							<InfoCard
+								key={item.id}
+								heading={item.heading}
+								data={item.data}
+								stepChangefn={stepChangefn}
+								itemId={index + 1}
+							/>
+						))}
 					</div>
 
 				</>
