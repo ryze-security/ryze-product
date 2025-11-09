@@ -443,12 +443,12 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 				? selectedRow.Response?.Score >= 75
 					? 'from-[#71AE57]'
 					: selectedRow.Response?.Score >= 50
-						? 'from-[#FFB266]'
+						? 'from-[#FFB039]'
 						: 'from-[#DA3D49]'
 				: Math.round(domainData.Response.Score * 100) >= 75
 					? 'from-[#71AE57] mb-0'
 					: Math.round(domainData.Response.Score * 100) >= 50
-						? 'from-[#FFB266] mb-0'
+						? 'from-[#FFB039] mb-0'
 						: 'from-[#FF6666] mb-0'
 				}
 
