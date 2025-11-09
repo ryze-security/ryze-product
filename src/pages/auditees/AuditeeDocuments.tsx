@@ -260,29 +260,37 @@ function AuditeeDocuments() {
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
-			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
-				<PageHeader
-					heading={
-						<div className="flex items-center gap-2">
+			<section className="flex w-full bg-black text-white pb-0 pt-16 lg:pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
+				<div className="max-w-7xl flex flex-col sm:flex-row items-start justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10">
+					<div className="flex flex-col space-y-4 p-6">
+						<h1 className="text-6xl font-bold">
 							Manage Files:{" "}
 							{isAuditeeLoading ? <RoundSpinner /> : auditeeName}
+						</h1>
+						<div>
+							<h3>Browse through uploaded files related to this auditee. You can add, view, and delete files as needed.</h3>
 						</div>
-					}
-					subtitle="Browse through uploaded files related to this auditee. You can add, view, and delete files as needed."
-					buttonText="Add"
-					variant="add"
-					isLoading={isLoading}
-					actionFn={() => setUploadOpen(true)}
-				>
-					<Button
-						variant="default"
-						disabled={isLoading}
-						className={`bg-zinc-700 hover:bg-zinc-800 rounded-2xl transition-colors text-white font-bold text-md`}
-						onClick={() => navigate("/auditee/edit/" + auditeeId)}
-					>
-						{isLoading ? <RoundSpinner /> : "Back"}
-					</Button>
-				</PageHeader>
+					</div>
+
+					<div className="flex items-center gap-4 m-6 mt-0 sm:mt-6">
+						<Button
+							variant="default"
+							disabled={isLoading}
+							className="bg-white hover:bg-gray-200 rounded-full text-black font-extrabold text-md px-6 py-2"
+							onClick={() => navigate("/auditee/edit/" + auditeeId)}
+						>
+							{isLoading ? <RoundSpinner /> : "Back"}
+						</Button>
+						<Button
+							variant="default"
+							className="bg-white hover:bg-gray-200 rounded-full text-black font-extrabold text-md px-6 py-2"
+							onClick={() => setUploadOpen(true)}
+						>
+							<Upload className="h-4 w-4 mr-2" />
+							Upload File
+						</Button>
+					</div>
+				</div>
 			</section>
 			<section className="flex items-center w-full bg-black text-white mt-8 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
 				<GenericDataTable
@@ -301,11 +309,10 @@ function AuditeeDocuments() {
 						<DialogDescription>
 							<div
 								{...getRootProps()}
-								className={`border-dashed flex flex-col gap-10 justify-center border-2 p-6 text-center rounded-lg mb-4 w-full min-h-fit ${
-									isLoading
-										? "pointer-events-none opacity-50"
-										: ""
-								}`}
+								className={`border-dashed flex flex-col gap-10 justify-center border-2 p-6 text-center rounded-lg mb-4 w-full min-h-fit ${isLoading
+									? "pointer-events-none opacity-50"
+									: ""
+									}`}
 							>
 								<input
 									{...getInputProps()}
@@ -321,7 +328,7 @@ function AuditeeDocuments() {
 									</p>
 									<p className="text-md opacity-45">
 										{userData.tenant_id ===
-										SPECIAL_TENANT_ID
+											SPECIAL_TENANT_ID
 											? "Support for PDF, DOCX, XLSX, XLS, CSV, PPTX, DOC and TXT files"
 											: "Support for PDF files only"}
 									</p>

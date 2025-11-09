@@ -237,10 +237,10 @@ function AuditeeForm() {
 				) : (
 					// Editable heading
 					<div className="max-w-7xl flex justify-between px-4 rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 !pb-12">
-						<div className="flex gap-6">
+						<div className="flex items-center gap-6">
 							<span
 								ref={spanRef}
-								className="invisible absolute whitespace-pre text-4xl font-semibold tracking-wide w-fit"
+								className="invisible text-white text-6xl font-bold absolute whitespace-pre tracking-wide w-fit"
 							>
 								{watchedAuditeeName || " "}
 							</span>
@@ -250,7 +250,7 @@ function AuditeeForm() {
 								<input
 									type="text"
 									ref={inputRef}
-									className="text-4xl font-semibold text-white tracking-wide bg-transparent border-none outline-none disabled:opacity-70"
+									className="text-6xl font-bold text-white tracking-wide bg-transparent border-none outline-none"
 									value={watchedAuditeeName}
 									disabled={!isHeadingEditing}
 									onChange={(e) =>
@@ -270,18 +270,12 @@ function AuditeeForm() {
 								{isHeadingEditing ? (
 									<Lock
 										className="text-black/80 hover:text-black"
-										style={{
-											width: "28px",
-											height: "28px",
-										}}
+										size={20}
 									/>
 								) : (
 									<Edit
 										className="text-black/80 hover:text-black"
-										style={{
-											width: "28px",
-											height: "28px",
-										}}
+										size={20}
 									/>
 								)}
 							</Button>

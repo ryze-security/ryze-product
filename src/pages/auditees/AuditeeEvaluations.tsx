@@ -43,18 +43,18 @@ import * as ExcelJS from "exceljs";
 import * as FileSaver from "file-saver";
 import { Progress } from "@/components/ui/progress";
 import { GenericDataTable } from "@/components/GenericDataTable";
-import { ArrowDown01, ArrowDownAZ, ArrowUp10, ArrowUpDown, ArrowUpZA, Filter, MoreHorizontal } from "lucide-react";
+import { ArrowDown01, ArrowDownAZ, ArrowUp10, ArrowUpDown, ArrowUpZA, Filter, MoreHorizontal, PlusCircleIcon } from "lucide-react";
 import { createRichTextFromMarkdown } from "@/utils/markdownExcel";
 
 interface ReportList {
-    sNo: number;
-    reportName: string;
-    report_id: string;
-    eval_id: string;
-    report_type: string;
-    processing_status: string;
-    created_at: string;
-    created_by: string;
+	sNo: number;
+	reportName: string;
+	report_id: string;
+	eval_id: string;
+	report_type: string;
+	processing_status: string;
+	created_at: string;
+	created_by: string;
 }
 
 function AuditeeEvaluations() {
@@ -92,10 +92,10 @@ function AuditeeEvaluations() {
 						overall_score:
 							newStatus.status === "completed"
 								? parseInt(
-										newStatus.progress.score_percentage.toFixed(
-											2
-										)
-								  )
+									newStatus.progress.score_percentage.toFixed(
+										2
+									)
+								)
 								: 0,
 					};
 				}
@@ -228,9 +228,8 @@ function AuditeeEvaluations() {
 							Framework
 							<div className="relative">
 								<Filter
-									className={`h-4 w-4 opacity-70 group-hover:opacity-100 transition-opacity ${
-										isFilterActive ? "text-violet-ryzr" : ""
-									}`}
+									className={`h-4 w-4 opacity-70 group-hover:opacity-100 transition-opacity ${isFilterActive ? "text-violet-ryzr" : ""
+										}`}
 								/>
 								{isFilterActive && (
 									<span className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center text-xs font-medium rounded-full bg-violet-ryzr text-white">
@@ -252,11 +251,10 @@ function AuditeeEvaluations() {
 											e.stopPropagation();
 											column.setFilterValue([]);
 										}}
-										className={`ml-3 h-6 text-xs text-violet-ryzr hover:text-white hover:bg-white/10 transition-opacity ${
-											!isFilterActive
-												? "opacity-0 pointer-events-none"
-												: ""
-										}`}
+										className={`ml-3 h-6 text-xs text-violet-ryzr hover:text-white hover:bg-white/10 transition-opacity ${!isFilterActive
+											? "opacity-0 pointer-events-none"
+											: ""
+											}`}
 									>
 										Clear all
 									</Button>
@@ -273,14 +271,14 @@ function AuditeeEvaluations() {
 												e.stopPropagation();
 												const newFilters = isSelected
 													? currentFilters.filter(
-															(f) =>
-																f !==
-																controlName
-													  )
+														(f) =>
+															f !==
+															controlName
+													)
 													: [
-															...currentFilters,
-															controlName,
-													  ];
+														...currentFilters,
+														controlName,
+													];
 												column.setFilterValue(
 													newFilters.length
 														? newFilters
@@ -290,11 +288,10 @@ function AuditeeEvaluations() {
 											className="flex items-center px-3 py-2 text-sm rounded-md cursor-pointer hover:bg-white/10 text-white/90 group"
 										>
 											<div
-												className={`h-4 w-4 rounded border ${
-													isSelected
-														? "bg-violet-ryzr border-violet-ryzr flex items-center justify-center"
-														: "border-zinc-600"
-												} mr-3`}
+												className={`h-4 w-4 rounded border ${isSelected
+													? "bg-violet-ryzr border-violet-ryzr flex items-center justify-center"
+													: "border-zinc-600"
+													} mr-3`}
 											>
 												{isSelected && (
 													<svg
@@ -373,7 +370,7 @@ function AuditeeEvaluations() {
 				return (
 					<div>
 						{row.original.processing_status === "in_progress" ||
-						row.original.processing_status ===
+							row.original.processing_status ===
 							"processing_missing_elements" ? (
 							<div className="flex justify-center max-w-28">
 								<RoundSpinner />
@@ -426,9 +423,8 @@ function AuditeeEvaluations() {
 							Status
 							<div className="relative">
 								<Filter
-									className={`h-4 w-4 opacity-70 group-hover:opacity-100 transition-opacity ${
-										isFilterActive ? "text-violet-ryzr" : ""
-									}`}
+									className={`h-4 w-4 opacity-70 group-hover:opacity-100 transition-opacity ${isFilterActive ? "text-violet-ryzr" : ""
+										}`}
 								/>
 								{isFilterActive && (
 									<span className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center text-xs font-medium rounded-full bg-violet-ryzr text-white">
@@ -450,11 +446,10 @@ function AuditeeEvaluations() {
 											e.stopPropagation();
 											column.setFilterValue([]);
 										}}
-										className={`ml-3 h-6 text-xs text-violet-ryzr hover:text-white hover:bg-white/10 transition-opacity ${
-											!isFilterActive
-												? "opacity-0 pointer-events-none"
-												: ""
-										}`}
+										className={`ml-3 h-6 text-xs text-violet-ryzr hover:text-white hover:bg-white/10 transition-opacity ${!isFilterActive
+											? "opacity-0 pointer-events-none"
+											: ""
+											}`}
 									>
 										Clear all
 									</Button>
@@ -472,14 +467,14 @@ function AuditeeEvaluations() {
 												e.stopPropagation();
 												const newFilters = isSelected
 													? currentFilters.filter(
-															(f) =>
-																f !==
-																status.value
-													  )
+														(f) =>
+															f !==
+															status.value
+													)
 													: [
-															...currentFilters,
-															status.value,
-													  ];
+														...currentFilters,
+														status.value,
+													];
 												column.setFilterValue(
 													newFilters.length
 														? newFilters
@@ -489,11 +484,10 @@ function AuditeeEvaluations() {
 											className="flex items-center px-3 py-2 text-sm rounded-md cursor-pointer hover:bg-white/10 text-white/90 group"
 										>
 											<div
-												className={`h-4 w-4 rounded border ${
-													isSelected
-														? "bg-violet-ryzr border-violet-ryzr flex items-center justify-center"
-														: "border-zinc-600"
-												} mr-3`}
+												className={`h-4 w-4 rounded border ${isSelected
+													? "bg-violet-ryzr border-violet-ryzr flex items-center justify-center"
+													: "border-zinc-600"
+													} mr-3`}
 											>
 												{isSelected && (
 													<svg
@@ -542,13 +536,12 @@ function AuditeeEvaluations() {
 				const evals: string = row.getValue("processing_status");
 				return (
 					<span
-						className={`px-2 py-1 rounded ${
-							evals === "completed"
-								? "bg-green-ryzr"
-								: evals === "failed" || evals === "cancelled"
+						className={`px-2 py-1 rounded ${evals === "completed"
+							? "bg-green-ryzr"
+							: evals === "failed" || evals === "cancelled"
 								? "bg-red-ryzr"
 								: "bg-yellow-600"
-						}`}
+							}`}
 					>
 						{evals.charAt(0).toUpperCase() +
 							evals.slice(1).replace("_", " ")}
@@ -609,7 +602,7 @@ function AuditeeEvaluations() {
 								setReportDialogOpen(true);
 								try {
 									setIsReportListLoading(true);
-									const response : reportResultListDTO =
+									const response: reportResultListDTO =
 										await reportsService.getReportList(
 											userData.tenant_id,
 											evaluation.tg_company_id,
@@ -634,12 +627,11 @@ function AuditeeEvaluations() {
 													created_at: new Date(
 														item.created_at
 													).toLocaleDateString(),
-													reportName: `Report_${
-														index + 1
-													}`,
+													reportName: `Report_${index + 1
+														}`,
 													report_type:
 														item.report_type ===
-														"Observations"
+															"Observations"
 															? "Gap Analysis Report"
 															: item.report_type,
 												};
@@ -677,7 +669,7 @@ function AuditeeEvaluations() {
 					evaluation.processing_status === "in_progress" ||
 					evaluation.processing_status === "pending" ||
 					evaluation.processing_status ===
-						"processing_missing_elements";
+					"processing_missing_elements";
 
 				const performDelete = async () => {
 					try {
@@ -830,12 +822,12 @@ function AuditeeEvaluations() {
 									evaluation.processing_status === "pending"
 										? 0
 										: Math.round(
-												Number.parseFloat(
-													evaluation.overall_score?.toFixed(
-														2
-													)
+											Number.parseFloat(
+												evaluation.overall_score?.toFixed(
+													2
 												)
-										  ),
+											)
+										),
 								created_at: new Date(
 									evaluation.created_at
 								).toLocaleDateString(),
@@ -1020,29 +1012,38 @@ function AuditeeEvaluations() {
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
-			<section className="flex justify-center items-center w-full bg-black text-white pb-0 pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
-				<PageHeader
-					heading={
-						<div className="flex items-center gap-2">
+			<section className="flex w-full bg-black text-white pb-0 pt-16 lg:pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
+				<div className="max-w-7xl flex flex-col sm:flex-row items-start justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10">
+					<div className="flex flex-col space-y-4 p-6">
+						<h1 className="text-6xl font-bold">
 							Manage Evaluations:{" "}
 							{isAuditeeLoading ? <RoundSpinner /> : auditeeName}
+						</h1>
+						<div>
+							<h3>Browse through evaluations related to this auditee. You can add, view, and delete evaluations as needed.</h3>
+							<h3>Also, reports can be downloaded for each evaluation.</h3>
 						</div>
-					}
-					subtitle="Browse through evaluations related to this auditee. You can add, view, and delete evaluations as needed. Also, reports can be downloaded for each evaluation."
-					buttonText="Add"
-					variant="add"
-					isLoading={isLoading}
-					buttonUrl="/new-evaluation"
-				>
-					<Button
-						variant="default"
-						disabled={isLoading}
-						className={`bg-zinc-700 hover:bg-zinc-800 rounded-2xl transition-colors text-white font-bold text-md`}
-						onClick={() => navigate("/auditee/edit/" + auditeeId)}
-					>
-						{isLoading ? <RoundSpinner /> : "Back"}
-					</Button>
-				</PageHeader>
+					</div>
+
+					<div className="flex items-center gap-4 m-6 mt-0 sm:mt-6">
+						<Button
+							variant="default"
+							disabled={isLoading}
+							className="bg-white hover:bg-gray-200 rounded-full text-black font-extrabold text-md px-6 py-2"
+							onClick={() => navigate("/auditee/edit/" + auditeeId)}
+						>
+							{isLoading ? <RoundSpinner /> : "Back"}
+						</Button>
+						<Button
+							variant="default"
+							className="bg-white hover:bg-gray-200 rounded-full text-black font-extrabold text-md px-6 py-2"
+							onClick={() => navigate("/new-evaluation")}
+						>
+							<PlusCircleIcon strokeWidth={3} />
+							New Evaluation
+						</Button>
+					</div>
+				</div>
 			</section>
 			<section className="flex items-center w-full bg-black text-white  pt-10 px-3 sm:px-6 md:px-4  lg:px-16">
 				<div className=" w-full">
