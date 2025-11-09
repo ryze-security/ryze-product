@@ -264,7 +264,7 @@ function AuditeeDocuments() {
 				<div className="max-w-7xl flex flex-col sm:flex-row items-start justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10">
 					<div className="flex flex-col space-y-4 p-6">
 						<div className={`w-fit transition-colors mx-0 px-4 bg-white text-black rounded-full overflow-visible`}>
-							Manage Files
+							Documents
 						</div>
 						<h1 className="text-6xl font-bold">
 							{isAuditeeLoading ? <RoundSpinner /> : auditeeName}
