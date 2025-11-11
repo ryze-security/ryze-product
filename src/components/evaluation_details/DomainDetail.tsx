@@ -536,7 +536,9 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 								{Math.round(domainData.Response.Score * 100).toString()}%.
 							</span>
 							<span className="text-4xl font-thin">
-								Alignment with organizational controls.
+								{`Alignment with ${domainData.Description.toLowerCase().includes('pii')
+									? domainData.Description.replace(/pii/gi, 'PII')
+									: domainData.Description.toLowerCase()}.`}
 							</span>
 						</div>
 					</>
