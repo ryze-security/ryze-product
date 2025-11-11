@@ -172,7 +172,7 @@ export function GenericDataTable<TData, TValue>({
 							table.getRowModel().rows.map((row) => (
 								<TableRow
 									key={row.id}
-									className={cn("hover:bg-zinc-800/50 transition text-white/80", disabledRow && "cursor-not-allowed hover:bg-zinc-900")}
+									className={cn("relative hover:bg-zinc-800/50 transition text-white/80", disabledRow && "cursor-not-allowed hover:bg-zinc-900")}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>
@@ -205,7 +205,7 @@ export function GenericDataTable<TData, TValue>({
 													e.stopPropagation();
 													handleRowClick(row.original);
 												}}
-												className="text-violet-light-ryzr transition-colors"
+												className="lg:absolute right-20 top-[33%] text-violet-light-ryzr transition-colors"
 												title="Download"
 											>
 												<Download size={18} />
