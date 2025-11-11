@@ -201,7 +201,7 @@ function QuestionForm(props: Props) {
 	}, [index, questionData]); // Run when index or questionData changes
 
 	return (
-		<div className="w-full px-4">
+		<div className="w-full">
 			<section className="w-full bg-gray-ryzr rounded-lg mb-4 mt-8">
 				{/* <div className="bg-gray-ryzr rounded-md h-fit w-fit px-2 py-1 flex gap-2">
 					{questionData.map((question, index) => (
@@ -361,7 +361,7 @@ function QuestionForm(props: Props) {
 							Observation
 						</span>
 						{/* Observation and textarea */}
-						<div className="w-full">
+						<div className="w-full text-justify">
 							{isObservationEditing ? (
 								<textarea
 									ref={(e) => {
@@ -389,7 +389,7 @@ function QuestionForm(props: Props) {
 						<span className="text-sm font-bold text-[#AAAAAA] tracking-wide uppercase">
 							Evidence
 						</span>
-						<div className="gap-2 flex flex-col">
+						<div className="text-justify gap-2 flex flex-col">
 							<span className="flex flex-wrap text-opacity-85 leading-relaxed text-lg">{`${selectedQuestion?.Response.evidence}`}</span>
 							<span className="text-opacity-85 leading-relaxed text-lg">{selectedQuestion?.Response.page_numbers}</span>
 						</div>
