@@ -52,8 +52,9 @@ function NotificationBell() {
 					<h3 className="font-semibold text-white">Notifications</h3>
 					{unreadCount > 0 && (
 						<Button
-							variant="secondary"
+							variant="primary"
 							size="sm"
+							className="font-roboto"
 							onClick={markAllAsRead}
 						>
 							Mark all as read

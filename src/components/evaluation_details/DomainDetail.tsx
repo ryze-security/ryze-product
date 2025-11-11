@@ -436,19 +436,19 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 	};
 
 	return (
-		<div className="max-w-7xl w-full">
+		<div className="max-w-7xl w-full px-4">
 			{/* Header section */}
 			{/* If row is selected then show row color else show domain color */}
 			<div className={`w-full mb-4 pb-8 flex flex-col p-6 rounded-2xl bg-gradient-to-b to-[#020506] ${selectedRow
 				? selectedRow.Response?.Score >= 75
 					? 'from-[#71AE57]'
 					: selectedRow.Response?.Score >= 50
-						? 'from-[#FFB266]'
+						? 'from-[#FFB039]'
 						: 'from-[#DA3D49]'
 				: Math.round(domainData.Response.Score * 100) >= 75
 					? 'from-[#71AE57] mb-0'
 					: Math.round(domainData.Response.Score * 100) >= 50
-						? 'from-[#FFB266] mb-0'
+						? 'from-[#FFB039] mb-0'
 						: 'from-[#FF6666] mb-0'
 				}
 

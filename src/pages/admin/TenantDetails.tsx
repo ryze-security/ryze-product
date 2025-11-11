@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { ProgressBarDataTable } from '@/components/ProgressBarDataTable'
-import PageHeader from "@/components/PageHeader";
 import {
     Evaluation,
     evaluationStatusDTO,
@@ -19,7 +18,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Ellipsis, Filter, MoreHorizontal, ArrowUpDown, ArrowDown01, ArrowUp10, ArrowDownAZ, ArrowUpZA, MoveLeft } from "lucide-react";
+import { Filter, MoreHorizontal, ArrowUpDown, ArrowDown01, ArrowUp10, ArrowDownAZ, ArrowUpZA } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import reportsService from "@/services/reportsServices";
 import { RoundSpinner } from "@/components/ui/spinner";
@@ -32,7 +31,6 @@ const TenantDetails = () => {
     const [reportList, setReportList] = React.useState<ReportList[]>([]);
     const { toast } = useToast();
     const location = useLocation();
-    const navigate = useNavigate();
     const [refreshTrigger, setRefreshTrigger] = React.useState<number>(0);
     const activePollers = useRef(new Map<string, AdaptivePolling>());
     const statusService = useRef(new EvaluationStatusService());
@@ -669,26 +667,15 @@ const TenantDetails = () => {
 
     return (
         <div className="min-h-screen font-roboto bg-black text-white p-6">
-            <section className='flex flex-col w-full bg-black text-white pb-0 pt-10 px-3 sm:px-6 md:px-4 lg:px-16 gap-6'>
-
-                <PageHeader
-                    heading="Tenant Details"
-                    subtitle="This is what to be shown whenever user click a row from Users tab or Tenants tab."
-                    isClickable={false}
-                />
-
-                <Button
-                    onClick={() => navigate(location.state?.previousPath)}
-                    disabled={tenant_id === null}
-                    className="rounded-full bg-zinc-700 hover:bg-zinc-800 transition-colors text-white p-2 w-20"
-                >
-                    <MoveLeft
-                        style={{
-                            width: "28px",
-                            height: "28px",
-                        }}
-                    />
-                </Button>
+            <section className="flex w-full bg-black text-white pb-0 pt-16 lg:pt-10 px-3 sm:px-6 md:px-4 lg:px-16">
+                <div className="max-w-7xl flex flex-col sm:flex-row items-start justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10">
+                    <div className="flex flex-col space-y-4 p-6">
+                        <h1 className="text-6xl font-bold">
+                            Tenant Details
+                        </h1>
+                        <h3>View and manage tenant information and settings.</h3>
+                    </div>
+                </div>
             </section>
 
             <section className="flex items-center w-full bg-black text-white mt-8 px-3 sm:px-6 md:px-4 lg:px-16">

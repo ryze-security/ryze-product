@@ -9,9 +9,9 @@ interface Props {
 }
 
 const getProgressColor = (progress: number) => {
-  if (progress >= 75) return "#71AE57";
-  if (progress >= 50) return "#FFB266";
-  return "#FF6666";
+	if (progress >= 75) return "#71AE57";
+	if (progress >= 50) return "#FFB039";
+	return "#FF6666";
 };
 
 function ProgressCircle(props: Props) {
@@ -23,7 +23,7 @@ function ProgressCircle(props: Props) {
 		trackColor = "#404040",
 	} = props;
 
-  const progressColor = getProgressColor(progress);
+	const progressColor = getProgressColor(progress);
 
 	// Ensure progress is within the 0-100 range
 	const clampedProgress = Math.max(0, Math.min(100, progress));

@@ -237,10 +237,10 @@ function AuditeeForm() {
 				) : (
 					// Editable heading
 					<div className="max-w-7xl flex justify-between px-4 rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 !pb-12">
-						<div className="flex gap-6">
+						<div className="flex items-baseline gap-6">
 							<span
 								ref={spanRef}
-								className="invisible absolute whitespace-pre text-4xl font-semibold tracking-wide w-fit"
+								className="invisible text-white text-6xl font-bold absolute whitespace-pre tracking-wide w-fit"
 							>
 								{watchedAuditeeName || " "}
 							</span>
@@ -250,7 +250,7 @@ function AuditeeForm() {
 								<input
 									type="text"
 									ref={inputRef}
-									className="text-4xl font-semibold text-white tracking-wide bg-transparent border-none outline-none disabled:opacity-70"
+									className="text-6xl font-bold text-white tracking-wide bg-transparent border-none outline-none"
 									value={watchedAuditeeName}
 									disabled={!isHeadingEditing}
 									onChange={(e) =>
@@ -262,29 +262,26 @@ function AuditeeForm() {
 									}
 								/>
 							)}
-							<Button
-								variant="outline"
+							<div
 								onClick={handleEditClick}
-								className="border-none rounded-full bg-white hover:bg-gray-200"
+								className="border-none rounded-fulls"
 							>
 								{isHeadingEditing ? (
 									<Lock
-										className="text-black/80 hover:text-black"
-										style={{
-											width: "28px",
-											height: "28px",
-										}}
+										className="text-white/80 hover:text-white"
+										size={20}
 									/>
 								) : (
-									<Edit
-										className="text-black/80 hover:text-black"
-										style={{
-											width: "28px",
-											height: "28px",
-										}}
-									/>
+									// <Edit
+									// 	className="text-black/80 hover:text-black"
+									// 	size={20}
+									// />
+									<svg width="20" height="20" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="M7.44885 0C7.63871 0.000210585 7.82132 0.0729087 7.95937 0.203241C8.09743 0.333573 8.1805 0.511701 8.19163 0.701231C8.20276 0.890761 8.14109 1.07739 8.01924 1.22298C7.89738 1.36857 7.72453 1.46213 7.536 1.48456L7.44885 1.48977H1.48977V11.9182H11.9182V5.95908C11.9184 5.76923 11.9911 5.58661 12.1214 5.44856C12.2517 5.31051 12.4299 5.22743 12.6194 5.2163C12.8089 5.20518 12.9955 5.26684 13.1411 5.3887C13.2867 5.51055 13.3803 5.6834 13.4027 5.87193L13.4079 5.95908V11.9182C13.4081 12.294 13.2661 12.656 13.0105 12.9316C12.755 13.2072 12.4047 13.376 12.0299 13.4042L11.9182 13.4079H1.48977C1.11392 13.4081 0.751912 13.2661 0.476318 13.0105C0.200725 12.755 0.0319134 12.4047 0.00372459 12.0299L7.46882e-08 11.9182V1.48977C-0.000118868 1.11392 0.141831 0.751912 0.397394 0.476318C0.652957 0.200725 1.00324 0.0319134 1.37804 0.00372451L1.48977 0H7.44885ZM12.0992 0.255496C12.2332 0.121902 12.4131 0.0443404 12.6023 0.0385641C12.7914 0.0327878 12.9757 0.09923 13.1176 0.224396C13.2596 0.349562 13.3486 0.524065 13.3665 0.712464C13.3845 0.900862 13.33 1.08903 13.2143 1.23874L13.1524 1.30951L5.77807 8.68313C5.64403 8.81672 5.46415 8.89428 5.27499 8.90006C5.08583 8.90583 4.90156 8.83939 4.75961 8.71423C4.61766 8.58906 4.52867 8.41456 4.51073 8.22616C4.49278 8.03776 4.54722 7.84959 4.66298 7.69988L4.72481 7.62986L12.0992 0.255496Z" fill="white" />
+									</svg>
+
 								)}
-							</Button>
+							</div>
 						</div>
 					</div>
 				)}
@@ -382,7 +379,8 @@ function AuditeeForm() {
 									trigger={
 										<Button
 											type="button"
-											className="bg-neutral-800 hover:bg-neutral-700 rounded-2xl transition-colors text-white font-bold text-md"
+											variant="primary"
+											className="rounded-2xl transition-colors font-bold text-md"
 											disabled={
 												isLoading ||
 												isFetchingData ||

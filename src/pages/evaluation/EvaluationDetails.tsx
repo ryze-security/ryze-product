@@ -19,14 +19,8 @@ import evaluationService from "@/services/evaluationServices";
 import reportsService, { ReportsService } from "@/services/reportsServices";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadEvaluationData } from "@/store/slices/evaluationSlice";
-import {
-	ArrowDown,
-	CornerUpRight,
-} from "lucide-react";
 import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { Button } from "react-day-picker";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { motion } from "framer-motion";
 
 const Home = React.lazy(
 	() => import("@/components/evaluation_details/DetailHome")
@@ -310,14 +304,15 @@ function EvaluationDetails() {
 					/>
 				</div>
 
-				<div className="relative group flex-shrink-0 2xl:mr-16">
-					<div className="flex items-center gap-0">
+				<div className="relative flex-shrink-0 2xl:mr-16">
+					<div className="group flex items-center gap-0 relative justify-start w-fit rounded-full">
 						<button
 							onClick={() => goToStep(dynamicSteps.length)}
-							className={`relative z-10 flex items-center gap-2 gap-x-4 px-4 py-2 text-sm font-medium text-white transition-colors duration-200 md:px-6 md:py-3 md:text-base ${dynamicSteps.length === currentStep
-								? 'bg-zinc-700 opacity-100'
-								: 'opacity-70 hover:opacity-100'
-								} rounded-full border border-white/50 hover:border-white`}
+							className={`relative z-20 flex items-center gap-2 gap-x-4 px-4 py-2 text-sm font-medium transition-colors duration-200 md:px-6 md:py-3 md:text-base rounded-full border border-white
+								${dynamicSteps.length === currentStep
+									? "bg-zinc-700 opacity-100 rounded-full"
+									: "opacity-70 hover:opacity-100"}
+								`}
 						>
 							<span>Reports</span>
 							<DropdownMenu>
@@ -368,14 +363,12 @@ function EvaluationDetails() {
 								</DropdownMenuContent>
 							</DropdownMenu>
 						</button>
+
+						<div className={`absolute inset-1 z-0 duration-200 group-hover:bg-zinc-700 rounded-full
+							${dynamicSteps.length === currentStep ? "bg-zinc-700" : ""}`}></div>
+
+
 					</div>
-					{dynamicSteps.length === currentStep && (
-						<motion.div
-							className="absolute inset-0 z-0 rounded-full bg-zinc-700/30"
-							layoutId="activeTab"
-							transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-						/>
-					)}
 				</div>
 			</section>
 

@@ -3,7 +3,7 @@ import ComingSoonBorder from "@/components/ComingSoonBorder";
 import SmallDisplayCard from "@/components/dashboard/SmallDisplayCard";
 import TableRowWithNumber from "@/components/dashboard/TableRowWithNumber";
 import TruncatedTooltip from "@/components/TruncatedTooltip";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { RoundSpinner } from "@/components/ui/spinner";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import { frequentDeviationsDTO } from "@/models/collection/collectionDTOs";
 import { requestCreditsBodyDTO } from "@/models/landing_page/contact_usDTOs";
 import { tenantDetailsDTO } from "@/models/tenant/TenantDTOs";
@@ -186,9 +187,9 @@ function Index() {
 						<DropdownMenuTrigger asChild>
 							<Button
 								variant="default"
-								className="bg-neutral-800 rounded-2xl hover:bg-neutral-700 text-white font-bold text-md px-4 py-2 flex items-center gap-2 w-fit text-sm md:text-base"
+								className="bg-white rounded-2xl hover:bg-gray-200 text-black font-bold text-md px-4 py-2 flex items-center gap-2 w-fit text-sm md:text-base"
 							>
-								<PlusCircleIcon />
+								<PlusCircleIcon strokeWidth={3} />
 								New
 							</Button>
 						</DropdownMenuTrigger>
@@ -367,6 +368,7 @@ function Index() {
 					open={creditsAlert}
 					onOpenChange={setCreditsAlert}
 					onAction={creditsAction}
+					confirmButtonClassName={cn(buttonVariants({ variant: "default" }))}
 				/>
 			</section>
 		</div>

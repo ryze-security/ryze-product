@@ -585,7 +585,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 					${Number(overallScore) >= 75
 							? 'from-[#71AE57]'
 							: Number(overallScore) >= 50
-								? 'from-[#FFB266]'
+								? 'from-[#FFB039]'
 								: 'from-[#DA3D49]'
 						}
 					`}>
@@ -679,7 +679,7 @@ const DetailHome = forwardRef((props: Props, ref) => {
 					? selectedRow.Response?.Score >= 75
 						? 'from-[#71AE57]'
 						: selectedRow.Response?.Score >= 50
-							? 'from-[#FFB266]'
+							? 'from-[#FFB039]'
 							: 'from-[#DA3D49]'
 					: ''} ${selectedRow ? 'mb-4 pb-8' : 'mb-0 pb-0'}`}>
 
@@ -895,7 +895,7 @@ const InfoCard = ({
 			className={`${dataInInteger >= 75
 				? "bg-[#71AE57]/30"
 				: dataInInteger >= 50 && dataInInteger < 75
-					? "bg-[#FFB266]/30"
+					? "bg-[#FFB039]/30"
 					: "bg-[#FF6666]/30"
 				} rounded-2xl w-full max-w-60 min-w-72 cursor-pointer`}
 			onClick={() => {
@@ -921,7 +921,7 @@ const InfoCard = ({
 					className={`text-[48px] ${dataInInteger >= 75
 						? "text-[#71AE57]"
 						: dataInInteger >= 50 && dataInInteger < 75
-							? "text-[#FFB266]"
+							? "text-[#FFB039]"
 							: "text-[#FF6666]"
 						} mt-auto font-semibold`}
 				>
