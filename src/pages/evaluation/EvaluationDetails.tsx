@@ -338,6 +338,7 @@ function EvaluationDetails() {
 										onClick={(e) => {
 											e.stopPropagation();
 											generateExcelReport();
+											goToStep(dynamicSteps.length)
 										}}
 										disabled={isReportGenerating}
 										className="cursor-pointer hover:bg-zinc-800 focus:bg-zinc-800"
