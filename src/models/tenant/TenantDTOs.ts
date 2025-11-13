@@ -9,4 +9,5 @@ export type tenantDetailsDTO = {
 	num_documents: number;
 	num_deviations: number;
 	num_evaluations: number;
+	first_user: string;
 };

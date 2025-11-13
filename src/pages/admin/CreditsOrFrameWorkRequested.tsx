@@ -289,8 +289,7 @@ const RequestedForms = ({ requestedType }: { requestedType: 'request_credits' | 
                             </Button>
                         )}
                         <Button
-                            variant="default"
-                            className="bg-neutral-800 hover:bg-neutral-700 text-white"
+                            variant="primary"
                             size="sm"
                             onClick={() => creditsRequestTable.nextPage()}
                             disabled={!creditsRequestTable.getCanNextPage()}
