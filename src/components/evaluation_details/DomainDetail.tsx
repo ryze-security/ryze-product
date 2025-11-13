@@ -196,10 +196,6 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 		},
 	});
 
-	useEffect(() => {
-		console.log(domainData)
-	}, [])
-
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [selectedRow, setSelectedRow] = useState<controlResponse>(null);
 	const [updatedData, setUpdatedData] = useState<domainResponse>(domainData);
