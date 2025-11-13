@@ -275,8 +275,7 @@ const UsersDashboard = () => {
                             </Button>
                         )}
                         <Button
-                            variant="default"
-                            className="bg-neutral-800 hover:bg-neutral-700 text-white"
+                            variant="primary"
                             size="sm"
                             onClick={() => table.nextPage()}
                             disabled={!table.getCanNextPage()}

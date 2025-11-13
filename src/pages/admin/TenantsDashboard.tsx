@@ -88,10 +88,10 @@ const TenantsDashboard = () => {
                 )
                 ,
             },
-            // {
-            //     accessorKey: 'tenant_id',
-            //     header: 'Tenant ID',
-            // },
+            {
+                accessorKey: 'first_user',
+                header: 'User Name',
+            },
             {
                 accessorKey: 'created_on',
                 header: ({ column }) => (
@@ -385,8 +385,7 @@ const TenantsDashboard = () => {
                             </Button>
                         )}
                         <Button
-                            variant="default"
-                            className="bg-neutral-800 hover:bg-neutral-700 text-white"
+                            variant="primary"
                             size="sm"
                             onClick={() => table.nextPage()}
                             disabled={!table.getCanNextPage()}
