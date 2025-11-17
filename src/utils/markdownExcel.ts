@@ -1,7 +1,7 @@
 export const createRichTextFromMarkdown = (text) => {
     const baseFont = {
         size: 12,
-        name: "SF Pro Display Regular",
+        name: "Arial",
         color: { argb: "FF000000" },
     };
     

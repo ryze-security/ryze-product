@@ -150,7 +150,7 @@ function EvaluationReports(props: Props) {
                         argb: "FFFFFFFF",
                     },
                     size: 12,
-                    name: "SF Pro Display Regular",
+                    name: "Arial",
                 };
                 cell.fill = {
                     type: "pattern",
@@ -177,7 +177,7 @@ function EvaluationReports(props: Props) {
                     }
                     cell.font = {
                         size: 12,
-                        name: "SF Pro Display Regular",
+                        name: "Arial",
                         color: {
                             argb: "FF000000",
                         },
