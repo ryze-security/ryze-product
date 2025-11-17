@@ -7,4 +7,5 @@ export interface AuthorizationDTO {
     user_id: string;
     created_at: string;
     status: 'idle' | 'loading' | 'fulfilled' | 'failed';
+    role: 'admin' | 'user';
 }
