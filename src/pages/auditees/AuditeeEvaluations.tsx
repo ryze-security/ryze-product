@@ -923,7 +923,7 @@ function AuditeeEvaluations() {
 						argb: "FFFFFFFF",
 					},
 					size: 12,
-					name: "SF Pro Display Regular",
+					name: "Arial",
 				};
 				cell.fill = {
 					type: "pattern",
@@ -952,7 +952,7 @@ function AuditeeEvaluations() {
 					}
 					cell.font = {
 						size: 12,
-						name: "SF Pro Display Regular",
+						name: "Arial",
 						color: {
 							argb: "FF000000",
 						},
