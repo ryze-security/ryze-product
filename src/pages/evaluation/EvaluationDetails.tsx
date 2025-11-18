@@ -82,7 +82,7 @@ const staticData = {
 		{
 			"control_id": "c_6.2",
 			"controlTitle": "Control title for the control id 6.2",
-			"severity": "Critical",
+			"severity": "critical",
 			"observations": "You have been hacked!"
 		},
 		{
@@ -100,7 +100,7 @@ const staticData = {
 		{
 			"control_id": "c_8.3",
 			"controlTitle": "Unpatched system vulnerability",
-			"severity": "Critical",
+			"severity": "critical",
 			"observations": "Server running outdated OS version."
 		},
 		{
@@ -142,7 +142,7 @@ const staticData = {
 		{
 			"control_id": "c_12.5",
 			"controlTitle": "Malicious file detected",
-			"severity": "Critical",
+			"severity": "critical",
 			"observations": "Ransomware executable found in user workstation."
 		},
 		{
@@ -166,7 +166,7 @@ const staticData = {
 		{
 			"control_id": "c_14.9",
 			"controlTitle": "Log tampering detected",
-			"severity": "Critical",
+			"severity": "critical",
 			"observations": "System logs show evidence of deletion."
 		},
 		{
@@ -202,7 +202,7 @@ const staticData = {
 		{
 			"control_id": "c_19.5",
 			"controlTitle": "Suspicious admin account creation",
-			"severity": "Critical",
+			"severity": "critical",
 			"observations": "New admin account created without authorization."
 		}
 	]
