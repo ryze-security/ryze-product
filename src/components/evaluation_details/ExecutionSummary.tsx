@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import html2pdf from "html2pdf.js"
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 
 
 // Type definitions for html2pdf options
@@ -127,38 +127,28 @@ interface ComplianceChartProps {
 
 const ComplianceChart: React.FC<ComplianceChartProps> = ({ data }) => {
     return (
-        <div className="flex-[35] bg-gradient-to-br from-[#f8f5ff] to-[#f2f2f2] flex flex-col items-center justify-center p-6 pb-0 rounded-lg">
+        <div className="flex-[35] bg-gradient-to-br from-[#f8f5ff] to-[#f2f2f2] flex flex-col items-center justify-center px-1 pb-0 rounded-lg">
+            {/* <ResponsiveContainer width="100%" height={380}> */}
             <ResponsiveContainer width="100%">
-                <AreaChart data={data} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
-                    <defs>
-                        <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#B05BEF" stopOpacity={0.8} />
-                            <stop offset="95%" stopColor="#B05BEF" stopOpacity={0} />
-                        </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                    <XAxis
+                <RadarChart data={data}>
+                    <PolarGrid stroke="#000000" />
+                    <PolarAngleAxis
                         dataKey="name"
-                        angle={-45}
-                        textAnchor="end"
-                        height={100}
                         tick={{ fontSize: 11, fill: '#555', fontWeight: 500 }}
-                        axisLine={{ stroke: '#ccc' }}
                     />
-                    <YAxis
+                    <PolarRadiusAxis
+                        angle={60}
                         domain={[0, 100]}
-                        tick={{ fontSize: 12, fill: '#333' }}
-                        axisLine={{ stroke: '#ccc' }}
+                        tick={{ fontSize: 10, fill: '#333' }}
                     />
-                    <Area
-                        type="monotone"
+                    <Radar
+                        name="Compliance Score"
                         dataKey="score"
                         stroke="#B05BEF"
-                        strokeWidth={3}
-                        fillOpacity={1}
-                        fill="url(#colorScore)"
+                        fill="#B05BEF"
+                        fillOpacity={0.3}
                     />
-                </AreaChart>
+                </RadarChart>
             </ResponsiveContainer>
         </div>
     );
@@ -176,18 +166,13 @@ const ExecutionSummary: React.FC<ExecutionSummaryProps> = ({
 
     const documentRef = useRef<HTMLDivElement | null>(null);
 
-    const radarData = Object.entries(data.EvalDomains).map(([domain, score]) => ({
-        name: domain.length > 20 ? domain.substring(0, 17) + '...' : domain,
-        score: Number(score),
-        fullName: domain
-    }));
 
     // Generates A1, A2, A3, ...
-    // const radarData = Object.entries(data.EvalDomains).map(([domain, score], index) => ({
-    //     name: `A${index + 1}`,
-    //     score: Number(score),
-    //     fullName: domain                // Keep the original full name
-    // }));
+    const radarData = Object.entries(data.EvalDomains).map(([domain, score], index) => ({
+        name: `A${index + 1}`,
+        score: Number(score),
+        fullName: domain // Keep the original full name
+    }));
 
 
     const exportPDF = useCallback((): void => {
@@ -215,7 +200,7 @@ const ExecutionSummary: React.FC<ExecutionSummaryProps> = ({
                 unit: 'mm',
                 format: 'a4',
                 orientation: 'portrait',
-                compress: true // Compress PDF for smaller file size
+                compress: true // Compress PDF for smaller file size (false - 20MB / true - 800KB )
             },
             pagebreak: {
                 avoid: ['tr', '.avoid-break'],
@@ -277,15 +262,24 @@ const ExecutionSummary: React.FC<ExecutionSummaryProps> = ({
                                     <div className="flex flex-col gap-y-1 flex-[65]">
                                         {/* column */}
                                         <div className="flex gap-1">
-                                            <p className="flex-[75] pl-1 pt-0.5 text-center font-medium text-xs bg-black text-white rounded">Information Security Domain</p>
-                                            <p className="flex-[25] text-center font-medium pt-0.5 text-xs bg-black text-white rounded">Compliance</p>
+                                            <p className="flex-[10] px-1 pt-0.5 text-center font-medium text-xs bg-black text-white rounded">S.No.</p>
+                                            <p className="flex-[70] pl-1 pt-0.5 text-center font-medium text-xs bg-black text-white rounded">Information Security Domain</p>
+                                            <p className="flex-[20] text-center font-medium pt-0.5 text-xs bg-black text-white rounded">Compliance</p>
                                         </div>
 
                                         {/* rows */}
-                                        {Object.entries(data.EvalDomains).map(([domain, percentage]) => {
+                                        {Object.entries(data.EvalDomains).map(([domain, percentage], index) => {
                                             return (
                                                 <div className="flex gap-1">
-                                                    <p className={`flex-[75] pl-1 font-medium text-xs pt-0.5 rounded
+                                                    <p className={`flex-[10] flex justify-center items-center px-1 font-medium text-xs pt-0.5 rounded
+                                                    ${percentage >= 75
+                                                            ? 'bg-[#d5e7cd]'
+                                                            : percentage >= 50
+                                                                ? 'bg-[#ffe9d3]'
+                                                                : 'bg-[#ffd3d2]'
+                                                        }`
+                                                    }>A{index + 1}</p>
+                                                    <p className={`flex-[70] pl-1 font-medium text-xs pt-0.5 rounded
                                                     ${percentage >= 75
                                                             ? 'bg-[#d5e7cd]'
                                                             : percentage >= 50
@@ -293,7 +287,7 @@ const ExecutionSummary: React.FC<ExecutionSummaryProps> = ({
                                                                 : 'bg-[#ffd3d2]'
                                                         }`
                                                     }>{domain}</p>
-                                                    <p className={`flex-[25] text-center flex justify-center items-center font-medium text-xs pt-0.5 rounded
+                                                    <p className={`flex-[20] text-center flex justify-center items-center font-medium text-xs pt-0.5 rounded
                                                     ${percentage >= 75
                                                             ? 'bg-[#d5e7cd]'
                                                             : percentage >= 50
