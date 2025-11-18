@@ -1,6 +1,6 @@
 import ComingSoonBorder from "@/components/ComingSoonBorder";
 import { DynamicIcons } from "@/components/DynamicIcons";
-import ExecutionSummary from "@/components/evaluation_details/ExecutionSummary";
+// import ExecutionSummary from "@/components/evaluation_details/ExecutionSummary";
 import NavHeader from "@/components/evaluation_details/nav-header";
 import {
 	DropdownMenu,
@@ -534,15 +534,20 @@ function EvaluationDetails() {
 									>
 										Gap analysis report(.xlsx)
 									</DropdownMenuItem>
+
+									{/* todo:  ENABLE THIS PART, ONCE WE ARE CONNECTED WITH API  */}
 									<DropdownMenuItem
-										className="cursor-pointer hover:bg-zinc-800 focus:bg-zinc-800"
+										className="text-gray-light-ryzr cursor-not-allowed"
+										// className="cursor-pointer hover:bg-zinc-800 focus:bg-zinc-800"
 										onClick={(e) => {
 											e.stopPropagation();
-											setOpenExecutionSummary(true)
+											// setOpenExecutionSummary(true)
+											// onClick={(e) => e.stopPropagation()}
 										}}>
-										{/* <ComingSoonBorder variant="inline" className="w-full"> */}
-										Exec. summary(.pptx)
-										{/* </ComingSoonBorder> */}
+
+										<ComingSoonBorder variant="inline" className="w-full">
+											Exec. summary(.pptx)
+										</ComingSoonBorder>
 									</DropdownMenuItem>
 									<DropdownMenuItem
 										className="text-gray-light-ryzr cursor-not-allowed"
@@ -613,8 +618,9 @@ function EvaluationDetails() {
 									/>
 								)}
 
+								{/* todo: remove this logic  */}
 								{/* Dialog box for the Execution Summary */}
-								<ExecutionSummary data={staticData} isOpen={openExecutionSummary} setIsOpen={setOpenExecutionSummary} />
+								{/* <ExecutionSummary data={staticData} isOpen={openExecutionSummary} setIsOpen={setOpenExecutionSummary} /> */}
 							</Suspense>
 						</>
 					)
