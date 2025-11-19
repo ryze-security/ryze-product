@@ -37,12 +37,13 @@ export class ReportsService {
 	}
 
 	async startExcelReport(
+		tenant_id:string,
 		report_id: string,
 		report_body: startReportDTO
 	): Promise<createStartReportResponseDTO | any> {
 		try {
 			const response = await axiosInstance.post<createStartReportResponseDTO>(
-				`/api/v1/reports/${report_id}/start`,
+				`/api/v1/${tenant_id}/reports/${report_id}/start`,
 				report_body,
 				{
 					headers: {
