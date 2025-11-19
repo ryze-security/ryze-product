@@ -90,7 +90,32 @@ const TenantsDashboard = () => {
             },
             {
                 accessorKey: 'first_user',
-                header: 'User Name',
+                header: ({ column }) => (
+                    <Button
+                        variant="ghost"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (!column.getIsSorted()) {
+                                column.toggleSorting(false);
+                            } else if (column.getIsSorted() === "asc") {
+                                column.toggleSorting(true);
+                            } else {
+                                column.clearSorting();
+                            }
+                        }}
+                        className="px-0 hover:bg-transparent hover:text-white"
+                    >
+                        User Name
+                        {column.getIsSorted() === "asc" ? (
+                            <ArrowDown01 className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : column.getIsSorted() === "desc" ? (
+                            <ArrowUp10 className="ml-2 h-4 w-4 text-violet-400" />
+                        ) : (
+                            <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />
+                        )}
+                    </Button>
+                ),
+                cell: ({ row }) => (<span className='flex justify-center items-center gap-2'>{row.original.first_user} </span>)
             },
             {
                 accessorKey: 'created_on',
