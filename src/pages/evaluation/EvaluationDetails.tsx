@@ -1,5 +1,6 @@
 import ComingSoonBorder from "@/components/ComingSoonBorder";
 import { DynamicIcons } from "@/components/DynamicIcons";
+// import ExecutionSummary from "@/components/evaluation_details/ExecutionSummary";
 import NavHeader from "@/components/evaluation_details/nav-header";
 import {
 	DropdownMenu,
@@ -21,6 +22,193 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loadEvaluationData } from "@/store/slices/evaluationSlice";
 import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+
+const staticData = {
+	"company": "Test Company",
+	"framework": "ISO 27701",
+	"overallComplianceScore": 88,
+	"controlCategoryScores": {
+		"People Controls": 88,
+		"Organizational Controls": 42,
+		"Physical Controls": 68,
+		"Technological Controls": 65,
+		"XXXXXXXX controls": 23,
+	},
+	"EvalDomains": {
+		"Information Security Domain": 80,
+		"Organization of Information Security": 80,
+		"Threat Intelligence": 80,
+		"Asset Management": 70,
+		"Access Control": 80,
+		"Supplier Relationships": 80,
+		"Information security in use of cloud": 70,
+		"Information Security Incident Management": 70,
+		"Information Security Aspects of Business Continuity Management": 80,
+		"Compliance": 70,
+		"Human Resource Security": 80,
+		"Physical and Environmental Security": 40,
+		"Operations Security": 40,
+		"Network Security": 80,
+		"Cryptography": 80,
+		"System Acquisition, Development and Maintenance": 80
+	},
+	controlsSeverityBreakdown: {
+		scoreBelow50: {
+			critical: 10,
+			high: 8,
+			medium: 7,
+			low: 32
+		},
+		scoreAbove50: {
+			critical: 10,
+			high: 8,
+			medium: 7,
+			low: 32
+		},
+		scoreAbove75: {
+			critical: 10,
+			high: 8,
+			medium: 7,
+			low: 32
+		},
+	},
+	"nonCompliances": [
+		{
+			"control_id": "c_5.1",
+			"controlTitle": "Control title for the control id 5.1",
+			"severity": "low",
+			"observations": "Your document is fake, please upload correct document."
+		},
+		{
+			"control_id": "c_6.2",
+			"controlTitle": "Control title for the control id 6.2",
+			"severity": "critical",
+			"observations": "You have been hacked!"
+		},
+		{
+			"control_id": "c_7.1",
+			"controlTitle": "Unauthorized access attempts detected",
+			"severity": "medium",
+			"observations": "Multiple failed login attempts from unknown IPs."
+		},
+		{
+			"control_id": "c_7.4",
+			"controlTitle": "Weak password policy",
+			"severity": "high",
+			"observations": "Password does not meet minimum complexity requirements."
+		},
+		{
+			"control_id": "c_8.3",
+			"controlTitle": "Unpatched system vulnerability",
+			"severity": "critical",
+			"observations": "Server running outdated OS version."
+		},
+		{
+			"control_id": "c_9.2",
+			"controlTitle": "Missing encryption",
+			"severity": "high",
+			"observations": "Sensitive data stored without encryption."
+		},
+		{
+			"control_id": "c_9.8",
+			"controlTitle": "Suspicious outbound traffic",
+			"severity": "medium",
+			"observations": "Unusual data transfer to unknown domain."
+		},
+		{
+			"control_id": "c_10.1",
+			"controlTitle": "Physical security loophole",
+			"severity": "low",
+			"observations": "Server room door left unlocked."
+		},
+		{
+			"control_id": "c_10.4",
+			"controlTitle": "Improper asset tagging",
+			"severity": "low",
+			"observations": "Devices not labeled as per inventory standards."
+		},
+		{
+			"control_id": "c_11.3",
+			"controlTitle": "Firewall misconfiguration",
+			"severity": "high",
+			"observations": "Ports open that should be restricted."
+		},
+		{
+			"control_id": "c_12.2",
+			"controlTitle": "Antivirus outdated",
+			"severity": "medium",
+			"observations": "Systems have not received signature updates."
+		},
+		{
+			"control_id": "c_12.5",
+			"controlTitle": "Malicious file detected",
+			"severity": "critical",
+			"observations": "Ransomware executable found in user workstation."
+		},
+		{
+			"control_id": "c_13.1",
+			"controlTitle": "Unauthorized USB device usage",
+			"severity": "high",
+			"observations": "User plugged in untrusted removable media."
+		},
+		{
+			"control_id": "c_13.6",
+			"controlTitle": "Inadequate backup frequency",
+			"severity": "medium",
+			"observations": "Data backup is performed only weekly."
+		},
+		{
+			"control_id": "c_14.2",
+			"controlTitle": "Missing audit logs",
+			"severity": "high",
+			"observations": "Logging disabled for critical system."
+		},
+		{
+			"control_id": "c_14.9",
+			"controlTitle": "Log tampering detected",
+			"severity": "critical",
+			"observations": "System logs show evidence of deletion."
+		},
+		{
+			"control_id": "c_15.3",
+			"controlTitle": "Outdated certificates",
+			"severity": "medium",
+			"observations": "SSL certificates expired last month."
+		},
+		{
+			"control_id": "c_16.1",
+			"controlTitle": "Improper role assignment",
+			"severity": "high",
+			"observations": "User has excessive privileges beyond their role."
+		},
+		{
+			"control_id": "c_16.7",
+			"controlTitle": "MFA not enforced",
+			"severity": "high",
+			"observations": "Critical accounts missing multi-factor authentication."
+		},
+		{
+			"control_id": "c_17.2",
+			"controlTitle": "Data retention policy violation",
+			"severity": "low",
+			"observations": "Old files stored longer than policy allows."
+		},
+		{
+			"control_id": "c_18.4",
+			"controlTitle": "Endpoint not monitored",
+			"severity": "medium",
+			"observations": "Workstations lack active monitoring agents."
+		},
+		{
+			"control_id": "c_19.5",
+			"controlTitle": "Suspicious admin account creation",
+			"severity": "critical",
+			"observations": "New admin account created without authorization."
+		}
+	]
+}
+
+
 
 const Home = React.lazy(
 	() => import("@/components/evaluation_details/DetailHome")
@@ -49,6 +237,7 @@ function EvaluationDetails() {
 	>({});
 	const [reportID, setReportID] = useState<string>("");
 	const [isReportGenerating, setIsReportGenerating] = useState(false);
+	const [openExecutionSummary, setOpenExecutionSummary] = useState<boolean>(true)
 
 	const { data, status, error } = useAppSelector((state) => state.evaluation);
 	const userData = useAppSelector((state) => state.appUser);
@@ -345,10 +534,17 @@ function EvaluationDetails() {
 									>
 										Gap analysis report(.xlsx)
 									</DropdownMenuItem>
+
+									{/* todo:  ENABLE THIS PART, ONCE WE ARE CONNECTED WITH API  */}
 									<DropdownMenuItem
 										className="text-gray-light-ryzr cursor-not-allowed"
-										onClick={(e) => e.stopPropagation()}
-									>
+										// className="cursor-pointer hover:bg-zinc-800 focus:bg-zinc-800"
+										onClick={(e) => {
+											e.stopPropagation();
+											// setOpenExecutionSummary(true)
+											// onClick={(e) => e.stopPropagation()}
+										}}>
+
 										<ComingSoonBorder variant="inline" className="w-full">
 											Exec. summary(.pptx)
 										</ComingSoonBorder>
@@ -421,6 +617,10 @@ function EvaluationDetails() {
 										evaluationId={data.data.EvaluationId}
 									/>
 								)}
+
+								{/* todo: remove this logic  */}
+								{/* Dialog box for the Execution Summary */}
+								{/* <ExecutionSummary data={staticData} isOpen={openExecutionSummary} setIsOpen={setOpenExecutionSummary} /> */}
 							</Suspense>
 						</>
 					)
