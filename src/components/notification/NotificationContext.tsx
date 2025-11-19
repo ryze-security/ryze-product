@@ -75,7 +75,7 @@ export function NotificationProvider({ children }) {
 				} else if (
 					newestNotification &&
 					newestNotification.notification_id !==
-						latestNotificationIdRef.current &&
+					latestNotificationIdRef.current &&
 					!newestNotification.read
 				) {
 					toast({
@@ -98,14 +98,19 @@ export function NotificationProvider({ children }) {
 						newestNotification.notification_id;
 				}
 
+				// Only update if there are new notifications or if data has changed
 				if (
-					notifications.length === 0 ||
-					(response.notifications.length > 0 &&
-						response.notifications[0].notification_id !==
-							notifications[0]?.notification_id)
+					response.notifications.length > 0 &&
+					notifications.length > 0 &&
+					response.notifications[0].notification_id !==
+					notifications[0]?.notification_id
 				) {
 					handleNotificationUpdate(response, false);
+				} else if (notifications.length === 0 && response.notifications.length > 0) {
+					// Only update when transitioning from empty to having notifications
+					handleNotificationUpdate(response, false);
 				} else {
+					// Just update counts without triggering re-render
 					setUnreadCount(response.unread_count);
 					setTotalCount(response.total_count);
 				}
@@ -132,6 +137,8 @@ export function NotificationProvider({ children }) {
 		tenant_id,
 		notificationService,
 		handleNotificationUpdate,
+		navigate,
+		toast,
 		notifications,
 	]);
 
@@ -219,7 +226,7 @@ export function NotificationProvider({ children }) {
 			);
 
 			isOptimisticUpdateRef.current = true;
-			if(latestNotificationIdRef.current === notificationId) {
+			if (latestNotificationIdRef.current === notificationId) {
 				const newLatest = originalNotifications.filter(n => n.notification_id !== notificationId)[0];
 				latestNotificationIdRef.current = newLatest ? newLatest.notification_id : null;
 			}
