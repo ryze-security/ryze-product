@@ -37,9 +37,9 @@ export class NotificationService {
         }
     }
 
-    async deleteNotification(notificationId: string, userId: string): Promise<void | any> {
+    async deleteNotification(notificationId: string, userId: string, tenantId:string): Promise<void | any> {
         try{
-            const response = await axiosInstance.delete(`/api/v1/notifications/${notificationId}?user_id=${userId}`);
+            const response = await axiosInstance.delete(`/api/v1/${tenantId}/notifications/${notificationId}?user_id=${userId}`);
 
             if(response.status !== 200){
                 throw response;
