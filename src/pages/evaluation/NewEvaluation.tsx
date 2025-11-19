@@ -278,6 +278,7 @@ const NewEvaluation = () => {
 				try {
 					const response =
 						await evaluationService.evaluationService.startEvaluation(
+							userData.tenant_id,
 							evalId.eval_id
 						);
 					toast({

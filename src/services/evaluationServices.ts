@@ -112,12 +112,13 @@ export class EvaluationService {
 	}
 
 	async startEvaluation(
+		tenantId:string,
 		evalId: string
 	): Promise<startEvaluationResponseDTO | any> {
 		try {
 			const response =
 				await axiosInstance.post<startEvaluationResponseDTO>(
-					`/api/v1/start/${evalId}`,
+					`/api/v1/${tenantId}/evaluation/${evalId}/start`,
 					null,
 					{
 						headers: {
