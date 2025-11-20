@@ -446,6 +446,7 @@ function EvaluationDetails() {
 				};
 				try {
 					const startResponse = await reportsService.startExcelReport(
+						userData.tenant_id,
 						response.report_id,
 						startReportBody
 					);

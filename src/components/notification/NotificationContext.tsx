@@ -189,7 +189,7 @@ export function NotificationProvider({ children }) {
 			}
 
 			try {
-				await notificationService.markAsRead(notificationId, user_id);
+				await notificationService.markAsRead(notificationId, user_id, tenant_id);
 			} catch (error) {
 				console.error("Failed to mark as read:", error);
 				setNotifications(originalNotifications);
@@ -242,7 +242,8 @@ export function NotificationProvider({ children }) {
 			try {
 				await notificationService.deleteNotification(
 					notificationId,
-					user_id
+					user_id,
+					tenant_id
 				);
 			} catch (error) {
 				console.error("Failed to delete notification:", error);
