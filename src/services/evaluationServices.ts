@@ -118,7 +118,7 @@ export class EvaluationService {
 		try {
 			const response =
 				await axiosInstance.post<startEvaluationResponseDTO>(
-					`/api/v1/${tenantId}/evaluation/${evalId}/start`,
+					`/api/v1/${tenantId}/evaluations/${evalId}/start`,
 					null,
 					{
 						headers: {
