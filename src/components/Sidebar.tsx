@@ -11,6 +11,7 @@ import {
 	Menu,
 	User2,
 	X,
+	UserCog2,
 } from "lucide-react";
 
 import {
@@ -44,6 +45,7 @@ import {
 import { Separator } from "./ui/separator";
 import { RoundSpinner } from "./ui/spinner";
 import { cn } from "@/lib/utils";
+import { useAppSelector } from "@/store/hooks";
 
 // Menu items.
 const items = [
@@ -51,26 +53,37 @@ const items = [
 		title: "Home",
 		url: "/home",
 		icon: Home,
+		adminOnly: false,
 	},
 	{
 		title: "Past Reviews",
 		url: "/evaluation",
 		icon: FileTextIcon,
+		adminOnly: false,
 	},
 	{
 		title: "Auditees",
 		url: "/auditee/dashboard",
 		icon: Building2Icon,
+		adminOnly: false,
 	},
 	{
 		title: "Frameworks",
 		url: "#",
 		icon: List,
+		adminOnly: false,
 	},
 	{
 		title: "Profile",
 		url: "#",
 		icon: User2,
+		adminOnly: false,
+	},
+	{
+		title: "Admin Page",
+		url: "/catchmeifyoucan-demo-admin-route", // Set your admin URL here
+		icon: UserCog2,
+		adminOnly: true, // Custom flag to check for admin role
 	},
 ];
 
@@ -79,6 +92,7 @@ function DesktopSidebar() {
 	const dispatch = useDispatch();
 	const { signOut } = useClerk();
 	const navigate = useNavigate();
+	const appUser = useAppSelector((state: RootState) => state.appUser);
 
 	const handleLogout = async () => {
 		await signOut();
@@ -120,25 +134,36 @@ function DesktopSidebar() {
 				<SidebarGroup>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{items.map((item) => (
-								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton asChild>
-										{item.url === "#" ? (
-											<div className="text-gray-light-ryzr cursor-not-allowed">
-												<item.icon />
-												<ComingSoonBorder variant="inline">
+							{items.map((item) => {
+								if (
+									item.adminOnly &&
+									appUser.role !== "admin"
+								) {
+									return null;
+								}
+
+								return (
+									<SidebarMenuItem key={item.title}>
+										<SidebarMenuButton asChild>
+											{item.url === "#" ? (
+												<div className="text-gray-light-ryzr cursor-not-allowed">
+													<item.icon />
+													<ComingSoonBorder variant="inline">
+														<span>
+															{item.title}
+														</span>
+													</ComingSoonBorder>
+												</div>
+											) : (
+												<Link to={item.url}>
+													<item.icon />
 													<span>{item.title}</span>
-												</ComingSoonBorder>
-											</div>
-										) : (
-											<Link to={item.url}>
-												<item.icon />
-												<span>{item.title}</span>
-											</Link>
-										)}
-									</SidebarMenuButton>
-								</SidebarMenuItem>
-							))}
+												</Link>
+											)}
+										</SidebarMenuButton>
+									</SidebarMenuItem>
+								);
+							})}
 						</SidebarMenu>
 					</SidebarGroupContent>
 				</SidebarGroup>
@@ -165,6 +190,7 @@ function DesktopSidebar() {
 
 function MobileNavbar() {
 	const dispatch = useDispatch();
+	const appUser = useSelector((state: RootState) => state.appUser);
 	const [isSheetOpen, setIsSheetOpen] = useState(false);
 	const [notificationsVisible, setNotificationsVisible] = useState(false);
 	const { signOut } = useClerk();
@@ -247,33 +273,44 @@ function MobileNavbar() {
 									</span>
 								</SidebarHeader>
 								<SidebarMenu className="mt-4">
-									{items.map((item) => (
-										<SidebarMenuItem key={item.title}>
-											<SidebarMenuButton asChild>
-												{item.url === "#" ? (
-													<div className="text-gray-light-ryzr cursor-pointer flex items-center gap-2">
-														<item.icon />
-														<span>
-															{item.title}
-														</span>{" "}
-													</div>
-												) : (
-													<Link
-														to={item.url}
-														className="flex items-center gap-2"
-														onClick={
-															handleLinkClick
-														}
-													>
-														<item.icon />
-														<span>
-															{item.title}
-														</span>
-													</Link>
-												)}
-											</SidebarMenuButton>
-										</SidebarMenuItem>
-									))}
+									{items.map((item) => {
+										if (
+											item.adminOnly &&
+											appUser.role !== "admin"
+										) {
+											return null;
+										}
+
+										return (
+											<SidebarMenuItem key={item.title}>
+												<SidebarMenuButton asChild>
+													{item.url === "#" ? (
+														<ComingSoonBorder variant="inline">
+															<div className="text-gray-light-ryzr cursor-pointer flex items-center gap-2">
+																<item.icon />
+																<span>
+																	{item.title}
+																</span>{" "}
+															</div>
+														</ComingSoonBorder>
+													) : (
+														<Link
+															to={item.url}
+															className="flex items-center gap-2"
+															onClick={
+																handleLinkClick
+															}
+														>
+															<item.icon />
+															<span>
+																{item.title}
+															</span>
+														</Link>
+													)}
+												</SidebarMenuButton>
+											</SidebarMenuItem>
+										);
+									})}
 								</SidebarMenu>
 							</div>
 							<SidebarFooter className="p-4 border-t overflow-y-auto">
@@ -303,10 +340,11 @@ function MobileNavbar() {
 										<span>Notifications</span>
 									</span>
 									<ChevronDown
-										className={`w-4 h-4 transition-transform ${notificationsVisible
-											? "rotate-180"
-											: ""
-											}`}
+										className={`w-4 h-4 transition-transform ${
+											notificationsVisible
+												? "rotate-180"
+												: ""
+										}`}
 									/>
 								</Button>
 
@@ -352,7 +390,9 @@ function MobileNavbar() {
 														)}
 														onClick={() => {
 															if (!n.read) {
-																markAsRead(n.notification_id);
+																markAsRead(
+																	n.notification_id
+																);
 															}
 															switch (n.type) {
 																case "evaluation_completed":
@@ -368,8 +408,7 @@ function MobileNavbar() {
 																default:
 																	break;
 															}
-														}
-														}
+														}}
 													>
 														<div className="flex items-start">
 															<div className="flex flex-1 flex-col space-y-1">
@@ -402,15 +441,47 @@ function MobileNavbar() {
 																<p className="text-zinc-300 text-xs mt-1">
 																	{n.message}
 																</p>
-																{n.data?.completed_at && (
+																{n.data
+																	?.completed_at && (
 																	<p className="text-zinc-500 text-[10px] mt-1">
 																		{(() => {
-																			const date = new Date(n.data.completed_at + 'Z');
-																			const day = String(date.getDate()).padStart(2, "0");
-																			const month = date.toLocaleString("en-GB", { month: "short" });
-																			const year = date.getFullYear();
-																			const hours = String(date.getHours()).padStart(2, "0");
-																			const minutes = String(date.getMinutes()).padStart(2, "0");
+																			const date =
+																				new Date(
+																					n
+																						.data
+																						.completed_at +
+																						"Z"
+																				);
+																			const day =
+																				String(
+																					date.getDate()
+																				).padStart(
+																					2,
+																					"0"
+																				);
+																			const month =
+																				date.toLocaleString(
+																					"en-GB",
+																					{
+																						month: "short",
+																					}
+																				);
+																			const year =
+																				date.getFullYear();
+																			const hours =
+																				String(
+																					date.getHours()
+																				).padStart(
+																					2,
+																					"0"
+																				);
+																			const minutes =
+																				String(
+																					date.getMinutes()
+																				).padStart(
+																					2,
+																					"0"
+																				);
 																			return `${day}-${month}-${year} ${hours}:${minutes}`;
 																		})()}
 																	</p>
@@ -426,7 +497,7 @@ function MobileNavbar() {
 												)}
 												{!hasMore &&
 													notifications.length >
-													0 && (
+														0 && (
 														<p className="text-zinc-400 text-sm text-center py-4">
 															You're all caught
 															up!
