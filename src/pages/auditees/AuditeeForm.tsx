@@ -20,60 +20,7 @@ import { Edit, Lock } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
-
-const services = [
-	{
-		label: "SaaS",
-		value: "saas",
-	},
-	{
-		label: "IaaS",
-		value: "iaas",
-	},
-	{
-		label: "PaaS",
-		value: "paas",
-	},
-	{
-		label: "COTS",
-		value: "cots",
-	},
-	{
-		label: "Hardware",
-		value: "hardware",
-	},
-	{
-		label: "Telecom",
-		value: "telecom",
-	},
-	{
-		label: "Consulting",
-		value: "consulting",
-	},
-	{
-		label: "None",
-		value: "none",
-	},
-];
-
-const companyDataTypes = [
-	{
-		label: "Personal Data",
-		value: "personal_data",
-	},
-	{
-		label: "Sensitive Data",
-		value: "sensitive_data",
-	},
-	{
-		label: "Financial Data",
-		value: "financial_data",
-	},
-	{
-		label: "None",
-		value: "none",
-	},
-];
+import { AUDITEE_SERVICES, AUDITEE_DATA_TYPES } from "@/constants/auditeeOptions";
 
 function AuditeeForm() {
 	const dispatch = useAppDispatch();
@@ -360,7 +307,7 @@ function AuditeeForm() {
 								<MultiSelectBox
 									control={methods.control}
 									name="auditeeService"
-									options={services}
+									options={AUDITEE_SERVICES}
 									label="Related Services"
 								/>
 							</div>
@@ -369,7 +316,7 @@ function AuditeeForm() {
 								<MultiSelectBox
 									control={methods.control}
 									name="auditeeData"
-									options={companyDataTypes}
+									options={AUDITEE_DATA_TYPES}
 									label="Type of data processed?"
 								/>
 							</div>

@@ -1,5 +1,6 @@
 import { AlertDialogBox } from "@/components/AlertDialogBox";
 import ComingSoonBorder from "@/components/ComingSoonBorder";
+import OnboardingForm from "@/components/dashboard/OnboardingForm";
 import SmallDisplayCard from "@/components/dashboard/SmallDisplayCard";
 import TableRowWithNumber from "@/components/dashboard/TableRowWithNumber";
 import TruncatedTooltip from "@/components/TruncatedTooltip";
@@ -169,6 +170,8 @@ function Index() {
 
 	return (
 		<div className="font-roboto text-white w-full min-h-screen p-6">
+			<OnboardingForm remainingCredits={tenantDetails?.remaining_credits || 0} evaluationNumber={tenantDetails?.num_evaluations || 0} />
+
 			{/* Header */}
 			<section className="w-full bg-black text-white pb-0 pt-10 px-3 sm:px-6 md:px-4 lg:px-16 mt-5 lg:mt-0">
 				<div className="max-w-7xl w-full flex flex-col lg:flex-row lg:items-center md:justify-between gap-4">

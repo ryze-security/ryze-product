@@ -17,6 +17,7 @@ export const localStorageMiddleware: Middleware = (store: Store) => (next: any) 
     if(action.type === 'appUser/logout'){
         try{
             localStorage.removeItem('appUser');
+            localStorage.removeItem('onboarding-skipped');
         }
         catch (error) {
             console.error('Failed to remove appUser state from localStorage:', error);

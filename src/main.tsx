@@ -14,7 +14,7 @@ if (!PUBLISHABLE_KEY) {
 	throw new Error("Missing Publishable Key");
 }
 
-initDatadogRum();
+// initDatadogRum();
 
 function Root() {
 	return (
