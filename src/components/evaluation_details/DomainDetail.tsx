@@ -122,7 +122,7 @@ const columns: ColumnDef<controlResponse>[] = [
 	},
 	{
 		accessorKey: "missing_elements",
-		header: "Missing elements",
+		header: "Summary",
 		cell: ({ row }) => {
 			const missing_elements: string = row.original.missing_elements;
 			const compliance: number = row.original.Response.Score;
