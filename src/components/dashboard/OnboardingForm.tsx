@@ -1,4 +1,14 @@
-import React, { useEffect, useState } from "react";
+// Logic of onboarding form -> take props companiesNum, remainingCredits And EvaluationNumber.
+// 1. If evalnumber > 0 -> skip
+// 2. if credits === 0 -> skip
+// 3. [companiesNum] 
+// 		-> If companiesnum === 0 
+//			Create a dummy company -> (Test Auditte), (Service Type: None), Businness type: none
+// 		-> else
+// 			Choose the first company
+// 4. Show the onboarding form and continue with the normal workflow... 
+
+import React, { useEffect, useRef, useState } from "react";
 import {
 	Dialog,
 	DialogContent,
@@ -32,8 +42,11 @@ import { CompanyListDto } from "@/models/company/companyDTOs";
 import { createEvaluationDTO, createEvaluationResponseDTO } from "@/models/evaluation/EvaluationDTOs";
 import evaluationServices from "@/services/evaluationServices";
 import { useNavigate } from "react-router-dom";
+import { skip } from "node:test";
+import { loadCompanyData } from "@/store/slices/companySlice";
 
 interface Props {
+	companiesNum: number;
 	remainingCredits: number;
 	evaluationNumber: number;
 }
@@ -46,7 +59,24 @@ const fileColumns: ColumnDef<FilesUploadResponseDTO>[] = [
 ];
 
 function OnboardingForm(props: Props) {
-	const { remainingCredits, evaluationNumber } = props;
+	const { companiesNum, remainingCredits, evaluationNumber } = props;
+	const companies = useAppSelector((state) => state.company.data)
+
+	const methods = useForm({
+		defaultValues: {
+			auditee: null as { value: string; label: string } | null,
+			frameworks: [] as { name: string, value: string }[],
+			documents: [] as FilesUploadResponseDTO[],
+		},
+		mode: "onChange",
+	});
+	const {
+		getValues,
+		trigger,
+		setValue,
+		watch,
+		formState: { errors },
+	} = methods;
 
 	const dispatch = useAppDispatch();
 	const userData = useAppSelector((state) => state.appUser);
@@ -59,42 +89,76 @@ function OnboardingForm(props: Props) {
 	const [open, setOpen] = useState<boolean>(false);
 	const [step, setStep] = useState(1);
 	const [loading, setLoading] = useState<boolean>(false);
+	const [initializingCompany, setInitializingCompany] = useState<boolean>(true);
+	const hasInitialized = useRef(false);
 
-	const methods = useForm({
-		defaultValues: {
-			auditeeName: "" as string,
-			auditeeData: [] as string[],
-			auditeeService: [] as string[],
-			auditee: null as { value: string; label: string } | null,
-			frameworks: [] as {name:string, value:string}[],
-			documents: [] as FilesUploadResponseDTO[],
-		},
-		mode: "onChange",
-	});
 
-	const {
-		watch,
-		setValue,
-		getValues,
-		trigger,
-		formState: { errors },
-	} = methods;
-	const watchedAuditee = watch("auditee");
-
-	//Eligibility Check
+	// Check if we needs to show onboarding or not. (Also, creates a company in case user have 0 companies. )
 	useEffect(() => {
-		const hasSkipped = localStorage.getItem("onboarding-skipped");
-		if (remainingCredits > 0 && evaluationNumber === 0 && !hasSkipped) {
-			setOpen(true);
+		if (hasInitialized.current) {
+			return;
 		}
-	}, [remainingCredits, evaluationNumber]);
+
+		const initializeCompany = async () => {
+			const hasSkipped = localStorage.getItem("onboarding-skipped");
+
+			// Check eligibility
+			if (remainingCredits <= 0 || evaluationNumber !== 0 || hasSkipped) {
+				setInitializingCompany(false);
+				return;
+			}
+
+			try {
+				// If no companies exist, create a dummy one
+				if (companiesNum === 0 && companies.length === 0) {
+					const response = await companyService.createCompany({
+						tenant_id: userData.tenant_id,
+						company_name: "Onboarding Company",
+						company_type: "",
+						service_type: [],
+						data_type: [],
+						created_by: userData.first_name + " " + userData.last_name,
+					});
+
+					setValue("auditee", {
+						value: response.tg_company_id,
+						label: response.tg_company_display_name,
+					});
+
+					// Reload companies in Redux
+					dispatch(loadCompanyData(userData.tenant_id));
+				} else if (companies.length > 0) {
+					// Use the first existing company
+					setValue("auditee", {
+						value: companies[0].tg_company_id,
+						label: companies[0].tg_company_display_name,
+					});
+				}
+
+				hasInitialized.current = true;
+				setInitializingCompany(false);
+				setOpen(true);
+			} catch (error) {
+				console.error("Error initializing company:", error);
+				setInitializingCompany(false);
+				toast({
+					title: "Error",
+					description: "Failed to initialize onboarding. Please try again.",
+					variant: "destructive",
+				});
+			}
+		};
+
+		initializeCompany();
+	}, [remainingCredits, evaluationNumber, companiesNum, userData, dispatch]);
+
 
 	// Load frameworks if we hit step 4
 	useEffect(() => {
-		if (step === 4 && collection.collections.length === 0) {
+		if (open && collection.collections.length === 0) {
 			dispatch(loadCollections(userData.tenant_id));
 		}
-	}, [step, userData.tenant_id, dispatch, collection.collections.length]);
+	}, [step, userData.tenant_id, dispatch, collection.collections.length, open]);
 
 	const handleSkip = () => {
 		localStorage.setItem("onboarding-skipped", "true");
@@ -105,20 +169,12 @@ function OnboardingForm(props: Props) {
 		if (loading) return;
 
 		switch (step) {
-			case 1:
-				const isValid = await trigger("auditeeName");
-				if (isValid) setStep(2);
+			case 1: {
+				setStep(2);
 				break;
-			case 2:
-				const isValidService = await trigger("auditeeService");
-				if (isValidService) setStep(3);
-				break;
-			case 3:
-				const isValidData = await trigger("auditeeData");
-				if (isValidData) handleCreateAuditee();
-				break;
-			case 4:
-				const isValidFramework = await trigger("frameworks");
+			}
+			case 2: {
+				// Validate framework selection
 				const fw = getValues("frameworks");
 				if (!fw || fw.length === 0) {
 					methods.setError("frameworks", {
@@ -127,10 +183,13 @@ function OnboardingForm(props: Props) {
 					});
 					return;
 				}
-				if (isValidFramework) setStep(5);
+				const isValidFramework = await trigger("frameworks");
+				if (isValidFramework) setStep(3);
 				break;
-			case 5:
-				const isValidFiles = await trigger("documents");
+
+			}
+			case 3: {
+				// Validate documents and run analysis
 				const dcmnt = getValues("documents");
 				if (!dcmnt || dcmnt.length === 0) {
 					methods.setError("documents", {
@@ -139,7 +198,10 @@ function OnboardingForm(props: Props) {
 					});
 					return;
 				}
+				const isValidFiles = await trigger("documents");
 				if (isValidFiles) handleRunAnalysis();
+				break;
+			}
 			default:
 				break;
 		}
@@ -147,7 +209,7 @@ function OnboardingForm(props: Props) {
 
 	const StepIndicator = () => (
 		<div className="flex items-center justify-center space-x-2 mb-6">
-			{[1, 2, 3, 4, 5].map((s) => (
+			{[1, 2, 3].map((s) => (
 				<div
 					key={s}
 					className={cn(
@@ -160,81 +222,34 @@ function OnboardingForm(props: Props) {
 		</div>
 	);
 
-	const handleCreateAuditee = async () => {
-		const isValidAuditeeName = await trigger("auditeeName");
-		const isValidServiceType = await trigger("auditeeService");
-		const isValidDataType = await trigger("auditeeData");
-		const isValid =
-			isValidAuditeeName && isValidServiceType && isValidDataType;
-		if (!isValid) return;
-
-		const { auditeeName, auditeeService, auditeeData } =
-			methods.getValues();
-		setLoading(true);
-
-		try {
-			// Check if user already created one in a previous attempt or create new
-			if (!watchedAuditee) {
-				const response = await companyService.createCompany({
-					tenant_id: userData.tenant_id,
-					company_name: auditeeName,
-					company_type: auditeeData[0],
-					service_type: auditeeService,
-					data_type: auditeeData,
-					created_by: userData.first_name + " " + userData.last_name,
-				});
-
-				// Set the specific structure FileUploadArea expects
-				setValue("auditee", {
-					value: response.tg_company_id,
-					label: response.tg_company_display_name,
-				});
-			} else {
-				// Update existing auditee
-				const response = (await companyService.updateCompany(
-					userData.tenant_id,
-					watchedAuditee.value,
-					{
-						company_name: auditeeName,
-						service_type: auditeeService,
-						data_type: auditeeData,
-					}
-				)) as CompanyListDto;
-				setValue("auditee", {
-					value: response.tg_company_id,
-					label: response.tg_company_display_name,
-				});
-			}
-			setStep(4);
-		} catch (error) {
-			console.error(error);
+	const handleRunAnalysis = async () => {
+		const selectedCompany = getValues("auditee");
+		if (!selectedCompany) {
 			toast({
-				title: `Error creating your auditee`,
-				description: `A fatal error occured while creating your auditee. Please try again later!`,
+				title: "Error",
+				description: "No company selected. Please try again.",
 				variant: "destructive",
 			});
-		} finally {
-			setLoading(false);
+			return;
 		}
-	};
 
-	const handleRunAnalysis = async () => {
 		setLoading(true);
-		try{
-			const {auditee, frameworks, documents} = getValues();
+		try {
+			const { frameworks, documents } = getValues();
 			const frameworkId = frameworks[0].value;
-			const evaluationData : createEvaluationDTO = {
+
+			const evaluationData: createEvaluationDTO = {
 				tenant_id: userData.tenant_id,
-				company_id: auditee!.value,
+				company_id: selectedCompany.value,
 				collection_id: frameworkId,
 				created_by: userData.first_name + " " + userData.last_name,
 				model_used: "azure-gpt04-mini",
 				document_list: documents.map((doc) => doc.file_id),
 			}
 
-			const createEvaluationResponse : createEvaluationResponseDTO = await evaluationServices.evaluationService.createEvaluation(evaluationData);
+			const createEvaluationResponse: createEvaluationResponseDTO = await evaluationServices.evaluationService.createEvaluation(evaluationData);
 
-			await evaluationServices.evaluationService.startEvaluation( userData.tenant_id, createEvaluationResponse.eval_id);
+			await evaluationServices.evaluationService.startEvaluation(userData.tenant_id, createEvaluationResponse.eval_id);
 
 			toast({
 				title: "Evaluation is running",
@@ -244,6 +259,7 @@ function OnboardingForm(props: Props) {
 			});
 
 			setOpen(false);
+			localStorage.setItem("onboarding-skipped", "true");
 			navigate("/evaluation");
 		} catch (error) {
 			console.error(error);
@@ -257,16 +273,20 @@ function OnboardingForm(props: Props) {
 		}
 	}
 
+	// Don't render dialog if still initializing
+	if (initializingCompany) {
+		return null;
+	}
+
 	return (
 		<Dialog open={open} onOpenChange={(val) => !val && handleSkip()}>
 			<DialogContent className="max-w-3xl bg-zinc-950 text-white border-zinc-800 font-roboto">
 				<DialogHeader>
 					<DialogTitle className="text-2xl font-bold text-center">
-						Welcome to Ryzr.
+						Welcome to Ryzr 👋
 					</DialogTitle>
-					<DialogDescription className="text-center text-zinc-400">
-						Let's set up your first security review in under 2
-						minutes.
+					<DialogDescription className="text-center text-zinc-300">
+						Let's run your first security evaluation in just 2 simple steps.
 					</DialogDescription>
 				</DialogHeader>
 
@@ -276,57 +296,35 @@ function OnboardingForm(props: Props) {
 					<div className="py-4 min-h-[300px] flex flex-col justify-center">
 						{/* STEP 1: Auditee */}
 						{step === 1 && (
-							<div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-								<Field>
-									<FieldLabel htmlFor="auditee-name">
-										Who are we auditing?
-									</FieldLabel>
-									<Input
-										{...methods.register("auditeeName", {
-											required: "Name is required",
-										})}
-										placeholder="e.g. Acme Corp, Internal IT, Vendor X"
-										className="bg-zinc-900 border-zinc-700 h-12 text-lg"
-										id="auditee-name"
-									/>
-									{errors.auditeeName && (
-										<p className="text-rose-500 text-sm">
-											{errors.auditeeName.message}
-										</p>
-									)}
-								</Field>
+							<div className="space-y-6 text-center animate-in fade-in slide-in-from-right-4">
+								<div className="mx-auto w-20 h-20 bg-violet-ryzr/20 rounded-full flex items-center justify-center">
+									<svg className="w-10 h-10 text-violet-ryzr" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+									</svg>
+								</div>
+								<div>
+									<h3 className="text-xl font-semibold mb-3">
+										Automated Security Compliance Made Simple
+									</h3>
+									<p className="text-zinc-400 max-w-md mx-auto leading-relaxed">
+										We've already set up a test environment for you. In the next steps,
+										you'll select a compliance framework and upload your security documents.
+										Our AI will handle the rest.
+									</p>
+								</div>
+								<div className="flex items-center justify-center gap-8 text-sm text-zinc-500">
+									<div className="flex items-center gap-2">
+										<span className="text-violet-ryzr">✓</span>
+										<span>No setup required</span>
+									</div>
+									<div className="flex items-center gap-2">
+										<span className="text-violet-ryzr">✓</span>
+										<span>Results in minutes</span>
+									</div>
+								</div>
 							</div>
 						)}
 						{step === 2 && (
-							<div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-								<Field>
-									<FieldLabel>
-										What type of services does the auditee
-										provide?
-									</FieldLabel>
-									<MultiSelectBox
-										control={methods.control}
-										name="auditeeService"
-										options={AUDITEE_SERVICES}
-									/>
-								</Field>
-							</div>
-						)}
-						{step === 3 && (
-							<div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-								<Field>
-									<FieldLabel>
-										What type of documents will be reviewed?
-									</FieldLabel>
-									<MultiSelectBox
-										control={methods.control}
-										name="auditeeData"
-										options={AUDITEE_DATA_TYPES}
-									/>
-								</Field>
-							</div>
-						)}
-						{step === 4 && (
 							<div className="space-y-6 animate-in fade-in slide-in-from-right-4 w-full">
 								<Field>
 									<FieldLabel>Select a Framework</FieldLabel>
@@ -373,7 +371,7 @@ function OnboardingForm(props: Props) {
 								</Field>
 							</div>
 						)}
-						{step === 5 && (
+						{step === 3 && (
 							<div className="space-y-4 animate-in fade-in slide-in-from-right-4 h-full max-w-3xl mx-auto w-full">
 								<Field>
 									<div className="border border-dashed border-zinc-700 rounded-lg p-4 bg-zinc-900/50">
@@ -454,7 +452,7 @@ function OnboardingForm(props: Props) {
 						>
 							{loading ? (
 								<RoundSpinner />
-							) : step === 5 ? (
+							) : step === 3 ? (
 								"Run Analysis"
 							) : (
 								<>

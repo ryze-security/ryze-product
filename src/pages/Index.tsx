@@ -170,7 +170,11 @@ function Index() {
 
 	return (
 		<div className="font-roboto text-white w-full min-h-screen p-6">
-			<OnboardingForm remainingCredits={tenantDetails?.remaining_credits || 0} evaluationNumber={tenantDetails?.num_evaluations || 0} />
+			<OnboardingForm
+				companiesNum={tenantDetails.num_companies}
+				remainingCredits={tenantDetails?.remaining_credits || 0}
+				evaluationNumber={tenantDetails?.num_evaluations || 0}
+			/>
 
 			{/* Header */}
 			<section className="w-full bg-black text-white pb-0 pt-10 px-3 sm:px-6 md:px-4 lg:px-16 mt-5 lg:mt-0">
