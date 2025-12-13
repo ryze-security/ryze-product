@@ -61,6 +61,8 @@ const fileColumns: ColumnDef<FilesUploadResponseDTO>[] = [
 function OnboardingForm(props: Props) {
 	const { companiesNum, remainingCredits, evaluationNumber } = props;
 	const companies = useAppSelector((state) => state.company.data)
+	const companyLoadingStatus = useAppSelector((state) => state.company.status)
+
 
 	const methods = useForm({
 		defaultValues: {
@@ -89,7 +91,6 @@ function OnboardingForm(props: Props) {
 	const [open, setOpen] = useState<boolean>(false);
 	const [step, setStep] = useState(1);
 	const [loading, setLoading] = useState<boolean>(false);
-	const [initializingCompany, setInitializingCompany] = useState<boolean>(true);
 	const hasInitialized = useRef(false);
 
 
@@ -103,14 +104,20 @@ function OnboardingForm(props: Props) {
 			const hasSkipped = localStorage.getItem("onboarding-skipped");
 
 			// Check eligibility
-			if (remainingCredits <= 0 || evaluationNumber !== 0 || hasSkipped) {
-				setInitializingCompany(false);
+			if (remainingCredits <= 0 || evaluationNumber !== 0 || hasSkipped || companyLoadingStatus === 'loading') {
 				return;
 			}
 
 			try {
+				// Wait for companies to load if they haven't been loaded yet
+				if (companyLoadingStatus === 'idle' || companyLoadingStatus === 'failed') {
+					await dispatch(loadCompanyData(userData.tenant_id)).unwrap();
+				}
+
+				const currentCompanies = companies;
+
 				// If no companies exist, create a dummy one
-				if (companiesNum === 0 && companies.length === 0) {
+				if (companiesNum === 0 && currentCompanies.length === 0) {
 					const response = await companyService.createCompany({
 						tenant_id: userData.tenant_id,
 						company_name: "Onboarding Company",
@@ -127,20 +134,18 @@ function OnboardingForm(props: Props) {
 
 					// Reload companies in Redux
 					dispatch(loadCompanyData(userData.tenant_id));
-				} else if (companies.length > 0) {
+				} else if (currentCompanies.length > 0) {
 					// Use the first existing company
 					setValue("auditee", {
-						value: companies[0].tg_company_id,
-						label: companies[0].tg_company_display_name,
+						value: currentCompanies[0].tg_company_id,
+						label: currentCompanies[0].tg_company_display_name,
 					});
 				}
 
 				hasInitialized.current = true;
-				setInitializingCompany(false);
 				setOpen(true);
 			} catch (error) {
 				console.error("Error initializing company:", error);
-				setInitializingCompany(false);
 				toast({
 					title: "Error",
 					description: "Failed to initialize onboarding. Please try again.",
@@ -150,7 +155,7 @@ function OnboardingForm(props: Props) {
 		};
 
 		initializeCompany();
-	}, [remainingCredits, evaluationNumber, companiesNum, userData, dispatch]);
+	}, [remainingCredits, evaluationNumber, companiesNum, userData, dispatch, companyLoadingStatus]);
 
 
 	// Load frameworks if we hit step 4
@@ -273,10 +278,6 @@ function OnboardingForm(props: Props) {
 		}
 	}
 
-	// Don't render dialog if still initializing
-	if (initializingCompany) {
-		return null;
-	}
 
 	return (
 		<Dialog open={open} onOpenChange={(val) => !val && handleSkip()}>
@@ -326,47 +327,49 @@ function OnboardingForm(props: Props) {
 						)}
 						{step === 2 && (
 							<div className="space-y-6 animate-in fade-in slide-in-from-right-4 w-full">
+								{/* Header Section */}
+								<div className="text-center space-y-2">
+									<h3 className="text-xl font-semibold">Choose Your Compliance Framework</h3>
+									<p className="text-zinc-400 text-sm">
+										Select the security standard you want to evaluate against
+									</p>
+								</div>
+
+								{/* Framework Grid */}
 								<Field>
-									<FieldLabel>Select a Framework</FieldLabel>
 									{status === "succeeded" ? (
-										<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-center">
-											{collection.collections.map((f) => (
-												<div
-													className="p-1"
-													key={f.collection_id}
-												>
+										<div className="space-y-4">
+											<div className=" grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+												{collection.collections.map((f) => (
 													<FrameworkCard
-														name={
-															f.collection_display_name
-														}
+														key={f.collection_id}
+														name={f.collection_display_name}
 														value={f.collection_id}
 														fieldName="frameworks"
-														control={
-															methods.control
-														}
-														error={
-															!!errors.frameworks
-														}
-														setFocus={
-															methods.setFocus
-														}
-														multiSelectAllowed={
-															false
-														}
+														control={methods.control}
+														error={!!errors.frameworks}
+														setFocus={methods.setFocus}
+														multiSelectAllowed={false}
 													/>
-												</div>
-											))}
+												))}
+											</div>
 										</div>
 									) : (
-										<div className="flex justify-center items-center h-40">
+										<div className="flex flex-col justify-center items-center h-48 space-y-3">
 											<RoundSpinner />
+											<p className="text-sm text-zinc-500">Loading frameworks...</p>
 										</div>
 									)}
 
 									{errors.frameworks && (
-										<p className="text-rose-500 text-sm text-center">
-											Please select a framework to proceed
-										</p>
+										<div className="flex items-center justify-center gap-2 mt-4 p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg">
+											<svg className="w-5 h-5 text-rose-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+											</svg>
+											<p className="text-rose-500 text-sm font-medium">
+												Please select a framework to proceed
+											</p>
+										</div>
 									)}
 								</Field>
 							</div>
