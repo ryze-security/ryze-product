@@ -155,7 +155,7 @@ export function FilesDataTable<TData>({
 				});
 
 				return (
-					<div className="relative space-y-4 rounded-md pt-5 pb-2 shadow-sm bg-black font-roboto">
+					<div className="relative space-y-4 rounded-md p-3 pt-5 pb-2 shadow-sm bg-black font-roboto">
 						<div className="flex justify-between">
 							<Input
 								placeholder={`Filter by File Name`}
@@ -247,7 +247,7 @@ export function FilesDataTable<TData>({
 								</tbody>
 							</table>
 						</ScrollArea>
-						<div className="absolute right-4 -bottom-4 flex items-center justify-end gap-2">
+						<div className="absolute right-4 -bottom-6 flex items-center justify-end gap-2">
 							<span className="text-sm text-muted-foreground">
 								Selected: {getSelectedCount()}
 							</span>

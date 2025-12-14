@@ -555,7 +555,7 @@ const NewEvaluation = () => {
 						<form className="flex flex-col w-full">
 							{/* Step Content */}
 							{currentStep === 0 && (
-								<div className="min-h-[calc(100vh-410px)]">
+								<div className="min-h-[calc(80vh-410px)]">
 									{/* Auditee Selection */}
 									<div className="space-y-4">
 										<label
@@ -781,7 +781,7 @@ const NewEvaluation = () => {
 
 
 							{currentStep === 1 && (
-								<div className="space-y-4 w-full min-h-[calc(100vh-410px)]">
+								<div className="space-y-4 w-full min-h-[calc(80vh-410px)]">
 									<Controller
 										name="controls"
 										control={methods.control}
@@ -813,7 +813,7 @@ const NewEvaluation = () => {
 							)}
 
 							{currentStep === 2 && (
-								<div className="space-y-4 w-full min-h-[calc(100vh-410px)]">
+								<div className="space-y-4 w-full min-h-[calc(80vh-410px)]">
 									<Controller
 										name="documents"
 										control={methods.control}
@@ -853,7 +853,7 @@ const NewEvaluation = () => {
 								</div>
 							)}
 							{currentStep === 3 && (
-								<div className="space-y-4 w-full min-h-[calc(100vh-410px)]">
+								<div className="space-y-4 w-full min-h-[calc(80vh-410px)]">
 									<SummaryStep goToStep={setCurrentStep} />
 								</div>
 							)}

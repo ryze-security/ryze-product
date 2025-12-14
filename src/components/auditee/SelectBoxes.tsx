@@ -93,7 +93,7 @@ const MultiSelectBox: React.FC<MultiSelectBoxProps> = ({
 	defaultValue = [],
 }) => {
 	const {
-		formState: { errors, touchedFields, isSubmitted },
+		formState: { errors, touchedFields, isSubmitted, isValid },
 		setValue,
 		clearErrors,
 		getValues,
@@ -179,7 +179,7 @@ const MultiSelectBox: React.FC<MultiSelectBoxProps> = ({
 					</div>
 				)}
 			/>
-			{errors[name] && (touchedFields[name] || isSubmitted) && (
+			{errors[name] && (touchedFields[name] || isSubmitted || !isValid) && (
 				<p className="text-sm text-rose-500">
 					Please select at least one option.
 				</p>

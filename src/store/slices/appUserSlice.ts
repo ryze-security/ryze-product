@@ -6,22 +6,6 @@ import {
 import { AxiosInstance } from "axios";
 
 const loadInitialState = (): AuthorizationDTO => {
-	// TODO: remove this hardcoded user before beta release
-	if(process.env.NODE_ENV === 'development') {
-		return {
-			clerk_user_id: "",
-			email: "",
-			first_name: "Aditya",
-			last_name: "Dev",
-			tenant_id: "7077beec-a9ef-44ef-a21b-83aab58872c9",
-			// tenant_id: "f5bcf5b3-9ee3-4d6d-aae5-42cefb73641d",
-			user_id: "5aaaad12-7ab9-4db2-9768-010bafc7ab93",
-			// user_id: "1231946a-faee-4e83-a2f7-3511e8a4e8c4",
-			created_at: "",
-			status: "idle",
-			role: "admin"
-		};
-	}
 	try {
 		const storedState = localStorage.getItem("appUser");
 		if (storedState) {
