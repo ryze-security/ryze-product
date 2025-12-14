@@ -23,12 +23,16 @@ interface FileUploadAreaProps {
 	control: any;
 	name: string;
 	columns: ColumnDef<FilesUploadResponseDTO>[];
+
+	// Optional props
+	defaultUploadScreen?: boolean;
 }
 
 export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 	control,
 	name,
 	columns,
+	defaultUploadScreen,
 }) => {
 	const { field } = useController({ name, control });
 	const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +40,7 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 	const [existingCompanyFiles, setExistingCompanyFiles] = useState<
 		FilesUploadResponseDTO[]
 	>([]);
-	const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(defaultUploadScreen ? defaultUploadScreen : false);
 	const { toast } = useToast();
 	const userData = useAppSelector((state) => state.appUser);
 	const SPECIAL_TENANT_ID = "7077beec-a9ef-44ef-a21b-83aab58872c9";
@@ -191,8 +195,8 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 						<div
 							{...getRootProps()}
 							className={`border-dashed flex flex-col gap-10 justify-center border-2 p-6 text-center rounded-lg mb-4 w-full min-h-fit ${isLoading
-									? "pointer-events-none opacity-50"
-									: ""
+								? "pointer-events-none opacity-50"
+								: ""
 								}`}
 						>
 							<input {...getInputProps()} disabled={isLoading} />
