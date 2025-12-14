@@ -158,7 +158,7 @@ function OnboardingForm(props: Props) {
 	}, [remainingCredits, evaluationNumber, companiesNum, userData, dispatch, companyLoadingStatus]);
 
 
-	// Load frameworks if we hit step 4
+	// Load frameworks when user open the modal
 	useEffect(() => {
 		if (open && collection.collections.length === 0) {
 			dispatch(loadCollections(userData.tenant_id));
@@ -295,7 +295,7 @@ function OnboardingForm(props: Props) {
 
 				<FormProvider {...methods}>
 					<div className="py-4 min-h-[300px] flex flex-col justify-center">
-						{/* STEP 1: Auditee */}
+						{/* STEP 1: Introduction */}
 						{step === 1 && (
 							<div className="space-y-6 text-center animate-in fade-in slide-in-from-right-4">
 								<div className="mx-auto w-20 h-20 bg-violet-ryzr/20 rounded-full flex items-center justify-center">
@@ -325,55 +325,81 @@ function OnboardingForm(props: Props) {
 								</div>
 							</div>
 						)}
+
+						{/* Choose frameowrk */}
 						{step === 2 && (
-							<div className="space-y-6 animate-in fade-in slide-in-from-right-4 w-full">
-								{/* Header Section */}
-								<div className="text-center space-y-2">
-									<h3 className="text-xl font-semibold">Choose Your Compliance Framework</h3>
-									<p className="text-zinc-400 text-sm">
-										Select the security standard you want to evaluate against
+							<section className="w-full space-y-8 animate-in fade-in slide-in-from-right-4">
+								{/* Header */}
+								<header className="text-center space-y-1">
+									<h3 className="text-xl font-semibold tracking-tight">
+										Choose Your Compliance Framework
+									</h3>
+									<p className="text-sm text-zinc-400 max-w-md mx-auto">
+										Select the security standard you want to evaluate against. You can only
+										proceed after choosing one framework.
 									</p>
-								</div>
+								</header>
 
-								{/* Framework Grid */}
 								<Field>
-									{status === "succeeded" ? (
-										<div className="space-y-4">
-											<div className=" grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-												{collection.collections.map((f) => (
-													<FrameworkCard
-														key={f.collection_id}
-														name={f.collection_display_name}
-														value={f.collection_id}
-														fieldName="frameworks"
-														control={methods.control}
-														error={!!errors.frameworks}
-														setFocus={methods.setFocus}
-														multiSelectAllowed={false}
-													/>
-												))}
+									<div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4 md:p-6">
+										{status === "succeeded" ? (
+											<>
+												{/* Framework Grid */}
+												<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+													{collection.collections.map((f) => (
+														<FrameworkCard
+															key={f.collection_id}
+															name={f.collection_display_name}
+															value={f.collection_id}
+															fieldName="frameworks"
+															control={methods.control}
+															error={!!errors.frameworks}
+															setFocus={methods.setFocus}
+															multiSelectAllowed={false}
+														/>
+													))}
+												</div>
+											</>
+										) : (
+											<div className="flex flex-col justify-center items-center h-48 space-y-3">
+												<RoundSpinner />
+												<p className="text-sm text-zinc-500">Loading frameworks...</p>
 											</div>
-										</div>
-									) : (
-										<div className="flex flex-col justify-center items-center h-48 space-y-3">
-											<RoundSpinner />
-											<p className="text-sm text-zinc-500">Loading frameworks...</p>
-										</div>
-									)}
+										)}
+									</div>
 
+									{/* Error Banner */}
 									{errors.frameworks && (
-										<div className="flex items-center justify-center gap-2 mt-4 p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg">
-											<svg className="w-5 h-5 text-rose-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+										<div className="mt-5 flex items-start gap-3 rounded-lg border border-rose-500/20 bg-rose-500/10 px-4 py-3">
+											<svg
+												className="w-5 h-5 text-rose-500 mt-0.5 flex-shrink-0"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+												/>
 											</svg>
-											<p className="text-rose-500 text-sm font-medium">
-												Please select a framework to proceed
-											</p>
+											<div>
+												<p className="text-sm font-medium text-rose-500">
+													Framework selection required
+												</p>
+												<p className="text-xs text-rose-400">
+													Please select one compliance framework before continuing.
+												</p>
+											</div>
 										</div>
 									)}
 								</Field>
-							</div>
+							</section>
 						)}
+
+
+						{/* Upload/choose document and proceed. */}
 						{step === 3 && (
 							<div className="space-y-4 animate-in fade-in slide-in-from-right-4 h-full max-w-3xl mx-auto w-full">
 								<Field>
