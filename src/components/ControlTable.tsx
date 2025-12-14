@@ -36,7 +36,7 @@ const ControlTable: React.FC<ControlTableProps> = ({
             {showDescription && <th className="p-4">Control description</th>}
             {showType && <th className="p-4">Control type</th>}
             <th className="p-4">Compliance</th>
-            {showMissingElements && <th className="p-4 rounded-r-lg">Missing elements</th>}
+            {showMissingElements && <th className="p-4 rounded-r-lg">Summary</th>}
           </tr>
         </thead>
         <tbody>
