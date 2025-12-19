@@ -211,11 +211,16 @@ function Index() {
 									Auditee
 								</DropdownMenuItem>
 							</Link>
-							<DropdownMenuItem className="font-roboto text-gray-light-ryzr cursor-not-allowed">
+							<Link to={"/framework/new"}>
+								<DropdownMenuItem className="font-roboto cursor-pointer">
+									Framework
+								</DropdownMenuItem>
+							</Link>
+							{/* <DropdownMenuItem className="font-roboto text-gray-light-ryzr cursor-not-allowed">
 								<ComingSoonBorder variant="inline">
 									Framework
 								</ComingSoonBorder>
-							</DropdownMenuItem>
+							</DropdownMenuItem> */}
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</div>

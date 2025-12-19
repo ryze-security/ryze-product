@@ -771,6 +771,18 @@ const NewEvaluation = () => {
 														Request
 													</div>
 												</div>
+
+												{/* Custom Framework */}
+												<div className="p-1">
+													<div
+														className="flex gap-2 justify-center cursor-pointer rounded-sm border p-4 font-roboto sm:w-full bg-violet-light-ryzr text-white transition-all duration-100 hover:scale-110"
+														onClick={() =>
+															navigate('/framework/new')
+														}
+													>
+														Custom Framework
+													</div>
+												</div>
 											</div>
 										) : (
 											<RoundSpinner />
