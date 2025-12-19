@@ -918,6 +918,7 @@ function EvaluationDashboard() {
                                     onRowClick={(row) => handleReportDownload(row.report_id)}
                                     disabledRow={isReportGenerating}
                                     pageSize={5}
+                                    downloadButton={true}
                                 />
                             </div>
                         )}

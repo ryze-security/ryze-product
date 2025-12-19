@@ -205,7 +205,7 @@ export function GenericDataTable<TData, TValue>({
 													e.stopPropagation();
 													handleRowClick(row.original);
 												}}
-												className="lg:absolute right-20 top-[33%] text-violet-light-ryzr transition-colors"
+												className="lg:absolute right-5 top-[33%] text-violet-light-ryzr transition-colors"
 												title="Download"
 											>
 												<Download size={18} />
