@@ -147,8 +147,7 @@ function EvaluationReports(props: Props) {
 						}}
 						isLoading={isReportListLoading}
 						filterKey="reportName"
-						onRowClick={() => { }}
-						downloadButton={true}
+						clickableRow={false}
 						disabledRow={isReportDownloading}
 					/>
 					:

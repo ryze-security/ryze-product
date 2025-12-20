@@ -48,7 +48,6 @@ interface DataTableProps<TData, TValue> {
 	disabledRow?: boolean;
 	pageSize?: number;
 	clickableRow?: boolean;
-	downloadButton?: boolean;
 	reportsActionsData?: {
 		companyId: string;
 		companyName: string;
@@ -77,7 +76,6 @@ export function GenericDataTable<TData, TValue>({
 	disabledRow = false,
 	pageSize = 10,
 	clickableRow = true,
-	downloadButton = false,
 	reportsActionsData,
 
 	// External control props
@@ -115,6 +113,9 @@ export function GenericDataTable<TData, TValue>({
 	const [executionSummaryData, setExecutionSummaryData] = React.useState<ExecutiveSummaryDTO | null>(null);
 	const { toast } = useToast();
 
+	React.useEffect(() => {
+		console.log(reportsActionsData)
+	}, [reportsActionsData])
 
 	const table = useReactTable({
 		data,
@@ -396,20 +397,22 @@ export function GenericDataTable<TData, TValue>({
 						className="max-w-sm text-xl bg-[#242424] text-white border-zinc-700 focus-visible:ring-zinc-700"
 					/>
 
-					<Button
-						variant="primary"
-						onClick={generateExcelReport}
-						disabled={isReportGenerating}
-						className="max-w-sm text-black">
-						{isReportGenerating ? (
-							<>
-								<RoundSpinner color="black" />
-								Generating...
-							</>
-						) : (
-							"Generate a new report"
-						)}
-					</Button>
+					{reportsActionsData &&
+						<Button
+							variant="primary"
+							onClick={generateExcelReport}
+							disabled={isReportGenerating}
+							className="max-w-sm text-black">
+							{isReportGenerating ? (
+								<>
+									<RoundSpinner color="black" />
+									Generating...
+								</>
+							) : (
+								"Generate a new report"
+							)}
+						</Button>
+					}
 				</div>
 			)}
 			<div className="rounded-md">
@@ -430,7 +433,7 @@ export function GenericDataTable<TData, TValue>({
 										)}
 									</TableHead>
 								))}
-								{downloadButton && (
+								{reportsActionsData && (
 									<>
 										<TableHead className="text-center">
 											<span className="text-white/80 text-sm font-medium">Excel Report</span>
@@ -474,7 +477,7 @@ export function GenericDataTable<TData, TValue>({
 											)}
 										</TableCell>
 									))}
-									{downloadButton && (
+									{reportsActionsData && (
 										<>
 											<TableCell className="text-center py-3">
 												<Button

@@ -716,7 +716,7 @@ function EvaluationDashboard() {
                             ).toLocaleDateString(),
                         };
                     });
-                  
+
                 }
                 setEvaluations(response);
             } catch (error) {
@@ -810,10 +810,9 @@ function EvaluationDashboard() {
                                     reportsActionsData={additionalData}
                                     isLoading={reportListLoading}
                                     filterKey="reportName"
-                                    onRowClick={() => { }}
+                                    clickableRow={false}
                                     disabledRow={isReportGenerating}
                                     pageSize={5}
-                                    downloadButton={true}
                                 />
                             </div>
                         )}
