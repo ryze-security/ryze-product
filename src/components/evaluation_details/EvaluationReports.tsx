@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { createRichTextFromMarkdown } from "@/utils/markdownExcel";
 import companyService from "@/services/companyServices";
 import { CompanyListDto } from "@/models/company/companyDTOs";
+import { Loader2 } from "lucide-react";
 
 interface Props {
 	tenantId: string;
@@ -66,13 +67,14 @@ function EvaluationReports(props: Props) {
 		useState<boolean>(false);
 	const [isReportDownloading, setIsReportDownloading] =
 		useState<boolean>(false);
+	const [fetchedReports, setFetchedReports] = useState<boolean>(false);
 
 	//Fetches reports list
 	useEffect(() => {
 		const fetchReports = async () => {
 			try {
 				setIsReportListLoading(true);
-				const companyDataResponse : CompanyListDto = await companyService.getCompanyByCompanyId(tenantId, companyId)
+				const companyDataResponse: CompanyListDto = await companyService.getCompanyByCompanyId(tenantId, companyId)
 				setCompanyData(companyDataResponse)
 
 
@@ -96,6 +98,7 @@ function EvaluationReports(props: Props) {
 					})
 					.sort((a, b) => b.created_at.localeCompare(a.created_at));
 				setReports(updatedData);
+				setFetchedReports(true);
 			} catch {
 				toast({
 					title: "Error",
@@ -120,116 +123,7 @@ function EvaluationReports(props: Props) {
 			.join(" ");
 	};
 
-	const handleReportDownload = async (reportId: string) => {
-        try {
-            setIsReportDownloading(true);
-            const response: reportResultDTO = await reportsService.getExcelReportResult(
-                tenantId,
-                companyId,
-                reportId
-            );
-            const df = new dfd.DataFrame(
-                response.results.sort((a, b) =>
-                    a.control_id.localeCompare(b.control_id, undefined, {
-                        numeric: true,
-                    })
-                )
-            );
-
-            const workbook = new ExcelJS.Workbook();
-            workbook.creator = "Ryzr";
-            workbook.created = new Date();
-            const worksheet = workbook.addWorksheet("Evaluation Report");
-
-            const headerRow = worksheet.addRow(df.columns);
-            headerRow.eachCell((cell, index) => {
-                cell.value = formatHeaderCells(cell.value.toString());
-                cell.font = {
-                    bold: true,
-                    color: {
-                        argb: "FFFFFFFF",
-                    },
-                    size: 12,
-                    name: "Arial",
-                };
-                cell.fill = {
-                    type: "pattern",
-                    pattern: "solid",
-                    fgColor: {
-                        argb: "FFB05AEF",
-                    },
-                };
-                cell.alignment = {
-                    vertical: "top",
-                };
-            });
-            const jsonData = dfd.toJSON(df) as Array<Record<string, any>>;
-
-            //Adds and formats data rows
-            jsonData.forEach((record) => {
-                const row = worksheet.addRow(Object.values(record));
-
-                row.eachCell((cell, index) => {
-                    if (index === 1) {
-                        const originalValue = cell.value ? cell.value.toString() : "";
-
-                        cell.value = originalValue.slice(2);
-                    }
-                    cell.font = {
-                        size: 12,
-                        name: "Arial",
-                        color: {
-                            argb: "FF000000",
-                        },
-                    };
-                    cell.alignment = {
-                        vertical: "top",
-                        wrapText: true,
-                    };
-
-                    if (cell.value && cell.value.toString().includes('*')) {
-                        cell.value = { richText: createRichTextFromMarkdown(cell.value.toString()) };
-                    }
-                });
-            });
-
-            worksheet.columns.forEach((columns, index) => {
-                if (index <= 2) {
-                    columns.width = 25;
-                } else {
-                    columns.width = 50;
-                }
-                columns.border = {
-                    top: {
-                        style: "thin",
-                    },
-                    bottom: {
-                        style: "thin",
-                    },
-                    left: {
-                        style: "thin",
-                    },
-                    right: {
-                        style: "thin",
-                    },
-                };
-            });
-
-            const buffer = await workbook.xlsx.writeBuffer();
-            const blob = new Blob([buffer], {
-                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            });
-            FileSaver.saveAs(blob, companyData.tg_company_display_name + " report.xlsx");
-        } catch {
-            toast({
-                title: "Error",
-                description: `Failed to download report. Please try again later!`,
-                variant: "destructive",
-            });
-        } finally {
-            setIsReportDownloading(false);
-        }
-    };
+		
 
 	return (
 		<div className="max-w-7xl w-full">
@@ -245,15 +139,20 @@ function EvaluationReports(props: Props) {
 					className
 				)}
 			>
-				<GenericDataTable
-					columns={reportColumns}
-					data={reports}
-					isLoading={isReportListLoading}
-					filterKey="reportName"
-					onRowClick={(row) => handleReportDownload(row.report_id)}
-					downloadButton={true}
-					disabledRow={isReportDownloading}
-				/>
+				{fetchedReports ?
+					<GenericDataTable
+						columns={reportColumns}
+						data={reports}
+						reportsActionsData={{ companyId: companyId, companyName: companyData.tg_company_display_name, tenantId: tenantId }}
+						isLoading={isReportListLoading}
+						filterKey="reportName"
+						onRowClick={() => { }}
+						downloadButton={true}
+						disabledRow={isReportDownloading}
+					/>
+					:
+					<Loader2 className="animate-spin" />
+				}
 			</section>
 		</div>
 	);
