@@ -119,11 +119,9 @@ const renderBoldMarkdownHtml = (text: string): { __html: string } => {
 const ExecutionSummary: React.FC<{ data: ExecutiveSummaryDTO | null; }> = ({ data }) => {
 
     const documentRef = useRef<HTMLDivElement | null>(null);
-    const lastDownloadedKeyRef = useRef<string | null>(null);
 
 
     const exportPDF = useCallback((): void => {
-        // return;
         if (!data) return;
 
         const elem = documentRef.current;
@@ -171,10 +169,6 @@ const ExecutionSummary: React.FC<{ data: ExecutiveSummaryDTO | null; }> = ({ dat
     useEffect(() => {
         if (!data) return;
 
-        const key = `${data.company}-${data.framework}-${data.overallComplianceScore}-${data.nonCompliances.length}`;
-        if (lastDownloadedKeyRef.current === key) return;
-
-        lastDownloadedKeyRef.current = key;
 
         const timeoutId = window.setTimeout(() => {
             exportPDF();

@@ -119,12 +119,13 @@ export class ReportsService {
 	async getExecutiveSummaryData(
 		tenant_id: string,
 		company_id: string,
-		eval_id: string
+		eval_id: string,
+		report_id: string
 	): Promise<ExecutiveSummaryResponseDTO | any> {
 		try {
 			const response =
 				await axiosInstance.get<ExecutiveSummaryResponseDTO>(
-					`/api/v1/reports/${tenant_id}/${company_id}/${eval_id}/dashboard`
+					`/api/v1/reports/${tenant_id}/${company_id}/${eval_id}/${report_id}/dashboard`
 				);
 			if (response.status !== 200) {
 				throw response;
