@@ -6,12 +6,8 @@ import {
 import reportsService from "@/services/reportsServices";
 import { ColumnDef } from "@tanstack/react-table";
 import React, { useEffect, useState } from "react";
-import * as dfd from "danfojs";
-import * as ExcelJS from "exceljs";
-import * as FileSaver from "file-saver";
 import { GenericDataTable } from "../GenericDataTable";
 import { cn } from "@/lib/utils";
-import { createRichTextFromMarkdown } from "@/utils/markdownExcel";
 import companyService from "@/services/companyServices";
 import { CompanyListDto } from "@/models/company/companyDTOs";
 import { Loader2 } from "lucide-react";
@@ -123,7 +119,7 @@ function EvaluationReports(props: Props) {
 			.join(" ");
 	};
 
-		
+
 
 	return (
 		<div className="max-w-7xl w-full">
@@ -143,7 +139,12 @@ function EvaluationReports(props: Props) {
 					<GenericDataTable
 						columns={reportColumns}
 						data={reports}
-						reportsActionsData={{ companyId: companyId, companyName: companyData.tg_company_display_name, tenantId: tenantId }}
+						reportsActionsData={{
+							companyId: companyId,
+							companyName: companyData.tg_company_display_name,
+							tenantId: tenantId,
+							evalId: evaluationId
+						}}
 						isLoading={isReportListLoading}
 						filterKey="reportName"
 						onRowClick={() => { }}

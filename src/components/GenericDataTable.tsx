@@ -53,6 +53,7 @@ interface DataTableProps<TData, TValue> {
 		companyId: string;
 		companyName: string;
 		tenantId: string;
+		evalId: string;
 	}
 
 	// External control props
@@ -107,7 +108,6 @@ export function GenericDataTable<TData, TValue>({
 	const setPagination = setExternalPagination || setInternalPagination;
 
 	// States for special functions
-	const { data: EvalData, status, error } = useAppSelector((state) => state.evaluation);
 	const userData = useAppSelector((state) => state.appUser);
 	const [isReportGenerating, setIsReportGenerating] = React.useState(false);
 	const [generatingExecutionSummary, setGeneratingExecutionSummary] = React.useState<string[]>([]);
@@ -163,9 +163,9 @@ export function GenericDataTable<TData, TValue>({
 	const generateExcelReport = async () => {
 		setIsReportGenerating(true);
 		const reportData: createReportDTO = {
-			tenant_id: EvalData.data.TenantId,
-			company_id: EvalData.data.CompanyId,
-			evaluation_id: EvalData.data.EvaluationId,
+			tenant_id: reportsActionsData.tenantId,
+			company_id: reportsActionsData.companyId,
+			evaluation_id: reportsActionsData.evalId,
 			report_type: "Observations",
 			created_by: `${userData.first_name} ${userData.last_name}`,
 		};
@@ -175,8 +175,8 @@ export function GenericDataTable<TData, TValue>({
 				await reportsService.createExcelReport(reportData);
 			if (response.report_id) {
 				const startReportBody: startReportDTO = {
-					tenant_id: EvalData.data.TenantId,
-					company_id: EvalData.data.CompanyId,
+					tenant_id: reportsActionsData.tenantId,
+					company_id: reportsActionsData.companyId,
 				};
 				try {
 					const startResponse = await reportsService.startExcelReport(
@@ -352,7 +352,7 @@ export function GenericDataTable<TData, TValue>({
 				const response: ExecutiveSummaryResponseDTO = await reportsService.getExecutiveSummaryData(
 					userData.tenant_id,
 					reportsActionsData.companyId,
-					EvalData.data.EvaluationId,
+					reportsActionsData.evalId,
 					reportId
 				);
 
@@ -386,7 +386,7 @@ export function GenericDataTable<TData, TValue>({
 
 
 	return (
-		<div className="space-y-4 max-w-7xl w-full border border-pink-500">
+		<div className="space-y-4 max-w-7xl w-full">
 			{!externalSearch && (
 				<div className="flex justify-between">
 					<Input
