@@ -432,11 +432,11 @@ export function GenericDataTable<TData, TValue>({
 								))}
 								{downloadButton && (
 									<>
-										<TableHead className="">
-											<span className="text-white/60 text-sm">Report</span>
+										<TableHead className="text-center">
+											<span className="text-white/80 text-sm font-medium">Excel Report</span>
 										</TableHead>
-										<TableHead className="rounded-tr-md">
-											<span className="text-white/60 text-sm">Exec. Summary</span>
+										<TableHead className="text-center rounded-tr-md">
+											<span className="text-white/80 text-sm font-medium">Exec. Summary</span>
 										</TableHead>
 									</>
 								)}
@@ -476,7 +476,7 @@ export function GenericDataTable<TData, TValue>({
 									))}
 									{downloadButton && (
 										<>
-											<TableCell className="w-30">
+											<TableCell className="text-center py-3">
 												<Button
 													onClick={(e) => {
 														e.stopPropagation();
@@ -488,46 +488,44 @@ export function GenericDataTable<TData, TValue>({
 													variant="outline"
 													size="sm"
 													disabled={downloadingReports.includes((row.original as Record<string, unknown>).report_id as string)}
-													className="bg-gradient-to-r from-violet-ryzr/20 to-violet-light-ryzr/20 border-violet-ryzr/50 text-violet-light-ryzr hover:from-violet-ryzr/30 hover:to-violet-light-ryzr/30 hover:border-violet-light-ryzr hover:text-white transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-													title="Download Report"
+													className="bg-green-600/80 border-green-500/60 text-green-100 hover:bg-green-500/90 hover:border-green-400/80 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 font-medium backdrop-blur-sm"
+													title="Download Excel Report"
 												>
 													{downloadingReports.includes((row.original as Record<string, unknown>).report_id as string) ? (
 														<>
-															<RoundSpinner color="white" /> Downloading...
+															<RoundSpinner color="white" className="mr-2" />
+															<span className="text-xs">Downloading...</span>
 														</>
 													) : (
 														<>
-															<FileSpreadsheet className="w-4 h-4" />
-															Report
+															<FileSpreadsheet className="w-4 h-4 mr-2" />
+															<span className="text-xs font-medium">Excel</span>
 														</>
 													)}
 												</Button>
 											</TableCell>
-											<TableCell className="w-30">
+											<TableCell className="text-center py-3">
 												<Button
 													onClick={(e) => {
 														e.stopPropagation();
-														// handleRowClick(row.original, "executionSummary");
 														const reportId = (row.original as Record<string, unknown>).report_id as string;
 														handleGeneratingExecutionSummary(reportId)
 													}}
 													variant="outline"
 													size="sm"
 													disabled={generatingExecutionSummary.includes((row.original as Record<string, unknown>).report_id as string)}
-													className="bg-gradient-to-r from-violet-ryzr/20 to-violet-light-ryzr/20 border-violet-ryzr/50 text-violet-light-ryzr hover:from-violet-ryzr/30 hover:to-violet-light-ryzr/30 hover:border-violet-light-ryzr hover:text-white transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-													title="Download Executive Summary"
+													className="bg-violet-600/80 border-violet-500/60 text-violet-100 hover:bg-violet-500/90 hover:border-violet-400/80 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 font-medium backdrop-blur-sm"
+													title="Download PDF Executive Summary"
 												>
 													{generatingExecutionSummary.includes((row.original as Record<string, unknown>).report_id as string) ? (
 														<>
-															<RoundSpinner color="white" />
-															Generating...
+															<RoundSpinner color="white" className="mr-2" />
+															<span className="text-xs">Generating...</span>
 														</>
 													) : (
 														<>
-															<div className="w-4 h-4 bg-red-600 rounded-sm flex items-center justify-center text-white text-[10px] font-bold">
-																PDF
-															</div>
-															Summary
+															<FileText className="w-4 h-4 mr-2" />
+															<span className="text-xs font-medium">PDF</span>
 														</>
 													)}
 												</Button>
