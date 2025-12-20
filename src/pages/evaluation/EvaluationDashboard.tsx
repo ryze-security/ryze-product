@@ -54,6 +54,12 @@ interface ReportList {
     created_by: string;
 }
 
+interface AdditionalData {
+    companyId: string;
+    companyName: string;
+    tenantId: string;
+}
+
 function EvaluationDashboard() {
     const navigate = useNavigate();
     const [reportList, setReportList] = React.useState<ReportList[]>([]);
@@ -67,6 +73,7 @@ function EvaluationDashboard() {
         total_count: 0,
     });
     const [filter, setFilter] = React.useState("");
+    const [additionalData, setAdditionalData] = useState<AdditionalData | null>(null)
 
     //method to update status of evaluations in state
     const handleStatusUpdate = useCallback((newStatus: evaluationStatusDTO) => {
@@ -702,6 +709,11 @@ function EvaluationDashboard() {
                             ).toLocaleDateString(),
                         };
                     });
+                    setAdditionalData({
+                        companyId: response.evaluations[0].tg_company_id,
+                        companyName: response.evaluations[0].tg_company_display_name,
+                        tenantId: userData.tenant_id,
+                    })
                 }
                 setEvaluations(response);
             } catch (error) {
@@ -899,7 +911,7 @@ function EvaluationDashboard() {
                         }
                     }}
                 >
-                    <DialogContent className="flex flex-col max-h-[90vh] h-fit scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-800 lg:max-w-2xl">
+                    <DialogContent className="flex flex-col max-h-[90vh] h-fit scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-800 lg:max-w-5xl">
                         <DialogHeader className="flex-shrink-0 border-b pb-4 text-left">
                             <DialogTitle>Download Reports: {reportCompany?.name}</DialogTitle>
                             <DialogDescription className="text-wrap">
@@ -913,6 +925,7 @@ function EvaluationDashboard() {
                                 <GenericDataTable
                                     columns={reportColumns}
                                     data={reportList}
+                                    reportsActionsData={additionalData}
                                     isLoading={reportListLoading}
                                     filterKey="reportName"
                                     onRowClick={(row) => handleReportDownload(row.report_id)}
