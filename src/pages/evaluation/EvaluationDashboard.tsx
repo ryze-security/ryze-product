@@ -54,6 +54,13 @@ interface ReportList {
     created_by: string;
 }
 
+interface AdditionalData {
+    companyId: string;
+    companyName: string;
+    tenantId: string;
+    evalId: string;
+}
+
 function EvaluationDashboard() {
     const navigate = useNavigate();
     const [reportList, setReportList] = React.useState<ReportList[]>([]);
@@ -67,6 +74,7 @@ function EvaluationDashboard() {
         total_count: 0,
     });
     const [filter, setFilter] = React.useState("");
+    const [additionalData, setAdditionalData] = useState<AdditionalData | null>(null)
 
     //method to update status of evaluations in state
     const handleStatusUpdate = useCallback((newStatus: evaluationStatusDTO) => {
@@ -510,6 +518,12 @@ function EvaluationDashboard() {
                                             id: evaluation.tg_company_id,
                                             name: evaluation.tg_company_display_name,
                                         });
+                                        setAdditionalData({
+                                            companyId: evaluation.tg_company_id,
+                                            companyName: evaluation.tg_company_display_name,
+                                            tenantId: userData.tenant_id,
+                                            evalId: evaluation.eval_id,
+                                        });
                                     }
                                 } catch (error) {
                                     toast({
@@ -702,6 +716,7 @@ function EvaluationDashboard() {
                             ).toLocaleDateString(),
                         };
                     });
+
                 }
                 setEvaluations(response);
             } catch (error) {
@@ -717,127 +732,6 @@ function EvaluationDashboard() {
 
         fetchEvaluations();
     }, [refreshTrigger, userData.tenant_id]);
-
-    const formatHeaderCells = (text: string): string => {
-        const wordsToRemove = ["display", "name"];
-        return text
-            .replace(/_/g, " ")
-            .split(" ")
-            .filter((word) => !wordsToRemove.includes(word.toLowerCase()))
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" ");
-    };
-
-    const handleReportDownload = async (reportId: string) => {
-        try {
-            setIsReportGenerating(true);
-            const response: reportResultDTO = await reportsService.getExcelReportResult(
-                userData.tenant_id,
-                reportCompany?.id,
-                reportId
-            );
-            const df = new dfd.DataFrame(
-                response.results.sort((a, b) =>
-                    a.control_id.localeCompare(b.control_id, undefined, {
-                        numeric: true,
-                    })
-                )
-            );
-
-            const workbook = new ExcelJS.Workbook();
-            workbook.creator = "Ryzr";
-            workbook.created = new Date();
-            const worksheet = workbook.addWorksheet("Evaluation Report");
-
-            const headerRow = worksheet.addRow(df.columns);
-            headerRow.eachCell((cell, index) => {
-                cell.value = formatHeaderCells(cell.value.toString());
-                cell.font = {
-                    bold: true,
-                    color: {
-                        argb: "FFFFFFFF",
-                    },
-                    size: 12,
-                    name: "Arial",
-                };
-                cell.fill = {
-                    type: "pattern",
-                    pattern: "solid",
-                    fgColor: {
-                        argb: "FFB05AEF",
-                    },
-                };
-                cell.alignment = {
-                    vertical: "top",
-                };
-            });
-            const jsonData = dfd.toJSON(df) as Array<Record<string, any>>;
-
-            //Adds and formats data rows
-            jsonData.forEach((record) => {
-                const row = worksheet.addRow(Object.values(record));
-
-                row.eachCell((cell, index) => {
-                    if (index === 1) {
-                        const originalValue = cell.value ? cell.value.toString() : "";
-
-                        cell.value = originalValue.slice(2);
-                    }
-                    cell.font = {
-                        size: 12,
-                        name: "Arial",
-                        color: {
-                            argb: "FF000000",
-                        },
-                    };
-                    cell.alignment = {
-                        vertical: "top",
-                        wrapText: true,
-                    };
-
-                    if (cell.value && cell.value.toString().includes('*')) {
-                        cell.value = { richText: createRichTextFromMarkdown(cell.value.toString()) };
-                    }
-                });
-            });
-
-            worksheet.columns.forEach((columns, index) => {
-                if (index <= 2) {
-                    columns.width = 25;
-                } else {
-                    columns.width = 50;
-                }
-                columns.border = {
-                    top: {
-                        style: "thin",
-                    },
-                    bottom: {
-                        style: "thin",
-                    },
-                    left: {
-                        style: "thin",
-                    },
-                    right: {
-                        style: "thin",
-                    },
-                };
-            });
-
-            const buffer = await workbook.xlsx.writeBuffer();
-            const blob = new Blob([buffer], {
-                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            });
-            FileSaver.saveAs(blob, reportCompany.name + " report.xlsx");
-        } catch {
-            toast({
-                title: "Error",
-                description: `Failed to download report. Please try again later!`,
-                variant: "destructive",
-            });
-        } finally {
-            setIsReportGenerating(false);
-        }
-    };
 
     return (
         <div className="flex flex-col min-h-screen font-roboto bg-black text-white p-6">
@@ -899,7 +793,7 @@ function EvaluationDashboard() {
                         }
                     }}
                 >
-                    <DialogContent className="flex flex-col max-h-[90vh] h-fit scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-800 lg:max-w-2xl">
+                    <DialogContent className="flex flex-col max-h-[90vh] h-fit scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-800 lg:max-w-5xl">
                         <DialogHeader className="flex-shrink-0 border-b pb-4 text-left">
                             <DialogTitle>Download Reports: {reportCompany?.name}</DialogTitle>
                             <DialogDescription className="text-wrap">
@@ -913,9 +807,10 @@ function EvaluationDashboard() {
                                 <GenericDataTable
                                     columns={reportColumns}
                                     data={reportList}
+                                    reportsActionsData={additionalData}
                                     isLoading={reportListLoading}
                                     filterKey="reportName"
-                                    onRowClick={(row) => handleReportDownload(row.report_id)}
+                                    clickableRow={false}
                                     disabledRow={isReportGenerating}
                                     pageSize={5}
                                 />

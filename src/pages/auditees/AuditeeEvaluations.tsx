@@ -76,6 +76,12 @@ function AuditeeEvaluations() {
 	const [isAuditeeLoading, setIsAuditeeLoading] = useState<boolean>(true);
 	const [isReportGenerating, setIsReportGenerating] =
 		useState<boolean>(false);
+	const [additionalData, setAdditionalData] = useState<{
+		companyId: string;
+		companyName: string;
+		tenantId: string;
+		evalId: string;
+	} | null>(null);
 
 	const activePollers = useRef(new Map<string, AdaptivePolling>());
 	const statusService = useRef(new EvaluationStatusService());
@@ -642,6 +648,12 @@ function AuditeeEvaluations() {
 												)
 											);
 										setReportList(updatedData);
+										setAdditionalData({
+											companyId: evaluation.tg_company_id,
+											companyName: auditeeName,
+											tenantId: userData.tenant_id,
+											evalId: evaluation.eval_id,
+										});
 									}
 								} catch (error) {
 									toast({
@@ -884,131 +896,6 @@ function AuditeeEvaluations() {
 		fetchAuditeeName();
 	}, [auditeeId, userData.tenant_id]);
 
-	const formatHeaderCells = (text: string): string => {
-		return text
-			.replace(/_/g, " ")
-			.split(" ")
-			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-			.join(" ");
-	};
-
-	const handleReportDownload = async (reportId: string) => {
-		try {
-			setIsReportGenerating(true);
-			const response: reportResultDTO =
-				await reportsService.getExcelReportResult(
-					userData.tenant_id,
-					auditeeId,
-					reportId
-				);
-			const df = new dfd.DataFrame(
-				response.results.sort((a, b) =>
-					a.control_id.localeCompare(b.control_id, undefined, {
-						numeric: true,
-					})
-				)
-			);
-
-			const workbook = new ExcelJS.Workbook();
-			workbook.creator = "Ryzr";
-			workbook.created = new Date();
-			const worksheet = workbook.addWorksheet("Evaluation Report");
-
-			const headerRow = worksheet.addRow(df.columns);
-			headerRow.eachCell((cell, index) => {
-				cell.value = formatHeaderCells(cell.value.toString());
-				cell.font = {
-					bold: true,
-					color: {
-						argb: "FFFFFFFF",
-					},
-					size: 12,
-					name: "Arial",
-				};
-				cell.fill = {
-					type: "pattern",
-					pattern: "solid",
-					fgColor: {
-						argb: "FFB05AEF",
-					},
-				};
-				cell.alignment = {
-					vertical: "top",
-				};
-			});
-			const jsonData = dfd.toJSON(df) as Array<Record<string, any>>;
-
-			//Adds and formats data rows
-			jsonData.forEach((record) => {
-				const row = worksheet.addRow(Object.values(record));
-
-				row.eachCell((cell, index) => {
-					if (index === 1) {
-						const originalValue = cell.value
-							? cell.value.toString()
-							: "";
-
-						cell.value = originalValue.slice(2);
-					}
-					cell.font = {
-						size: 12,
-						name: "Arial",
-						color: {
-							argb: "FF000000",
-						},
-					};
-					cell.alignment = {
-						vertical: "top",
-						wrapText: true,
-					};
-
-					if (cell.value && cell.value.toString().includes("*")) {
-						cell.value = {
-							richText: createRichTextFromMarkdown(
-								cell.value.toString()
-							),
-						};
-					}
-				});
-			});
-
-			worksheet.columns.forEach((columns, index) => {
-				if (index <= 2) {
-					columns.width = 25;
-				} else {
-					columns.width = 50;
-				}
-				columns.border = {
-					top: {
-						style: "thin",
-					},
-					bottom: {
-						style: "thin",
-					},
-					left: {
-						style: "thin",
-					},
-					right: {
-						style: "thin",
-					},
-				};
-			});
-
-			const buffer = await workbook.xlsx.writeBuffer();
-			const blob = new Blob([buffer], {
-				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-			});
-			FileSaver.saveAs(blob, auditeeName + " report.xlsx");
-		} catch {
-			toast({
-				title: "Error",
-				description: `Failed to download report. Please try again later!`,
-				variant: "destructive",
-			});
-		} finally {
-			setIsReportGenerating(false);
-		}
-	};
 
 	return (
 		<div className="min-h-screen font-roboto bg-black text-white p-6">
@@ -1062,10 +949,11 @@ function AuditeeEvaluations() {
 						setReportDialogOpen(isOpen);
 						if (!isOpen) {
 							setReportList(null);
+							setAdditionalData(null);
 						}
 					}}
 				>
-					<DialogContent className="flex flex-col max-h-[90vh] h-fit scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-800 lg:max-w-2xl">
+					<DialogContent className="flex flex-col max-h-[90vh] h-fit scrollbar-thin scrollbar-track-transparent scrollbar-thumb-zinc-800 lg:max-w-5xl">
 						<DialogHeader className="flex-shrink-0 border-b pb-4 text-left">
 							<DialogTitle>
 								Download Reports: {auditeeName}
@@ -1084,9 +972,8 @@ function AuditeeEvaluations() {
 									data={reportList}
 									isLoading={isReportListLoading}
 									filterKey="reportName"
-									onRowClick={(row) =>
-										handleReportDownload(row.report_id)
-									}
+									clickableRow={false}
+									reportsActionsData={additionalData}
 									disabledRow={isReportGenerating}
 									pageSize={5}
 								/>

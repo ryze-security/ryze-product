@@ -24,7 +24,18 @@ import { useNavigate } from "react-router-dom";
 import { RoundSpinner } from "./ui/spinner";
 import { Progress } from "./ui/progress";
 import { cn } from "@/lib/utils";
-import { Download } from "lucide-react";
+import { FileSpreadsheet, FileText } from "lucide-react";
+import { createReportDTO, createStartReportResponseDTO, reportResultDTO, startReportDTO } from "@/models/reports/ExcelDTOs";
+import { useAppSelector } from "@/store/hooks";
+import reportsService from "@/services/reportsServices";
+import { useToast } from "@/hooks/use-toast";
+import * as dfd from "danfojs";
+import * as ExcelJS from "exceljs";
+import * as FileSaver from "file-saver";
+import { createRichTextFromMarkdown } from "@/utils/markdownExcel";
+import { ExecutiveSummaryDTO, ExecutiveSummaryResponseDTO } from "@/models/reports/ExecutiveSummaryDTO";
+import ExecutionSummary from "./evaluation_details/ExecutionSummary";
+
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -37,7 +48,12 @@ interface DataTableProps<TData, TValue> {
 	disabledRow?: boolean;
 	pageSize?: number;
 	clickableRow?: boolean;
-	downloadButton?: boolean;
+	reportsActionsData?: {
+		companyId: string;
+		companyName: string;
+		tenantId: string;
+		evalId: string;
+	}
 
 	// External control props
 	externalFilter?: string;
@@ -60,7 +76,7 @@ export function GenericDataTable<TData, TValue>({
 	disabledRow = false,
 	pageSize = 10,
 	clickableRow = true,
-	downloadButton = false,
+	reportsActionsData,
 
 	// External control props
 	externalFilter,
@@ -89,6 +105,18 @@ export function GenericDataTable<TData, TValue>({
 	const pagination = externalPagination !== undefined ? externalPagination : internalPagination;
 	const setPagination = setExternalPagination || setInternalPagination;
 
+	// States for special functions
+	const userData = useAppSelector((state) => state.appUser);
+	const [isReportGenerating, setIsReportGenerating] = React.useState(false);
+	const [generatingExecutionSummary, setGeneratingExecutionSummary] = React.useState<string[]>([]);
+	const [downloadingReports, setDownloadingReports] = React.useState<string[]>([]);
+	const [executionSummaryData, setExecutionSummaryData] = React.useState<ExecutiveSummaryDTO | null>(null);
+	const { toast } = useToast();
+
+	React.useEffect(() => {
+		console.log(reportsActionsData)
+	}, [reportsActionsData])
+
 	const table = useReactTable({
 		data,
 		columns,
@@ -111,6 +139,7 @@ export function GenericDataTable<TData, TValue>({
 		},
 		onSortingChange: setSorting,
 		getSortedRowModel: getSortedRowModel(),
+
 	});
 
 	const handleRowClick = (row: TData) => {
@@ -129,15 +158,262 @@ export function GenericDataTable<TData, TValue>({
 		}
 	};
 
+	// Special Functions (to create or delete report)
+
+	// to generate a new excel report
+	const generateExcelReport = async () => {
+		setIsReportGenerating(true);
+		const reportData: createReportDTO = {
+			tenant_id: reportsActionsData.tenantId,
+			company_id: reportsActionsData.companyId,
+			evaluation_id: reportsActionsData.evalId,
+			report_type: "Observations",
+			created_by: `${userData.first_name} ${userData.last_name}`,
+		};
+
+		try {
+			const response: createStartReportResponseDTO =
+				await reportsService.createExcelReport(reportData);
+			if (response.report_id) {
+				const startReportBody: startReportDTO = {
+					tenant_id: reportsActionsData.tenantId,
+					company_id: reportsActionsData.companyId,
+				};
+				try {
+					const startResponse = await reportsService.startExcelReport(
+						reportsActionsData.tenantId,
+						response.report_id,
+						startReportBody
+					);
+					if (startResponse) {
+						toast({
+							title: `Report Generation Started`,
+							description: "Your report will be generated in a few minutes. You will be notified once it's ready. The generated reports can be found under the 'Reports' tab.",
+							variant: "default",
+							className: "bg-green-ryzr",
+						});
+					}
+				} catch (error) {
+					toast({
+						title: `Error starting report generation`,
+						description: `There was an error while starting the report generation. Please try again later!`,
+						variant: "destructive",
+					});
+				}
+			}
+		} catch (error) {
+			toast({
+				title: `Error creating report`,
+				description: `There was an error while creating the report. Please try again later!`,
+				variant: "destructive",
+			});
+		} finally {
+			setIsReportGenerating(false);
+		}
+	};
+
+	// to download the excel report
+	const formatHeaderCells = (text: string): string => {
+		const wordsToRemove = ["display", "name"];
+		return text
+			.replace(/_/g, " ")
+			.split(" ")
+			.filter((word) => !wordsToRemove.includes(word.toLowerCase()))
+			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(" ");
+	};
+
+	const handleReportDownload = async (reportId: string) => {
+		try {
+			setDownloadingReports((prev) => [...prev, reportId]);
+			const response: reportResultDTO = await reportsService.getExcelReportResult(
+				reportsActionsData.tenantId,
+				reportsActionsData.companyId,
+				reportId
+			);
+			const df = new dfd.DataFrame(
+				response.results.sort((a, b) =>
+					a.control_id.localeCompare(b.control_id, undefined, {
+						numeric: true,
+					})
+				)
+			);
+
+			const workbook = new ExcelJS.Workbook();
+			workbook.creator = "Ryzr";
+			workbook.created = new Date();
+			const worksheet = workbook.addWorksheet("Evaluation Report");
+
+			const headerRow = worksheet.addRow(df.columns);
+			headerRow.eachCell((cell, index) => {
+				cell.value = formatHeaderCells(cell.value.toString());
+				cell.font = {
+					bold: true,
+					color: {
+						argb: "FFFFFFFF",
+					},
+					size: 12,
+					name: "Arial",
+				};
+				cell.fill = {
+					type: "pattern",
+					pattern: "solid",
+					fgColor: {
+						argb: "FFB05AEF",
+					},
+				};
+				cell.alignment = {
+					vertical: "top",
+				};
+			});
+			const jsonData = dfd.toJSON(df) as Array<Record<string, any>>;
+
+			//Adds and formats data rows
+			jsonData.forEach((record) => {
+				const row = worksheet.addRow(Object.values(record));
+
+				row.eachCell((cell, index) => {
+					if (index === 1) {
+						const originalValue = cell.value ? cell.value.toString() : "";
+
+						cell.value = originalValue.slice(2);
+					}
+					cell.font = {
+						size: 12,
+						name: "Arial",
+						color: {
+							argb: "FF000000",
+						},
+					};
+					cell.alignment = {
+						vertical: "top",
+						wrapText: true,
+					};
+
+					if (cell.value && cell.value.toString().includes('*')) {
+						cell.value = { richText: createRichTextFromMarkdown(cell.value.toString()) };
+					}
+				});
+			});
+
+			worksheet.columns.forEach((columns, index) => {
+				if (index <= 2) {
+					columns.width = 25;
+				} else {
+					columns.width = 50;
+				}
+				columns.border = {
+					top: {
+						style: "thin",
+					},
+					bottom: {
+						style: "thin",
+					},
+					left: {
+						style: "thin",
+					},
+					right: {
+						style: "thin",
+					},
+				};
+			});
+
+			const buffer = await workbook.xlsx.writeBuffer();
+			const blob = new Blob([buffer], {
+				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			});
+			FileSaver.saveAs(blob, reportsActionsData.companyName + " report.xlsx");
+		} catch {
+			toast({
+				title: "Error",
+				description: `Failed to download report. Please try again later!`,
+				variant: "destructive",
+			});
+		} finally {
+			setDownloadingReports((prev) => prev.filter((id) => id !== reportId));
+		}
+	};
+
+	// to download the exec. summary pdf
+	const handleGeneratingExecutionSummary = async (reportId: string) => {
+		setGeneratingExecutionSummary((prev) => [...prev, reportId]);
+		toast({
+			title: "Generating Execution Summary",
+			description: "Your execution summary is being generated. This may take a few seconds — the PDF will automatically download once it's ready.",
+			variant: "default",
+			className: "bg-green-ryzr",
+		});
+
+		const maxAttempts = 5;
+		const pollingInterval = 10000;
+		let success = false;
+
+		for (let attempt = 0; attempt < maxAttempts; attempt++) {
+			try {
+				const response: ExecutiveSummaryResponseDTO = await reportsService.getExecutiveSummaryData(
+					userData.tenant_id,
+					reportsActionsData.companyId,
+					reportsActionsData.evalId,
+					reportId
+				);
+
+				if (response.status === "ready") {
+					setExecutionSummaryData(response.data);
+					success = true;
+					break;
+				}
+
+				if (attempt < maxAttempts - 1) {
+					await new Promise(resolve => setTimeout(resolve, pollingInterval));
+				}
+			} catch (error) {
+				if (attempt === maxAttempts - 1) {
+					console.error(error.response?.data?.message);
+					setExecutionSummaryData(null);
+				}
+			}
+		}
+
+		if (!success) {
+			toast({
+				title: "Timeout",
+				description: "Execution summary generation is taking longer than expected. Please try again later.",
+				variant: "destructive",
+			});
+		}
+
+		setGeneratingExecutionSummary((prev) => prev.filter((id) => id !== reportId))
+	}
+
+
 	return (
 		<div className="space-y-4 max-w-7xl w-full">
 			{!externalSearch && (
-				<Input
-					placeholder="Search..."
-					value={filter}
-					onChange={(e) => setFilter(e.target.value)}
-					className="max-w-sm text-xl bg-[#242424] text-white border-zinc-700 focus-visible:ring-zinc-700"
-				/>
+				<div className="flex justify-between">
+					<Input
+						placeholder="Search..."
+						value={filter}
+						onChange={(e) => setFilter(e.target.value)}
+						className="max-w-sm text-xl bg-[#242424] text-white border-zinc-700 focus-visible:ring-zinc-700"
+					/>
+
+					{reportsActionsData &&
+						<Button
+							variant="primary"
+							onClick={generateExcelReport}
+							disabled={isReportGenerating}
+							className="max-w-sm text-black">
+							{isReportGenerating ? (
+								<>
+									<RoundSpinner color="black" />
+									Generating...
+								</>
+							) : (
+								"Generate new report"
+							)}
+						</Button>
+					}
+				</div>
 			)}
 			<div className="rounded-md">
 				<Table className="rounded-md bg-zinc-900">
@@ -150,19 +426,22 @@ export function GenericDataTable<TData, TValue>({
 								{headerGroup.headers.map((header, index) => (
 									<TableHead
 										key={header.id}
-										className={`text-white text-base bg-[#1a1a1a]
-													${index === 0 ? "rounded-tl-md" : ""}
-													${index === headerGroup.headers.length - 1 ? "rounded-tr-md" : ""}`}>
+										className={`text-white text-base bg-[#1a1a1a] ${index === 0 ? "rounded-tl-md" : ""}`}>
 										{flexRender(
 											header.column.columnDef.header,
 											header.getContext()
 										)}
 									</TableHead>
 								))}
-								{downloadButton && (
-									<TableHead className="w-10 rounded-tr-md">
-										<span className="sr-only">Actions</span>
-									</TableHead>
+								{reportsActionsData && (
+									<>
+										<TableHead className="text-center">
+											<span className="text-white/80 text-sm font-medium">Excel Report</span>
+										</TableHead>
+										<TableHead className="text-center rounded-tr-md">
+											<span className="text-white/80 text-sm font-medium">Exec. Summary</span>
+										</TableHead>
+									</>
 								)}
 							</TableRow>
 						))}
@@ -198,19 +477,63 @@ export function GenericDataTable<TData, TValue>({
 											)}
 										</TableCell>
 									))}
-									{downloadButton && (
-										<TableCell className="w-10">
-											<button
-												onClick={(e) => {
-													e.stopPropagation();
-													handleRowClick(row.original);
-												}}
-												className="lg:absolute right-20 top-[33%] text-violet-light-ryzr transition-colors"
-												title="Download"
-											>
-												<Download size={18} />
-											</button>
-										</TableCell>
+									{reportsActionsData && (
+										<>
+											<TableCell className="text-center py-3">
+												<Button
+													onClick={(e) => {
+														e.stopPropagation();
+														const reportId = (row.original as Record<string, unknown>).report_id as string;
+														if (reportId) {
+															handleReportDownload(reportId);
+														}
+													}}
+													variant="outline"
+													size="sm"
+													disabled={downloadingReports.includes((row.original as Record<string, unknown>).report_id as string)}
+													className="text-white transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 font-medium backdrop-blur-sm"
+													title="Download Excel Report"
+												>
+													{downloadingReports.includes((row.original as Record<string, unknown>).report_id as string) ? (
+														<>
+															<RoundSpinner color="white" className="mr-2" />
+															<span className="text-xs">Downloading...</span>
+														</>
+													) : (
+														<>
+															<FileSpreadsheet className="w-4 h-4 mr-2" />
+															<span className="text-xs font-medium">Excel</span>
+														</>
+													)}
+												</Button>
+											</TableCell>
+											<TableCell className="text-center py-3">
+												<Button
+													onClick={(e) => {
+														e.stopPropagation();
+														const reportId = (row.original as Record<string, unknown>).report_id as string;
+														handleGeneratingExecutionSummary(reportId)
+													}}
+													variant="outline"
+													size="sm"
+													disabled={generatingExecutionSummary.includes((row.original as Record<string, unknown>).report_id as string)}
+													className="text-white transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 font-medium backdrop-blur-sm"
+													title="Download PDF Executive Summary"
+												>
+													{generatingExecutionSummary.includes((row.original as Record<string, unknown>).report_id as string) ? (
+														<>
+															<RoundSpinner color="white" className="mr-2" />
+															<span className="text-xs">Generating...</span>
+														</>
+													) : (
+														<>
+															<FileText className="w-4 h-4 mr-2" />
+															<span className="text-xs font-medium">PDF</span>
+														</>
+													)}
+												</Button>
+											</TableCell>
+										</>
 									)}
 								</TableRow>
 							))
@@ -261,6 +584,8 @@ export function GenericDataTable<TData, TValue>({
 					</div>
 				)}
 			</div>
+
+			<ExecutionSummary data={executionSummaryData} />
 		</div >
 	);
 }
