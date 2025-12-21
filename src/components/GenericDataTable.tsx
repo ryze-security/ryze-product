@@ -409,7 +409,7 @@ export function GenericDataTable<TData, TValue>({
 									Generating...
 								</>
 							) : (
-								"Generate a new report"
+								"Generate new report"
 							)}
 						</Button>
 					}
@@ -491,7 +491,7 @@ export function GenericDataTable<TData, TValue>({
 													variant="outline"
 													size="sm"
 													disabled={downloadingReports.includes((row.original as Record<string, unknown>).report_id as string)}
-													className="bg-green-600/80 border-green-500/60 text-green-100 hover:bg-green-500/90 hover:border-green-400/80 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 font-medium backdrop-blur-sm"
+													className="text-white transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 font-medium backdrop-blur-sm"
 													title="Download Excel Report"
 												>
 													{downloadingReports.includes((row.original as Record<string, unknown>).report_id as string) ? (
@@ -517,7 +517,7 @@ export function GenericDataTable<TData, TValue>({
 													variant="outline"
 													size="sm"
 													disabled={generatingExecutionSummary.includes((row.original as Record<string, unknown>).report_id as string)}
-													className="bg-violet-600/80 border-violet-500/60 text-violet-100 hover:bg-violet-500/90 hover:border-violet-400/80 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 font-medium backdrop-blur-sm"
+													className="text-white transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 font-medium backdrop-blur-sm"
 													title="Download PDF Executive Summary"
 												>
 													{generatingExecutionSummary.includes((row.original as Record<string, unknown>).report_id as string) ? (
