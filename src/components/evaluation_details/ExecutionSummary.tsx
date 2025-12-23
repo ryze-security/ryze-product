@@ -112,6 +112,13 @@ const renderBoldMarkdownHtml = (text: string): { __html: string } => {
     return { __html: withBold };
 };
 
+const formatToOneDecimal = (num: number): number => {
+    if (Number.isInteger(num)) {
+        return num;
+    }
+    return parseFloat(num.toFixed(1));
+};
+
 
 
 
@@ -217,7 +224,7 @@ const ExecutionSummary: React.FC<{ data: ExecutiveSummaryDTO | null; }> = ({ dat
                     {/* Cards */}
                     <div className="flex flex-wrap gap-2 ">
                         {Object.entries(data.EvalDomains).map(([domainName, percentage]) => {
-                            return <ControlCard controlName={domainName} percentage={percentage} />
+                            return <ControlCard controlName={domainName} percentage={formatToOneDecimal(percentage)} />
                         })}
                     </div>
 
@@ -264,7 +271,7 @@ const ExecutionSummary: React.FC<{ data: ExecutiveSummaryDTO | null; }> = ({ dat
                                                         ? 'bg-[#ffe9d3]'
                                                         : 'bg-[#ffd3d2]'
                                                 }    
-                                                        `}>{percentage}%</p>
+                                                        `}>{formatToOneDecimal(percentage)}%</p>
                                         </div>
                                     )
                                 })}
@@ -334,7 +341,7 @@ const ExecutionSummary: React.FC<{ data: ExecutiveSummaryDTO | null; }> = ({ dat
                         {data.nonCompliances.map((control) => {
                             return (
                                 <div className="flex gap-1 table-row-container">
-                                    <p className="flex-[10] flex p-1 px-2  font-medium justify-center items-center text-sm bg-gray-200 text-black rounded-md">{control.control_id.replace("c_", "")}</p>
+                                    <p className="flex-[10] flex p-1 px-2  font-medium justify-center items-center text-sm bg-gray-200 text-black rounded-md">{control.control_id.split('_').slice(1).join('_')}</p>
                                     <p className="flex-[20] flex p-1 px-2  font-medium justify-center items-center text-sm bg-gray-200 text-black rounded-md">{control.controlTitle}</p>
                                     <p className="flex-[10] flex p-1 px-2  font-medium justify-center items-center text-sm bg-gray-200 text-black rounded-md">{control.severity}</p>
                                     <p className="flex-[60] flex p-1 px-2  font-medium text-sm bg-gray-200 text-black rounded-md">
