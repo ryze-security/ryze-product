@@ -217,7 +217,7 @@ const ExecutionSummary: React.FC<{ data: ExecutiveSummaryDTO | null; }> = ({ dat
                     <h2 className="rounded-full bg-black px-8 pt-1 py-1 tracking-wide text-white w-fit text-xs font-bold">{data.framework}</h2>
 
                     <h2 className="text-2xl mt-6">
-                        <span className="font-semibold text-violet-light-ryzr">{data.overallComplianceScore}%.</span>
+                        <span className="font-semibold text-violet-light-ryzr">{formatToOneDecimal(data.overallComplianceScore)}%.</span>
                         Overall compliance.
                     </h2>
 
