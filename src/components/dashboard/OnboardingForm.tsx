@@ -282,19 +282,8 @@ function OnboardingForm(props: Props) {
 	return (
 		<Dialog open={open} onOpenChange={(val) => !val && handleSkip()}>
 			<DialogContent className="max-w-3xl bg-zinc-950 text-white border-zinc-800 font-roboto">
-				<DialogHeader>
-					<DialogTitle className="text-2xl font-bold text-center">
-						Welcome to Ryzr 👋
-					</DialogTitle>
-					<DialogDescription className="text-center text-zinc-300">
-						Let's run your first security evaluation in just 2 simple steps.
-					</DialogDescription>
-				</DialogHeader>
-
-				<StepIndicator />
-
 				<FormProvider {...methods}>
-					<div className="py-4 min-h-[300px] flex flex-col justify-center">
+					<div className="p-4 min-h-[300px] flex flex-col">
 						{/* STEP 1: Introduction */}
 						{step === 1 && (
 							<div className="space-y-8 animate-in fade-in slide-in-from-right-4">
@@ -303,50 +292,47 @@ function OnboardingForm(props: Props) {
 										{/* <svg className="w-10 h-10 text-violet-ryzr" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
 										</svg> */}
-										<Zap className="w-10 h-10 text-violet-ryzr" />
+										<img
+											className="size-20 md:size-24"
+											src="/assets/Ryzr_White Logo_v2.png"
+											alt="Ryzr Logo"
+										/>
 									</div>
-									<h3 className="text-2xl font-bold mb-3">
-										Your First Security Review Starts Here
+									<h3 className="text-5xl tracking-wider font-semibold mb-3">
+										Welcome to Ryzr
 									</h3>
-									<p className="text-zinc-400 max-w-xl mx-auto">
-										We've set up everything you need. Follow these simple steps to see
-										Ryzr's AI-powered compliance analysis in action.
+									<p className="text-xl max-w-xl mx-auto">
+										Start your first AI-powered security documentation review.
 									</p>
 								</div>
 
-								<div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
-									<div className="bg-zinc-900/50 rounded-lg p-4 border border-zinc-800">
-										<div className="flex items-start gap-3">
-											<div className="flex-shrink-0 w-8 h-8 bg-violet-ryzr/20 rounded-lg flex items-center justify-center text-violet-ryzr font-bold">
-												1
-											</div>
-											<div>
-												<h4 className="font-semibold mb-1">Choose Framework</h4>
-												<p className="text-sm text-zinc-400">
-													Select from ISO 27001, NIST CSF, and more
-												</p>
-											</div>
-										</div>
+								<div className="space-y-2">
+									<div className="text-gray-400 max-w-2xl mx-auto text-lg">
+										Get Started
 									</div>
-									<div className="bg-zinc-900/50 rounded-lg p-4 border border-zinc-800">
-										<div className="flex items-start gap-3">
-											<div className="flex-shrink-0 w-8 h-8 bg-violet-ryzr/20 rounded-lg flex items-center justify-center text-violet-ryzr font-bold">
-												2
-											</div>
-											<div>
-												<h4 className="font-semibold mb-1">Upload Documents</h4>
-												<p className="text-sm text-zinc-400">
-													Add your policies, procedures, or evidence
-												</p>
-											</div>
-										</div>
-									</div>
-								</div>
 
-								<div className="text-center pt-2">
-									<p className="text-sm text-zinc-500">
-										<span className="text-violet-ryzr font-semibold">Pro tip:</span> Results typically appear in 2-5 minutes
-									</p>
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+										<div className="bg-[#D9D9D9]/10 rounded-lg p-4 border border-zinc-800">
+											<div className="flex items-start gap-3">
+												<div>
+													<h4 className="font-semibold text-md mb-1">1. Choose a Framework</h4>
+													<p className="text-sm text-zinc-400">
+														Check compliance against ISO 27001, NIST CSF, GDPR and more.
+													</p>
+												</div>
+											</div>
+										</div>
+										<div className="bg-[#D9D9D9]/10 rounded-lg p-4 border border-zinc-800">
+											<div className="flex items-start gap-3">
+												<div>
+													<h4 className="font-semibold mb-1">2. Upload Documents</h4>
+													<p className="text-sm text-zinc-400">
+														Review compliance of uploaded policies, procedures, or assurance reports.
+													</p>
+												</div>
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 						)}
@@ -355,18 +341,17 @@ function OnboardingForm(props: Props) {
 						{step === 2 && (
 							<section className="w-full space-y-8 animate-in fade-in slide-in-from-right-4">
 								{/* Header */}
-								<header className="text-center space-y-1">
-									<h3 className="text-xl font-semibold tracking-tight">
-										Choose Your Compliance Framework
-									</h3>
-									<p className="text-sm text-zinc-400 max-w-md mx-auto">
-										Select the security standard you want to evaluate against. You can only
-										proceed after choosing one framework.
-									</p>
+								<header className="">
+									<h2 className="text-xl font-semibold tracking-wider">
+										Choose
+										<span className="block text-4xl">
+											Compliance Framework
+										</span>
+									</h2>
 								</header>
 
 								<Field>
-									<div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4 md:p-6">
+									<div className="">
 										{status === "succeeded" ? (
 											<>
 												{/* Framework Grid */}
@@ -427,8 +412,18 @@ function OnboardingForm(props: Props) {
 						{/* Upload/choose document and proceed. */}
 						{step === 3 && (
 							<div className="space-y-4 animate-in fade-in slide-in-from-right-4 h-full max-w-3xl mx-auto w-full">
+
+								<header className="">
+									<h2 className="text-xl font-semibold tracking-wider">
+										Upload
+										<span className="block text-4xl">
+											Documents to review
+										</span>
+									</h2>
+								</header>
+
 								<Field>
-									<div className="border border-dashed border-zinc-700 rounded-lg p-4 bg-zinc-900/50">
+									<div className="">
 										<Controller
 											name="documents"
 											control={methods.control}
@@ -463,6 +458,7 @@ function OnboardingForm(props: Props) {
 													name="documents"
 													columns={fileColumns}
 													defaultUploadScreen={true}
+													showHeading={false}
 												/>
 											)}
 										/>
@@ -478,18 +474,18 @@ function OnboardingForm(props: Props) {
 					</div>
 				</FormProvider>
 
-				<DialogFooter className="flex sm:justify-between items-center gap-4">
+				<DialogFooter className={`flex items-center gap-4 ${step > 2 && 'sm:justify-between'}`}>
 					<Button
-						variant="ghost"
+						variant="outline"
 						onClick={handleSkip}
 						className="text-zinc-500 hover:text-white"
 						disabled={loading}
 					>
-						Skip for now
+						Skip Intro
 					</Button>
 
 					<div className="flex gap-2">
-						{step > 1 && (
+						{step > 2 && (
 							<Button
 								variant="outline"
 								onClick={() => setStep(step - 1)}
@@ -508,7 +504,7 @@ function OnboardingForm(props: Props) {
 							{loading ? (
 								<RoundSpinner />
 							) : step === 3 ? (
-								"Run Analysis"
+								"Run"
 							) : (
 								<>
 									Next{" "}
