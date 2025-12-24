@@ -443,7 +443,11 @@ const NewEvaluation = () => {
 				<div className="max-w-7xl flex flex-col sm:flex-row justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10 ">
 					<div className="flex-1 w-full flex flex-col space-y-4 p-6 ">
 						<h1 className="text-4xl font-bold">Start a new evaluation</h1>
-						<h3 className="text-base font-thin">Review documentation gaps against leading security standards and frameworks</h3>
+						<h3 className="text-base font-thin">
+							{currentStep === 1 ? "Select the controls you'd like to evaluate for compliance." :
+								"Review documentation gaps against leading security standards and frameworks"
+							}
+						</h3>
 
 						{/* Progress Bar Section */}
 						<section className="flex-1 w-full flex flex-col space-y-4 p-0 !mt-8 ">
