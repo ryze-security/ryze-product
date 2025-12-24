@@ -10,13 +10,23 @@ import { GenericDataTable } from "../GenericDataTable";
 import { cn } from "@/lib/utils";
 import companyService from "@/services/companyServices";
 import { CompanyListDto } from "@/models/company/companyDTOs";
-import { Loader2 } from "lucide-react";
+import { Loader2, PlusCircleIcon } from "lucide-react";
+import { Button } from "../ui/button";
+import { RoundSpinner } from "../ui/spinner";
+import { useReportGeneration } from "@/hooks/useReportGeneration";
 
 interface Props {
 	tenantId: string;
 	companyId: string;
 	evaluationId: string;
 	className?: string;
+}
+
+interface AdditionalData {
+	companyId: string;
+	companyName: string;
+	tenantId: string;
+	evalId: string;
 }
 
 interface ReportList {
@@ -65,6 +75,12 @@ function EvaluationReports(props: Props) {
 		useState<boolean>(false);
 	const [fetchedReports, setFetchedReports] = useState<boolean>(false);
 
+	// Use the custom hook for report generation
+	const { generateExcelReport, isReportGenerating } = useReportGeneration();
+
+	// Props related to the generate report button > this data will be passed to the GenericDataTable component for generating report
+	const [reportsActionsData, setReportsActionsData] = useState<AdditionalData | null>(null)
+
 	//Fetches reports list
 	useEffect(() => {
 		const fetchReports = async () => {
@@ -107,28 +123,41 @@ function EvaluationReports(props: Props) {
 		};
 
 		fetchReports();
-	}, [tenantId, companyId, evaluationId]);
-
-	const formatHeaderCells = (text: string): string => {
-		const wordsToRemove = ["display", "name"];
-		return text
-			.replace(/_/g, " ")
-			.split(" ")
-			.filter((word) => !wordsToRemove.includes(word.toLowerCase()))
-			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-			.join(" ");
-	};
-
+	}, [tenantId, companyId, evaluationId, toast]);
 
 
 	return (
 		<div className="max-w-7xl w-full">
-			<div className="flex flex-col sm:flex-row justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10">
+			{/* <div className="flex flex-col sm:flex-row justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10">
 				<div className="flex flex-col space-y-4 p-3">
 					<h1 className="text-4xl sm:text-6xl font-bold text-white">Generated Reports</h1>
 					<h3 className="text-white/90">Browse through generated reports to track progress and review findings.</h3>
 				</div>
-			</div>
+			</div> */}
+
+			<section className="flex flex-col sm:flex-row justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10 ">
+				<div className="flex flex-col space-y-4 p-6 ">
+					<h1 className="text-4xl sm:text-6xl font-bold text-white">Generated Reports</h1>
+					<h3 className="text-white/90">Browse through generated reports to track progress and review findings.</h3>
+				</div>
+
+				<Button
+					variant="primary"
+					onClick={() => generateExcelReport({ tenantId, companyId, evaluationId })}
+					disabled={isReportGenerating}
+					className="bg-white m-6 mt-0 sm:mt-6 hover:bg-gray-200 rounded-full transition-colors text-black font-extrabold text-md w-fit px-6 py-2">
+					{isReportGenerating ? (
+						<>
+							<RoundSpinner color="black" />
+							Generating...
+						</>
+					) : (
+						"Generate new report"
+					)}
+				</Button>
+			</section>
+
+
 			<section
 				className={cn(
 					"flex items-center w-full bg-black text-white pt-4",
@@ -149,6 +178,7 @@ function EvaluationReports(props: Props) {
 						filterKey="reportName"
 						clickableRow={false}
 						disabledRow={isReportDownloading}
+						externalGenerateReport={true}
 					/>
 					:
 					<Loader2 className="animate-spin" />
