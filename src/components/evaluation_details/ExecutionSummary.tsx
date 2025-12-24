@@ -338,18 +338,25 @@ const ExecutionSummary: React.FC<{ data: ExecutiveSummaryDTO | null; }> = ({ dat
                         </div>
 
                         {/* rows */}
-                        {data.nonCompliances.map((control) => {
-                            return (
-                                <div className="flex gap-1 table-row-container">
-                                    <p className="flex-[10] flex p-1 px-2  font-medium justify-center items-center text-sm bg-gray-200 text-black rounded-md">{control.control_id.split('_').slice(1).join('_')}</p>
-                                    <p className="flex-[20] flex p-1 px-2  font-medium justify-center items-center text-sm bg-gray-200 text-black rounded-md">{control.controlTitle}</p>
-                                    <p className="flex-[10] flex p-1 px-2  font-medium justify-center items-center text-sm bg-gray-200 text-black rounded-md">{control.severity}</p>
-                                    <p className="flex-[60] flex p-1 px-2  font-medium text-sm bg-gray-200 text-black rounded-md">
-                                        <span dangerouslySetInnerHTML={renderBoldMarkdownHtml(control.observations)} />
-                                    </p>
-                                </div>
-                            )
-                        })}
+                        {data.nonCompliances
+                            .sort((a, b) => {
+                                const severityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+                                const aSeverity = severityOrder[a.severity.toLowerCase()] ?? 999;
+                                const bSeverity = severityOrder[b.severity.toLowerCase()] ?? 999;
+                                return aSeverity - bSeverity;
+                            })
+                            .map((control) => {
+                                return (
+                                    <div className="flex gap-1 table-row-container">
+                                        <p className="flex-[10] flex p-1 px-2 font-medium text-sm bg-gray-200 text-black rounded-md">{control.control_id.split('_').slice(1).join('_')}</p>
+                                        <p className="flex-[20] flex p-1 px-2 font-medium text-sm bg-gray-200 text-black rounded-md">{control.controlTitle}</p>
+                                        <p className="flex-[10] flex p-1 px-2 font-medium text-sm bg-gray-200 text-black rounded-md">{control.severity}</p>
+                                        <p className="flex-[60] flex p-1 px-2 font-medium text-sm bg-gray-200 text-black rounded-md">
+                                            <span dangerouslySetInnerHTML={renderBoldMarkdownHtml(control.observations)} />
+                                        </p>
+                                    </div>
+                                )
+                            })}
                     </div>
                 </section>
 
