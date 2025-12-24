@@ -26,6 +26,7 @@ interface FileUploadAreaProps {
 
 	// Optional props
 	defaultUploadScreen?: boolean;
+	showHeading?: boolean;
 }
 
 export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
@@ -33,6 +34,7 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 	name,
 	columns,
 	defaultUploadScreen,
+	showHeading=true
 }) => {
 	const { field } = useController({ name, control });
 	const [isLoading, setIsLoading] = useState(false);
@@ -168,11 +170,13 @@ export const FileUploadArea: React.FC<FileUploadAreaProps> = ({
 		<div className="flex gap-8 justify-evenly font-roboto">
 			{/* Existing Files Datatable */}
 			<div className="w-full max-h-fit pb-4 px-1 space-y-4 rounded-lg scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent">
-				<div className="w-full flex justify-start items-center gap-4">
-					<p className="text-lg font-semibold">
-						Choose your files for evaluation
-					</p>
-				</div>
+				{showHeading &&
+					<div className="w-full flex justify-start items-center gap-4">
+						<p className="text-lg font-semibold">
+							Choose your files for evaluation
+						</p>
+					</div>
+				}
 				<FilesDataTable
 					columns={columns}
 					data={existingCompanyFiles}
