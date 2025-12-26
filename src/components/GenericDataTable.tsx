@@ -24,7 +24,10 @@ import { useNavigate } from "react-router-dom";
 import { RoundSpinner } from "./ui/spinner";
 import { Progress } from "./ui/progress";
 import { cn } from "@/lib/utils";
-import { Download } from "lucide-react";
+import { FileSpreadsheet, FileText } from "lucide-react";
+import { useReportGeneration } from "@/hooks/useReportGeneration";
+import ExecutionSummary from "./evaluation_details/ExecutionSummary";
+
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -37,7 +40,12 @@ interface DataTableProps<TData, TValue> {
 	disabledRow?: boolean;
 	pageSize?: number;
 	clickableRow?: boolean;
-	downloadButton?: boolean;
+	reportsActionsData?: {
+		companyId: string;
+		companyName: string;
+		tenantId: string;
+		evalId: string;
+	}
 
 	// External control props
 	externalFilter?: string;
@@ -47,6 +55,9 @@ interface DataTableProps<TData, TValue> {
 	externalPagination?: PaginationState;
 	setExternalPagination?: (value: PaginationState) => void;
 	externalSearch?: boolean;
+
+	// External control props for generate report button
+	externalGenerateReport?: boolean;
 }
 
 export function GenericDataTable<TData, TValue>({
@@ -60,7 +71,7 @@ export function GenericDataTable<TData, TValue>({
 	disabledRow = false,
 	pageSize = 10,
 	clickableRow = true,
-	downloadButton = false,
+	reportsActionsData,
 
 	// External control props
 	externalFilter,
@@ -70,6 +81,7 @@ export function GenericDataTable<TData, TValue>({
 	externalPagination,
 	setExternalPagination,
 	externalSearch = false,
+	externalGenerateReport = false,
 }: DataTableProps<TData, TValue>) {
 	const [internalFilter, setInternalFilter] = React.useState("");
 	const [internalSorting, setInternalSorting] = React.useState<SortingState>([]);
@@ -88,6 +100,22 @@ export function GenericDataTable<TData, TValue>({
 
 	const pagination = externalPagination !== undefined ? externalPagination : internalPagination;
 	const setPagination = setExternalPagination || setInternalPagination;
+
+	// Use the enhanced hook for all report generation functionality
+	const {
+		generateExcelReport,
+		downloadExcelReport,
+		generateExecutionSummaryPDF,
+		isReportGenerating,
+		downloadingReports,
+		generatingExecutionSummary,
+		executionSummaryData,
+		setExecutionSummaryData,
+	} = useReportGeneration();
+
+	React.useEffect(() => {
+		console.log(reportsActionsData)
+	}, [reportsActionsData])
 
 	const table = useReactTable({
 		data,
@@ -111,6 +139,7 @@ export function GenericDataTable<TData, TValue>({
 		},
 		onSortingChange: setSorting,
 		getSortedRowModel: getSortedRowModel(),
+
 	});
 
 	const handleRowClick = (row: TData) => {
@@ -132,12 +161,35 @@ export function GenericDataTable<TData, TValue>({
 	return (
 		<div className="space-y-4 max-w-7xl w-full">
 			{!externalSearch && (
-				<Input
-					placeholder="Search..."
-					value={filter}
-					onChange={(e) => setFilter(e.target.value)}
-					className="max-w-sm text-xl bg-[#242424] text-white border-zinc-700 focus-visible:ring-zinc-700"
-				/>
+				<div className="flex justify-between">
+					<Input
+						placeholder="Search..."
+						value={filter}
+						onChange={(e) => setFilter(e.target.value)}
+						className="max-w-sm text-xl bg-[#242424] text-white border-zinc-700 focus-visible:ring-zinc-700"
+					/>
+
+					{reportsActionsData && !externalGenerateReport &&
+						<Button
+							variant="primary"
+							onClick={() => generateExcelReport({
+								tenantId: reportsActionsData.tenantId,
+								companyId: reportsActionsData.companyId,
+								evaluationId: reportsActionsData.evalId
+							})}
+							disabled={isReportGenerating}
+							className="max-w-sm text-black">
+							{isReportGenerating ? (
+								<>
+									<RoundSpinner color="black" />
+									Generating...
+								</>
+							) : (
+								"Generate new report"
+							)}
+						</Button>
+					}
+				</div>
 			)}
 			<div className="rounded-md">
 				<Table className="rounded-md bg-zinc-900">
@@ -150,19 +202,22 @@ export function GenericDataTable<TData, TValue>({
 								{headerGroup.headers.map((header, index) => (
 									<TableHead
 										key={header.id}
-										className={`text-white text-base bg-[#1a1a1a]
-													${index === 0 ? "rounded-tl-md" : ""}
-													${index === headerGroup.headers.length - 1 ? "rounded-tr-md" : ""}`}>
+										className={`text-white text-base bg-[#1a1a1a] ${index === 0 ? "rounded-tl-md" : ""}`}>
 										{flexRender(
 											header.column.columnDef.header,
 											header.getContext()
 										)}
 									</TableHead>
 								))}
-								{downloadButton && (
-									<TableHead className="w-10 rounded-tr-md">
-										<span className="sr-only">Actions</span>
-									</TableHead>
+								{reportsActionsData && (
+									<>
+										<TableHead className="text-center">
+											<span className="text-white/80 text-sm font-medium">Excel Report</span>
+										</TableHead>
+										<TableHead className="text-center rounded-tr-md">
+											<span className="text-white/80 text-sm font-medium">Exec. Summary</span>
+										</TableHead>
+									</>
 								)}
 							</TableRow>
 						))}
@@ -198,19 +253,72 @@ export function GenericDataTable<TData, TValue>({
 											)}
 										</TableCell>
 									))}
-									{downloadButton && (
-										<TableCell className="w-10">
-											<button
-												onClick={(e) => {
-													e.stopPropagation();
-													handleRowClick(row.original);
-												}}
-												className="lg:absolute right-20 top-[33%] text-violet-light-ryzr transition-colors"
-												title="Download"
-											>
-												<Download size={18} />
-											</button>
-										</TableCell>
+									{reportsActionsData && (
+										<>
+											<TableCell className="text-center py-3">
+												<Button
+													onClick={(e) => {
+														e.stopPropagation();
+														const reportId = (row.original as Record<string, unknown>).report_id as string;
+														if (reportId) {
+															downloadExcelReport(reportId, {
+																tenantId: reportsActionsData.tenantId,
+																companyId: reportsActionsData.companyId,
+																evaluationId: reportsActionsData.evalId,
+																companyName: reportsActionsData.companyName,
+															});
+														}
+													}}
+													variant="outline"
+													size="sm"
+													disabled={downloadingReports.includes((row.original as Record<string, unknown>).report_id as string)}
+													className="text-white transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 font-medium backdrop-blur-sm"
+													title="Download Excel Report"
+												>
+													{downloadingReports.includes((row.original as Record<string, unknown>).report_id as string) ? (
+														<>
+															<RoundSpinner color="white" className="mr-2" />
+															<span className="text-xs">Downloading...</span>
+														</>
+													) : (
+														<>
+															<FileSpreadsheet className="w-4 h-4 mr-2" />
+															<span className="text-xs font-medium">Excel</span>
+														</>
+													)}
+												</Button>
+											</TableCell>
+											<TableCell className="text-center py-3">
+												<Button
+													onClick={(e) => {
+														e.stopPropagation();
+														const reportId = (row.original as Record<string, unknown>).report_id as string;
+														generateExecutionSummaryPDF(reportId, {
+															tenantId: reportsActionsData.tenantId,
+															companyId: reportsActionsData.companyId,
+															evaluationId: reportsActionsData.evalId,
+														})
+													}}
+													variant="outline"
+													size="sm"
+													disabled={generatingExecutionSummary.includes((row.original as Record<string, unknown>).report_id as string)}
+													className="text-white transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 font-medium backdrop-blur-sm"
+													title="Download PDF Executive Summary"
+												>
+													{generatingExecutionSummary.includes((row.original as Record<string, unknown>).report_id as string) ? (
+														<>
+															<RoundSpinner color="white" className="mr-2" />
+															<span className="text-xs">Generating...</span>
+														</>
+													) : (
+														<>
+															<FileText className="w-4 h-4 mr-2" />
+															<span className="text-xs font-medium">PDF</span>
+														</>
+													)}
+												</Button>
+											</TableCell>
+										</>
 									)}
 								</TableRow>
 							))
@@ -261,6 +369,8 @@ export function GenericDataTable<TData, TValue>({
 					</div>
 				)}
 			</div>
+
+			<ExecutionSummary data={executionSummaryData} />
 		</div >
 	);
 }

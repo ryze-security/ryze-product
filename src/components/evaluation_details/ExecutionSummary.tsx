@@ -1,11 +1,7 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import {
-    Dialog,
-    DialogContent,
-} from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import html2pdf from "html2pdf.js"
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
+import { ExecutiveSummaryDTO } from "@/models/reports/ExecutiveSummaryDTO";
 
 
 // Type definitions for html2pdf options
@@ -34,62 +30,8 @@ interface Html2PdfOptions {
     };
 }
 
-// Interfaces
-interface NonCompliance {
-    control_id: string;
-    controlTitle: string;
-    severity: string;
-    observations: string;
-}
-
-interface Severity {
-    critical: number;
-    high: number,
-    medium: number,
-    low: number,
-}
-
-interface EvalDomains {
-    "Information Security Domain": number;
-    "Organization of Information Security": number;
-    "Threat Intelligence": number;
-    "Asset Management": number;
-    "Access Control": number;
-    "Supplier Relationships": number;
-    "Information security in use of cloud": number;
-    "Information Security Incident Management": number;
-    "Information Security Aspects of Business Continuity Management": number;
-    "Compliance": number;
-    "Human Resource Security": number;
-    "Physical and Environmental Security": number;
-    "Operations Security": number;
-    "Network Security": number;
-    "Cryptography": number;
-    "System Acquisition, Development and Maintenance": number;
-}
-
-interface ExecutionSummaryData {
-    company: string;
-    framework: string;
-    overallComplianceScore: number;
-    controlCategoryScores: {
-        [controlName: string]: number;
-    },
-    controlsSeverityBreakdown: {
-        scoreBelow50: Severity
-        scoreAbove50: Severity,
-        scoreAbove75: Severity,
-    }
-    EvalDomains: EvalDomains;
-    nonCompliances: NonCompliance[];
-}
 
 
-interface ExecutionSummaryProps {
-    data: ExecutionSummaryData;
-    isOpen: boolean;
-    setIsOpen: (open: boolean) => void;
-}
 
 const ControlCard = ({ controlName, percentage }: { controlName: string, percentage: number }) => {
     return (
@@ -128,7 +70,6 @@ interface ComplianceChartProps {
 const ComplianceChart: React.FC<ComplianceChartProps> = ({ data }) => {
     return (
         <div className="flex-[35] bg-gradient-to-br from-[#f8f5ff] to-[#f2f2f2] flex flex-col items-center justify-center px-1 pb-0 rounded-lg">
-            {/* <ResponsiveContainer width="100%" height={380}> */}
             <ResponsiveContainer width="100%">
                 <RadarChart data={data}>
                     <PolarGrid stroke="#000000" />
@@ -147,6 +88,8 @@ const ComplianceChart: React.FC<ComplianceChartProps> = ({ data }) => {
                         stroke="#B05BEF"
                         fill="#B05BEF"
                         fillOpacity={0.3}
+                        isAnimationActive={false}
+                        animationDuration={0}
                     />
                 </RadarChart>
             </ResponsiveContainer>
@@ -154,28 +97,40 @@ const ComplianceChart: React.FC<ComplianceChartProps> = ({ data }) => {
     );
 };
 
+const escapeHtml = (text: string): string => {
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+};
+
+const renderBoldMarkdownHtml = (text: string): { __html: string } => {
+    const escaped = escapeHtml(text);
+    const withBold = escaped.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+    return { __html: withBold };
+};
+
+const formatToOneDecimal = (num: number): number => {
+    if (Number.isInteger(num)) {
+        return num;
+    }
+    return parseFloat(num.toFixed(1));
+};
 
 
 
 
-const ExecutionSummary: React.FC<ExecutionSummaryProps> = ({
-    data,
-    isOpen,
-    setIsOpen,
-}) => {
+
+const ExecutionSummary: React.FC<{ data: ExecutiveSummaryDTO | null; }> = ({ data }) => {
 
     const documentRef = useRef<HTMLDivElement | null>(null);
 
 
-    // Generates A1, A2, A3, ...
-    const radarData = Object.entries(data.EvalDomains).map(([domain, score], index) => ({
-        name: `A${index + 1}`,
-        score: Number(score),
-        fullName: domain // Keep the original full name
-    }));
-
-
     const exportPDF = useCallback((): void => {
+        if (!data) return;
+
         const elem = documentRef.current;
 
         if (!elem) {
@@ -216,168 +171,197 @@ const ExecutionSummary: React.FC<ExecutionSummaryProps> = ({
             .catch((error: Error) => {
                 console.error('PDF export failed:', error);
             });
-    }, [data.company]);
+    }, [data]);
 
-    // Trigger PDF export when dialog closes
     useEffect(() => {
-        if (!isOpen) {
+        if (!data) return;
+
+
+        const timeoutId = window.setTimeout(() => {
             exportPDF();
-        }
-    }, [isOpen, exportPDF])
+        }, 350);
+
+        return () => {
+            window.clearTimeout(timeoutId);
+        };
+    }, [data, exportPDF]);
+
+    if (!data) return null;
+
+    // Generates A1, A2, A3, ...
+    const radarData = Object.entries(data.controlCategoryScores).map(([domain, score], index) => ({
+        name: `A${index + 1}`,
+        score: Number(score),
+        fullName: domain // Keep the original full name
+    }));
 
 
     return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogContent className="flex  justify-center items-start p-4 bg-gray-200  text-black  max-w-screen min-h-[34vh]">
-                <style>{pageBreakStyles}</style>
-                <ScrollArea className="w-full max-w-7xls max-w-[210mm] h-[100vh]">
-                    <div ref={documentRef} className="flex flex-col gap-8 text-black font-roboto" style={{ fontFamily: "'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial" }}> {/** Using these fonts because they are pretty accurate to SF Pro Display*/}
+        <div
+            // className="absolute inset-0 z-50"
+            style={{
+                position: "fixed",
+                left: "-10000px",
+                top: 0,
+                width: "210mm",
+                background: "white",
+            }}
+        >
+            <style>{pageBreakStyles}</style>
+            <div ref={documentRef} className="flex flex-col gap-8 text-black font-roboto" style={{ fontFamily: "'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial" }}> {/** Using these fonts because they are pretty accurate to SF Pro Display*/}
 
-                        {/* PAGE 1 */}
-                        <section className="bg-white w-full shadow-lg p-10 flex gap-y-2 flex-col">
+                {/* PAGE 1 */}
+                <section className="bg-white w-full shadow-lg p-10 flex gap-y-2 flex-col">
 
-                            <h1 className="font-extrabold text-5xl tracking-wide">{data.company}</h1>
-                            <h2 className="rounded-full bg-black px-8 pt-1 py-1 tracking-wide text-white w-fit text-xs font-bold">{data.framework}</h2>
+                    <h1 className="font-extrabold text-5xl tracking-wide">{data.company}</h1>
+                    <h2 className="rounded-full bg-black px-8 pt-1 py-1 tracking-wide text-white w-fit text-xs font-bold">{data.framework}</h2>
 
-                            <h2 className="text-2xl mt-6">
-                                <span className="font-semibold text-violet-light-ryzr">{data.overallComplianceScore}%.</span>
-                                Overall compliance.
-                            </h2>
+                    <h2 className="text-2xl mt-6">
+                        <span className="font-semibold text-violet-light-ryzr">{formatToOneDecimal(data.overallComplianceScore)}%.</span>
+                        Overall compliance.
+                    </h2>
 
-                            {/* Cards */}
-                            <div className="flex flex-wrap gap-2 ">
-                                {Object.entries(data.controlCategoryScores).map(([controlName, percentage]) => {
-                                    return <ControlCard controlName={controlName} percentage={percentage} />
-                                })}
-                            </div>
+                    {/* Cards */}
+                    <div className="flex flex-wrap gap-2 ">
+                        {Object.entries(data.EvalDomains).map(([domainName, percentage]) => {
+                            return <ControlCard controlName={domainName} percentage={formatToOneDecimal(percentage)} />
+                        })}
+                    </div>
 
-                            {/* Main Container for  chart and table */}
-                            <div className="flex flex-col gap-y-3 mt-6">
-                                <h2 className="text-2xl font-extrabold tracking-wide">Security Posture.</h2>
+                    {/* Main Container for  chart and table */}
+                    <div className="flex flex-col gap-y-3 mt-6">
+                        <h2 className="text-2xl font-extrabold tracking-wide">Security Posture.</h2>
 
-                                <div className="flex gap-x-4">
-                                    <ComplianceChart data={radarData} />
+                        <div className="flex gap-x-4">
+                            <ComplianceChart data={radarData} />
 
-                                    {/* Table */}
-                                    <div className="flex flex-col gap-y-1 flex-[65]">
-                                        {/* column */}
-                                        <div className="flex gap-1">
-                                            <p className="flex-[10] px-1 pt-0.5 text-center font-medium text-xs bg-black text-white rounded">S.No.</p>
-                                            <p className="flex-[70] pl-1 pt-0.5 text-center font-medium text-xs bg-black text-white rounded">Information Security Domain</p>
-                                            <p className="flex-[20] text-center font-medium pt-0.5 text-xs bg-black text-white rounded">Compliance</p>
-                                        </div>
-
-                                        {/* rows */}
-                                        {Object.entries(data.EvalDomains).map(([domain, percentage], index) => {
-                                            return (
-                                                <div className="flex gap-1">
-                                                    <p className={`flex-[10] flex justify-center items-center px-1 font-medium text-xs pt-0.5 rounded
-                                                    ${percentage >= 75
-                                                            ? 'bg-[#d5e7cd]'
-                                                            : percentage >= 50
-                                                                ? 'bg-[#ffe9d3]'
-                                                                : 'bg-[#ffd3d2]'
-                                                        }`
-                                                    }>A{index + 1}</p>
-                                                    <p className={`flex-[70] pl-1 font-medium text-xs pt-0.5 rounded
-                                                    ${percentage >= 75
-                                                            ? 'bg-[#d5e7cd]'
-                                                            : percentage >= 50
-                                                                ? 'bg-[#ffe9d3]'
-                                                                : 'bg-[#ffd3d2]'
-                                                        }`
-                                                    }>{domain}</p>
-                                                    <p className={`flex-[20] text-center flex justify-center items-center font-medium text-xs pt-0.5 rounded
-                                                    ${percentage >= 75
-                                                            ? 'bg-[#d5e7cd]'
-                                                            : percentage >= 50
-                                                                ? 'bg-[#ffe9d3]'
-                                                                : 'bg-[#ffd3d2]'
-                                                        }    
-                                                        `}>{percentage}%</p>
-                                                </div>
-                                            )
-                                        })}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Severity Breakdown */}
-                            <div className="flex flex-col mt-6">
-                                <h2 className="text-2xl font-extrabold tracking-wide text-[#a6a6a6]">Breakdown as per control severity</h2>
-
-                                {/* cards */}
-                                <div className="flex gap-x-1 w-full flex-1 mt-3">
-                                    {Object.entries(data.controlsSeverityBreakdown)
-                                        .sort(([keyA], [keyB]) => {
-                                            const order = ['scoreBelow50', 'scoreAbove50', 'scoreAbove75'];
-                                            return order.indexOf(keyA) - order.indexOf(keyB);
-                                        })
-                                        .map(([key, value]) => {
-                                            return (
-                                                <div className={`flex flex-col p-6 rounded w-full h-full text-sm 
-                                            ${key === "scoreBelow50" ? 'flex-[50]  bg-[#ffd3d2]' :
-                                                        key === "scoreAbove50" ? 'flex-[25] bg-[#ffe9d3]' :
-                                                            'flex-[25] bg-[#d5e7cd]'
-                                                    } `}>
-                                                    {Object.entries(value).map(([severity, severityNumber]) => {
-                                                        return (
-                                                            <div className="flex justify-between items-center">
-                                                                {/* for first div only */}
-                                                                {key === 'scoreBelow50' && <span>{severity.charAt(0).toUpperCase() + severity.slice(1)}.</span>}
-
-                                                                {severity.charAt(0).toUpperCase()}. {severityNumber} controls.
-
-                                                            </div>
-                                                        )
-                                                    })}
-                                                </div>
-                                            )
-                                        })}
-                                </div>
-
-                                <div className="mt-1 flex text-xs text-[#a6a6a6]  gap-2">
-                                    <div className="flex-[50] flex justify-between">
-                                        <span>Compliance</span>
-                                        <span>50%</span>
-                                    </div>
-                                    <div className="flex-[25] text-end">75%</div>
-                                    <div className="flex-[25] text-end">100%</div>
-                                </div>
-                            </div>
-                        </section>
-
-                        {/* PAGE  2 and more... */}
-                        <section className="bg-white w-full shadow-lg p-10 flex gap-y-4 flex-col">
-                            <h1 className="font-extrabold text-4xl break-before-avoid-page">Key non-compliances.</h1>
-
+                            {/* Table */}
                             <div className="flex flex-col gap-y-1 flex-[65]">
                                 {/* column */}
                                 <div className="flex gap-1">
-                                    <p className="flex-[5] p-1 px-2 text-center font-medium text-sm bg-black text-white rounded-md">#</p>
-                                    <p className="flex-[25] p-1 px-2 text-center font-medium text-sm bg-black text-white rounded-md">Control Title</p>
-                                    <p className="flex-[10] p-1 px-2 text-center font-medium text-sm bg-black text-white rounded-md">Severity</p>
-                                    <p className="flex-[60] p-1 px-2 text-center font-medium text-sm bg-black text-white rounded-md">Observations</p>
+                                    <p className="flex-[10] px-1 pt-0.5 text-center font-medium text-xs bg-black text-white rounded">S.No.</p>
+                                    <p className="flex-[70] pl-1 pt-0.5 text-center font-medium text-xs bg-black text-white rounded">Information Security Domain</p>
+                                    <p className="flex-[20] text-center font-medium pt-0.5 text-xs bg-black text-white rounded">Compliance</p>
                                 </div>
 
                                 {/* rows */}
-                                {data.nonCompliances.map((control) => {
+                                {Object.entries(data.controlCategoryScores).map(([controlName, percentage], index) => {
                                     return (
-                                        <div className="flex gap-1 table-row-container">
-                                            <p className="flex-[5] flex p-1 px-2  font-medium justify-center items-center text-sm bg-gray-200 text-black rounded-md">{control.control_id.replace("c_", "")}</p>
-                                            <p className="flex-[25] flex p-1 px-2  font-medium text-sm bg-gray-200 text-black rounded-md">{control.controlTitle}</p>
-                                            <p className="flex-[10] flex p-1 px-2  font-medium justify-center items-center text-sm bg-gray-200 text-black rounded-md">{control.severity}</p>
-                                            <p className="flex-[60] flex p-1 px-2  font-medium  text-sm bg-gray-200 text-black rounded-md">{control.observations}</p>
+                                        <div className="flex gap-1">
+                                            <p className={`flex-[10] flex justify-center items-center px-1 font-medium text-xs pt-0.5 rounded
+                                                    ${percentage >= 75
+                                                    ? 'bg-[#d5e7cd]'
+                                                    : percentage >= 50
+                                                        ? 'bg-[#ffe9d3]'
+                                                        : 'bg-[#ffd3d2]'
+                                                }`
+                                            }>A{index + 1}</p>
+                                            <p className={`flex-[70] pl-1 font-medium text-xs pt-0.5 rounded
+                                                    ${percentage >= 75
+                                                    ? 'bg-[#d5e7cd]'
+                                                    : percentage >= 50
+                                                        ? 'bg-[#ffe9d3]'
+                                                        : 'bg-[#ffd3d2]'
+                                                }`
+                                            }>{controlName}</p>
+                                            <p className={`flex-[20] text-center flex justify-center items-center font-medium text-xs pt-0.5 rounded
+                                                    ${percentage >= 75
+                                                    ? 'bg-[#d5e7cd]'
+                                                    : percentage >= 50
+                                                        ? 'bg-[#ffe9d3]'
+                                                        : 'bg-[#ffd3d2]'
+                                                }    
+                                                        `}>{formatToOneDecimal(percentage)}%</p>
                                         </div>
                                     )
                                 })}
                             </div>
-                        </section>
-
+                        </div>
                     </div>
-                </ScrollArea>
-            </DialogContent>
-        </Dialog>
+
+                    {/* Severity Breakdown */}
+                    <div className="flex flex-col mt-6">
+                        <h2 className="text-2xl font-extrabold tracking-wide text-[#a6a6a6]">Breakdown as per control severity</h2>
+
+                        {/* cards */}
+                        <div className="flex gap-x-1 w-full flex-1 mt-3">
+                            {Object.entries(data.controlsSeverityBreakdown)
+                                .sort(([keyA], [keyB]) => {
+                                    const order = ['scoreBelow50', 'scoreAbove50', 'scoreAbove75'];
+                                    return order.indexOf(keyA) - order.indexOf(keyB);
+                                })
+                                .map(([key, value]) => {
+                                    return (
+                                        <div className={`flex flex-col p-6 rounded w-full h-full text-sm 
+                                            ${key === "scoreBelow50" ? 'flex-[50]  bg-[#ffd3d2]' :
+                                                key === "scoreAbove50" ? 'flex-[25] bg-[#ffe9d3]' :
+                                                    'flex-[25] bg-[#d5e7cd]'
+                                            } `}>
+                                            {Object.entries(value).map(([severity, severityNumber]) => {
+                                                return (
+                                                    <div className="flex justify-between items-center">
+                                                        {/* for first div only */}
+                                                        {key === 'scoreBelow50' && <span>{severity.charAt(0).toUpperCase() + severity.slice(1)}.</span>}
+
+                                                        <span>{`${severity.charAt(0).toUpperCase()}. ${severityNumber} controls.`}</span>
+
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>
+                                    )
+                                })}
+                        </div>
+
+                        <div className="mt-1 flex text-xs text-[#a6a6a6]  gap-2">
+                            <div className="flex-[50] flex justify-between">
+                                <span>Compliance</span>
+                                <span>50%</span>
+                            </div>
+                            <div className="flex-[25] text-end">75%</div>
+                            <div className="flex-[25] text-end">100%</div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* PAGE  2 and more... */}
+                <section className="bg-white w-full shadow-lg p-10 flex gap-y-4 flex-col">
+                    <h1 className="font-extrabold text-4xl break-before-avoid-page">Key non-compliances.</h1>
+
+                    <div className="flex flex-col gap-y-1 flex-[65]">
+                        {/* column */}
+                        <div className="flex gap-1">
+                            <p className="flex-[10] p-1 px-2 text-center font-medium text-sm bg-black text-white rounded-md">#</p>
+                            <p className="flex-[20] p-1 px-2 text-center font-medium text-sm bg-black text-white rounded-md">Control Title</p>
+                            <p className="flex-[10] p-1 px-2 text-center font-medium text-sm bg-black text-white rounded-md">Severity</p>
+                            <p className="flex-[60] p-1 px-2 text-center font-medium text-sm bg-black text-white rounded-md">Observations</p>
+                        </div>
+
+                        {/* rows */}
+                        {data.nonCompliances
+                            .sort((a, b) => {
+                                const severityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+                                const aSeverity = severityOrder[a.severity.toLowerCase()] ?? 999;
+                                const bSeverity = severityOrder[b.severity.toLowerCase()] ?? 999;
+                                return aSeverity - bSeverity;
+                            })
+                            .map((control) => {
+                                return (
+                                    <div className="flex gap-1 table-row-container">
+                                        <p className="flex-[10] flex p-1 px-2 font-medium text-sm bg-gray-200 text-black rounded-md">{control.control_id.split('_').slice(1).join('_')}</p>
+                                        <p className="flex-[20] flex p-1 px-2 font-medium text-sm bg-gray-200 text-black rounded-md">{control.controlTitle}</p>
+                                        <p className="flex-[10] flex p-1 px-2 font-medium text-sm bg-gray-200 text-black rounded-md">{control.severity}</p>
+                                        <p className="flex-[60] flex p-1 px-2 font-medium text-sm bg-gray-200 text-black rounded-md">
+                                            <span dangerouslySetInnerHTML={renderBoldMarkdownHtml(control.observations)} />
+                                        </p>
+                                    </div>
+                                )
+                            })}
+                    </div>
+                </section>
+
+            </div>
+        </div>
     );
 };
 
