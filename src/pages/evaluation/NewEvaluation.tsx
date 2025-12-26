@@ -767,7 +767,7 @@ const NewEvaluation = () => {
 												{/*Add link to framework section */}
 												<div className="p-1">
 													<div
-														className="flex gap-2 justify-center cursor-pointer rounded-sm border p-4 font-roboto sm:w-full bg-zinc-800 text-zinc-400 transition-all text-opacity-80 duration-100 hover:scale-110"
+														className="flex gap-2 justify-center cursor-pointer rounded-lg border-2 border-dashed border-zinc-600 p-4 font-roboto sm:w-full bg-gradient-to-r from-zinc-800 to-zinc-700 text-zinc-300 font-semibold shadow-lg transition-all duration-200 hover:scale-105 hover:border-zinc-500 hover:text-white hover:shadow-xl"
 														onClick={() =>
 															setOpenDialog(true)
 														}
@@ -779,7 +779,7 @@ const NewEvaluation = () => {
 												{/* Custom Framework */}
 												<div className="p-1">
 													<div
-														className="flex gap-2 justify-center cursor-pointer rounded-sm border p-4 font-roboto sm:w-full bg-violet-light-ryzr text-white transition-all duration-100 hover:scale-110"
+														className="flex gap-2 justify-center cursor-pointer rounded-lg border-2 border-violet-400 p-4 font-roboto sm:w-full bg-gradient-to-r from-violet-light-ryzr to-violet-600 text-white font-semibold shadow-lg transition-all duration-200 hover:scale-105 hover:border-violet-300 hover:shadow-xl "
 														onClick={() =>
 															navigate('/framework/new')
 														}
