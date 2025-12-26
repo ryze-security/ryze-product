@@ -26,6 +26,7 @@ import {
 	PublicRoute,
 } from "./components/layout/layoutIndex.ts";
 import TenantDetails from "./pages/admin/TenantDetails.tsx";
+import NewFramework from "./pages/frameworks/NewFramework.tsx";
 
 const queryClient = new QueryClient();
 
@@ -90,12 +91,16 @@ const App = () => {
 								path="/framework/deviation"
 								element={<DeviationDashboard />}
 							/>
+							<Route
+								path="/framework/new"
+								element={<NewFramework />}
+							/>
 						</Route>
 					</Route>
 					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</TooltipProvider>
-		</QueryClientProvider>
+		</QueryClientProvider >
 	);
 };
 
