@@ -303,7 +303,7 @@ const NewFramework = () => {
                                                                     htmlFor={`control-${control.id}`}
                                                                     className="text-gray-light-ryzr cursor-pointer"
                                                                 >
-                                                                    {control.id} - {control.name}
+                                                                    {control.name}
                                                                 </Label>
                                                             </div>
                                                         ))}
