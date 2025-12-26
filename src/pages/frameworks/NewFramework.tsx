@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -20,54 +20,88 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ChevronDown, CheckSquare, Square } from 'lucide-react'
+import { CheckSquare, Square, Loader2 } from 'lucide-react'
+import { useToast } from '@/hooks/use-toast'
+import collectionService from '@/services/collectionServices'
+import { customFrameworkResponse, createCustomFrameworkRequest, controlArray } from '@/models/collection/collectionDTOs'
+import { useAppSelector, useAppDispatch } from '@/store/hooks'
+import { loadCollections } from '@/store/slices/collectionSlice'
 
 const NewFramework = () => {
     const navigate = useNavigate()
-    const informationSecurityDomains = [
-        "Information Security Domain",
-        "Organization of Information Security",
-        "Threat Intelligence",
-        "Asset Management",
-        "Access Control",
-        "Supplier Relationships",
-        "Information security in use of cloud",
-        "Information Security Incident Management",
-        "Information Security Aspects of Business Continuity Management",
-        "Compliance",
-        "Human Resource Security",
-        "Physical and Environmental Security",
-        "Operations Security",
-        "Network Security",
-        "Cryptography",
-        "System Acquisition, Development and Maintenance"
-    ]
+    const { toast } = useToast()
+    const userData = useAppSelector((state) => state.appUser);
+    const dispatch = useAppDispatch();
 
-    // Generate controls for each domain (1.1, 1.2, etc.)
-    const generateControls = (domainIndex: number) => {
-        return Array.from({ length: 10 }, (_, i) => ({
-            id: `${domainIndex + 1}.${i + 1}`,
-            name: `Control ${domainIndex + 1}.${i + 1}`,
-            selected: false
-        }))
-    }
-
-    // Initialize domains with controls
-    const [domains, setDomains] = useState(
-        informationSecurityDomains.map((domain, index) => ({
-            name: domain,
-            selected: false,
-            controls: generateControls(index)
-        }))
-    )
-
-    // Dialog state
+    // ---------- STATES -----------
+    const [frameworkData, setFrameworkData] = useState<customFrameworkResponse | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
     const [showDialog, setShowDialog] = useState(false)
     const [frameworkName, setFrameworkName] = useState('')
     const [isCreating, setIsCreating] = useState(false)
 
-    // Toggle domain selection
+    // Initialize domains with controls from API data 
+    // This is the main state for the UI
+    const [domains, setDomains] = useState<Array<{
+        name: string
+        selected: boolean
+        controls: Array<{
+            id: string
+            name: string
+            selected: boolean
+        }>
+    }>>([])
+
+    // Fetch framework
+    useEffect(() => {
+        const fetchFrameworkData = async () => {
+            try {
+                setIsLoading(true)
+                const data = await collectionService.getCustomFrameworkDomains()
+                setFrameworkData(data)
+
+                // Transform API data to domain structure -> Easy to handle the UI
+                const transformedDomains = Object.entries(data.summary).map(([categoryName, controls]) => ({
+                    name: categoryName,
+                    selected: false,
+                    controls: (controls as controlArray[]).map(control => ({
+                        id: control.control_display_index,
+                        name: control.control_display_name,
+                        selected: false
+                    }))
+                }))
+
+                setDomains(transformedDomains)
+            } catch (error) {
+                console.error('Failed to fetch framework data:', error)
+                toast({
+                    title: "Error",
+                    description: "Failed to load framework data. Please try again later.",
+                    variant: "destructive",
+                })
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        fetchFrameworkData()
+    }, [toast])
+
+    // Function to transform domains state to API format
+    const getSelectedControlsForAPI = () => {
+        return domains.reduce((acc, domain) => {
+            const selectedControlsInDomain = domain.controls.filter(control => control.selected)
+            if (selectedControlsInDomain.length > 0) {
+                acc[domain.name] = selectedControlsInDomain.map(control => ({
+                    control_display_index: control.id,
+                    control_display_name: control.name
+                }))
+            }
+            return acc
+        }, {} as { [categoryName: string]: controlArray[] })
+    }
+
+    // ---------- FUNCTIONS RELATED TO UI -----------
     const toggleDomain = (domainIndex: number) => {
         setDomains(prev => prev.map((domain, index) => {
             if (index === domainIndex) {
@@ -85,7 +119,6 @@ const NewFramework = () => {
         }))
     }
 
-    // Toggle control selection
     const toggleControl = (domainIndex: number, controlId: string) => {
         setDomains(prev => prev.map((domain, index) => {
             if (index === domainIndex) {
@@ -93,6 +126,7 @@ const NewFramework = () => {
                     control.id === controlId ? { ...control, selected: !control.selected } : control
                 )
                 const allControlsSelected = updatedControls.every(control => control.selected)
+
                 return {
                     ...domain,
                     selected: allControlsSelected,
@@ -103,7 +137,6 @@ const NewFramework = () => {
         }))
     }
 
-    // Select all domains and controls
     const selectAll = () => {
         setDomains(prev => prev.map(domain => ({
             ...domain,
@@ -112,7 +145,6 @@ const NewFramework = () => {
         })))
     }
 
-    // Deselect all domains and controls
     const deselectAll = () => {
         setDomains(prev => prev.map(domain => ({
             ...domain,
@@ -121,36 +153,54 @@ const NewFramework = () => {
         })))
     }
 
-    // Check if any domains are selected
     const hasSelections = domains.some(domain => domain.selected || domain.controls.some(control => control.selected))
-
-    // Check if all are selected
     const allSelected = domains.every(domain => domain.selected)
-
-    // Handle create framework
     const handleCreateFramework = () => {
         if (!hasSelections) return
         setShowDialog(true)
     }
 
-    // Handle dialog submit
-    const handleDialogSubmit = () => {
+
+    // ------------ FUNCTION TO CREATE FRAMEWORK ------------
+    const handleDialogSubmit = async () => {
         if (!frameworkName.trim()) return
-
         setIsCreating(true)
-        // TODO: Add actual framework creation logic here
-        console.log('Creating framework:', frameworkName)
-        console.log('Selected domains:', domains.filter(d => d.selected || d.controls.some(c => c.selected)))
 
-        setTimeout(() => {
-            setIsCreating(false)
-            setShowDialog(false)
-            setFrameworkName('')
-            navigate('/new-evaluation')
-        }, 1000)
+        try {
+            const selectedControlsForAPI = getSelectedControlsForAPI();
+            const requestData: createCustomFrameworkRequest = {
+                category_control_selection: selectedControlsForAPI,
+                collection_display_name: frameworkName.trim(),
+                global_framework_version: frameworkData?.version || 1,
+                overwrite: false,
+                tenant_id: userData.tenant_id
+            };
+
+            const response = await collectionService.createCustomFramework(requestData);
+            toast({
+                title: "Framework created successfully",
+                description: `Framework "${response.collection_display_name}" created successfully with ${response.stats.controls_created} controls and ${response.stats.domains_created} domains.`,
+                variant: "default",
+                className: "bg-green-ryzr",
+            });
+
+            // Before navigating to evaluation page, update the collection slice
+            dispatch(loadCollections(userData.tenant_id));
+            navigate('/new-evaluation');
+
+        } catch (error) {
+            console.error('Failed to create framework:', error);
+            toast({
+                title: "Error",
+                description: "Failed to create framework. Please try again later.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsCreating(false);
+            setShowDialog(false);
+            setFrameworkName('');
+        }
     }
-
-
 
 
 
@@ -166,171 +216,174 @@ const NewFramework = () => {
                 </div>
             </section>
 
-
-            {/* Framework Selection Section */}
             <section className="px-3 sm:px-6 md:px-4 lg:px-16 py-8">
-                <div className="max-w-7xl">
-                    <Card className="bg-zinc-900">
-                        <CardHeader>
-                            <div className="flex justify-between items-start">
-                                <div className="flex-1">
-                                    <CardTitle className="text-white text-2xl mb-2">Select Framework Domains</CardTitle>
-                                    <p className="text-gray-light-ryzr">Choose domains and controls to include in your custom framework</p>
-                                </div>
-                                <div className="flex items-center gap-2 ml-4">
-                                    <div className="text-sm text-gray-light-ryzr mr-2">
-                                        {domains.filter(d => d.selected).length}/{domains.length} selected
+                {isLoading ? (
+                    <Loader2 className="animate-spin" />
+                ) : (
+                    <>
+                        {/* Framework Selection Section */}
+                        <div className="max-w-7xl">
+                            <Card className="bg-zinc-900">
+                                <CardHeader>
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex-1">
+                                            <CardTitle className="text-white text-2xl mb-2">Select Framework Domains</CardTitle>
+                                            <p className="text-gray-light-ryzr">Choose domains and controls to include in your custom framework</p>
+                                        </div>
+                                        <div className="flex items-center gap-2 ml-4">
+                                            <div className="text-sm text-gray-light-ryzr mr-2">
+                                                {domains.filter(d => d.selected).length}/{domains.length} selected
+                                            </div>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={allSelected ? deselectAll : selectAll}
+                                                className={`border-gray-600 hover:bg-gray-800 flex items-center gap-2 transition-all ${allSelected
+                                                    ? 'bg-violet-ryzr/20 border-violet-ryzr text-violet-ryzr hover:bg-violet-ryzr/30'
+                                                    : 'text-white'
+                                                    }`}
+                                            >
+                                                {allSelected ? (
+                                                    <>
+                                                        <CheckSquare className="h-4 w-4" />
+                                                        <span className="hidden sm:inline">Deselect All</span>
+                                                        <span className="sm:hidden">All</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Square className="h-4 w-4" />
+                                                        <span className="hidden sm:inline">Select All</span>
+                                                        <span className="sm:hidden">All</span>
+                                                    </>
+                                                )}
+                                            </Button>
+                                        </div>
                                     </div>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={allSelected ? deselectAll : selectAll}
-                                        className={`border-gray-600 hover:bg-gray-800 flex items-center gap-2 transition-all ${allSelected
-                                            ? 'bg-violet-ryzr/20 border-violet-ryzr text-violet-ryzr hover:bg-violet-ryzr/30'
-                                            : 'text-white'
-                                            }`}
-                                    >
-                                        {allSelected ? (
-                                            <>
-                                                <CheckSquare className="h-4 w-4" />
-                                                <span className="hidden sm:inline">Deselect All</span>
-                                                <span className="sm:hidden">All</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Square className="h-4 w-4" />
-                                                <span className="hidden sm:inline">Select All</span>
-                                                <span className="sm:hidden">All</span>
-                                            </>
-                                        )}
-                                    </Button>
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <Accordion type="multiple" className="space-y-2">
-                                {domains.map((domain, domainIndex) => (
-                                    <AccordionItem
-                                        key={domainIndex}
-                                        value={`domain-${domainIndex}`}
-                                        className="bg-zinc-900"
-                                    >
-                                        <AccordionTrigger className="hover:no-underline px-4 py-3">
-                                            <div className="flex items-center justify-between w-full mr-4">
-                                                <div className="flex items-center gap-3">
-                                                    <Checkbox
-                                                        id={`domain-${domainIndex}`}
-                                                        checked={domain.selected}
-                                                        onCheckedChange={() => toggleDomain(domainIndex)}
-                                                        onClick={(e) => e.stopPropagation()}
-                                                    />
-                                                    <Label
-                                                        htmlFor={`domain-${domainIndex}`}
-                                                        className="text-white font-medium text-left cursor-pointer"
-                                                        onClick={(e) => e.stopPropagation()}
-                                                    >
-                                                        {domain.name}
-                                                    </Label>
-                                                </div>
-                                                <span className="text-gray-light-ryzr text-sm">
-                                                    {domain.controls.filter(c => c.selected).length}/{domain.controls.length} selected
-                                                </span>
-                                            </div>
-                                        </AccordionTrigger>
-                                        <AccordionContent className="px-4 pb-4">
-                                            <div className="space-y-2 ml-8">
-                                                {domain.controls.map((control) => (
-                                                    <div key={control.id} className="flex items-center gap-3 py-2">
-                                                        <Checkbox
-                                                            id={`control-${control.id}`}
-                                                            checked={control.selected}
-                                                            onCheckedChange={() => toggleControl(domainIndex, control.id)}
-                                                        />
-                                                        <Label
-                                                            htmlFor={`control-${control.id}`}
-                                                            className="text-gray-light-ryzr cursor-pointer"
-                                                        >
-                                                            {control.id} - {control.name}
-                                                        </Label>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <Accordion type="multiple" className="space-y-2">
+                                        {domains.map((domain, domainIndex) => (
+                                            <AccordionItem
+                                                key={domainIndex}
+                                                value={`domain-${domainIndex}`}
+                                                className="bg-zinc-900"
+                                            >
+                                                <AccordionTrigger className="hover:no-underline px-4 py-3">
+                                                    <div className="flex items-center justify-between w-full mr-4">
+                                                        <div className="flex items-center gap-3">
+                                                            <Checkbox
+                                                                id={`domain-${domainIndex}`}
+                                                                checked={domain.selected}
+                                                                onCheckedChange={() => toggleDomain(domainIndex)}
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            />
+                                                            <Label
+                                                                htmlFor={`domain-${domainIndex}`}
+                                                                className="text-white font-medium text-left cursor-pointer"
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            >
+                                                                {domain.name}
+                                                            </Label>
+                                                        </div>
+                                                        <span className="text-gray-light-ryzr text-sm">
+                                                            {domain.controls.filter(c => c.selected).length}/{domain.controls.length} selected
+                                                        </span>
                                                     </div>
-                                                ))}
-                                            </div>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                ))}
-                            </Accordion>
+                                                </AccordionTrigger>
+                                                <AccordionContent className="px-4 pb-4">
+                                                    <div className="space-y-2 ml-8">
+                                                        {domain.controls.map((control) => (
+                                                            <div key={control.id} className="flex items-center gap-3 py-2">
+                                                                <Checkbox
+                                                                    id={`control-${control.id}`}
+                                                                    checked={control.selected}
+                                                                    onCheckedChange={() => toggleControl(domainIndex, control.id)}
+                                                                />
+                                                                <Label
+                                                                    htmlFor={`control-${control.id}`}
+                                                                    className="text-gray-light-ryzr cursor-pointer"
+                                                                >
+                                                                    {control.id} - {control.name}
+                                                                </Label>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </AccordionContent>
+                                            </AccordionItem>
+                                        ))}
+                                    </Accordion>
 
-                            {/* <Separator className="bg-gray-700 my-6" /> */}
+                                    {/* <Separator className="bg-gray-700 my-6" /> */}
 
-                            <div className="flex justify-between items-center">
-                                <div className="text-gray-light-ryzr">
-                                    {domains.filter(d => d.selected).length} domains selected
+                                    <div className="flex justify-between items-center">
+                                        <div className="text-gray-light-ryzr">
+                                            {domains.filter(d => d.selected).length} domains selected
+                                        </div>
+                                        <div className="flex gap-4">
+                                            <Button
+                                                variant="outline"
+                                            >
+                                                Cancel
+                                            </Button>
+                                            <Button
+                                                variant="primary"
+                                                onClick={handleCreateFramework}
+                                                disabled={!hasSelections}
+                                                className={!hasSelections ? 'opacity-50 cursor-not-allowed' : ''}
+                                            >
+                                                Next
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        {/* Create Framework Dialog */}
+                        <Dialog open={showDialog} onOpenChange={setShowDialog}>
+                            <DialogContent className="bg-zinc-900 border-gray-700">
+                                <DialogHeader>
+                                    <DialogTitle className="text-white">Create Custom Framework</DialogTitle>
+                                    <DialogDescription className="text-gray-light-ryzr">
+                                        Give your custom framework a name to proceed with creation.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-4 py-4">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="framework-name" className="text-white">Framework Name</Label>
+                                        <Input
+                                            id="framework-name"
+                                            value={frameworkName}
+                                            onChange={(e) => setFrameworkName(e.target.value)}
+                                            placeholder="e.g., My Security Framework"
+                                            className="bg-neutral-800 border-gray-600 text-white"
+                                        />
+                                    </div>
+                                    <div className="text-sm text-gray-light-ryzr">
+                                        {domains.filter(d => d.selected || d.controls.some(c => c.selected)).length} domains will be included
+                                    </div>
                                 </div>
-                                <div className="flex gap-4">
+                                <DialogFooter>
                                     <Button
                                         variant="outline"
+                                        onClick={() => setShowDialog(false)}
                                     >
                                         Cancel
                                     </Button>
                                     <Button
-                                        variant="primary"
-                                        onClick={handleCreateFramework}
-                                        disabled={!hasSelections}
-                                        className={!hasSelections ? 'opacity-50 cursor-not-allowed' : ''}
+                                        onClick={handleDialogSubmit}
+                                        disabled={!frameworkName.trim() || isCreating}
+                                        variant='primary'
+                                        className="disabled:opacity-50"
                                     >
-                                        Next
+                                        {isCreating ? 'Creating...' : 'Create Framework'}
                                     </Button>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    </>
+                )}
             </section>
-
-            {/* Create Framework Dialog */}
-            <Dialog open={showDialog} onOpenChange={setShowDialog}>
-                <DialogContent className="bg-zinc-900 border-gray-700">
-                    <DialogHeader>
-                        <DialogTitle className="text-white">Create Custom Framework</DialogTitle>
-                        <DialogDescription className="text-gray-light-ryzr">
-                            Give your custom framework a name to proceed with creation.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="framework-name" className="text-white">Framework Name</Label>
-                            <Input
-                                id="framework-name"
-                                value={frameworkName}
-                                onChange={(e) => setFrameworkName(e.target.value)}
-                                placeholder="e.g., My Security Framework"
-                                className="bg-neutral-800 border-gray-600 text-white"
-                            />
-                        </div>
-                        <div className="text-sm text-gray-light-ryzr">
-                            {domains.filter(d => d.selected || d.controls.some(c => c.selected)).length} domains will be included
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button
-                            variant="outline"
-                            onClick={() => setShowDialog(false)}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={handleDialogSubmit}
-                            disabled={!frameworkName.trim() || isCreating}
-                            variant='primary'
-                            className="disabled:opacity-50"
-                        >
-                            {isCreating ? 'Creating...' : 'Create Framework'}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
-
         </div>
     )
 }
