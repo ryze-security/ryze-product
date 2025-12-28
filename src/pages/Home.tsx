@@ -62,6 +62,7 @@ function Home() {
 		{ label: "About", target: "features", disabled: false },
 		{ label: "Use cases", target: "product", disabled: false },
 		{ label: "Book a demo", target: "contact-us", disabled: false },
+		{ label: "NIS2", href: "/nis2", disabled: false },
 	];
 
 	const FeatureCARDS: Tab[] = [
@@ -357,8 +358,8 @@ function Home() {
 		try {
 			const response = await customFormsService.contactUs(contactUsBody);
 			if (response) {
-					handleCelebrate();
-					toast({
+				handleCelebrate();
+				toast({
 					title: "Thank you for contacting us!",
 					description: "We will get back to you soon.",
 					className: "bg-green-ryzr text-white",
@@ -715,7 +716,7 @@ function Home() {
 							</form>
 						</div>
 					</div>
-					
+
 				</section>
 			</FadeInSection>
 
