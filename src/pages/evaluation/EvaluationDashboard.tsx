@@ -32,16 +32,13 @@ import {
 import { reportResultDTO } from "@/models/reports/ExcelDTOs";
 import reportsService from "@/services/reportsServices";
 import { RoundSpinner } from "@/components/ui/spinner";
-import * as dfd from "danfojs";
-import * as ExcelJS from "exceljs";
-import * as FileSaver from "file-saver";
 import { useAppSelector } from "@/store/hooks";
 import { AlertDialogBox } from "@/components/AlertDialogBox";
 import { GenericDataTable } from "@/components/GenericDataTable";
 import { Progress } from "@/components/ui/progress";
-import { createRichTextFromMarkdown } from "@/utils/markdownExcel";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
+import { capitalizeAndFormat } from "@/utils/stringFormattings";
 
 interface ReportList {
     sNo: number;
@@ -423,7 +420,7 @@ function EvaluationDashboard() {
                                 : "bg-yellow-600"
                             }`}
                     >
-                        {evals.charAt(0).toUpperCase() + evals.slice(1).replace("_", " ")}
+                        {capitalizeAndFormat(evals)}
                     </span>
                 );
             },

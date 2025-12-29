@@ -13,6 +13,10 @@ import * as dfd from "danfojs";
 import * as ExcelJS from "exceljs";
 import * as FileSaver from "file-saver";
 import { createRichTextFromMarkdown } from "@/utils/markdownExcel";
+import {
+    capitalizeAndFormat,
+    formatControlID,
+} from "@/utils/stringFormattings";
 
 interface ReportGenerationParams {
     tenantId: string;
@@ -121,7 +125,7 @@ export function useReportGeneration() {
                     .filter(
                         (word) => !wordsToRemove.includes(word.toLowerCase())
                     )
-                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .map((word) => capitalizeAndFormat(word))
                     .join(" ");
             };
 
@@ -159,7 +163,7 @@ export function useReportGeneration() {
                         const originalValue = cell.value
                             ? cell.value.toString()
                             : "";
-                        cell.value = originalValue.slice(2);
+                        cell.value = formatControlID(originalValue);
                     }
 
                     cell.font = {

@@ -26,6 +26,7 @@ import { AlertDialogBox } from "@/components/AlertDialogBox";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from '@/hooks/use-toast';
 import { useParams } from "react-router-dom";
+import { capitalizeAndFormat } from "@/utils/stringFormattings";
 
 const TenantDetails = () => {
     const [reportList, setReportList] = React.useState<ReportList[]>([]);
@@ -394,7 +395,7 @@ const TenantDetails = () => {
                                 : "bg-yellow-600"
                             }`}
                     >
-                        {evals.charAt(0).toUpperCase() + evals.slice(1).replace("_", " ")}
+                        {capitalizeAndFormat(evals)}
                     </span>
                 );
             },
