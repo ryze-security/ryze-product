@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef } from "react";
 import html2pdf from "html2pdf.js"
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 import { ExecutiveSummaryDTO } from "@/models/reports/ExecutiveSummaryDTO";
+import { capitalizeAndFormat, formatControlID } from "@/utils/stringFormattings";
 
 
 // Type definitions for html2pdf options
@@ -301,9 +302,9 @@ const ExecutionSummary: React.FC<{ data: ExecutiveSummaryDTO | null; }> = ({ dat
                                                 return (
                                                     <div className="flex justify-between items-center">
                                                         {/* for first div only */}
-                                                        {key === 'scoreBelow50' && <span>{severity.charAt(0).toUpperCase() + severity.slice(1)}.</span>}
+                                                        {key === 'scoreBelow50' && <span>{capitalizeAndFormat(severity)}.</span>}
 
-                                                        <span>{`${severity.charAt(0).toUpperCase()}. ${severityNumber} controls.`}</span>
+                                                        <span>{`${capitalizeAndFormat(severity)} ${severityNumber} controls.`}</span>
 
                                                     </div>
                                                 )
@@ -348,7 +349,7 @@ const ExecutionSummary: React.FC<{ data: ExecutiveSummaryDTO | null; }> = ({ dat
                             .map((control) => {
                                 return (
                                     <div className="flex gap-1 table-row-container">
-                                        <p className="flex-[10] flex p-1 px-2 font-medium text-sm bg-gray-200 text-black rounded-md">{control.control_id.split('_').slice(1).join('_')}</p>
+                                        <p className="flex-[10] flex p-1 px-2 font-medium text-sm bg-gray-200 text-black rounded-md">{formatControlID(control.control_id)}</p>
                                         <p className="flex-[20] flex p-1 px-2 font-medium text-sm bg-gray-200 text-black rounded-md">{control.controlTitle}</p>
                                         <p className="flex-[10] flex p-1 px-2 font-medium text-sm bg-gray-200 text-black rounded-md">{control.severity}</p>
                                         <p className="flex-[60] flex p-1 px-2 font-medium text-sm bg-gray-200 text-black rounded-md">

@@ -45,6 +45,7 @@ import { Progress } from "@/components/ui/progress";
 import { GenericDataTable } from "@/components/GenericDataTable";
 import { ArrowDown01, ArrowDownAZ, ArrowUp10, ArrowUpDown, ArrowUpZA, Filter, MoreHorizontal, PlusCircleIcon } from "lucide-react";
 import { createRichTextFromMarkdown } from "@/utils/markdownExcel";
+import { capitalizeAndFormat } from "@/utils/stringFormattings";
 
 interface ReportList {
 	sNo: number;
@@ -549,8 +550,7 @@ function AuditeeEvaluations() {
 								: "bg-yellow-600"
 							}`}
 					>
-						{evals.charAt(0).toUpperCase() +
-							evals.slice(1).replace("_", " ")}
+						{capitalizeAndFormat(evals)}
 					</span>
 				);
 			},

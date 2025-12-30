@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { formatControlID } from "@/utils/stringFormattings";
 
 interface ControlsSelectionProps {
     formControl: any;
@@ -211,7 +212,7 @@ const ControlsSelection = ({ formControl, name, selectedFramework, isControlsLoa
                                                             aria-label={`Select ${control.control_display_name}`}
                                                         />
                                                     </TableCell>
-                                                    <TableCell className="font-medium">{control.control_id.slice(2)}</TableCell>
+                                                    <TableCell className="font-medium">{formatControlID(control.control_id)}</TableCell>
                                                     <TableCell>{control.control_display_name}</TableCell>
                                                 </TableRow>
                                             ))
@@ -283,7 +284,7 @@ const ControlsSelection = ({ formControl, name, selectedFramework, isControlsLoa
                                                             aria-label={`Select ${control.control_display_name}`}
                                                         />
                                                     </TableCell>
-                                                    <TableCell className="font-medium">{control.control_id.slice(2)}</TableCell>
+                                                    <TableCell className="font-medium">{formatControlID(control.control_id)}</TableCell>
                                                     <TableCell>{control.control_display_name}</TableCell>
                                                 </TableRow>
                                             ))}

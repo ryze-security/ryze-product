@@ -12,6 +12,7 @@ import { useAppSelector } from "@/store/hooks";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowDown01Icon, ArrowUp01Icon, ArrowUpDownIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { formatControlID } from "@/utils/stringFormattings";
 
 function DeviationDashboard() {
 	const userData = useAppSelector((state) => state.appUser);
@@ -34,7 +35,7 @@ function DeviationDashboard() {
 					(item, index) => {
 						return {
 							...item,
-							id: item.control_id.slice(2),
+							id: formatControlID(item.control_id),
 						};
 					}
 				);
