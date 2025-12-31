@@ -51,6 +51,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { formatControlID, sortControlIds } from "@/utils/stringFormattings";
 
 interface Props {
 	overallScore: string;
@@ -160,7 +161,7 @@ const columns: ColumnDef<controlResponse>[] = [
 					content={missing_elements}
 					truncateAt={30}
 					disableBoldText={true}
-					// emptyState="No missing elements found"
+				// emptyState="No missing elements found"
 				/>
 			);
 		},
@@ -317,16 +318,18 @@ const DetailHome = forwardRef((props: Props, ref) => {
 	const [isInitialSyncCompleted, setIsInitialSyncCompleted] =
 		useState<boolean>(false);
 
-	// updated combinedControls to have the score in percentage
+	// updated combinedControls to have the score in percentage and sorted by controlId
 	const updatedControlResponseList = React.useMemo(() => {
-		const updatedControls = combinedControls.map((control) => ({
-			...control,
-			serial: control.controlId.substring(2),
-			Response: {
-				...control.Response,
-				Score: Math.round(control.Response.Score * 100),
-			},
-		}));
+		const updatedControls = [...combinedControls]
+			.sort((a, b) => sortControlIds(a.controlId, b.controlId))
+			.map((control) => ({
+				...control,
+				serial: formatControlID(control.controlId),
+				Response: {
+					...control.Response,
+					Score: Math.round(control.Response.Score * 100),
+				},
+			}));
 		return updatedControls;
 	}, [combinedControls]);
 

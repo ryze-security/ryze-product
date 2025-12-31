@@ -29,6 +29,7 @@ import { RoundSpinner } from "../ui/spinner";
 import MarkdownRenderer from "./MarkdownRenderer";
 import ProgressCircle from "./ProgressCircle";
 import { Progress } from "../ui/progress";
+import { formatControlID } from "@/utils/stringFormattings";
 
 interface Props {
 	domainData: domainResponse;
@@ -130,7 +131,7 @@ const columns: ColumnDef<controlResponse>[] = [
 				<MarkdownRenderer
 					content={missing_elements}
 					truncateAt={30}
-					// emptyState="No missing elements found"
+				// emptyState="No missing elements found"
 				/>
 			);
 		},
@@ -259,7 +260,7 @@ const DomainDetail = forwardRef((props: Props, ref) => {
 			(control) => {
 				const updatedControl = {
 					...control,
-					serial: control.controlId.substring(2),
+					serial: formatControlID(control.controlId),
 					Response: {
 						...control.Response,
 						Score: Math.round(control.Response.Score * 100),
