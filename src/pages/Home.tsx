@@ -381,6 +381,7 @@ function Home() {
 		<div className="min-h-screen font-roboto w-full overflow-x-hidden overflow-y-hidden lg:overflow-y-auto relative">
 			<Navbar items={items} />
 
+
 			{/* Main Hero Section */}
 			<FadeInSection>
 				<div className="h-fit w-full flex flex-col items-center justify-center bg-[linear-gradient(to_bottom,#000000,#000000,#0B0B0B80,#B05BEF,#B05BEF)] lg:bg-[linear-gradient(to_bottom,#000000,#0B0B0B80,#B05BEF,#B05BEF)] text-white">
