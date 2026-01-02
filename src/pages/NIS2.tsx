@@ -49,21 +49,22 @@ const CheckApplicability = ({ show: boolean = false, setShow }) => {
             question: "What is the size of your organization?",
             options: [
                 {
-                    option: "> 250 employees and > EUR 50m revenue",
-                    nextStep: 5
-                },
-                {
-                    option: "50 to 250 employees and EUR 10m to 50m revenue",
+                    option: "< 9 employees and < EUR 2m revenue",
                     nextStep: 5
                 },
                 {
                     option: "< 49 employees and < EUR 10m revenue",
+                    nextStep: 5
+                },
+                {
+                    option: "> 250 employees and > EUR 50m revenue",
                     nextStep: 3
                 },
                 {
-                    option: "< 9 employees and < EUR 2m revenue",
+                    option: "50 to 250 employees and EUR 10m to 50m revenue",
                     nextStep: 3
-                }
+                },
+
             ]
         },
         {
@@ -263,7 +264,7 @@ const CheckApplicability = ({ show: boolean = false, setShow }) => {
                                             }
                                         </p>
                                         <div className="space-x-4">
-                                            <Button onClick={()=>setShow(false)} variant="outline" className="mr-2">
+                                            <Button onClick={() => setShow(false)} variant="outline" className="mr-2">
                                                 Close
                                             </Button>
                                             {isApplicable && (
