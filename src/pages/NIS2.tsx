@@ -1,0 +1,408 @@
+import { useEffect, useState } from 'react';
+import { FadeInSection } from '@/components/FadeInSection';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import Navbar from '@/components/home/Navbar';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Label } from '@/components/ui/label';
+import { ArrowLeftIcon } from 'lucide-react';
+import confetti from "canvas-confetti";
+
+export function launchConfetti(): void {
+    confetti({
+        particleCount: 150,
+        spread: 70,
+        origin: { y: 0.6 }
+    });
+}
+
+
+const CheckApplicability = ({ show: boolean = false, setShow }) => {
+    interface QuestionsDTO {
+        questionId: number;
+        question: string;
+        options: {
+            option: string;
+            nextStep: number;
+            applicable?: boolean;
+        }[];
+    }
+
+    const questions: QuestionsDTO[] = [
+        {
+            questionId: 1,
+            question: "Does your organization deliver services or products to countries within the European Union?",
+            options: [
+                {
+                    option: "YES",
+                    nextStep: 2,
+                },
+                {
+                    option: "NO",
+                    nextStep: 6,
+                    applicable: false
+                }
+            ]
+        },
+        {
+            questionId: 2,
+            question: "What is the size of your organization?",
+            options: [
+                {
+                    option: "> 250 employees and > EUR 50m revenue",
+                    nextStep: 5
+                },
+                {
+                    option: "50 to 250 employees and EUR 10m to 50m revenue",
+                    nextStep: 5
+                },
+                {
+                    option: "< 49 employees and < EUR 10m revenue",
+                    nextStep: 3
+                },
+                {
+                    option: "< 9 employees and < EUR 2m revenue",
+                    nextStep: 3
+                }
+            ]
+        },
+        {
+            questionId: 3,
+            question: "In which sector(s) does your company operate?",
+            options: [
+                {
+                    option: "Energy, Transport (Air, Rail, Water or Road), Banking, Financial markets incl. insurance provider, Healthcare, Drinking water, Waste water, Digital infrastructure provider, ICT service management (managed service providers incl. security service providers), Public administration, Space",
+                    nextStep: 6,
+                    applicable: true
+                },
+                {
+                    option: "No, we are not operating in these sectors.",
+                    nextStep: 4
+                }
+            ]
+        },
+        {
+            questionId: 4,
+            question: "Ok, do any of these additional sectors cover your organization?",
+            options: [
+                {
+                    option: "Postal and courier services, Waste management, Chemicals, Food",
+                    nextStep: 6,
+                    applicable: true
+                },
+                {
+                    option: "Manufacturing (medical devices, computers, electronics, electrical, machinery, motor vehicles or other transport equipment), Digital service providers (Online Market Places, Online Search Engines, and Social Networking Service Platforms), Research",
+                    nextStep: 6,
+                    applicable: true
+                },
+                {
+                    option: "No, these sectors don't apply to us either. I am not sure.",
+                    nextStep: 5
+                }
+            ]
+        },
+        {
+            questionId: 5,
+            question: "Does your organization fall under any of the following categories?",
+            options: [
+                {
+                    option: "Digital infrastructure provider (DNS service providers, TLD name registries, data centre service providers, cloud computing service providers, content delivery networks, trust service providers)",
+                    nextStep: 6,
+                    applicable: true
+                },
+                {
+                    option: "Public administration",
+                    nextStep: 6,
+                    applicable: true
+                },
+                {
+                    option: "Government-related",
+                    nextStep: 6,
+                    applicable: true
+                },
+                {
+                    option: "No, none of these.",
+                    nextStep: 6,
+                    applicable: false
+                }
+            ]
+        }
+    ];
+
+    // Single state to track navigation history -> enable us to bring user back to his prev. question
+    const [navigationHistory, setNavigationHistory] = useState<number[]>([1]);
+    const [isApplicable, setIsApplicable] = useState<boolean | null>(null);
+
+    useEffect(() => {
+        if (isApplicable) {
+            launchConfetti();
+        }
+    }, [isApplicable]);
+
+    const currentStep = navigationHistory[navigationHistory.length - 1];
+    const currentQuestion = questions.find(q => q.questionId === currentStep);
+
+    const handleOptionSelect = (option: string, nextStep: number, applicable?: boolean) => {
+        if (nextStep === 6) {
+            setIsApplicable(applicable ?? false);
+        }
+        setNavigationHistory(prev => [...prev, nextStep]);
+    };
+
+    const handleBack = () => {
+        if (navigationHistory.length > 1) {
+            // Remove the current step, revealing the previous one
+            setNavigationHistory(prev => prev.slice(0, -1));
+            if (currentStep === 6) {
+                setIsApplicable(null);
+            }
+        }
+    };
+
+    const handleReset = () => {
+        setNavigationHistory([1]);
+        setIsApplicable(null);
+    };
+
+    // if (!currentQuestion && currentStep !== 6) {
+    //     return null
+    // }
+
+    const showResetButton = navigationHistory.length > 1;
+
+
+    useEffect(() => {
+        // Store the current overflow value
+        const originalStyle = window.getComputedStyle(document.body).overflow;
+
+        // Disable scroll
+        document.body.style.overflow = 'hidden';
+
+        // Re-enable scroll when component unmounts
+        return () => {
+            document.body.style.overflow = originalStyle;
+        };
+    }, []);
+
+    return (
+        <>
+            <div className='z-50  bg-black inset-0 absolute'>
+                <div className="p-2 w-full rounded-lg overflow-hidden flex flex-col h-full">
+                    <FadeInSection delay={0.25}>
+
+
+                        <section className="relative w-full flex flex-col items-center py-32 text-center px-4">
+                            <h1 className="w-full text-center text-[13vw] md:text-[20vw] lg:text-8xl font-bold text-white bg-transparent px-6 py-4 rounded-lg tracking-wide">
+                                NIS2 Applicability
+                            </h1>
+                        </section>
+
+                        <FadeInSection delay={0.5}>
+                            <section className='flex space-y-6 flex-col max-w-4xl mx-auto '>
+
+                                {currentStep !== 6 && (
+                                    // <FadeInSection key={currentQuestion?.questionId} delay={0.05}>
+                                    <h2 className="text-xl font-bold">
+                                        {currentQuestion?.question}
+                                    </h2>
+                                    // </FadeInSection>
+                                )}
+
+                                <div className="space-y-2">
+                                    {currentStep !== 6 &&
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+                                            {currentQuestion?.options.map((opt, index) => {
+                                                const letter = String.fromCharCode(65 + index); // A, B, C, D, etc.
+                                                return (
+                                                    <FadeInSection delay={index * 0.08} key={opt.option}>
+                                                        <Button
+                                                            variant="outline"
+                                                            className="w-full h-full flex items-start justify-start text-left py-3 px-4 whitespace-normal group"
+                                                            onClick={() => handleOptionSelect(opt.option, opt.nextStep, opt.applicable)}
+                                                        >
+                                                            <div className="flex items-start gap-4">
+                                                                <Label className="bg-white size-6 rounded-full text-black flex items-center justify-center self-start shrink-0">
+                                                                    {letter}
+                                                                </Label>
+                                                                <span className="flex-1 leading-relaxed">
+                                                                    {opt.option}
+                                                                </span>
+                                                            </div>
+                                                        </Button>
+                                                    </FadeInSection>
+                                                );
+                                            })}
+                                        </div>
+                                    }
+                                </div>
+
+                                {currentStep !== 1 && currentStep !== 6 &&
+                                    <div className='flex w-full gap-2'>
+                                        <Button
+                                            onClick={handleBack}
+                                            variant='outline'>
+                                            <ArrowLeftIcon className="mr-1 h-4 w-4" />
+                                            Previous
+                                        </Button>
+                                    </div>
+                                }
+
+                                {/* Final Step answer */}
+                                {currentStep === 6 && (
+                                    <div className="text-center py-8">
+                                        <h3 className="text-2xl font-bold mb-4">
+                                            {isApplicable
+                                                ? "Your organization is LIKELY subject to NIS2 requirements"
+                                                : "Your organization is likely NOT subject to NIS2 requirements"
+                                            }
+                                        </h3>
+                                        <p className="text-muted-foreground mb-6">
+                                            {isApplicable
+                                                ? "Based on your responses, your organization appears to be in scope for NIS2 compliance requirements. We recommend a detailed assessment to ensure full compliance with all applicable regulations."
+                                                : "Based on your responses, your organization does not appear to fall under the scope of NIS2 Directive."
+                                            }
+                                        </p>
+                                        <div className="space-x-4">
+                                            <Button onClick={()=>setShow(false)} variant="outline" className="mr-2">
+                                                Close
+                                            </Button>
+                                            {isApplicable && (
+                                                <Button asChild>
+                                                    <Link to="/home">
+                                                        Run a detailed AI assessment
+                                                    </Link>
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </section>
+                        </FadeInSection>
+
+
+                    </FadeInSection>
+                </div>
+            </div>
+        </>
+    );
+};
+
+const NIS2 = () => {
+    const items = [
+        { label: "Home", href: "/", disabled: false },
+        { label: "FAQs", target: "faq", disabled: false },
+        { label: "NIS2", href: "/nis2", disabled: false },
+    ];
+
+    const FAQs = [
+        {
+            question: "Who must comply with NIS2?",
+            answer: "Medium and large organizations operating in the EU including essential and important entities as well as certain non-EU providers delivering critical services in the EU."
+        },
+        {
+            question: "What does NIS2 require organizations to implement?",
+            answer: "NIS2 mandates cybersecurity risk management, incident response and reporting, business continuity, access control, supply-chain security, and management accountability."
+        },
+        {
+            question: "What happens if an organization does not comply?",
+            answer: "Non-compliance can lead to significant fines, regulatory enforcement actions, increased supervision, and potential personal liability for senior management."
+        },
+        {
+            question: "How does our automated NIS2 assessment help?",
+            answer: "Our platform performs an in-depth automated assessment against 190+ NIS2-aligned controls, covering key domains such as incident management, access control, supply-chain security, governance, and operational resilience."
+        },
+        {
+            question: "What makes the assessment more effective than manual reviews?",
+            answer: "It rapidly analyzes policies, procedures, and reports using AI, identifies gaps at a control level, and provides recommendations for compliance - saving time, reducing human error, and improving consistency."
+        },
+        {
+            question: "What other compliance frameworks does your platform support?",
+            answer: "In addition to NIS2, our platform enables automated compliance reviews against ISO 27001, NIST CSF, and GDPR, allowing organizations to assess, map, and manage multiple regulatory and security frameworks through a single, unified solution."
+        }
+    ]
+
+    const [isCheckingApplicability, setIsCheckingApplicability] = useState(false)
+    const navigate = useNavigate();
+
+    return (
+        <section className="flex w-full bg-black text-white flex-col ">
+            <Navbar items={items} />
+            <div className='font-roboto pt-32 pb-0 px-3 sm:px-6 md:px-4 lg:px-16 flex flex-col'>
+
+                <div className="flex flex-col sm:flex-row justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10 ">
+                    <div className="flex flex-col gap-y-4 p-10">
+                        <h1 className="text-8xl font-bold">NIS2</h1>
+                        <h3 className='font-bold text-2xl mb-4'>EU&apos;s Network and Information Systems Directive (NIS2) </h3>
+
+                        {/* lists input */}
+                        <div className="text-2xl space-y-3 mb-4">
+                            <ul className="space-y-3 list-disc pl-5">
+                                <li>Strengthens cybersecurity through mandatory risk management, incident reporting, and resilience measures.</li>
+                                <li>Makes senior management directly accountable for cybersecurity oversight and decisions.</li>
+                                <li>Now in force in multiple EU countries, including Belgium, Italy, Greece, Finland, and others.</li>
+                                <li>Non-compliance can result in heavy fines, regulatory action, and personal sanctions for executives.</li>
+                            </ul>
+                        </div>
+
+                        <Button
+                            onClick={() => setIsCheckingApplicability(true)}
+                            className='w-fit font-bold text-xl rounded-full bg-[#B05BEF] hover:bg-[#B05BEF]/70 text-white px-6 mb-6'>Check Applicability</Button>
+
+                        <p className='text-3xl font-extrabold tracking-wide mb-2'>Review compliance? Try our AI-based compliance review for €0</p>
+
+                        <div className='flex space-x-4 mb-6'>
+                            <Button
+                                onClick={() => navigate("/sign-up")}
+                                className='w-fit font-bold text-xl rounded-full bg-[#B05BEF] hover:bg-[#B05BEF]/70 text-white px-6'>Detailed AI-based Assessment</Button>
+
+                            {/* todo: add this later */}
+                            {/* <Button className='w-fit font-bold text-xl rounded-full px-6'>Basic Self Assessment</Button> */}
+                        </div>
+
+                        <p className='text-2xl'>Explore compliance with ISO 27001, NIST CSF, and GDPR at no cost. <Link to="/sign-up" className='text-[#B05BEF] hover:underline'>Sign up</Link> to get started.</p>
+
+                    </div>
+                </div>
+
+
+                <div className="bg-[#1A1A1A] flex flex-col sm:flex-row rounded-2xl w-full p-0 sm:p-6 pb-10 mt-10">
+                    <div className="flex flex-col space-y-4 w-full">
+
+
+
+                        <FadeInSection>
+                            <section
+                                id="faq"
+                                className="relative z-10 w-full p-10"
+                            >
+                                <div className="w-full flex flex-col">
+                                    <h2 className="text-4xl font-bold mb-6 mx-auto">Questions</h2>
+                                    <div className="w-full">
+                                        {FAQs.map((faq, index) => (
+                                            <Accordion key={index} type="multiple">
+                                                <AccordionItem value={`item-${index + 1}`}>
+                                                    <AccordionTrigger className="text-left text-lg md:text-[22px] text-[#D7D7D7]">
+                                                        {faq.question}
+                                                    </AccordionTrigger>
+                                                    <AccordionContent className="text-sm md:text-base lg:text-lg text-[#d7d7d7dd]">
+                                                        {faq.answer}
+                                                    </AccordionContent>
+                                                </AccordionItem>
+                                            </Accordion>
+                                        ))}
+                                    </div>
+                                </div>
+                            </section>
+                        </FadeInSection>
+
+                    </div>
+                </div>
+            </div>
+
+            {isCheckingApplicability && <CheckApplicability show={isCheckingApplicability} setShow={setIsCheckingApplicability} />}
+        </section>
+    )
+}
+
+
+export default NIS2

@@ -27,6 +27,7 @@ import {
 } from "./components/layout/layoutIndex.ts";
 import TenantDetails from "./pages/admin/TenantDetails.tsx";
 import NewFramework from "./pages/frameworks/NewFramework.tsx";
+import NIS2 from "./pages/NIS2.tsx";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => {
 				<Sonner />
 				<Routes>
 					<Route path="/" element={<Home />} />
+					<Route path="/nis2" element={<NIS2 />} />
 
 					<Route element={<PublicRoute />}>
 						<Route path="/login" element={<LoginPage />} />
