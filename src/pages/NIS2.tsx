@@ -4,8 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/home/Navbar';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
-import { ArrowLeftIcon } from 'lucide-react';
+import { ArrowLeftIcon, X } from 'lucide-react';
 import confetti from "canvas-confetti";
 
 export function launchConfetti(): void {
@@ -17,7 +18,7 @@ export function launchConfetti(): void {
 }
 
 
-const CheckApplicability = ({ show: boolean = false, setShow }) => {
+const CheckApplicability = ({ open, onOpenChange }) => {
     interface QuestionsDTO {
         questionId: number;
         question: string;
@@ -160,72 +161,78 @@ const CheckApplicability = ({ show: boolean = false, setShow }) => {
         }
     };
 
-    const handleReset = () => {
-        setNavigationHistory([1]);
-        setIsApplicable(null);
-    };
-
-    // if (!currentQuestion && currentStep !== 6) {
-    //     return null
-    // }
-
-    const showResetButton = navigationHistory.length > 1;
-
-
-    useEffect(() => {
-        // Store the current overflow value
-        const originalStyle = window.getComputedStyle(document.body).overflow;
-
-        // Disable scroll
-        document.body.style.overflow = 'hidden';
-
-        // Re-enable scroll when component unmounts
-        return () => {
-            document.body.style.overflow = originalStyle;
-        };
-    }, []);
-
     return (
-        <>
-            <div className='z-50  bg-black inset-0 absolute'>
-                <div className="p-2 w-full rounded-lg overflow-hidden flex flex-col h-full">
+        <Dialog open={open}
+            onOpenChange={(isOpen) => {
+                if (!isOpen) {
+                    // Reset all states when closing
+                    setNavigationHistory([1]);
+                    setIsApplicable(null);
+                }
+                onOpenChange(isOpen);
+            }}>
+
+
+
+            <DialogContent removeXButton={true} className="h-screen max-w-none w-screen m-0 p-0 border-0 bg-black">
+                <div className="pointer-events-none hidden sm:block absolute left-0 top-0 right-52 bottom-52 bg-[radial-gradient(circle_at_12%_22%,rgba(168,85,247,0.5),transparent_45%)] z-10 " />
+
+                {/* LOGO */}
+                <img
+                    className="w-10 h-10 md:w-12 md:h-12 lg:size-16 cursor-pointer absolute z-50 top-[46px] left-[76px] "
+                    src="/assets/Ryzr_White Logo_v2.png"
+                    alt="Ryzr Logo"
+                />
+
+
+
+                <div className="p-2 w-full h-full flex flex-col">
                     <FadeInSection delay={0.25}>
 
 
-                        <section className="relative w-full flex flex-col items-center py-32 text-center px-4">
-                            <h1 className="w-full text-center text-[13vw] md:text-[20vw] lg:text-8xl font-bold text-white bg-transparent px-6 py-4 rounded-lg tracking-wide">
-                                NIS2 Applicability
+                        <section className="relative w-full flex flex-col items-center pt-52 pb-24 text-center px-4">
+                            <h1 className="w-full text-center text-3xl md:text-[40px] lg:text-[64px] font-bold text-white bg-transparent px-6 py-4 rounded-lg tracking-wide">
+                                NIS2 Applicability Check
                             </h1>
+
+                            {/* Custom X button */}
+                            <X
+                                className='absolute right-[5%] md:right-[15%] top-28 text-violet-ryzr border-violet-ryzr cursor-pointer border rounded-full p-2 size-8 hover:bg-violet-ryzr/20 transition-colors duration-200'
+                                onClick={() => {
+                                    setNavigationHistory([1]);
+                                    setIsApplicable(null);
+                                    onOpenChange(false);
+                                }}
+                            />
+
                         </section>
 
                         <FadeInSection delay={0.5}>
-                            <section className='flex space-y-6 flex-col max-w-4xl mx-auto '>
+                            <section className='flex space-y-6 flex-col max-w-6xl mx-auto '>
 
                                 {currentStep !== 6 && (
-                                    // <FadeInSection key={currentQuestion?.questionId} delay={0.05}>
-                                    <h2 className="text-xl font-bold">
+                                    <h2 className="text-2xl font-bold text-center mb-16">
                                         {currentQuestion?.question}
                                     </h2>
-                                    // </FadeInSection>
                                 )}
 
                                 <div className="space-y-2">
                                     {currentStep !== 6 &&
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
                                             {currentQuestion?.options.map((opt, index) => {
                                                 const letter = String.fromCharCode(65 + index); // A, B, C, D, etc.
                                                 return (
                                                     <FadeInSection delay={index * 0.08} key={opt.option}>
                                                         <Button
                                                             variant="outline"
-                                                            className="w-full h-full flex items-start justify-start text-left py-3 px-4 whitespace-normal group"
+                                                            className="w-full h-full flex items-start justify-start text-left py-6 px-6 whitespace-normal group border border-violet-ryzr rounded-2xl"
                                                             onClick={() => handleOptionSelect(opt.option, opt.nextStep, opt.applicable)}
                                                         >
                                                             <div className="flex items-start gap-4">
-                                                                <Label className="bg-white size-6 rounded-full text-black flex items-center justify-center self-start shrink-0">
+                                                                <Label className="bg-[#31153F] size-6 rounded-full text-white flex items-center justify-center self-start shrink-0 ">
                                                                     {letter}
                                                                 </Label>
-                                                                <span className="flex-1 leading-relaxed">
+                                                                <span className="flex-1 leading-relaxed font-bold">
                                                                     {opt.option}
                                                                 </span>
                                                             </div>
@@ -250,30 +257,43 @@ const CheckApplicability = ({ show: boolean = false, setShow }) => {
 
                                 {/* Final Step answer */}
                                 {currentStep === 6 && (
-                                    <div className="text-center py-8">
-                                        <h3 className="text-2xl font-bold mb-4">
-                                            {isApplicable
-                                                ? "Your organization is LIKELY subject to NIS2 requirements"
-                                                : "Your organization is likely NOT subject to NIS2 requirements"
-                                            }
-                                        </h3>
-                                        <p className="text-muted-foreground mb-6">
-                                            {isApplicable
-                                                ? "Based on your responses, your organization appears to be in scope for NIS2 compliance requirements. We recommend a detailed assessment to ensure full compliance with all applicable regulations."
-                                                : "Based on your responses, your organization does not appear to fall under the scope of NIS2 Directive."
-                                            }
-                                        </p>
-                                        <div className="space-x-4">
-                                            <Button onClick={() => setShow(false)} variant="outline" className="mr-2">
-                                                Close
-                                            </Button>
-                                            {isApplicable && (
-                                                <Button asChild>
-                                                    <Link to="/home">
-                                                        Run a detailed AI assessment
-                                                    </Link>
+                                    <div className="text-center py-12 px-4 max-w-4xl mx-auto">
+                                        <div className="bg-gradient-to-br from-purple-900/30 to-black/30 p-8 rounded-2xl border border-violet-ryzr/30 backdrop-blur-sm">
+                                            <h3 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-white to-violet-200 bg-clip-text text-transparent">
+                                                {isApplicable
+                                                    ? "Your organization is LIKELY subject to NIS2 requirements"
+                                                    : "Your organization is likely NOT subject to NIS2 requirements"
+                                                }
+                                            </h3>
+                                            <p className="text-violet-100/80 text-lg mb-8 leading-relaxed max-w-3xl mx-auto">
+                                                {isApplicable
+                                                    ? "Based on your responses, your organization appears to be in scope for NIS2 compliance requirements. We recommend a detailed assessment to ensure full compliance with all applicable regulations."
+                                                    : "Based on your responses, your organization does not appear to fall under the scope of NIS2 Directive."
+                                                }
+                                            </p>
+                                            <div className="flex flex-col sm:flex-row justify-center gap-4 mt-10">
+                                                <Button
+                                                    variant="outline"
+                                                    className="px-8 py-6 text-base border-violet-ryzr text-violet-100 hover:bg-violet-900/30 hover:text-white transition-all duration-300"
+                                                    onClick={() => {
+                                                        setNavigationHistory([1]);
+                                                        setIsApplicable(null);
+                                                        onOpenChange(false);
+                                                    }}
+                                                >
+                                                    Close
                                                 </Button>
-                                            )}
+                                                {isApplicable && (
+                                                    <Button
+                                                        asChild
+                                                        className="px-8 py-6 text-base bg-violet-light-ryzr hover:bg-violet-ryzr text-white hover:shadow-lg hover:shadow-violet-500/20 transition-all duration-300"
+                                                    >
+                                                        <Link to="/home">
+                                                            Run a detailed AI assessment
+                                                        </Link>
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -283,17 +303,18 @@ const CheckApplicability = ({ show: boolean = false, setShow }) => {
 
                     </FadeInSection>
                 </div>
-            </div>
-        </>
+            </DialogContent>
+        </Dialog>
     );
 };
 
 const NIS2 = () => {
     const items = [
-        { label: "Home", href: "/", disabled: false },
-        { label: "FAQs", target: "faq", disabled: false },
+        { label: "About", target: "features", disabled: false },
+        { label: "Use cases", target: "product", disabled: false },
+        { label: "Book a demo", target: "contact-us", disabled: false },
         { label: "NIS2", href: "/nis2", disabled: false },
-    ];
+    ]
 
     const FAQs = [
         {
@@ -322,8 +343,12 @@ const NIS2 = () => {
         }
     ]
 
-    const [isCheckingApplicability, setIsCheckingApplicability] = useState(false)
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const navigate = useNavigate();
+
+    const handleOpenChange = (open: boolean) => {
+        setIsDialogOpen(open);
+    };
 
     return (
         <section className="flex w-full bg-black text-white flex-col ">
@@ -346,12 +371,18 @@ const NIS2 = () => {
                         </div>
 
                         <Button
-                            onClick={() => setIsCheckingApplicability(true)}
-                            className='w-fit font-bold text-xl rounded-full bg-[#B05BEF] hover:bg-[#B05BEF]/70 text-white px-6 mb-6'>Check Applicability</Button>
+                            onClick={() => setIsDialogOpen(true)}
+                            className='w-fit font-bold text-xl rounded-full bg-[#B05BEF] hover:bg-[#B05BEF]/70 text-white px-6 mb-6'>
+                            Check Applicability
+                        </Button>
+                        <CheckApplicability
+                            open={isDialogOpen}
+                            onOpenChange={handleOpenChange}
+                        />
 
                         <p className='text-3xl font-extrabold tracking-wide mb-2'>Review compliance? Try our AI-based compliance review for €0</p>
 
-                        <div className='flex space-x-4 mb-6'>
+                        <div className='flex space-x-4'>
                             <Button
                                 onClick={() => navigate("/sign-up")}
                                 className='w-fit font-bold text-xl rounded-full bg-[#B05BEF] hover:bg-[#B05BEF]/70 text-white px-6'>Detailed AI-based Assessment</Button>
@@ -359,11 +390,9 @@ const NIS2 = () => {
                             {/* todo: add this later */}
                             {/* <Button className='w-fit font-bold text-xl rounded-full px-6'>Basic Self Assessment</Button> */}
                         </div>
-
-                        <p className='text-2xl'>Explore compliance with ISO 27001, NIST CSF, and GDPR at no cost. <Link to="/sign-up" className='text-[#B05BEF] hover:underline'>Sign up</Link> to get started.</p>
-
                     </div>
                 </div>
+                <p className='mb-6 px-[64px] text-2xl'>Explore compliance with ISO 27001, NIST CSF, and GDPR at no cost. <Link to="/sign-up" className='text-[#B05BEF] hover:underline'>Sign up</Link> to get started.</p>
 
 
                 <div className="bg-[#1A1A1A] flex flex-col sm:flex-row rounded-2xl w-full p-0 sm:p-6 pb-10 mt-10">
@@ -400,7 +429,6 @@ const NIS2 = () => {
                 </div>
             </div>
 
-            {isCheckingApplicability && <CheckApplicability show={isCheckingApplicability} setShow={setIsCheckingApplicability} />}
         </section>
     )
 }

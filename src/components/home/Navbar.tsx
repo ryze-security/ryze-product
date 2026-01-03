@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "../ui/button";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -24,6 +24,7 @@ interface Props {
 function Navbar(props: Props) {
 	const { items } = props;
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	const handleScrollTo = (sectionId: string) => {
 		const el = document.getElementById(sectionId);
@@ -39,11 +40,13 @@ function Navbar(props: Props) {
 	return (
 		<div className="flex items-center w-full h-[70px] font-roboto fixed z-50">
 			<div className="absolute top-[46px] left-1/2 transform -translate-x-1/2 rounded-[36px] flex justify-between items-center h-[70px] w-11/12 md:w-10/12 bg-transparent/40 backdrop-blur-sm gap-4 px-4 md:px-9 shadow-sm z-50">
-				<img
-					className="w-10 h-10 md:w-12 md:h-12"
-					src="/assets/Ryzr_White Logo_v2.png"
-					alt="Ryzr Logo"
-				/>
+				<Link to="/">
+					<img
+						className="w-10 h-10 md:w-12 md:h-12 cursor-pointer"
+						src="/assets/Ryzr_White Logo_v2.png"
+						alt="Ryzr Logo"
+					/>
+				</Link>
 				{/* Desktop nav links */}
 				<div className="hidden lg:flex gap-6">
 					{items &&
@@ -55,10 +58,17 @@ function Navbar(props: Props) {
 									}`}
 								disabled={item.disabled}
 								onClick={() => {
-									if (!item.disabled && item.href) {
+									if (item.disabled) return;
+
+									if (item.target) {
+										if (location.pathname === "/") {
+											handleScrollTo(item.target);
+										} else {
+											navigate(`/#${item.target}`);
+										}
+									}
+									else if (item.href) {
 										navigate(item.href);
-									} else if (!item.disabled && item.target) {
-										handleScrollTo(item.target);
 									}
 								}}
 							>
