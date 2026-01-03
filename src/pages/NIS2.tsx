@@ -355,8 +355,11 @@ const NIS2 = () => {
             <Navbar items={items} />
             <div className='font-roboto pt-32 pb-0 px-3 sm:px-6 md:px-4 lg:px-16 flex flex-col'>
 
-                <div className="flex flex-col sm:flex-row justify-between rounded-2xl bg-gradient-to-b from-[#B05BEF] to-[black] w-full p-0 sm:p-6 pb-10 ">
-                    <div className="flex flex-col gap-y-4 p-10">
+                <div className="flex flex-col sm:flex-row justify-between w-full p-0 sm:p-6 pb-10 ">
+
+                    <div className="pointer-events-none hidden sm:block absolute left-0 top-0 right-52 bottom-52 bg-[radial-gradient(circle_at_12%_22%,rgba(168,85,247,0.5),transparent_45%)]" />
+
+                    <div className="flex flex-col gap-y-4 p-10 z-10">
                         <h1 className="text-8xl font-bold">NIS2</h1>
                         <h3 className='font-bold text-2xl mb-4'>EU&apos;s Network and Information Systems Directive (NIS2) </h3>
 
