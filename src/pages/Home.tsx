@@ -39,7 +39,7 @@ import {
 } from "lucide-react";
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import TabbedFeatures, { Tab } from "@/components/home/TabbedFeatures";
 import { recordGetStartedClick, recordDemoFormView, recordDemoFormInteraction, recordDemoFormSubmission } from "@/services/datadogManualTracking";
 
@@ -64,6 +64,31 @@ function Home() {
 		{ label: "Book a demo", target: "contact-us", disabled: false },
 		{ label: "NIS2", href: "/nis2", disabled: false },
 	];
+
+	const { hash } = useLocation();
+
+	// to scroll to a given section when navigating from some other url /nis2 -> /#features => takes us to features section of home page
+	useEffect(() => {
+		if (hash) {
+			const id = hash.replace('#', '');
+			const element = document.getElementById(id);
+
+			if (element) {
+				setTimeout(() => {
+					const headerOffset = 180;
+					const elementPosition = element.getBoundingClientRect().top;
+					const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+					window.scrollTo({
+						top: offsetPosition,
+						behavior: "smooth"
+					});
+
+					window.history.replaceState(null, "", window.location.pathname);
+				}, 100);
+			}
+		}
+	}, [hash]);
 
 	const FeatureCARDS: Tab[] = [
 		{

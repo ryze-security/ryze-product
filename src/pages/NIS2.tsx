@@ -290,10 +290,11 @@ const CheckApplicability = ({ show: boolean = false, setShow }) => {
 
 const NIS2 = () => {
     const items = [
-        { label: "Home", href: "/", disabled: false },
-        { label: "FAQs", target: "faq", disabled: false },
+        { label: "About", target: "features", disabled: false },
+        { label: "Use cases", target: "product", disabled: false },
+        { label: "Book a demo", target: "contact-us", disabled: false },
         { label: "NIS2", href: "/nis2", disabled: false },
-    ];
+    ]
 
     const FAQs = [
         {
