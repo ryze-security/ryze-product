@@ -382,7 +382,7 @@ const NIS2 = () => {
 
                         <p className='text-3xl font-extrabold tracking-wide mb-2'>Review compliance? Try our AI-based compliance review for €0</p>
 
-                        <div className='flex space-x-4 mb-6'>
+                        <div className='flex space-x-4'>
                             <Button
                                 onClick={() => navigate("/sign-up")}
                                 className='w-fit font-bold text-xl rounded-full bg-[#B05BEF] hover:bg-[#B05BEF]/70 text-white px-6'>Detailed AI-based Assessment</Button>
@@ -390,11 +390,9 @@ const NIS2 = () => {
                             {/* todo: add this later */}
                             {/* <Button className='w-fit font-bold text-xl rounded-full px-6'>Basic Self Assessment</Button> */}
                         </div>
-
-                        <p className='text-2xl'>Explore compliance with ISO 27001, NIST CSF, and GDPR at no cost. <Link to="/sign-up" className='text-[#B05BEF] hover:underline'>Sign up</Link> to get started.</p>
-
                     </div>
                 </div>
+                <p className='mb-6 px-[64px] text-2xl'>Explore compliance with ISO 27001, NIST CSF, and GDPR at no cost. <Link to="/sign-up" className='text-[#B05BEF] hover:underline'>Sign up</Link> to get started.</p>
 
 
                 <div className="bg-[#1A1A1A] flex flex-col sm:flex-row rounded-2xl w-full p-0 sm:p-6 pb-10 mt-10">
