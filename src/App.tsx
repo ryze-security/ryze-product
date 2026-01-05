@@ -28,6 +28,7 @@ import {
 import TenantDetails from "./pages/admin/TenantDetails.tsx";
 import NewFramework from "./pages/frameworks/NewFramework.tsx";
 import NIS2 from "./pages/NIS2.tsx";
+import PrivacyPolicy from "./pages/legal/PrivacyPolicy.tsx";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => {
 				<Routes>
 					<Route path="/" element={<Home />} />
 					<Route path="/nis2" element={<NIS2 />} />
+					<Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
 					<Route element={<PublicRoute />}>
 						<Route path="/login" element={<LoginPage />} />
@@ -49,9 +51,9 @@ const App = () => {
 					<Route element={<ProtectedRoute />}>
 						<Route element={<Layout />}>
 							<Route path="/home" element={<Index />} />
-							<Route path="/catchmeifyoucan-demo-admin-route" element={<AdminDashboard />} />
-							<Route path="/catchmeifyoucan-demo-admin-route/tenant/:tenantId" element={<TenantDetails />} />
-							<Route path="/catchmeifyoucan-demo-admin-route/tenant/:tenantId/:companyId/:evaluationId" element={<EvaluationDetails />} />
+							<Route path="/admin" element={<AdminDashboard />} />
+							<Route path="/admin/tenant/:tenantId" element={<TenantDetails />} />
+							<Route path="/admin/tenant/:tenantId/:companyId/:evaluationId" element={<EvaluationDetails />} />
 
 							<Route
 								path="/evaluation"
