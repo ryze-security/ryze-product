@@ -7,15 +7,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
 import { ArrowLeftIcon, X } from 'lucide-react';
-import confetti from "canvas-confetti";
-
-export function launchConfetti(): void {
-    confetti({
-        particleCount: 150,
-        spread: 70,
-        origin: { y: 0.6 }
-    });
-}
 
 
 const CheckApplicability = ({ open, onOpenChange }) => {
@@ -58,14 +49,13 @@ const CheckApplicability = ({ open, onOpenChange }) => {
                     nextStep: 5
                 },
                 {
-                    option: "> 250 employees and > EUR 50m revenue",
-                    nextStep: 3
-                },
-                {
                     option: "50 to 250 employees and EUR 10m to 50m revenue",
                     nextStep: 3
                 },
-
+                {
+                    option: "> 250 employees and > EUR 50m revenue",
+                    nextStep: 3
+                },
             ]
         },
         {
@@ -135,11 +125,6 @@ const CheckApplicability = ({ open, onOpenChange }) => {
     const [navigationHistory, setNavigationHistory] = useState<number[]>([1]);
     const [isApplicable, setIsApplicable] = useState<boolean | null>(null);
 
-    useEffect(() => {
-        if (isApplicable) {
-            launchConfetti();
-        }
-    }, [isApplicable]);
 
     const currentStep = navigationHistory[navigationHistory.length - 1];
     const currentQuestion = questions.find(q => q.questionId === currentStep);
@@ -190,7 +175,7 @@ const CheckApplicability = ({ open, onOpenChange }) => {
                     <FadeInSection delay={0.25}>
 
 
-                        <section className="relative w-full flex flex-col items-center pt-52 pb-24 text-center px-4">
+                        <section className="relative w-full flex flex-col items-center pt-[15vh] pb-24 text-center px-4">
                             <h1 className="w-full text-center text-3xl md:text-[40px] lg:text-[64px] font-bold text-white bg-transparent px-6 py-4 rounded-lg tracking-wide">
                                 NIS2 Applicability Check
                             </h1>
@@ -208,7 +193,7 @@ const CheckApplicability = ({ open, onOpenChange }) => {
                         </section>
 
                         <FadeInSection delay={0.5}>
-                            <section className='flex space-y-6 flex-col max-w-6xl mx-auto '>
+                            <section className='flex gap-y-6 flex-col max-w-6xl mx-auto '>
 
                                 {currentStep !== 6 && (
                                     <h2 className="text-2xl font-bold text-center mb-16">
@@ -218,24 +203,22 @@ const CheckApplicability = ({ open, onOpenChange }) => {
 
                                 <div className="space-y-2">
                                     {currentStep !== 6 &&
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full items-stretch">
                                             {currentQuestion?.options.map((opt, index) => {
                                                 const letter = String.fromCharCode(65 + index); // A, B, C, D, etc.
                                                 return (
                                                     <FadeInSection delay={index * 0.08} key={opt.option}>
                                                         <Button
                                                             variant="outline"
-                                                            className="w-full h-full flex items-start justify-start text-left py-6 px-6 whitespace-normal group border border-violet-ryzr rounded-2xl"
+                                                            className="w-full h-full flex items-start gap-4 justify-start text-left py-6 px-6 whitespace-normal group border border-violet-ryzr rounded-2xl"
                                                             onClick={() => handleOptionSelect(opt.option, opt.nextStep, opt.applicable)}
                                                         >
-                                                            <div className="flex items-start gap-4">
-                                                                <Label className="bg-[#31153F] size-6 rounded-full text-white flex items-center justify-center self-start shrink-0 ">
-                                                                    {letter}
-                                                                </Label>
-                                                                <span className="flex-1 leading-relaxed font-bold">
-                                                                    {opt.option}
-                                                                </span>
-                                                            </div>
+                                                            <Label className="bg-[#31153F] size-6 rounded-full text-white flex items-center justify-center self-start shrink-0 ">
+                                                                {letter}
+                                                            </Label>
+                                                            <span className="flex-1 leading-relaxed font-bold">
+                                                                {opt.option}
+                                                            </span>
                                                         </Button>
                                                     </FadeInSection>
                                                 );
@@ -245,7 +228,7 @@ const CheckApplicability = ({ open, onOpenChange }) => {
                                 </div>
 
                                 {currentStep !== 1 && currentStep !== 6 &&
-                                    <div className='flex w-full gap-2'>
+                                    <div className='flex w-full mt-6'>
                                         <Button
                                             onClick={handleBack}
                                             variant='outline'>
