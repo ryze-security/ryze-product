@@ -7,15 +7,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Label } from '@/components/ui/label';
 import { ArrowLeftIcon, X } from 'lucide-react';
-import confetti from "canvas-confetti";
-
-export function launchConfetti(): void {
-    confetti({
-        particleCount: 150,
-        spread: 70,
-        origin: { y: 0.6 }
-    });
-}
 
 
 const CheckApplicability = ({ open, onOpenChange }) => {
@@ -58,14 +49,13 @@ const CheckApplicability = ({ open, onOpenChange }) => {
                     nextStep: 5
                 },
                 {
-                    option: "> 250 employees and > EUR 50m revenue",
-                    nextStep: 3
-                },
-                {
                     option: "50 to 250 employees and EUR 10m to 50m revenue",
                     nextStep: 3
                 },
-
+                {
+                    option: "> 250 employees and > EUR 50m revenue",
+                    nextStep: 3
+                },
             ]
         },
         {
@@ -135,11 +125,6 @@ const CheckApplicability = ({ open, onOpenChange }) => {
     const [navigationHistory, setNavigationHistory] = useState<number[]>([1]);
     const [isApplicable, setIsApplicable] = useState<boolean | null>(null);
 
-    useEffect(() => {
-        if (isApplicable) {
-            launchConfetti();
-        }
-    }, [isApplicable]);
 
     const currentStep = navigationHistory[navigationHistory.length - 1];
     const currentQuestion = questions.find(q => q.questionId === currentStep);
@@ -190,7 +175,7 @@ const CheckApplicability = ({ open, onOpenChange }) => {
                     <FadeInSection delay={0.25}>
 
 
-                        <section className="relative w-full flex flex-col items-center pt-52 pb-24 text-center px-4">
+                        <section className="relative w-full flex flex-col items-center pt-[15vh] pb-24 text-center px-4">
                             <h1 className="w-full text-center text-3xl md:text-[40px] lg:text-[64px] font-bold text-white bg-transparent px-6 py-4 rounded-lg tracking-wide">
                                 NIS2 Applicability Check
                             </h1>
@@ -208,7 +193,7 @@ const CheckApplicability = ({ open, onOpenChange }) => {
                         </section>
 
                         <FadeInSection delay={0.5}>
-                            <section className='flex space-y-6 flex-col max-w-6xl mx-auto '>
+                            <section className='flex gap-y-6 flex-col max-w-6xl mx-auto '>
 
                                 {currentStep !== 6 && (
                                     <h2 className="text-2xl font-bold text-center mb-16">
@@ -218,24 +203,22 @@ const CheckApplicability = ({ open, onOpenChange }) => {
 
                                 <div className="space-y-2">
                                     {currentStep !== 6 &&
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full items-stretch">
                                             {currentQuestion?.options.map((opt, index) => {
                                                 const letter = String.fromCharCode(65 + index); // A, B, C, D, etc.
                                                 return (
                                                     <FadeInSection delay={index * 0.08} key={opt.option}>
                                                         <Button
                                                             variant="outline"
-                                                            className="w-full h-full flex items-start justify-start text-left py-6 px-6 whitespace-normal group border border-violet-ryzr rounded-2xl"
+                                                            className="w-full h-full flex items-start gap-4 justify-start text-left py-6 px-6 whitespace-normal group border border-violet-ryzr rounded-2xl"
                                                             onClick={() => handleOptionSelect(opt.option, opt.nextStep, opt.applicable)}
                                                         >
-                                                            <div className="flex items-start gap-4">
-                                                                <Label className="bg-[#31153F] size-6 rounded-full text-white flex items-center justify-center self-start shrink-0 ">
-                                                                    {letter}
-                                                                </Label>
-                                                                <span className="flex-1 leading-relaxed font-bold">
-                                                                    {opt.option}
-                                                                </span>
-                                                            </div>
+                                                            <Label className="bg-[#31153F] size-6 rounded-full text-white flex items-center justify-center self-start shrink-0 ">
+                                                                {letter}
+                                                            </Label>
+                                                            <span className="flex-1 leading-relaxed font-bold">
+                                                                {opt.option}
+                                                            </span>
                                                         </Button>
                                                     </FadeInSection>
                                                 );
@@ -245,7 +228,7 @@ const CheckApplicability = ({ open, onOpenChange }) => {
                                 </div>
 
                                 {currentStep !== 1 && currentStep !== 6 &&
-                                    <div className='flex w-full gap-2'>
+                                    <div className='flex w-full mt-6'>
                                         <Button
                                             onClick={handleBack}
                                             variant='outline'>
@@ -318,6 +301,10 @@ const NIS2 = () => {
 
     const FAQs = [
         {
+            question: "In which EU country is NIS2 in force",
+            answer: "NIS2 is now in force in multiple EU countries, including Belgium, Croatia, Greece, Hungary, Italy, Latvia, Lithuania, Slovakia, Slovenia, Finland and others. Other Member States including France, Germany, the Netherlands, and Spain are finalising national legislation, with enforcement expected in the year 2026."
+        },
+        {
             question: "Who must comply with NIS2?",
             answer: "Medium and large organizations operating in the EU including essential and important entities as well as certain non-EU providers delivering critical services in the EU."
         },
@@ -355,27 +342,26 @@ const NIS2 = () => {
             <Navbar items={items} />
             <div className='font-roboto pt-32 pb-0 px-3 sm:px-6 md:px-4 lg:px-16 flex flex-col'>
 
-                <div className="flex flex-col sm:flex-row justify-between w-full p-0 sm:p-6 pb-10 ">
+                <div className="flex xl:flex-row flex-col items-center sms:flex-row w-full p-0 sm:p-6 pb-10 ">
 
                     <div className="pointer-events-none hidden sm:block absolute left-0 top-0 right-52 bottom-52 bg-[radial-gradient(circle_at_12%_22%,rgba(168,85,247,0.5),transparent_45%)]" />
 
-                    <div className="flex flex-col gap-y-4 p-10 z-10">
+                    <div className="flex flex-col gap-y-4 p-10 z-10 w-full">
                         <h1 className="text-8xl font-bold">NIS2</h1>
-                        <h3 className='font-bold text-2xl mb-4'>EU&apos;s Network and Information Systems Directive (NIS2) </h3>
+                        <h3 className='font-base tracking-wider text-2xl mb-4'>EU&apos;s Network and Information Systems (NIS) Directive</h3>
 
                         {/* lists input */}
-                        <div className="text-2xl space-y-3 mb-4">
+                        {/* <div className="text-2xl space-y-3 mb-4">
                             <ul className="space-y-3 list-disc pl-5">
                                 <li>Strengthens cybersecurity through mandatory risk management, incident reporting, and resilience measures.</li>
                                 <li>Makes senior management directly accountable for cybersecurity oversight and decisions.</li>
                                 <li>Now in force in multiple EU countries, including Belgium, Italy, Greece, Finland, and others.</li>
                                 <li>Non-compliance can result in heavy fines, regulatory action, and personal sanctions for executives.</li>
                             </ul>
-                        </div>
-
+                        </div> */}
                         <Button
                             onClick={() => setIsDialogOpen(true)}
-                            className='w-fit font-bold text-xl rounded-full bg-[#B05BEF] hover:bg-[#B05BEF]/70 text-white px-6 mb-6'>
+                            className='w-fit font-bold text-xl rounded-full bg-[#B05BEF] hover:bg-[#B05BEF]/70 text-white px-6 mb-10'>
                             Check Applicability
                         </Button>
                         <CheckApplicability
@@ -383,18 +369,41 @@ const NIS2 = () => {
                             onOpenChange={handleOpenChange}
                         />
 
-                        <p className='text-3xl font-extrabold tracking-wide mb-2'>Review compliance? Try our AI-based compliance review for €0</p>
+                        <div className='max-w-sm mb-4'>
+                            <p className='text-4xl font-extrabold tracking-wide mb-2'>Review compliance with our AI-based assessment for <span className='text-violet-ryzr'>€0</span> *</p>
+                            <p className='text-[11px]'>* Promotion valid until 31st March 2026</p>
+                        </div>
 
                         <div className='flex space-x-4'>
                             <Button
                                 onClick={() => navigate("/sign-up")}
-                                className='w-fit font-bold text-xl rounded-full bg-[#B05BEF] hover:bg-[#B05BEF]/70 text-white px-6'>Detailed AI-based Assessment</Button>
+                                className='w-fit font-bold text-xl rounded-full bg-[#B05BEF] hover:bg-[#B05BEF]/70 text-white px-6'>Detailed AI-based assessment</Button>
 
                             {/* todo: add this later */}
-                            {/* <Button className='w-fit font-bold text-xl rounded-full px-6'>Basic Self Assessment</Button> */}
+                            <Button className='hidden w-fit font-bold text-xl rounded-full px-6'>Basic self assessment</Button>
                         </div>
                     </div>
+
+
+                    <div className='flex h-full w-full items-center p-10 xl:p-0'>
+                        <img
+                            className="shadow-lg p-1"
+                            src='/assets/NIS2-productImage.png'
+                            alt='NIS2 product image'
+                        />
+                    </div>
+
+                    {/* <div className='hidden xl:flex h-full w-full items-center'>
+                        <img
+                            className="shadow-lg p-1"
+                            src='/assets/NIS2-productImage.png'
+                            alt='NIS2 product image'
+                        />
+                    </div> */}
+
+
                 </div>
+
                 <p className='mb-6 px-[64px] text-2xl'>Explore compliance with ISO 27001, NIST CSF, and GDPR at no cost. <Link to="/sign-up" className='text-[#B05BEF] hover:underline'>Sign up</Link> to get started.</p>
 
 
@@ -409,7 +418,7 @@ const NIS2 = () => {
                                 className="relative z-10 w-full p-10"
                             >
                                 <div className="w-full flex flex-col">
-                                    <h2 className="text-4xl font-bold mb-6 mx-auto">Questions</h2>
+                                    <h2 className="text-4xl font-bold mb-6 mx-auto">Question?</h2>
                                     <div className="w-full">
                                         {FAQs.map((faq, index) => (
                                             <Accordion key={index} type="multiple">
