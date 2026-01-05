@@ -2,6 +2,7 @@ import React from "react";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface Props {
 	ProductLinks?: {
@@ -17,6 +18,8 @@ interface Props {
 
 function Footer(props: Props) {
 	const { ProductLinks = [], LegalLinks = [] } = props;
+	const navigate = useNavigate();
+	const location = useLocation();
 
 	const handleScrollTo = (sectionId: string) => {
 		const el = document.getElementById(sectionId);
@@ -48,9 +51,13 @@ function Footer(props: Props) {
 									className="text-[#8A8A8A] px-0 w-fit text-left justify-start text-base md:text-xl"
 									onClick={() => {
 										if (link.href) {
-											null;
-										} else {
-											handleScrollTo(link.target);
+											navigate(link.href);
+										} else if (link.target) {
+											if (location.pathname === "/") {
+												handleScrollTo(link.target);
+											} else {
+												navigate(`/#${link.target}`);
+											}
 										}
 									}}
 								>
@@ -69,6 +76,11 @@ function Footer(props: Props) {
 									key={index}
 									variant="link"
 									className="text-[#8A8A8A] px-0 w-fit text-left justify-start text-base md:text-xl"
+									onClick={() => {
+										if (link.href) {
+											navigate(link.href);
+										}
+									}}
 								>
 									{link.name}
 								</Button>
