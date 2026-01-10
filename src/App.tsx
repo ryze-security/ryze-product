@@ -19,6 +19,9 @@ import {
 	AuditeeDocuments,
 	AuditeeEvaluations,
 	AdminDashboard,
+	SelfAssessmentStart,
+	SelfAssessmentForm,
+	SelfAssessmentResults,
 } from "./pages/pageIndex.ts";
 import {
 	Layout,
@@ -46,6 +49,9 @@ const App = () => {
 					<Route element={<PublicRoute />}>
 						<Route path="/login" element={<LoginPage />} />
 						<Route path="/sign-up" element={<SignupPage />} />
+						<Route path="/nis2/assessment" element={<SelfAssessmentStart />} />
+						<Route path="/nis2/assessment/form" element={<SelfAssessmentForm />}/>
+						<Route path="/nis2/assessment/results" element={<SelfAssessmentResults />} />
 					</Route>
 
 					<Route element={<ProtectedRoute />}>

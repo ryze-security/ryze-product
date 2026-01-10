@@ -81,7 +81,7 @@ const items = [
 	},
 	{
 		title: "Admin Page",
-		url: "/catchmeifyoucan-demo-admin-route", // Set your admin URL here
+		url: "/admin", // Set your admin URL here
 		icon: UserCog2,
 		adminOnly: true, // Custom flag to check for admin role
 	},
