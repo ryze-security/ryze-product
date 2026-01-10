@@ -227,30 +227,15 @@ export function GenericDataTable<TData, TValue>({
 							table.getRowModel().rows.map((row) => (
 								<TableRow
 									key={row.id}
-									className={cn("relative hover:bg-zinc-800/50 transition text-white/80", disabledRow && "cursor-not-allowed hover:bg-zinc-900")}
+									onClick={() => handleRowClick(row.original)}
+									className={cn("relative hover:bg-zinc-800/50 transition text-white/80", disabledRow && "cursor-not-allowed hover:bg-zinc-900", clickableRow && !disabledRow && "cursor-pointer")}
 								>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id}>
-											{typeof cell.getValue() ===
-												"string" ? (
-												// Truncate long text to 50 words
-												<div className="text-wrap">
-													{(cell.getValue() as string)
-														.split(" ")
-														.slice(0, 30)
-														.join(" ")}
-													{(
-														cell.getValue() as string
-													).split(" ").length > 30 &&
-														"..."}
-												</div>
-											) : (
-												// Render default cell content for other types
-												flexRender(
+											{flexRender(
 													cell.column.columnDef.cell,
 													cell.getContext()
-												)
-											)}
+												)}
 										</TableCell>
 									))}
 									{reportsActionsData && (
