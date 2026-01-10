@@ -324,7 +324,7 @@ const SelfAssessmentResults = () => {
 						</h3>
 
 						{selectedRecommendations.length > 0 ? (
-							<ul className="space-y-3">
+							<ul className="space-y-3 overflow-y-auto">
 								{selectedRecommendations.map((rec, idx) => (
 									<li
 										key={idx}
